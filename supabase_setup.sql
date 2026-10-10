@@ -52,8 +52,7 @@ create table if not exists public.sessions (
   user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
   initials text not null check (char_length(initials) between 1 and 4),
   date date not null,
-  time time,
-  duration integer check (duration is null or duration > 0),
+  duration integer not null check (duration > 0),
   comment text,
   created_at timestamptz not null default now()
 );

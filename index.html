@@ -60,13 +60,20 @@
    <b id="sfTitle">Add session</b>
    <div class="grid2"><label class="lbl">Client initials *<input name="initials" required maxlength="4" placeholder="e.g. AK" autocapitalize="characters"></label>
    <label class="lbl">Date *<input name="date" type="date" required></label>
-   <label class="lbl">Start time<input name="time" type="time"></label>
-   <label class="lbl">Duration (min)<input name="duration" type="number" min="1" max="600" placeholder="optional"></label></div>
+   <label class="lbl full">Duration (min) *<input name="duration" type="number" min="1" max="600" required placeholder="e.g. 60"></label></div>
    <label class="lbl">Comment<textarea name="comment" rows="2" placeholder="Short note (no names or health details)"></textarea></label>
    <div class="grid2"><button class="gold" id="sfBtn">Add session</button><button type="button" id="sfCancel" class="ghost" hidden>Cancel edit</button></div>
    <p id="sfMsg" class="msg"></p>
   </form>
-  <button id="pdfBtn" class="gold big1 wide">⬇ Export PDF</button>
+  <div class="grid2 wide"><button id="pdfBtn" class="gold big1">⬇ Export PDF</button><button id="mailToggle" type="button" class="outline big1">✉️ Send by email</button></div>
+  <div id="mailBox" hidden><form id="mailForm" class="card">
+   <b>Send session log by email</b>
+   <label class="lbl">To<input name="to" type="email" required list="mailSug"></label><datalist id="mailSug"><option value="info@integralbodyinstitute.com"></datalist>
+   <label class="lbl">Subject<input name="subject" required></label>
+   <label class="lbl">Message<textarea name="msg" rows="4"></textarea></label>
+   <button class="gold">Send with my email app</button>
+   <p class="muted">The PDF is created on your phone and sent from your own email app (no data goes through FasciApp).</p><p id="mailNote" class="msg"></p>
+  </form></div>
   <div id="sessList"></div>
  </div>
 </section>

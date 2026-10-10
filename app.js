@@ -89,18 +89,18 @@ function resetSF(){const f=$("#sessForm");f.reset();{const n=new Date();f.date.v
 async function loadLog(){$("#logNeed").hidden=!!me;$("#logBox").hidden=!me;if(!me)return;if(!editId)resetSF();try{sess=await DB.sessions()}catch(e){sess=[];$("#sfMsg").textContent="Could not load: "+e.message}renderLog()}
 function renderLog(){const n=sess.length;$("#pNum").textContent=`${n} / ${GOAL} sessions`;$("#pPct").textContent=n>=GOAL?"✓ complete":`${GOAL-n} to go`;$("#pFill").style.width=Math.min(100,n/GOAL*100)+"%";
  $("#pdfBtn").disabled=!n;
- $("#sessList").innerHTML=n?sess.map((s,i)=>`<div class="sess"><span class="sn">${i+1}</span><div class="sb"><b>${esc(s.initials)}</b> · ${fmtD(s.date)}${s.time?" · "+esc(s.time.slice(0,5)):""}${s.duration?" · "+s.duration+" min":""}${s.comment?`<br><small>${esc(s.comment)}</small>`:""}</div>
+ $("#sessList").innerHTML=n?sess.map((s,i)=>`<div class="sess"><span class="sn">${i+1}</span><div class="sb"><b>${esc(s.initials)}</b> · ${fmtD(s.date)}${s.duration?" · "+s.duration+" min":""}${s.comment?`<br><small>${esc(s.comment)}</small>`:""}</div>
  <span class="sa"><button class="ghost sm" data-ed="${s.id}" aria-label="Edit">✎</button><button class="ghost sm" data-del="${s.id}" aria-label="Delete">🗑</button></span></div>`).join(""):"<p class='muted center'>No sessions yet. Add your first one above.</p>";
- $$("[data-ed]").forEach(b=>b.onclick=()=>{const s=sess.find(x=>x.id===b.dataset.ed),f=$("#sessForm");editId=s.id;["initials","date","comment"].forEach(k=>f[k].value=s[k]||"");f.time.value=(s.time||"").slice(0,5);f.duration.value=s.duration||"";
+ $$("[data-ed]").forEach(b=>b.onclick=()=>{const s=sess.find(x=>x.id===b.dataset.ed),f=$("#sessForm");editId=s.id;["initials","date","comment"].forEach(k=>f[k].value=s[k]||"");f.duration.value=s.duration||"";
   $("#sfTitle").textContent="Edit session";$("#sfBtn").textContent="Save changes";$("#sfCancel").hidden=false;f.scrollIntoView({behavior:"smooth"})});
  $$("[data-del]").forEach(b=>b.onclick=async()=>{if(!confirm("Delete this session?"))return;await DB.deleteSession(b.dataset.del);sess=await DB.sessions();if(editId===b.dataset.del)resetSF();renderLog()})}
 $("#sfCancel").onclick=resetSF;
 $("#sessForm").onsubmit=async e=>{e.preventDefault();const f=e.target,m=$("#sfMsg");
- const x={id:editId,initials:f.initials.value.trim().toUpperCase().slice(0,4),date:f.date.value,time:f.time.value||null,duration:f.duration.value?parseInt(f.duration.value):null,comment:f.comment.value.trim()};
- if(!x.initials)return m.textContent="Please add the client initials.";
+ const x={id:editId,initials:f.initials.value.trim().toUpperCase().slice(0,4),date:f.date.value,duration:f.duration.value?parseInt(f.duration.value):null,comment:f.comment.value.trim()};
+ if(!x.initials)return m.textContent="Please add the client initials.";if(!x.duration)return m.textContent="Please add the duration.";
  try{await DB.saveSession(x);m.textContent=editId?"Saved ✓":"Session added ✓";resetSF();sess=await DB.sessions();renderLog()}catch(err){m.textContent="Could not save: "+err.message}};
 async function logoData(){try{const b=await (await fetch("icon-192-v3.png")).blob();return await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(b)})}catch(e){return null}}
-$("#pdfBtn").onclick=async()=>{if(!window.jspdf)return alert("PDF library could not load. Check your internet connection.");
+async function buildPdf(){if(!window.jspdf){alert("PDF library could not load. Check your internet connection.");return null}
  const prof=await DB.mine().catch(()=>null)||{},name=prof.name||me.email,training=(prof.mods||[]).filter(m=>m!=="Other").join(" / ")||"—";
  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:"mm",format:"a4"}),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
  const ds=sess.map(s=>s.date).sort(),range=ds.length?`${fmtD(ds[0])} – ${fmtD(ds[ds.length-1])}`:"";
@@ -109,16 +109,26 @@ $("#pdfBtn").onclick=async()=>{if(!window.jspdf)return alert("PDF library could 
  doc.setTextColor(255,255,255);doc.setFont("helvetica","normal");doc.setFontSize(11);doc.text("Session Log",40,22);doc.setFontSize(8);doc.setTextColor(150,200,200);doc.text("Fascia connects us all",40,28);
  doc.setTextColor(2,25,30);doc.setFontSize(11);
  [["Practitioner",name],["Training",training],["Period",range],["Sessions",`${sess.length} / ${GOAL}`]].forEach(([k,v],i)=>{doc.setFont("helvetica","bold");doc.text(k+":",14,44+i*6);doc.setFont("helvetica","normal");doc.text(String(v),44,44+i*6)});
- doc.autoTable({startY:70,head:[["#","Initials","Date","Time","Duration","Comment"]],
-  body:sess.map((s,i)=>[i+1,s.initials,fmtD(s.date),(s.time||"").slice(0,5),s.duration?s.duration+" min":"",s.comment||""]),
+ doc.autoTable({startY:70,head:[["#","Initials","Date","Duration","Comment"]],
+  body:sess.map((s,i)=>[i+1,s.initials,fmtD(s.date),s.duration?s.duration+" min":"",s.comment||""]),
   headStyles:{fillColor:[2,25,30],textColor:[201,158,103]},alternateRowStyles:{fillColor:[245,240,233]},styles:{fontSize:9,cellPadding:2},
-  columnStyles:{0:{cellWidth:10},1:{cellWidth:18},2:{cellWidth:24},3:{cellWidth:16},4:{cellWidth:20}},
+  columnStyles:{0:{cellWidth:10},1:{cellWidth:18},2:{cellWidth:26},3:{cellWidth:22}},
   didDrawPage:()=>{doc.setFontSize(8);doc.setTextColor(120);doc.text(`FasciApp · ${name} · page ${doc.internal.getNumberOfPages()}`,14,H-8)}});
  let y=doc.lastAutoTable.finalY+12;if(y>H-45){doc.addPage();y=30}
  doc.setTextColor(2,25,30);doc.setFontSize(11);doc.setFont("helvetica","bold");doc.text(`Total sessions: ${sess.length}`,14,y);
  const mins=sess.reduce((a,s)=>a+(s.duration||0),0);doc.setFont("helvetica","normal");if(mins)doc.text(`Total time: ${Math.floor(mins/60)} h ${mins%60} min`,14,y+6);
  doc.line(14,y+26,90,y+26);doc.line(110,y+26,186,y+26);doc.setFontSize(9);doc.text("Practitioner signature",14,y+31);doc.text("Date",110,y+31);
- doc.save(`FasciApp_Session_Log_${name.replace(/[^\p{L}\p{N}]+/gu,"_").replace(/^_|_$/g,"")}.pdf`)};
+ return {doc,name,fn:`FasciApp_Session_Log_${name.replace(/[^\p{L}\p{N}]+/gu,"_").replace(/^_|_$/g,"")}.pdf`}}
+$("#pdfBtn").onclick=async()=>{const r=await buildPdf();if(r)r.doc.save(r.fn)};
+// ===== Send by email (no server: share sheet or user's mail app) =====
+$("#mailToggle").onclick=async()=>{const box=$("#mailBox");box.hidden=!box.hidden;if(!box.hidden){const prof=await DB.mine().catch(()=>null)||{},f=$("#mailForm");
+ if(!f.to.value)f.to.value="info@integralbodyinstitute.com";f.subject.value=`Session log – ${prof.name||me.email}`;
+ if(!f.msg.value)f.msg.value=`Hello,\n\nplease find attached my session log (${sess.length} / ${GOAL} sessions).\n\nWarm regards,\n${prof.name||""}`;$("#mailNote").textContent=""}};
+$("#mailForm").onsubmit=async e=>{e.preventDefault();const f=e.target,note=$("#mailNote");const r=await buildPdf();if(!r)return;
+ const to=f.to.value.trim(),subject=f.subject.value.trim(),body=f.msg.value;const file=new File([r.doc.output("blob")],r.fn,{type:"application/pdf"});
+ if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:subject,text:body});note.textContent="Shared ✓ (choose Mail in the share sheet; add the recipient "+to+" if needed).";return}catch(err){if(err.name==="AbortError"){note.textContent="Sharing cancelled.";return}}}
+ r.doc.save(r.fn);note.textContent=`PDF downloaded (${r.fn}). Your email app is opening – please attach the downloaded PDF before sending.`;
+ setTimeout(()=>{location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body+"\n\n[Please attach: "+r.fn+"]")}`},600)};
 
 // ===== phone / WhatsApp =====
 const WA='<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3a.5.5 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>';

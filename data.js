@@ -3,8 +3,8 @@
 const cfg=window.FASCIAPP_CONFIG||{};
 const LS={get:(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
 const FIELDS=["name","mods","address","city","country","lat","lng","phone","email","website","bio","photo","consent","whatsapp"];
-const SF=["initials","date","time","duration","comment"];const pickS=x=>Object.fromEntries(SF.map(k=>[k,x[k]===""?null:(x[k]??null)]));
-const cmp=(a,b)=>(a.date+(a.time||"")+a.created_at).localeCompare(b.date+(b.time||"")+b.created_at);
+const SF=["initials","date","duration","comment"];const pickS=x=>Object.fromEntries(SF.map(k=>[k,x[k]===""?null:(x[k]??null)]));
+const cmp=(a,b)=>(a.date+a.created_at).localeCompare(b.date+b.created_at);
 const pick=p=>Object.fromEntries(FIELDS.map(k=>[k,p[k]??null]));
 
 const local={mode:"local",

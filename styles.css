@@ -75,3 +75,5 @@ select[name=country]:invalid{color:#9fb3b5}
 .cbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .cb{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:16px;font-size:12px;font-weight:600;text-decoration:none!important;border:1px solid #C99E67;color:#C99E67!important}
 .cb.call{background:#C99E67;color:#02191E!important}.cb.wa{background:#25D366;border-color:#25D366;color:#fff!important}
+#mailBox{margin-bottom:12px}.grid2.wide{display:grid}
+.grid2 .full{grid-column:auto}
