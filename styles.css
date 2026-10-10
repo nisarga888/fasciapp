@@ -56,3 +56,8 @@ a{color:#5FC9C3}.hbtns{display:flex;gap:6px}.hbtns .sm{padding:6px 10px;font-siz
 [hidden]{display:none!important}
 .hbtns .sm{white-space:nowrap;padding:6px 9px;font-size:11px}.hb small{font-size:8px;letter-spacing:1.5px}.hb b{font-size:15px}.hb img{width:28px}
 #leaf .thread{stroke-width:2.6px}
+
+.infoc{display:flex;flex-direction:row-reverse;align-items:center;gap:6px;margin:0 6px 6px 0!important}
+.infoc button{width:20px;height:20px;border-radius:50%;padding:0;border:1px solid #02191E33;background:#ffffffcc;color:#02191E;font:italic 600 12px Georgia,serif;line-height:18px}
+.infoc span{background:#ffffffe6;color:#02191E;font-size:10px;padding:3px 7px;border-radius:8px;max-width:240px}
+select[name=country]:invalid{color:#9fb3b5}

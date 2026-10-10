@@ -35,13 +35,15 @@ function av(p,cls=""){return p.photo?`<img class="av ${cls}" src="${esc(p.photo)
 function link(u){if(!u)return"";const h=/^https?:\/\//.test(u)?u:"https://"+u;return `<a href="${esc(h)}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\//,""))}</a>`}
 function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</span>`).join("");
  const c=p.consent?[p.phone&&`📞 <a href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`,p.email&&`✉️ <a href="mailto:${esc(p.email)}">${esc(p.email)}</a>`,p.website&&`🌐 ${link(p.website)}`].filter(Boolean).map(x=>"<br>"+x).join(""):"<br><i>Not public yet</i>";
- return `<div class="row">${av(p)}<div><b>${esc(p.name)}</b><br>${pills}<br>${esc(p.city)}${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
+ return `<div class="row">${av(p)}<div><b>${esc(p.name)}</b><br>${pills}<br>${esc([p.city,p.country].filter(Boolean).join(", "))}${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
 
 // map
-function initMap(){if(map)return renderMarkers();map=L.map("leaf",{zoomControl:true}).setView([50,18],4);
+function initMap(){if(map)return renderMarkers();map=L.map("leaf",{zoomControl:true,attributionControl:false}).setView([50,18],4);
  const att='Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors';
  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",{attribution:att,maxZoom:16,className:"base"}).addTo(map);
  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",{maxZoom:16,className:"labels"}).addTo(map);
+ const Info=L.Control.extend({options:{position:"bottomright"},onAdd(){const d=L.DomUtil.create("div","infoc");d.innerHTML=`<button title="Map credits" aria-label="Map credits">i</button><span hidden>${att} · <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a></span>`;
+ L.DomEvent.disableClickPropagation(d);d.firstChild.onclick=()=>{d.lastChild.hidden=!d.lastChild.hidden};return d}});new Info().addTo(map);
  layer=L.layerGroup().addTo(map);renderMarkers()}
 function curve(a,b){const pts=[],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,dx=b[0]-a[0],dy=b[1]-a[1],c=[mx-dy*.2,my+dx*.2];
  for(let t=0;t<=1.001;t+=.05)pts.push([(1-t)**2*a[0]+2*(1-t)*t*c[0]+t*t*b[0],(1-t)**2*a[1]+2*(1-t)*t*c[1]+t*t*b[1]]);return pts}
@@ -62,15 +64,15 @@ function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));if(here)ps.sor
 
 // profile
 async function loadProf(){$("#needLogin").hidden=!!me;$("#profForm").hidden=!me;if(!me)return;$("#who").textContent="Signed in as "+me.email;
- const p=await DB.mine().catch(()=>null);const f=$("#profForm");if(!p)return;["name","address","city","phone","email","website","bio"].forEach(k=>f[k].value=p[k]||"");
+ const p=await DB.mine().catch(()=>null);const f=$("#profForm");if(!p)return;["name","address","city","country","phone","email","website","bio"].forEach(k=>f[k].value=p[k]||"");
  f.consent.checked=!!p.consent;f.querySelectorAll("[name=mod]").forEach(c=>c.checked=(p.mods||[]).includes(c.value));if(p.photo){$("#phPrev").src=p.photo;$("#phPrev").hidden=false}}
-async function geocode(addr,city){try{const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&accept-language=en&limit=1&q="+encodeURIComponent([addr,city].filter(Boolean).join(", ")));const j=await r.json();if(j[0])return[+j[0].lat,+j[0].lon,"address",j[0].display_name.split(", ").pop()]}catch(e){}
+async function geocode(addr,city,country){try{const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&accept-language=en&limit=1&q="+encodeURIComponent([addr,city,country].filter(c=>c&&c!=="Other").join(", ")));const j=await r.json();if(j[0])return[+j[0].lat,+j[0].lon,"address",j[0].display_name.split(", ").pop()]}catch(e){}
  const c=CITY[city.trim().toLowerCase()];return c?[c[0],c[1],"city",null]:null}
 $("#profForm").onsubmit=async e=>{e.preventDefault();const f=e.target,st=$("#status");st.textContent="Locating your address…";
  const old=await DB.mine().catch(()=>null)||{};
- const p={name:f.name.value.trim(),address:f.address.value.trim(),city:f.city.value.trim(),phone:f.phone.value.trim(),email:f.email.value.trim(),website:f.website.value.trim(),bio:f.bio.value.trim(),consent:f.consent.checked,mods:[...f.querySelectorAll("[name=mod]:checked")].map(c=>c.value),photo:photoData||old.photo||null};
- const g=await geocode(p.address,p.city);if(!g){st.textContent="Could not find that place. Check the city name.";return}
- Object.assign(p,{lat:g[0],lng:g[1],country:g[3]||old.country||p.city});
+ const p={name:f.name.value.trim(),address:f.address.value.trim(),city:f.city.value.trim(),phone:f.phone.value.trim(),email:f.email.value.trim(),website:f.website.value.trim(),bio:f.bio.value.trim(),consent:f.consent.checked,country:f.country.value,mods:[...f.querySelectorAll("[name=mod]:checked")].map(c=>c.value),photo:photoData||old.photo||null};
+ const g=await geocode(p.address,p.city,p.country);if(!g){st.textContent="Could not find that place. Check the city name.";return}
+ Object.assign(p,{lat:g[0],lng:g[1]});
  try{await DB.save(p);await refresh();st.textContent=`Saved ✓ placed by ${g[2]==="city"?"city centre (address not found)":"address"}.${p.consent?"":" Tick 'show publicly' so others can find you."}`}catch(err){st.textContent="Could not save: "+err.message}};
 $("#photo").onchange=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas"),s=256,m=Math.min(im.width,im.height);c.width=c.height=s;
  c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,s,s);photoData=c.toDataURL("image/jpeg",.85);$("#phPrev").src=photoData;$("#phPrev").hidden=false};im.src=r.result};r.readAsDataURL(file)};
