@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FasciApp · Find your practitioner</title><link rel="icon" href="logo.svg">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="styles.css"></head><body>
+<section id="splash" class="screen active">
+ <img src="logo.svg" class="biglogo" alt=""><h1 class="wm">Fasci<span>App</span></h1><div class="brandline">Find your practitioner</div>
+ <p class="slogan">Fascia connects us all</p><p class="tag">Every body is connected. Every practitioner, too.</p>
+ <form id="loginForm" class="card">
+  <div class="demo">DEMO – accounts stored only in this browser</div>
+  <input id="email" type="email" placeholder="Email" required>
+  <input id="pw" type="password" placeholder="Password" required minlength="4">
+  <div class="roles"><label><input type="radio" name="role" value="practitioner" checked> Practitioner</label>
+  <label><input type="radio" name="role" value="client"> Client</label></div>
+  <button class="gold">Join the network</button>
+  <button type="button" id="skip" class="ghost">Just browse the map</button>
+ </form>
+ <p class="founding">founding school: Integral Body Institute</p>
+</section>
+<header id="hdr"><span class="hb"><img src="logo.svg" alt=""><span><b>Fasci<span class="t">App</span></b><small>Find your practitioner</small></span></span><button id="logout" class="ghost sm">Log out</button></header>
+<main>
+<section id="map" class="screen">
+ <div class="bar"><button id="near" class="gold sm">📍 Near me</button>
+ <select id="filter"><option value="">All methods</option><option>MER</option><option>BBTRS</option><option>Other</option></select></div>
+ <div id="count" class="count"></div><div id="leaf"></div>
+</section>
+<section id="list" class="screen"><h2>Practitioners</h2><p id="from" class="muted"></p><div id="items"></div></section>
+<section id="profile" class="screen"><h2>My practitioner profile</h2>
+ <form id="profForm" class="card">
+  <div class="ph"><img id="phPrev" class="av big" hidden><label class="ghost sm phbtn">📷 Add profile photo<input type="file" id="photo" accept="image/*" hidden></label></div>
+  <input name="name" placeholder="Full name" required>
+  <div class="checks"><label><input type="checkbox" name="mod" value="MER"> MER</label><label><input type="checkbox" name="mod" value="BBTRS"> BBTRS</label><label><input type="checkbox" name="mod" value="Other"> Other</label></div>
+  <input name="address" placeholder="Street address"><input name="city" placeholder="City" required>
+  <input name="phone" placeholder="Phone"><input name="email" type="email" placeholder="Contact email">
+  <input name="website" placeholder="Website"><textarea name="bio" rows="3" placeholder="Short bio"></textarea>
+  <label class="consent"><input type="checkbox" name="consent"> Show my contacts publicly on the map</label>
+  <button class="gold">Save & place me on the map</button><p id="status" class="muted"></p>
+ </form><p id="clientNote" class="muted" hidden>You are signed in as a client. Switch role at login to create a listing.</p>
+</section>
+<section id="log" class="screen"><h2>Session log</h2><div class="card soon"><div class="logo">✎</div><p><b>Coming next</b></p><p class="muted">Log client initials, date, duration and a comment for your 60 training sessions, then export for IBI.</p></div></section>
+</main>
+<nav id="tabs"><button data-t="map">🗺<span>Map</span></button><button data-t="list">☰<span>List</span></button><button data-t="profile">👤<span>Profile</span></button><button data-t="log">✎<span>Log</span></button></nav>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="app.js"></script></body></html>

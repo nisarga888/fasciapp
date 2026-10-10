@@ -1,0 +1,37 @@
+:root{--bg:#02191E;--gold:#C99E67;--tx:#F3EDE4;--mut:#9fb3b5;--card:#0a2a30}
+*{box-sizing:border-box}body{margin:0;font-family:Montserrat,sans-serif;background:var(--bg);color:var(--tx);max-width:480px;margin:auto;min-height:100vh}
+.screen{display:none;padding:16px 16px 90px}.screen.active{display:block}
+#splash{text-align:center;padding-top:48px}#splash h1{font-weight:300;font-size:34px;letter-spacing:1px;margin:8px 0;color:var(--gold)}
+.logo{font-size:52px;color:var(--gold)}.tag{color:var(--mut);margin-bottom:24px}.founding{font-size:11px;color:var(--mut);letter-spacing:1px;text-transform:uppercase;margin-top:28px}
+.card{background:var(--card);border:1px solid #c99e6733;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;text-align:left}
+input,select,textarea{font:inherit;padding:12px;border-radius:10px;border:1px solid #c99e6744;background:#02191E;color:var(--tx)}
+button{font:inherit;cursor:pointer;border-radius:24px;padding:12px;border:1px solid var(--gold)}.gold{background:var(--gold);color:var(--bg);font-weight:600}.ghost{background:none;color:var(--gold)}.sm{padding:6px 14px;font-size:13px}
+.demo{font-size:11px;color:var(--gold);text-align:center}.roles,.checks{display:flex;gap:16px}.consent{font-size:14px}
+header{display:none;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #c99e6733;color:var(--gold)}
+nav{display:none;position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:auto;background:#011114;border-top:1px solid #c99e6744}
+nav button{flex:1;border:0;background:none;color:var(--mut);font-size:20px;display:flex;flex-direction:column;align-items:center;border-radius:0}nav button span{font-size:11px}nav button.on{color:var(--gold)}
+body.in header,body.in nav{display:flex}
+.bar{display:flex;gap:8px;margin-bottom:10px}.bar select{flex:1}#leaf{height:calc(100vh - 210px);border-radius:16px}
+h2{font-weight:400;color:var(--gold)}.muted{color:var(--mut);font-size:13px}
+.item{background:var(--card);border-radius:14px;padding:12px;margin-bottom:10px;border-left:3px solid var(--gold)}.item .d{float:right;color:var(--gold);font-weight:600}
+.pill{display:inline-block;font-size:10px;border:1px solid var(--gold);color:var(--gold);border-radius:10px;padding:1px 7px;margin-right:4px}.pill.demo{background:#c99e6733}
+.soon{text-align:center;align-items:center}.leaflet-popup-content{font-family:Montserrat}
+
+.biglogo{width:150px;height:150px;filter:drop-shadow(0 0 18px #5FC9C355)}
+.brandline{letter-spacing:4px;text-transform:uppercase;font-size:12px;color:#5FC9C3;margin-top:6px}
+.slogan{font-style:italic;color:var(--gold);margin:4px 0}
+.hb{display:flex;gap:10px;align-items:center}.hb img{width:34px}.hb small{display:block;font-size:10px;letter-spacing:2px;color:#5FC9C3;text-transform:uppercase}
+.count{font-size:12px;color:var(--mut);margin:-2px 0 8px;text-align:center}.count b{color:var(--gold)}
+#leaf{background:#02191E;border:1px solid #c99e6733;height:calc(100vh - 235px)}
+.thread{stroke-dasharray:6 10;animation:flow 6s linear infinite;filter:drop-shadow(0 0 3px #C99E67)}
+.glow{filter:blur(3px)}.node{filter:drop-shadow(0 0 6px #C99E67)}
+@keyframes flow{to{stroke-dashoffset:-160}}
+@keyframes pulse{50%{stroke-opacity:.15}}.glow{animation:pulse 4s ease-in-out infinite}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#0a2a30;color:#F3EDE4}
+
+#splash h1.wm{font-weight:700;font-size:44px;letter-spacing:0;margin:6px 0 2px}.wm span,.hb .t{color:#5FC9C3}
+#leaf .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.75) saturate(.5) sepia(.25) hue-rotate(140deg)}
+
+.av{width:44px;height:44px;border-radius:50%;border:2px solid #C99E67;object-fit:cover;display:inline-flex;align-items:center;justify-content:center;background:#0a2a30;color:#C99E67;font-weight:700;font-size:15px;box-shadow:0 0 10px #C99E6788;vertical-align:middle}
+.av.big{width:96px;height:96px;font-size:30px}.ph{display:flex;align-items:center;gap:14px}.phbtn{border:1px solid #C99E67;border-radius:24px;padding:8px 14px;color:#C99E67;cursor:pointer}
+.avm{background:none;border:0}.avm .av{width:40px;height:40px}.row{display:flex;gap:10px;align-items:flex-start}.row>div{flex:1}
