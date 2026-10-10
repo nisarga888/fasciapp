@@ -1,10 +1,6 @@
 const S={get:(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
 const CITY={tallinn:[59.437,24.7536],warsaw:[52.2297,21.0122],warszawa:[52.2297,21.0122],krakow:[50.0647,19.945],"kraków":[50.0647,19.945],kielce:[50.8661,20.6286],berlin:[52.52,13.405],lesvos:[39.2645,26.2777],mytilene:[39.1047,26.5552]};
-const DEMO=[
-["DEMO Kaja Tamm","Tallinn",[59.437,24.7536],["MER","BBTRS"]],["DEMO Anna Nowak","Warsaw",[52.2297,21.0122],["MER"]],
-["DEMO Piotr Zieliński","Kraków",[50.0647,19.945],["BBTRS"]],["DEMO Marta Kowalska","Kielce",[50.8661,20.6286],["MER","Other"]],
-["DEMO Jonas Weber","Berlin",[52.52,13.405],["BBTRS","Other"]],["DEMO Eleni Papadaki","Lesvos",[39.2645,26.2777],["MER","BBTRS"]]
-].map(([name,city,ll,mods],i)=>({id:"demo"+i,demo:true,name,city,country:{Tallinn:"EE",Warsaw:"PL","Kraków":"PL",Kielce:"PL",Berlin:"DE",Lesvos:"GR"}[city],lat:ll[0],lng:ll[1],mods,consent:true,phone:"+000 000 000",email:"demo"+i+"@example.com",website:"example.com",bio:"Fictional demo practitioner."}));
+const DEMO=[];
 let me=S.get("fyp_session",null),here=null,map,layer;
 const $=s=>document.querySelector(s);
 function all(){return DEMO.concat(Object.values(S.get("fyp_profiles",{})))}
