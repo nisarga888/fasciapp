@@ -69,3 +69,9 @@ select[name=country]:invalid{color:#9fb3b5}
 .sess{display:flex;gap:10px;align-items:flex-start;background:#0a2a30;border-radius:12px;padding:10px;margin-bottom:8px;border-left:3px solid #C99E67}
 .sn{min-width:28px;height:28px;border-radius:50%;background:#C99E67;color:#02191E;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px}
 .sb{flex:1;font-size:14px}.sb small{color:#9fb3b5}.sa{display:flex;gap:4px}.sa .sm{padding:4px 8px}
+
+.phone{display:flex;gap:6px;align-items:center;position:relative}.phone [name=prefix]{width:78px;flex:none}.phone [name=phone]{flex:1;min-width:0}
+.cc{position:absolute;left:58px;top:50%;transform:translateY(-50%);font-size:9px;color:#9fb3b5;pointer-events:none}
+.cbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.cb{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:16px;font-size:12px;font-weight:600;text-decoration:none!important;border:1px solid #C99E67;color:#C99E67!important}
+.cb.call{background:#C99E67;color:#02191E!important}.cb.wa{background:#25D366;border-color:#25D366;color:#fff!important}

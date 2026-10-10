@@ -15,8 +15,12 @@ create table if not exists public.practitioners (
   bio text,
   photo text,            -- data URL (~256px JPEG) or a Storage URL
   consent boolean not null default false,
+  whatsapp boolean not null default false,
   created_at timestamptz not null default now()
 );
+
+-- for databases created before v0.5:
+alter table public.practitioners add column if not exists whatsapp boolean not null default false;
 
 alter table public.practitioners enable row level security;
 
