@@ -35,3 +35,24 @@ h2{font-weight:400;color:var(--gold)}.muted{color:var(--mut);font-size:13px}
 .av{width:44px;height:44px;border-radius:50%;border:2px solid #C99E67;object-fit:cover;display:inline-flex;align-items:center;justify-content:center;background:#0a2a30;color:#C99E67;font-weight:700;font-size:15px;box-shadow:0 0 10px #C99E6788;vertical-align:middle}
 .av.big{width:96px;height:96px;font-size:30px}.ph{display:flex;align-items:center;gap:14px}.phbtn{border:1px solid #C99E67;border-radius:24px;padding:8px 14px;color:#C99E67;cursor:pointer}
 .avm{background:none;border:0}.avm .av{width:40px;height:40px}.row{display:flex;gap:10px;align-items:flex-start}.row>div{flex:1}
+/* v0.3 */
+.banner{position:sticky;top:0;z-index:2000;background:#C99E67;color:#02191E;font-size:12px;font-weight:600;text-align:center;padding:5px}
+.choices{display:flex;flex-direction:column;gap:14px;margin:26px 0 8px}
+button.big{display:flex;gap:14px;align-items:center;text-align:left;padding:18px 20px;border-radius:18px;font-size:18px}
+button.big b{display:block;font-size:19px}button.big small{display:block;font-size:13px;font-weight:400;opacity:.85;margin-top:2px}.big .ic{font-size:28px}
+button.outline{background:#0a2a30;color:#F3EDE4;border:2px solid #C99E67}button.outline b{color:#C99E67}
+.big1{font-size:17px;padding:15px}
+.back{background:none;border:0;color:#C99E67;padding:4px 0;font-size:15px}
+.seg{display:flex;background:#0a2a30;border-radius:28px;padding:4px;margin:6px 0 14px;border:1px solid #c99e6744}.seg button{flex:1;border:0;background:none;color:#9fb3b5;font-weight:600;font-size:15px}.seg button.on{background:#C99E67;color:#02191E}
+.lbl{display:flex;flex-direction:column;gap:6px;font-size:13px;color:#9fb3b5}.msg{color:#C99E67;font-size:14px;min-height:1em;margin:0}.center{text-align:center}
+a{color:#5FC9C3}.hbtns{display:flex;gap:6px}.hbtns .sm{padding:6px 10px;font-size:12px}
+#leaf{background:#e9efee;border:1px solid #C99E6766;height:calc(100vh - 250px)}
+#leaf .leaflet-tile-pane{filter:none}
+#leaf .base{filter:sepia(.25) hue-rotate(130deg) saturate(1.4) brightness(1.02)}
+.leaflet-container .thread{filter:none}.leaflet-container .glow{filter:blur(3px)}
+.avm .av{box-shadow:0 2px 10px #02191E55,0 0 0 3px #fff8}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#fff;color:#02191E}.leaflet-popup-content a{color:#1d7f79}
+.leaflet-popup-content .pill{color:#8a6a3c;border-color:#C99E67}
+[hidden]{display:none!important}
+.hbtns .sm{white-space:nowrap;padding:6px 9px;font-size:11px}.hb small{font-size:8px;letter-spacing:1.5px}.hb b{font-size:15px}.hb img{width:28px}
+#leaf .thread{stroke-width:2.6px}

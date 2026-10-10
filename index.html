@@ -1,23 +1,32 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FasciApp · Find your practitioner</title><link rel="icon" href="logo.svg">
+<title>FasciApp</title><link rel="icon" href="logo.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#02191E"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="FasciApp">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="styles.css"></head><body>
+<div id="demoBanner" class="banner" hidden>Demo mode: saved on this device</div>
 <section id="splash" class="screen active">
  <img src="logo.svg" class="biglogo" alt=""><h1 class="wm">Fasci<span>App</span></h1><div class="brandline">Find your practitioner</div>
  <p class="slogan">Fascia connects us all</p><p class="tag">Every body is connected. Every practitioner, too.</p>
- <form id="loginForm" class="card">
-  <div class="demo">DEMO – accounts stored only in this browser</div>
-  <input id="email" type="email" placeholder="Email" required>
-  <input id="pw" type="password" placeholder="Password" required minlength="4">
-  <div class="roles"><label><input type="radio" name="role" value="practitioner" checked> Practitioner</label>
-  <label><input type="radio" name="role" value="client"> Client</label></div>
-  <button class="gold">Join the network</button>
-  <button type="button" id="skip" class="ghost">Just browse the map</button>
- </form>
+ <div class="choices">
+  <button id="goLook" class="big gold"><span class="ic">🔍</span><span><b>Just looking</b><small>Find a practitioner near me · no login needed</small></span></button>
+  <button id="goPract" class="big outline"><span class="ic">📍</span><span><b>Practitioner</b><small>Add me to the map</small></span></button>
+ </div>
  <p class="founding">founding school: Integral Body Institute</p>
 </section>
-<header id="hdr"><span class="hb"><img src="logo.svg" alt=""><span><b>Fasci<span class="t">App</span></b><small>Find your practitioner</small></span></span><button id="logout" class="ghost sm">Log out</button></header>
+<section id="auth" class="screen">
+ <button class="back" data-go="splash">← Back</button>
+ <h2 id="authTitle">Create your practitioner account</h2>
+ <div class="seg"><button id="tabUp" class="on" type="button">Create account</button><button id="tabIn" type="button">Sign in</button></div>
+ <form id="authForm" class="card">
+  <label class="lbl">Email<input id="email" type="email" autocomplete="email" required></label>
+  <label class="lbl">Password<input id="pw" type="password" autocomplete="current-password" required minlength="6" placeholder="at least 6 characters"></label>
+  <button id="authBtn" class="gold big1">Create account</button>
+  <p id="authMsg" class="msg"></p>
+ </form>
+ <p class="muted center">Just want to find someone? <a href="#" id="authLook">Browse the map without an account</a></p>
+</section>
+<header id="hdr"><span class="hb"><img src="logo.svg" alt=""><span><b>Fasci<span class="t">App</span></b><small>Find your practitioner</small></span></span>
+ <span class="hbtns"><button id="hEdit" class="ghost sm">Edit my profile</button><button id="hOut" class="ghost sm">Log out</button><button id="hIn" class="gold sm">Sign in</button></span></header>
 <main>
 <section id="map" class="screen">
  <div class="bar"><button id="near" class="gold sm">📍 Near me</button>
@@ -26,18 +35,24 @@
 </section>
 <section id="list" class="screen"><h2>Practitioners</h2><p id="from" class="muted"></p><div id="items"></div></section>
 <section id="profile" class="screen"><h2>My practitioner profile</h2>
- <form id="profForm" class="card">
-  <div class="ph"><img id="phPrev" class="av big" hidden><label class="ghost sm phbtn">📷 Add profile photo<input type="file" id="photo" accept="image/*" hidden></label></div>
+ <div id="needLogin" class="card center" hidden><p>Sign in or create an account to add yourself to the map.</p><button class="gold big1" data-go="auth">Sign in / Create account</button></div>
+ <form id="profForm" class="card" hidden>
+  <p id="who" class="muted"></p>
+  <div class="ph"><img id="phPrev" class="av big" hidden alt=""><label class="phbtn">📷 Add profile photo<input type="file" id="photo" accept="image/*" hidden></label></div>
   <input name="name" placeholder="Full name" required>
   <div class="checks"><label><input type="checkbox" name="mod" value="MER"> MER</label><label><input type="checkbox" name="mod" value="BBTRS"> BBTRS</label><label><input type="checkbox" name="mod" value="Other"> Other</label></div>
   <input name="address" placeholder="Street address"><input name="city" placeholder="City" required>
   <input name="phone" placeholder="Phone"><input name="email" type="email" placeholder="Contact email">
   <input name="website" placeholder="Website"><textarea name="bio" rows="3" placeholder="Short bio"></textarea>
-  <label class="consent"><input type="checkbox" name="consent"> Show my contacts publicly on the map</label>
-  <button class="gold">Save & place me on the map</button><p id="status" class="muted"></p>
- </form><p id="clientNote" class="muted" hidden>You are signed in as a client. Switch role at login to create a listing.</p>
+  <label class="consent"><input type="checkbox" name="consent"> Show me and my contacts publicly on the map</label>
+  <button class="gold big1">Save & place me on the map</button><p id="status" class="msg"></p>
+  <button type="button" id="pOut" class="ghost">Log out</button>
+ </form>
 </section>
 <section id="log" class="screen"><h2>Session log</h2><div class="card soon"><div class="logo">✎</div><p><b>Coming next</b></p><p class="muted">Log client initials, date, duration and a comment for your 60 training sessions, then export for IBI.</p></div></section>
 </main>
-<nav id="tabs"><button data-t="map">🗺<span>Map</span></button><button data-t="list">☰<span>List</span></button><button data-t="profile">👤<span>Profile</span></button><button data-t="log">✎<span>Log</span></button></nav>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="app.js"></script></body></html>
+<nav id="tabs"><button data-t="map">🗺<span>Map</span></button><button data-t="list">☰<span>List</span></button><button data-t="profile">👤<span>My profile</span></button><button data-t="log">✎<span>Log</span></button></nav>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="config.js"></script>
+<script>if(window.FASCIAPP_CONFIG&&FASCIAPP_CONFIG.SUPABASE_URL&&FASCIAPP_CONFIG.SUPABASE_ANON_KEY)document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>')</script>
+<script src="data.js"></script><script src="app.js"></script></body></html>
