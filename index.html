@@ -50,10 +50,29 @@
   <button type="button" id="pOut" class="ghost">Log out</button>
  </form>
 </section>
-<section id="log" class="screen"><h2>Session log</h2><div class="card soon"><div class="logo">✎</div><p><b>Coming next</b></p><p class="muted">Log client initials, date, duration and a comment for your 60 training sessions, then export for IBI.</p></div></section>
+<section id="log" class="screen"><h2>Session log</h2>
+ <div id="logNeed" class="card center" hidden><p>Sign in as a practitioner to keep your training session log.</p><button class="gold big1" data-go="auth">Sign in / Create account</button></div>
+ <div id="logBox" hidden>
+  <div class="card prog"><div class="pt"><b id="pNum">0 / 60 sessions</b><span id="pPct" class="muted"></span></div><div class="pbar"><div id="pFill"></div></div></div>
+  <form id="sessForm" class="card">
+   <b id="sfTitle">Add session</b>
+   <div class="grid2"><label class="lbl">Client initials *<input name="initials" required maxlength="4" placeholder="e.g. AK" autocapitalize="characters"></label>
+   <label class="lbl">Date *<input name="date" type="date" required></label>
+   <label class="lbl">Start time<input name="time" type="time"></label>
+   <label class="lbl">Duration (min)<input name="duration" type="number" min="1" max="600" placeholder="optional"></label></div>
+   <label class="lbl">Comment<textarea name="comment" rows="2" placeholder="Short note (no names or health details)"></textarea></label>
+   <div class="grid2"><button class="gold" id="sfBtn">Add session</button><button type="button" id="sfCancel" class="ghost" hidden>Cancel edit</button></div>
+   <p id="sfMsg" class="msg"></p>
+  </form>
+  <button id="pdfBtn" class="gold big1 wide">⬇ Export PDF</button>
+  <div id="sessList"></div>
+ </div>
+</section>
 </main>
 <nav id="tabs"><button data-t="map">🗺<span>Map</span></button><button data-t="list">☰<span>List</span></button><button data-t="profile">👤<span>My profile</span></button><button data-t="log">✎<span>Log</span></button></nav>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="config.js"></script>
 <script>if(window.FASCIAPP_CONFIG&&FASCIAPP_CONFIG.SUPABASE_URL&&FASCIAPP_CONFIG.SUPABASE_ANON_KEY)document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>')</script>
 <script src="data.js"></script><script src="app.js"></script></body></html>

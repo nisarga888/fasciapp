@@ -41,3 +41,21 @@ create policy "owner can update own listing"
 create policy "owner can delete own listing"
   on public.practitioners for delete
   to authenticated using (auth.uid() = user_id);
+
+-- ===== Session log (each practitioner sees only their own sessions) =====
+create table if not exists public.sessions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  initials text not null check (char_length(initials) between 1 and 4),
+  date date not null,
+  time time,
+  duration integer check (duration is null or duration > 0),
+  comment text,
+  created_at timestamptz not null default now()
+);
+create index if not exists sessions_user_idx on public.sessions(user_id, date);
+alter table public.sessions enable row level security;
+create policy "owner can read own sessions"   on public.sessions for select to authenticated using (auth.uid() = user_id);
+create policy "owner can insert own sessions" on public.sessions for insert to authenticated with check (auth.uid() = user_id);
+create policy "owner can update own sessions" on public.sessions for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "owner can delete own sessions" on public.sessions for delete to authenticated using (auth.uid() = user_id);
