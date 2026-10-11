@@ -4,7 +4,7 @@
 //   title:       card title
 //   by:          author line (optional)
 //   line:        one short line under the title (optional)
-//   type:        "youtube" or "pdf"
+//   type:        "youtube", "pdf" or "link" (link = external page, e.g. a sign-up page; button text from "cta")
 //   youtubeId:   for videos: the YouTube link or its 11-character ID (youtu.be/XXXX or watch?v=XXXX)
 //   url:         for PDFs: full https link, or a file placed in app/learn/ (e.g. "learn/breathe.pdf")
 //   cover:       optional image (https link or "learn/cover.jpg"); videos use the YouTube thumbnail automatically
@@ -19,5 +19,8 @@ window.FASCIAPP_LEARN = [
   { section: "Videos", title: "Introduction to BioDynamic Breathwork & Trauma Release System.", by: "Biodynamic Breathwork Trauma Release Institute", line: "BBTRS · 3:11", type: "youtube", youtubeId: "JcWmW2VZ5FU", public: false },
   { section: "Videos", title: "Biodynamic Breathwork (BBTRS)-Home practice demo with founder Giten Tonkov", by: "Biodynamic Breathwork Trauma Release Institute", line: "BBTRS home practice · 21:27", type: "youtube", youtubeId: "_XN7MuIcOls", public: false },
   { section: "Ebooks", title: "The Issue Lives in the Tissue", by: "Nisarga Eryk Dobosz", line: "Free Trauma Release ebook. PDF download.", type: "pdf", url: "lab/issue-lives-in-the-tissue.pdf", cover: "lab/issue-lives-in-the-tissue-cover.jpg", public: false },
-  { section: "Ebooks", title: "Feel2Heal", by: "Giten Tonkov", line: "PDF download.", type: "pdf", url: "", public: false }
+  { section: "Ebooks", title: "Feel2Heal", by: "Giten Tonkov", line: "PDF download.", type: "pdf", url: "", public: false },
+  // Free live sessions: official pages, checked 11 Oct 2026
+  { section: "Free live sessions", title: "Free online breathwork", by: "BBTRS® · Biodynamic Breathwork", line: "Free online community sessions, twice a month.", type: "link", cta: "Sign up", url: "https://biodynamicbreath.com/find-breathwork-training?type=free_event&field_location_target_id=All&month=All", public: true },
+  { section: "Free live sessions", title: "Free Sunday meditations", by: "MER® · Myofascial Energetic Release", line: "Free online group session, every Sunday.", type: "link", cta: "Sign up", url: "https://www.myofascialtrainings.com/online-courses/group-sessions", public: true }
 ];
