@@ -106,10 +106,10 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
    return unpackSession(chk(r))},
   async deleteSession(id){chk(await sb.from("sessions").delete().eq("id",id))},
   async msgOk(){const r=await sb.from("messages").select("id").limit(1);return !r.error},
-  async msgs(){const s=await sess();if(!s)return[];return chk(await sb.from("messages").select("*").or(`sender.eq.${s.user_id},recipient.eq.${s.user_id}`).order("created_at").limit(1000))},
+  async msgs(){const s=await sess();if(!s)return[];return chk(await sb.from("messages").select("*").or(`sender.eq.${s.user_id},recipient.eq.${s.user_id}`).order("created_at",{ascending:false}).limit(300)).reverse()},
   async sendMsg(to,body){const s=await sess();return chk(await sb.from("messages").insert({sender:s.user_id,recipient:to,body}).select().single())},
   async markRead(from){const s=await sess();chk(await sb.from("messages").update({read_at:new Date().toISOString()}).eq("recipient",s.user_id).eq("sender",from).is("read_at",null))},
-  onMsg(cb){try{const ch=sb.channel("msgs").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},cb).subscribe();return ()=>sb.removeChannel(ch)}catch(e){return ()=>{}}}};
+  onMsg(cb,uid){try{const ch=sb.channel("msgs-"+(uid||"x"));const f=uid?[{filter:"recipient=eq."+uid},{filter:"sender=eq."+uid}]:[{}];f.forEach(o=>ch.on("postgres_changes",{event:"*",schema:"public",table:"messages",...o},cb));window.RT_OK=false;ch.subscribe(st=>{window.RT_OK=st==="SUBSCRIBED"});return ()=>sb.removeChannel(ch)}catch(e){return ()=>{}}}};
 }
 window.DB=(cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY&&window.supabase)?supa():local;
 // Re-bind if supabase-js arrived after data.js (Safari / slow CDN)

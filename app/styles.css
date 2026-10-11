@@ -231,3 +231,4 @@ nav#tabs svg,nav#tabs span,#logoHome *{pointer-events:none}
 #leaf,.leaflet-container{position:relative;z-index:0;isolation:isolate}
 body.in > header,body.in > nav#tabs{transform:translateZ(0)}
 .toast{pointer-events:none}
+.bub.pend{opacity:.7}.bub.fail{outline:1px solid #d66;cursor:pointer}

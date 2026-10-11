@@ -53,7 +53,9 @@ let showT=null;function afterShow(t){try{if(t==="map"){initMap();setTimeout(()=>
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;return}loadProf()})()}
  if(t==="log")loadLog();if(t==="inbox")renderInbox()}catch(e){console.warn(e)}}
 function hdr(){$("#tabInbox").hidden=false;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
-async function refresh(){try{people=await DB.list()}catch(e){console.warn(e);people=[]}fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true)}
+const PKEY="fa_people_v1";function cachedPeople(){try{const j=JSON.parse(localStorage.getItem(PKEY)||"null");return Array.isArray(j)?j:null}catch(e){return null}}
+function paintFromCache(){const c=cachedPeople();if(!c||people.length)return false;people=c;fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true);return true}
+async function refresh(){try{people=await DB.list();try{localStorage.setItem(PKEY,JSON.stringify(people))}catch(e){}}catch(e){console.warn(e);if(!people.length)people=cachedPeople()||[]}fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true)}
 
 // navigation
 $("#goLook").onclick=()=>show("map");$("#authLook").onclick=e=>{e.preventDefault();show("map")};
@@ -65,7 +67,7 @@ const logoHome=$("#logoHome");if(logoHome)logoHome.onclick=()=>show("splash");
 $$("nav button").forEach(b=>b.onclick=()=>show(b.dataset.t));
 $("#hIn").onclick=()=>{fillLastEmail();show("auth")};
 $("#hEdit").onclick=async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(me)show("profile");else{fillLastEmail();show("auth")}};
-async function logout(){await DB.signOut();me=null;msgs=[];closeChat();photoData=null;hdr();await refresh();show("splash")}
+async function logout(){closeChat();if(unsub){unsub();unsub=null}msgUid=null;me=null;msgs=[];photoData=null;hdr();show("splash");$("#unread").hidden=true;DB.signOut().catch(()=>{}).then(()=>refresh())}
 $("#hOut").onclick=logout;$("#pOut").onclick=logout;
 
 // auth
@@ -92,7 +94,7 @@ $("#resetForm").onsubmit=async e=>{e.preventDefault();const a=$("#newPw").value,
   try{const u=new URL(location.href);u.searchParams.delete("reset");history.replaceState({},"",u.pathname+u.search+u.hash.replace(/access_token=[^&]+/g,""))}catch(e){}
   hdr();await refresh();msgInit();setTimeout(()=>show("profile"),600)}catch(err){m.textContent=err.message||"Could not update password."}};
 $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please confirm you are 18+ and accept the Terms and Privacy Policy.";return}m.textContent="…";
- try{me=signUpMode?await DB.signUp(em,pw):await DB.signIn(em,pw);rememberEmail(em);m.textContent="";hdr();await refresh();await msgInit();const next=pendingChat;pendingChat=null;if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
+ try{me=signUpMode?await DB.signUp(em,pw):await DB.signIn(em,pw);rememberEmail(em);m.textContent="";hdr();refresh();msgInit();const next=pendingChat;pendingChat=null;if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
 
 // helpers
 function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(p.lng-from[1]);const a=Math.sin(dl/2)**2+Math.cos(r(from[0]))*Math.cos(r(p.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
@@ -314,6 +316,7 @@ function setupSafariChrome(){const ua=navigator.userAgent||"";
  setupSafariChrome();
  $("#demoBanner").hidden=DB.mode!=="local";
  fillLastEmail();
+ try{paintFromCache()}catch(e){}
  me=await DB.session().catch(()=>null);hdr();
  await refresh();
  applyDeepLink();
@@ -434,10 +437,22 @@ $("#addLoc").onclick=()=>addXloc();
 
 // ===== in-app messages =====
 const nameOf=id=>{const p=all().find(x=>x.user_id===id);return p?p.name:"FasciApp member"};
-async function msgInit(){try{MSG_OK=!!(DB.msgOk&&await DB.msgOk())}catch(e){MSG_OK=false}hdr();renderMarkers();renderList();if(MSG_OK&&me)await pullMsgs()}
-async function pullMsgs(){if(!MSG_OK||!me)return;try{msgs=await DB.msgs()}catch(e){return}
- const un=msgs.filter(m=>m.recipient===me.user_id&&!m.read_at).length;const b=$("#unread");b.textContent=un;b.hidden=!un;
+const MKEY=()=>"fa_msgs_"+(me&&me.user_id);
+function saveMsgs(){try{localStorage.setItem(MKEY(),JSON.stringify(msgs.filter(m=>!m.pending).slice(-300)))}catch(e){}}
+function paintMsgs(){if(!me)return;const un=msgs.filter(m=>m.recipient===me.user_id&&!m.read_at).length;const b=$("#unread");b.textContent=un;b.hidden=!un;
  if(chatWith)renderChat();if($("#inbox").classList.contains("active"))renderInbox()}
+function mergeMsg(m){if(!m||!m.id)return;const i=msgs.findIndex(x=>x.id===m.id);if(i>=0)msgs[i]={...msgs[i],...m};
+ else{const t=msgs.findIndex(x=>x.pending&&x.sender===m.sender&&x.recipient===m.recipient&&x.body===m.body);if(t>=0)msgs[t]=m;else msgs.push(m)}
+ msgs.sort((a,b)=>a.created_at.localeCompare(b.created_at))}
+let msgUid=null,lastPull=0;
+async function msgInit(){if(me&&msgUid!==me.user_id){try{msgs=JSON.parse(localStorage.getItem(MKEY())||"[]")}catch(e){msgs=[]}}
+ if(me&&msgs.length){MSG_OK=true;paintMsgs()}
+ try{MSG_OK=!!(DB.msgOk&&await DB.msgOk())}catch(e){MSG_OK=false}hdr();renderMarkers();renderList();
+ if(MSG_OK&&me){if(msgUid!==me.user_id){if(unsub)unsub();unsub=DB.onMsg?DB.onMsg(ev=>{const m=ev&&ev.new;if(m&&m.id){mergeMsg(m);saveMsgs();paintMsgs()}else pullMsgs()},me.user_id):null;msgUid=me.user_id}
+  await pullMsgs()}}
+async function pullMsgs(){if(!MSG_OK||!me)return;lastPull=Date.now();let got;try{got=await DB.msgs()}catch(e){return}
+ const pend=msgs.filter(m=>m.pending);msgs=got;pend.forEach(p=>{if(!msgs.some(m=>m.sender===p.sender&&m.recipient===p.recipient&&m.body===p.body))msgs.push(p)});
+ saveMsgs();paintMsgs()}
 function convs(){const c={};msgs.forEach(m=>{const o=m.sender===me.user_id?m.recipient:m.sender;(c[o]=c[o]||[]).push(m)});
  return Object.entries(c).map(([o,l])=>({o,last:l[l.length-1],un:l.filter(m=>m.recipient===me.user_id&&!m.read_at).length})).sort((a,b)=>b.last.created_at.localeCompare(a.last.created_at))}
 function renderInbox(){const box=$("#convs");
@@ -446,15 +461,22 @@ function renderInbox(){const box=$("#convs");
  if(!MSG_OK){box.innerHTML="<p class=muted>Messaging is not available right now. Try again later.</p>";return}
  const cs=convs();box.innerHTML=cs.map(c=>{const p=all().find(x=>x.user_id===c.o)||{name:nameOf(c.o)};return `<div class="item conv" data-c="${esc(c.o)}"><div class="row">${av(p)}<div><b>${esc(p.name)}</b>${c.un?` <span class="badge">${c.un}</span>`:""}<br><small class=muted>${esc(c.last.body.slice(0,80))}</small></div></div></div>`}).join("")||"<p class=muted>No messages yet. Open a practitioner on the map and tap Message.</p>";
  $$("#convs .conv").forEach(d=>d.onclick=()=>openChat(d.dataset.c))}
-async function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;chatWith=id;$("#chatName").textContent=nameOf(id);$("#chat").hidden=false;renderChat();$("#chatTxt").focus();
- if(DB.onMsg&&!unsub)unsub=DB.onMsg(()=>pullMsgs());clearInterval(pollT);pollT=setInterval(pullMsgs,20000);
- if(msgs.some(m=>m.sender===id&&m.recipient===me.user_id&&!m.read_at)){try{await DB.markRead(id)}catch(e){}await pullMsgs()}}
-function closeChat(){chatWith=null;$("#chat").hidden=true;clearInterval(pollT);pollT=null}
-function renderChat(){const l=msgs.filter(m=>(m.sender===chatWith&&m.recipient===me.user_id)||(m.recipient===chatWith&&m.sender===me.user_id));
- const b=$("#chatLog");b.innerHTML=l.map(m=>`<div class="bub ${m.sender===me.user_id?"me":"them"}">${esc(m.body)}<small>${new Date(m.created_at).toLocaleString([], {dateStyle:"short",timeStyle:"short"})}</small></div>`).join("")||"<p class='muted center'>Say hello 👋</p>";b.scrollTop=b.scrollHeight;
- if(l.some(m=>m.sender===chatWith&&!m.read_at))DB.markRead(chatWith).catch(()=>{})}
+function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;chatWith=id;$("#chatName").textContent=nameOf(id);$("#chat").hidden=false;renderChat();$("#chatTxt").focus();
+ if(!unsub&&MSG_OK)msgInit()}
+function closeChat(){chatWith=null;$("#chat").hidden=true}
+function renderChat(){if(!me||!chatWith)return;const all=msgs.filter(m=>(m.sender===chatWith&&m.recipient===me.user_id)||(m.recipient===chatWith&&m.sender===me.user_id));const l=all.slice(-30);
+ const b=$("#chatLog");b.innerHTML=l.map(m=>`<div class="bub ${m.sender===me.user_id?"me":"them"}${m.pending?" pend":""}${m.failed?" fail":""}">${esc(m.body)}<small>${m.failed?"Not sent · tap to retry":m.pending?"Sending…":new Date(m.created_at).toLocaleString([], {dateStyle:"short",timeStyle:"short"})}</small></div>`).join("")||"<p class='muted center'>Say hello 👋</p>";b.scrollTop=b.scrollHeight;
+ $$("#chatLog .bub.fail").forEach((d,i)=>d.onclick=()=>{const f=l.filter(m=>m.failed)[i];if(f){f.failed=false;sendNow(f);renderChat()}});
+ const unread=l.filter(m=>m.sender===chatWith&&!m.read_at);if(unread.length){const now=new Date().toISOString();unread.forEach(m=>m.read_at=now);saveMsgs();
+  const u=msgs.filter(m=>m.recipient===me.user_id&&!m.read_at).length,bd=$("#unread");bd.textContent=u;bd.hidden=!u;DB.markRead(chatWith).catch(()=>{})}}
+function sendNow(tmp){tmp.pending=true;DB.sendMsg(tmp.recipient,tmp.body).then(row=>{const i=msgs.indexOf(tmp);if(i>=0)msgs.splice(i,1);mergeMsg(row);saveMsgs();paintMsgs()})
+ .catch(err=>{tmp.pending=false;tmp.failed=true;$("#chatErr").textContent="Could not send: "+err.message;paintMsgs()})}
 document.addEventListener("click",e=>{const t=e.target.closest("[data-msg]");if(t){e.preventDefault();openChat(t.dataset.msg)}});
 $("#chatX").onclick=closeChat;
-$("#chatForm").onsubmit=async e=>{e.preventDefault();const t=$("#chatTxt"),v=t.value.trim().slice(0,1000);if(!v)return;$("#chatErr").textContent="";
- try{await DB.sendMsg(chatWith,v);t.value="";await pullMsgs()}catch(err){$("#chatErr").textContent="Could not send: "+err.message}};
-setInterval(()=>{if(!document.hidden&&!chatWith)pullMsgs()},60000);
+$("#chatForm").onsubmit=e=>{e.preventDefault();const t=$("#chatTxt"),v=t.value.trim().slice(0,1000);if(!v||!chatWith)return;$("#chatErr").textContent="";
+ const tmp={id:"tmp-"+Date.now()+Math.random(),sender:me.user_id,recipient:chatWith,body:v,created_at:new Date().toISOString(),read_at:null,pending:true};
+ msgs.push(tmp);t.value="";renderChat();sendNow(tmp)};
+setInterval(()=>{if(chatWith&&!document.hidden&&!window.RT_OK)pullMsgs()},15000);
+// Realtime does the work; a light safety net catches anything missed (only when visible, max every 2 min).
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-lastPull>30000)pullMsgs()});
+setInterval(()=>{if(!document.hidden&&Date.now()-lastPull>110000)pullMsgs()},120000);
