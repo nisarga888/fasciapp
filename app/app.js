@@ -41,6 +41,7 @@ function renderPlaceMenu(){const box=$("#placeMenu");if(!box)return;const q=fold
 
 
 function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
+ const tab=(sp.get("tab")||"").toLowerCase();if(tab==="learn"||tab==="lab"){show("learn");return true}
  if(sp.get("join")==="1"){if(me){show("profile");return true}setMode(true);show("auth");return true}
  if(sp.get("search")==="1"){show("list");const q=$("#qPlace");if(q){requestAnimationFrame(()=>{q.focus();if(typeof openPlaceMenu==="function")openPlaceMenu()})}return true}
  const practice=(sp.get("practice")||sp.get("mod")||"").trim();const place=(sp.get("place")||sp.get("city")||"").trim();
