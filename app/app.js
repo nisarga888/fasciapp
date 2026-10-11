@@ -496,3 +496,5 @@ setInterval(()=>{if(chatWith&&!document.hidden&&!window.RT_OK)pullMsgs()},15000)
 // Realtime does the work; a light safety net catches anything missed (only when visible, max every 2 min).
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-lastPull>30000)pullMsgs()});
 setInterval(()=>{if(!document.hidden&&Date.now()-lastPull>110000)pullMsgs()},120000);
+
+document.addEventListener("visibilitychange",()=>document.documentElement.classList.toggle("bg-hidden",document.hidden));

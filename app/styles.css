@@ -235,3 +235,9 @@ body.in > header,body.in > nav#tabs{transform:translateZ(0)}
 .bub.pend{opacity:.7}.bub.fail{outline:1px solid #d66;cursor:pointer}
 /* v0.19 light: no continuous animations */
 .logoMark .logoRing,.cb.msg .msgRing,.thread,.glow{animation:none!important}
+/* v0.19.1 header logo: ring in its own composited layer; glow is static inside it, only transform animates */
+.logoWrap{position:relative;display:block;width:32px;height:32px;flex:none}
+.logoWrap .logoRingSvg{position:absolute;inset:0;width:32px;height:32px;will-change:transform;transform:translateZ(0);animation:logoSpinL 14s linear infinite;pointer-events:none}
+@keyframes logoSpinL{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.logoWrap .logoRingSvg{animation:none}}
+html.bg-hidden .logoWrap .logoRingSvg{animation-play-state:paused}
