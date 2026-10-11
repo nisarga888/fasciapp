@@ -1,6 +1,6 @@
 // FasciApp service worker. Bump VERSION on every release.
 // App JS/CSS: network-first so Safari/PWA picks up updates. Other shell: cache-first.
-const VERSION="fasciapp-v0.10.1";
+const VERSION="fasciapp-v0.11.0";
 const SHELL=["./","index.html","styles.css","app.js","data.js","config.js","logo.svg","manifest.json","icon-192-v3.png","icon-512-v3.png","apple-touch-icon-v3.png",
  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css","https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
  "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js","https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"];

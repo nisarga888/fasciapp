@@ -68,9 +68,13 @@ function spiderfy(entries){const TH=0.0009,used=new Set(),placed=entries.map(e=>
  for(let oi=1;oi<order.length;oi++){const cur=placed[order[oi]],prev=placed[order[oi-1]];
   if(Math.abs(cur.lat-prev.lat)<.55&&Math.abs(cur.lng-prev.lng)<.55&&cur.side===prev.side)cur.side=prev.side==="right"?"left":"right"}
  return placed}
-function pinIcon(p,side){const label=practiceTitle(p),mods=pinModsHtml(p);
- const html=`<div class="pin ${side==="left"?"left":""}">${av(p)}<span class="pinlab"><span class="pintitle">${esc(label)}</span>${mods}</span></div>`;
- return L.divIcon({className:"avm",html,iconSize:[172,62],iconAnchor:side==="left"?[150,31]:[22,31]})}
+function pinIcon(p,side,loc){const title=practiceTitle(p),mods=pinModsHtml(p);
+ const locLab=String(loc&&loc.label||"").trim();
+ const tLow=title.toLowerCase(),nLow=String(p.name||"").toLowerCase();
+ const showLoc=!!locLab&&locLab.toLowerCase()!==tLow&&locLab.toLowerCase()!==nLow;
+ const sub=showLoc?`<span class="pinloc">${esc(locLab)}</span>`:"";
+ const html=`<div class="pin ${side==="left"?"left":""}">${av(p)}<span class="pinlab"><span class="pintitle">${esc(title)}</span>${sub}${mods}</span></div>`;
+ return L.divIcon({className:"avm",html,iconSize:[188,78],iconAnchor:side==="left"?[166,39]:[22,39]})}
 
 // map
 function initMap(){if(map)return renderMarkers();map=L.map("leaf",{zoomControl:true,attributionControl:false}).setView([50,18],4);
@@ -91,11 +95,15 @@ function count(){const a=all(),c=new Set(a.map(p=>(p.country||p.city||"").trim()
 function fitPins(force){if(!map)return;const pts=[];filtered().forEach(p=>pins(p).forEach(l=>{if(l.lat!=null&&l.lng!=null)pts.push([+l.lat,+l.lng])}));
  if(!pts.length)return;if(!force&&didFit)return;
  try{if(pts.length===1)map.setView(pts[0],10,{animate:false});
- else map.fitBounds(L.latLngBounds(pts),{padding:[56,56],maxZoom:10,animate:false});
+ else{const b=L.latLngBounds(pts),span=Math.max(Math.abs(b.getNorth()-b.getSouth()),Math.abs(b.getEast()-b.getWest()));
+  if(span>6){// far-apart locations (e.g. Tallinn + Lesvos): focus densest local cluster
+   let best=pts[0],bestN=0;pts.forEach(a=>{const n=pts.filter(c=>Math.abs(a[0]-c[0])<1.2&&Math.abs(a[1]-c[1])<1.2).length;if(n>bestN){bestN=n;best=a}});
+   map.setView(best,10,{animate:false})}
+  else map.fitBounds(b,{padding:[56,56],maxZoom:10,animate:false})}
  didFit=true;setTimeout(()=>map&&map.invalidateSize(),60)}catch(e){console.warn(e)}}
 function renderMarkers(){count();if(!layer)return;layer.clearLayers();const ps=filtered();drawThreads(ps);
  const entries=[];ps.forEach(p=>pins(p).forEach(l=>entries.push({p,l})));
- spiderfy(entries).forEach(({p,lat,lng,side})=>{L.marker([lat,lng],{icon:pinIcon(p,side)}).bindPopup(card(p)).addTo(layer)});
+ spiderfy(entries).forEach(({p,l,lat,lng,side})=>{L.marker([lat,lng],{icon:pinIcon(p,side,l)}).bindPopup(card(p)).addTo(layer)});
  if(here)L.circleMarker(here,{radius:7,color:"#fff",weight:3,fillColor:"#2a9d96",fillOpacity:1}).bindPopup("You are here").addTo(layer);
  if(ps.length&&!didFit)fitPins(true)}
 $("#filter").onchange=()=>{renderMarkers();renderList()};
