@@ -10,9 +10,14 @@
 //   cover:       optional image (https link or "learn/cover.jpg"); videos use the YouTube thumbnail automatically
 //   public:      true = open to everyone; false = locked, opens only after sign-in
 // An item with no youtubeId / url shows as "Coming soon".
+// Videos verified via YouTube oEmbed on 11 Oct 2026 (embeddable). "title" = YouTube title as given (bold-Unicode letters shown as plain text).
 window.FASCIAPP_LEARN = [
-  { section: "Videos", title: "MER video", line: "An introduction to Myofascial Energetic Release.", type: "youtube", youtubeId: "", public: true },
-  { section: "Videos", title: "BBTRS video", line: "An introduction to Biodynamic Breathwork.", type: "youtube", youtubeId: "", public: false },
-  { section: "Ebooks", title: "Breathe for Stress and Sleep", by: "Nisarga Eryk Dobosz", line: "21 gentle days of breathwork. PDF download.", type: "pdf", url: "", public: false },
+  { section: "Videos", title: "Myofascial Energetic Release Training With founder Satyarthi Peloquin", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER · 2:46", type: "youtube", youtubeId: "crpUWY3Bi5M", public: true },
+  { section: "Videos", title: "Myofascial Energetic Release: Revolutionary New Elements", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER · 7:31", type: "youtube", youtubeId: "7b0ziT10Zpw", public: false },
+  { section: "Videos", title: "Psoas Release for Low Back Pain | Myofascial Energetic Release Demo with Satyarthi Peloquin", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER demo · 6:19", type: "youtube", youtubeId: "b4vg4Y_yIMw", public: false },
+  { section: "Videos", title: "Discover the Power of BBTRS®: Explained by Founder Giten Tonkov", by: "Biodynamic Breathwork Trauma Release Institute", line: "BBTRS · 3:14", type: "youtube", youtubeId: "OG9VhxyYjOY", public: true },
+  { section: "Videos", title: "Introduction to BioDynamic Breathwork & Trauma Release System.", by: "Biodynamic Breathwork Trauma Release Institute", line: "BBTRS · 3:11", type: "youtube", youtubeId: "JcWmW2VZ5FU", public: false },
+  { section: "Videos", title: "Biodynamic Breathwork (BBTRS)-Home practice demo with founder Giten Tonkov", by: "Biodynamic Breathwork Trauma Release Institute", line: "BBTRS home practice · 21:27", type: "youtube", youtubeId: "_XN7MuIcOls", public: false },
+  { section: "Ebooks", title: "The Issue Lives in the Tissue", by: "Nisarga Eryk Dobosz", line: "Free Trauma Release ebook. PDF download.", type: "pdf", url: "lab/issue-lives-in-the-tissue.pdf", cover: "lab/issue-lives-in-the-tissue-cover.jpg", public: false },
   { section: "Ebooks", title: "Feel2Heal", by: "Giten Tonkov", line: "PDF download.", type: "pdf", url: "", public: false }
 ];

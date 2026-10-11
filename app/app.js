@@ -520,7 +520,7 @@ function renderLearn(){const box=$("#learnList");if(!box)return;const items=(win
   const act=!ready?"":locked?'data-unlock="1"':x.type==="youtube"?`data-yt="${esc(id)}"`:`data-pdf="${esc(x.url)}"`;
   const foot=!ready?"Coming soon":locked?"Sign in to unlock":x.type==="youtube"?"Play video":"Open PDF ↗";
   return `<button type="button" class="lcard${ready?"":" lph"}${locked?" locked":""}" ${act} ${ready?"":"disabled"} aria-label="${esc(x.title)}: ${foot}">
-   <div class="lthumb">${labCover(x,locked?"":id)}${locked?`<span class="lockov">${LOCK}</span>`:""}</div>
+   <div class="lthumb">${labCover(x,id)}${locked?`<span class="lockov">${LOCK}</span>`:""}</div>
    <div class="lbody"><div class="lbadges">${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`).join("")}
 document.addEventListener("click",e=>{const y=e.target.closest(".lcard[data-yt]");if(y){const t=y.querySelector(".lthumb");if(!t.querySelector("iframe"))t.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${y.dataset.yt}?autoplay=1&rel=0&playsinline=1" title="YouTube video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;return}
  const pd=e.target.closest(".lcard[data-pdf]");if(pd){window.open(pd.dataset.pdf,"_blank","noopener");return}

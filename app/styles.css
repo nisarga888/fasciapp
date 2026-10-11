@@ -265,3 +265,4 @@ body.in > main{overscroll-behavior:contain}
 .ltag{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:9px;border:1px solid #c99e6766;color:#C99E67}
 .ltag.lk{border-color:#5FC9C355;color:#5FC9C3}.ltag.soon{border-color:#9fb3b555;color:#9fb3b5}.ltag.free{border-color:#5FC9C3;color:#5FC9C3}
 .lfoot{margin-top:6px;font-size:12px;font-weight:600;color:#C99E67}
+.lbody b{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
