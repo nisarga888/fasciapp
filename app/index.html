@@ -42,7 +42,7 @@
  <p class="muted center">Just want to find someone? <a href="#" id="authLook">Browse the map without an account</a></p>
 </section>
 <header id="hdr">
- <span class="hb"><img src="logo.svg" alt=""><b>Fasci<span class="t">App</span></b></span>
+ <button type="button" class="hb" id="logoHome" aria-label="Back to map"><img src="logo.svg" alt=""><b>Fasci<span class="t">App</span></b></button>
  <span class="hbtns">
   <button type="button" id="hEdit" class="iconbtn" aria-label="Edit profile" title="Edit profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
   <button type="button" id="hOut" class="iconbtn" aria-label="Log out" title="Log out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></button>
@@ -56,7 +56,7 @@
  <div id="count" class="count"></div><div id="leaf"></div>
 </section>
 <section id="list" class="screen"><h2>Practitioners</h2><p id="from" class="muted"></p><div id="items"></div></section>
-<section id="profile" class="screen"><h2>My practitioner profile</h2>
+<section id="profile" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><h2>My practitioner profile</h2>
  <div id="needLogin" class="card center" hidden><p>Sign in or create an account to add yourself to the map.</p><button class="gold big1" data-go="auth">Sign in / Create account</button></div>
  <form id="profForm" class="card" hidden>
   <p id="who" class="muted"></p>
@@ -75,10 +75,10 @@
   <button type="button" id="pOut" class="ghost">Log out</button>
  </form>
 </section>
-<section id="inbox" class="screen"><h2>Messages</h2><div id="convs"></div></section>
+<section id="inbox" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><h2>Messages</h2><div id="convs"></div></section>
 <div id="chat" class="chat" hidden><div class="chatH"><b id="chatName"></b><button type="button" id="chatX" class="ghost sm" aria-label="Close">✕</button></div>
  <div id="chatLog" class="chatLog"></div><form id="chatForm" class="chatF"><textarea id="chatTxt" rows="2" maxlength="1000" placeholder="Write a message…"></textarea><button class="gold">Send</button></form><p id="chatErr" class="msg"></p></div>
-<section id="log" class="screen"><h2>Session log</h2>
+<section id="log" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><h2>Session log</h2>
  <div id="logNeed" class="card center" hidden><p>Sign in as a practitioner to keep your training session log.</p><button class="gold big1" data-go="auth">Sign in / Create account</button></div>
  <div id="logBox" hidden>
   <div class="card prog"><div class="pt"><b id="pNum">0 / 60 sessions</b><span id="pPct" class="muted"></span></div><div class="pbar"><div id="pFill"></div></div></div>
@@ -111,6 +111,7 @@
  <div id="sheetList" class="sheetList"></div>
 </div>
 <div id="sheetBackdrop" class="sheetBack" hidden></div>
+<div id="toast" class="toast" hidden role="status" aria-live="polite">Saved ✓</div>
 <nav id="tabs">
 <button data-t="map" aria-label="Map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.2-5.6-6.2-10.2a6.2 6.2 0 1 1 12.4 0C18.2 15.4 12 21 12 21z"/><circle cx="12" cy="10.8" r="2.1"/><path d="M6 15.5c2 .8 3.2 2.2 4.5 2.8M18 15.5c-2 .8-3.2 2.2-4.5 2.8" opacity=".55"/></svg><span>Map</span></button>
 <button data-t="list" aria-label="List"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 7h11M9 12h11M9 17h11"/><circle cx="5" cy="7" r="1.15"/><circle cx="5" cy="12" r="1.15"/><circle cx="5" cy="17" r="1.15"/></svg><span>List</span></button>
@@ -126,7 +127,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="data.js"></script><script src="app.js"></script>
 <script>
-if("serviceWorker" in navigator){
+if("serviceWorker" in navigator&&navigator.serviceWorker){
   let refreshing=false;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{if(refreshing)return;refreshing=true;location.reload()});
   addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));

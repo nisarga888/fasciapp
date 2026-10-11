@@ -20,6 +20,7 @@ async function refresh(){try{people=await DB.list()}catch(e){console.warn(e);peo
 $("#goLook").onclick=()=>show("map");$("#authLook").onclick=e=>{e.preventDefault();show("map")};
 $("#goPract").onclick=()=>me?show("profile"):show("auth");
 $$("[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.go));
+const logoHome=$("#logoHome");if(logoHome)logoHome.onclick=()=>{if(document.body.classList.contains("in"))show("map")};
 $$("nav button").forEach(b=>b.onclick=()=>show(b.dataset.t));
 $("#hIn").onclick=()=>show("auth");$("#hEdit").onclick=()=>show("profile");
 async function logout(){await DB.signOut();me=null;msgs=[];closeChat();photoData=null;hdr();await refresh();show("splash")}
@@ -188,12 +189,33 @@ $("#profForm").onsubmit=async e=>{e.preventDefault();const f=e.target,st=$("#sta
  Object.assign(p,{lat:g[0],lng:g[1]});p.locations=[{label:f.label.value.trim(),address:p.address,city:p.city,country:p.country,lat:g[0],lng:g[1]}];
  for(const b of $$("#extraLocs .xloc")){const l={label:b.querySelector("[data-k=label]").value.trim(),address:b.querySelector("[data-k=address]").value.trim(),city:b.querySelector("[data-k=city]").value.trim(),country:b.querySelector("[data-k=country]").value};
   if(!l.city)continue;st.textContent="Locating "+l.city+"…";await new Promise(r=>setTimeout(r,1100));const gg=await geocode(l.address,l.city,l.country);if(!gg){st.textContent="Could not find "+l.city+". Check the city name.";return}l.lat=gg[0];l.lng=gg[1];p.locations.push(l)}
- try{await DB.save(p);await refresh();st.textContent=`Saved ✓ placed by ${g[2]==="city"?"city centre (address not found)":"address"}.${p.consent?"":" Tick 'show publicly' so others can find you."}`}catch(err){st.textContent="Could not save: "+err.message}};
+ try{await DB.save(p);await refresh();
+  const tip=p.consent?"":" Tip: tick “show publicly” so others can find you.";
+  st.textContent=`Saved ✓${tip}`;
+  showToast("Saved ✓");
+  didFit=true;
+  show("map");
+  const loc=(p.locations&&p.locations[0])||p;
+  setTimeout(()=>{if(map&&loc.lat!=null){map.setView([+loc.lat,+loc.lng],13,{animate:false});map.invalidateSize()}},120);
+ }catch(err){st.textContent="Could not save: "+err.message}};
 $("#photo").onchange=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas"),s=256,m=Math.min(im.width,im.height);c.width=c.height=s;
  c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,s,s);photoData=c.toDataURL("image/jpeg",.85);$("#phPrev").src=photoData;$("#phPrev").hidden=false};im.src=r.result};r.readAsDataURL(file)};
 
 // start
+
+function showToast(msg){const t=$("#toast");if(!t)return;t.textContent=msg||"Saved ✓";t.hidden=false;requestAnimationFrame(()=>t.classList.add("show"));
+ clearTimeout(showToast._t);showToast._t=setTimeout(()=>{t.classList.remove("show");setTimeout(()=>{t.hidden=true},220)},2200)}
+function setupSafariChrome(){const ua=navigator.userAgent||"";
+ const safari=/Safari/i.test(ua)&&!/Chrome|CriOS|Chromium|FxiOS|EdgiOS|OPR|Android/i.test(ua);
+ const standalone=!!(navigator.standalone||window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches);
+ if(safari&&!standalone)document.documentElement.classList.add("safari-browser");
+ const sync=()=>{if(!window.visualViewport)return;
+  const vv=window.visualViewport;const gap=Math.max(0,Math.round(window.innerHeight-vv.height-vv.offsetTop));
+  document.documentElement.style.setProperty("--vv-bottom",gap+"px")};
+ if(window.visualViewport){visualViewport.addEventListener("resize",sync);visualViewport.addEventListener("scroll",sync);sync()}
+ addEventListener("orientationchange",()=>setTimeout(sync,300))}
 (async()=>{
+ setupSafariChrome();
  $("#demoBanner").hidden=DB.mode!=="local";
  me=await DB.session().catch(()=>null);hdr();
  await refresh();
