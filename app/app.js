@@ -24,30 +24,35 @@ function placeOptions(){const cityMap=new Map(),countryMap=new Map();
    if(country){const k=fold(country);if(!seenCo.has(k)){seenCo.add(k);const o=countryMap.get(k)||{country,n:0};o.n++;countryMap.set(k,o)}}})});
  return{cities:[...cityMap.values()].sort((a,b)=>{const c=a.city.localeCompare(b.city,"en",{sensitivity:"base"});return c||a.country.localeCompare(b.country,"en",{sensitivity:"base"})}),
   countries:[...countryMap.values()].sort((a,b)=>a.country.localeCompare(b.country,"en",{sensitivity:"base"}))}}
-function fillFilter(){const mods=modCounts();const opts=`<option value="">All practices</option>`+mods.map(([m,n])=>`<option value="${esc(m)}">${esc(m)} (${n})</option>`).join("");
+function fillFilter(){try{fillPlaces()}catch(e){}
+const mods=modCounts();const opts=`<option value="">All practices</option>`+mods.map(([m,n])=>`<option value="${esc(m)}">${esc(m)} (${n})</option>`).join("");
  const v=($("#filter")&&$("#filter").value)||($("#listFilter")&&$("#listFilter").value)||"";
  ["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;el.innerHTML=opts;if([...el.options].some(o=>o.value===v))el.value=v;else el.value=""})}
 function syncModFilter(fromId){const src=$(`#${fromId}`);if(!src)return;const v=src.value;["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(el&&el!==src)el.value=v});renderMarkers();renderList()}
-function closePlaceMenu(){const m=$("#placeMenu"),i=$("#qPlace");if(m)m.hidden=true;if(i)i.setAttribute("aria-expanded","false")}
-function openPlaceMenu(){renderPlaceMenu();const m=$("#placeMenu"),i=$("#qPlace");if(m)m.hidden=false;if(i)i.setAttribute("aria-expanded","true")}
-function renderPlaceMenu(){const box=$("#placeMenu");if(!box)return;const q=fold(($("#qPlace")&&$("#qPlace").value)||"");const {cities,countries}=placeOptions();
- const rows=[];
- cities.forEach(c=>{const label=`${c.city}, ${c.country}`,fl=fold(label);if(!q||fl.includes(q)||fold(c.city).includes(q)||fold(c.country).includes(q))rows.push({label,value:label,n:c.n,kind:"city"})});
- countries.forEach(c=>{const label=c.country,fl=fold(label);if(!q||fl.includes(q))rows.push({label,value:label,n:c.n,kind:"country"})});
- // de-dupe exact same value preferring city rows already added — country rows still useful
- if(!rows.length){box.innerHTML=`<li class="empty">No matching places</li>`;return}
- box.innerHTML=rows.map(r=>`<li role="option"><button type="button" data-place="${esc(r.value)}" data-kind="${r.kind}"><span>${esc(r.label)} <span class="n">(${r.n})</span></span></button></li>`).join("");
- $$("#placeMenu button").forEach(b=>b.onclick=()=>{const i=$("#qPlace");if(i)i.value=b.dataset.place;closePlaceMenu();renderList();renderMarkers()})}
-
-
+// Location filter: native <select> (iOS picker). Values: "co:<country>", "ci:<city>|<country>", "free:<text>" (deep links)
+function closePlaceMenu(){}function openPlaceMenu(){}
+function fillPlaces(){const el=$("#qPlace");if(!el||el.tagName!=="SELECT")return;const v=el.value;const {cities,countries}=placeOptions();
+ const by=new Map();cities.forEach(c=>{const k=fold(c.country);(by.get(k)||by.set(k,[]).get(k)).push(c)});
+ let h=`<option value="">All locations</option>`;
+ countries.forEach(co=>{const cs=(by.get(fold(co.country))||[]).slice().sort((a,b)=>a.city.localeCompare(b.city,"en",{sensitivity:"base"}));
+  h+=`<optgroup label="${esc(co.country)}"><option value="co:${esc(co.country)}">${esc(co.country)} (${co.n})</option>${cs.map(c=>`<option value="ci:${esc(c.city)}|${esc(c.country)}">${esc(c.city)} (${c.n})</option>`).join("")}</optgroup>`});
+ if(v.startsWith("free:"))h+=`<option value="${esc(v)}">${esc(v.slice(5))}</option>`;
+ el.innerHTML=h;el.value=[...el.options].some(o=>o.value===v)?v:""}
+function setPlace(text){const el=$("#qPlace");if(!el)return;fillPlaces();const t=fold(text);
+ const o=[...el.options].find(o=>o.value.startsWith("ci:")&&fold(o.value.slice(3).split("|")[0])===t)||[...el.options].find(o=>o.value.startsWith("co:")&&fold(o.value.slice(3))===t);
+ if(o){el.value=o.value;return}const opt=document.createElement("option");opt.value="free:"+text;opt.textContent=text;el.appendChild(opt);el.value=opt.value}
+function placeOk(p){const v=($("#qPlace")&&$("#qPlace").value)||"";if(!v)return true;const locs=(p.locations&&p.locations.length)?p.locations:[p];
+ if(v.startsWith("co:")){const c=fold(v.slice(3));return locs.some(l=>fold(l.country||"")===c)}
+ if(v.startsWith("ci:")){const [ci,co]=v.slice(3).split("|").map(fold);return locs.some(l=>fold(l.city||"")===ci&&fold(l.country||"")===co)}
+ return placeHit(p,fold(v.replace(/^free:/,"")))}
 function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  const tab=(sp.get("tab")||"").toLowerCase();if(tab==="learn"||tab==="lab"){show("learn");return true}
  if(sp.get("join")==="1"){if(me){show("profile");return true}setMode(true);show("auth");return true}
- if(sp.get("search")==="1"){show("list");const q=$("#qPlace");if(q){requestAnimationFrame(()=>{q.focus();if(typeof openPlaceMenu==="function")openPlaceMenu()})}return true}
+ if(sp.get("search")==="1"){show("list");const q=$("#qPlace");if(q)requestAnimationFrame(()=>{try{q.focus();q.showPicker&&q.showPicker()}catch(e){}});return true}
  const practice=(sp.get("practice")||sp.get("mod")||"").trim();const place=(sp.get("place")||sp.get("city")||"").trim();
  if(!practice&&!place)return false;fillFilter();let hit=false;
  if(practice){const want=fold(practice);["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;const opt=[...el.options].find(o=>o.value&&(fold(o.value)===want||fold(o.value).includes(want)||want.includes(fold(o.value))));if(opt){el.value=opt.value;hit=true}})}
- if(place){const q=$("#qPlace");if(q){q.value=place;hit=true}}
+ if(place){setPlace(place);hit=true}
  if(hit){renderMarkers();renderList();show("list");return true}return false}catch(e){return false}}
 window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
@@ -113,7 +118,7 @@ function placeHit(p,q){if(!q)return true;const locs=(p.locations&&p.locations.le
  return locs.some(l=>fold([l.city,l.country,l.address].filter(Boolean).join(" ")).includes(q))}
 function placeQ(){const el=$("#qPlace");return fold(el?el.value.trim():"")}
 function filtered(){const f=($("#filter")&&$("#filter").value)||($("#listFilter")&&$("#listFilter").value)||"";const q=placeQ();
- return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f))&&placeHit(p,q))}
+ return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f))&&placeOk(p))}
 function initials(n){return String(n||"?").split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase()}
 function av(p,cls=""){return p.photo?`<img class="av ${cls}" src="${esc(p.photo)}" alt="">`:`<span class="av ${cls}">${esc(initials(p.name))}</span>`}
 function practiceTitle(p){return String(p.practice_name||"").trim()||String(p.name||"").trim()||"Practitioner"}
@@ -242,10 +247,7 @@ function renderMarkers(){count();if(!layer)return;layer.clearLayers();if(threads
  if(ps.length&&!didFit)fitPins(true)}
 $("#filter")&&($("#filter").onchange=()=>syncModFilter("filter"));
 $("#listFilter")&&($("#listFilter").onchange=()=>syncModFilter("listFilter"));
-$("#qPlace")&&($("#qPlace").onfocus=()=>openPlaceMenu());
-$("#qPlace")&&($("#qPlace").onclick=()=>openPlaceMenu());
-$("#qPlace")&&($("#qPlace").oninput=()=>{openPlaceMenu();renderList()});
-$("#qPlace")&&($("#qPlace").onkeydown=e=>{if(e.key==="Escape")closePlaceMenu()});
+$("#qPlace")&&($("#qPlace").onchange=()=>{renderList();renderMarkers()});
 document.addEventListener("click",e=>{const c=$("#placeCombo");if(c&&!c.contains(e.target))closePlaceMenu()});
 $("#listClear")&&($("#listClear").onclick=()=>{const q=$("#qPlace");if(q)q.value="";["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(el)el.value=""});closePlaceMenu();renderMarkers();renderList()});
 $("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show("map");didFit=false;setTimeout(()=>{fitPins(true);map&&map.invalidateSize()},100)});
@@ -275,7 +277,7 @@ $("#nearCity")&&($("#nearCity").onsubmit=async e=>{e.preventDefault();const f=e.
  m.textContent="Looking up "+city+"…";const g=await geocode("",city,"");if(!g){m.textContent="Could not find that city. Try another spelling.";showToast("City not found");return}
  applyNear(g[0],g[1])});
 function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));if(here)ps.sort((a,b)=>a.d-b.d);
- const n=ps.length,q=($("#qPlace")&&$("#qPlace").value.trim())||"",mod=($("#listFilter")&&$("#listFilter").value)||($("#filter")&&$("#filter").value)||"";
+ const _pe=$("#qPlace"),n=ps.length,q=(_pe&&_pe.value&&_pe.selectedOptions[0]?_pe.selectedOptions[0].textContent.replace(/\s*\(\d+\)$/,""):""),mod=($("#listFilter")&&$("#listFilter").value)||($("#filter")&&$("#filter").value)||"";
  const lc=$("#listCount");if(lc)lc.textContent=n?`${n} practitioner${n===1?"":"s"}`:"No practitioners";
  const clr=$("#listClear");if(clr)clr.hidden=!(q||mod);
  $("#from").textContent=here?"Sorted by distance from you":"Tap 📍 Near me on the map to sort by distance";

@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 
-<link rel="stylesheet" href="styles.css?v=0.20.10"></head><body>
+<link rel="stylesheet" href="styles.css?v=0.21.0"></head><body>
 <div id="demoBanner" class="banner" hidden>Demo mode: saved on this device</div>
 <section id="splash" class="screen active">
  <svg class="biglogo logoMark" width="150" height="150" aria-hidden="true" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -102,10 +102,7 @@
 </section>
 <section id="list" class="screen"><h2>Practitioners</h2>
  <div id="listSearch" class="listSearch">
-  <div class="combo" id="placeCombo">
-   <input id="qPlace" type="search" placeholder="City or country" autocomplete="off" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="placeMenu">
-   <ul id="placeMenu" class="comboMenu" hidden role="listbox"></ul>
-  </div>
+  <select id="qPlace" aria-label="Location"><option value="">All locations</option></select>
   <select id="listFilter" aria-label="Practice modality"><option value="">All practices</option></select>
   <div class="listSearchMeta">
    <span id="listCount" class="muted">0 practitioners</span>
@@ -192,9 +189,9 @@
 
 
 
-<script src="config.js?v=0.20.10"></script>
+<script src="config.js?v=0.21.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="learn.js?v=0.20.10"></script><script src="data.js?v=0.20.10"></script><script src="app.js?v=0.20.10"></script>
+<script src="learn.js?v=0.21.0"></script><script src="data.js?v=0.21.0"></script><script src="app.js?v=0.21.0"></script>
 <script>
 if("serviceWorker" in navigator&&navigator.serviceWorker){
   // Never reload while the user is using the app: apply a new version only when the app is in the background or on next open.
