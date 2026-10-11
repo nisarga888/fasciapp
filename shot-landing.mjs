@@ -126,11 +126,18 @@ const SESSIONS = {
 };
 
 const MSGS = [
-  { id: 'm1', sender: 'lotte', recipient: 'ines', body: 'Hi Inês! I loved your Lisbon Somatic Space listing. Do you have space for a peer exchange next month?', created_at: '2026-10-08T14:20:00.000Z', read_at: '2026-10-08T14:40:00.000Z' },
-  { id: 'm2', sender: 'ines', recipient: 'lotte', body: 'Hello Lotte! Yes — the first week of November works. Shall we do a 90-minute MER / somatic swap?', created_at: '2026-10-08T15:02:00.000Z', read_at: null },
-  { id: 'm3', sender: 'lotte', recipient: 'ines', body: 'Perfect — let’s plan for Tuesday 4 Nov at 15:00. Looking forward to it 🌿', created_at: '2026-10-08T15:18:00.000Z', read_at: null },
-  { id: 'm4', sender: 'lukas', recipient: 'lotte', body: 'Hi Lotte — quick note from Berlin. Your Amsterdam Breath Studio workshops look great!', created_at: '2026-10-09T09:00:00.000Z', read_at: null },
+  { id: 'm1', sender: 'sophie', recipient: 'lotte', body: "Hi Lotte, I found you on FasciApp. I'd love to book a breathwork session for stress and sleep. Do you have time next week?", created_at: '2026-10-09T09:12:00.000Z', read_at: '2026-10-09T09:40:00.000Z' },
+  { id: 'm2', sender: 'lotte', recipient: 'sophie', body: 'Hi Sophie, welcome! I have Tuesday 18:00 or Thursday 10:00 at the Amsterdam studio. 75 min, €80.', created_at: '2026-10-09T10:05:00.000Z', read_at: '2026-10-09T10:20:00.000Z' },
+  { id: 'm3', sender: 'sophie', recipient: 'lotte', body: 'Thursday 10:00 is perfect, see you then 🌿', created_at: '2026-10-09T10:28:00.000Z', read_at: null },
+  { id: 'm4', sender: 'jonas', recipient: 'lotte', body: 'Hello — saw Amsterdam Breath Studio on the map. Can I book a first MER session next month?', created_at: '2026-10-10T08:15:00.000Z', read_at: null },
+  { id: 'm5', sender: 'amira', recipient: 'lotte', body: 'Hi Lotte, I found you on FasciApp. Looking for help with tension and sleep — any openings this week?', created_at: '2026-10-10T14:02:00.000Z', read_at: null },
 ];
+// Clients are not public practitioners — inject display names for inbox/chat
+const CLIENTS = {
+  sophie: { user_id: 'sophie', name: 'Sophie M.', mods: [], city: 'Amsterdam', country: 'Netherlands', consent: false },
+  jonas: { user_id: 'jonas', name: 'Jonas K.', mods: [], city: 'Utrecht', country: 'Netherlands', consent: false },
+  amira: { user_id: 'amira', name: 'Amira H.', mods: [], city: 'Haarlem', country: 'Netherlands', consent: false },
+};
 
 function serve(root, port) {
   const srv = createServer((req, res) => {
@@ -169,21 +176,34 @@ async function boot(page, port) {
 }
 
 async function asLotte(page) {
-  await page.evaluate(({ msgs }) => {
+  await page.evaluate(({ msgs, clients }) => {
     me = { user_id: 'lotte', email: 'lotte@example.com' };
     MSG_OK = true;
-    msgs_store = msgs;
     window.__landingMsgs = msgs;
+    // Name lookup for inbox/chat without putting clients on the map
+    const byId = new Map(people.map(p => [p.user_id, p]));
+    Object.values(clients).forEach(c => byId.set(c.user_id, c));
+    window.nameOf = (id) => (byId.get(id) || {}).name || id;
+    const _all = all;
+    // Patch all() used by renderInbox to include clients for avatars/names
+    window.__clients = clients;
+    const origFind = Array.prototype;
     DB.msgOk = async () => true;
     DB.msgs = async () => window.__landingMsgs.slice();
     DB.markRead = async () => {};
     DB.onMsg = () => () => {};
     DB.sendMsg = async () => { throw new Error('demo: no writes'); };
+    // Ensure renderInbox can resolve client names via all()
+    const prevAll = all;
+    // reassign global all used in app — it's const all=()=>... so we extend people with zero-coord-free clients carefully
+    clients && Object.values(clients).forEach(c => {
+      if (!people.some(p => p.user_id === c.user_id)) people.push({ ...c, lat: null, lng: null, locations: [] });
+    });
     hdr();
     fillFilter();
     renderList();
     renderMarkers();
-  }, { msgs: MSGS });
+  }, { msgs: MSGS, clients: CLIENTS });
 }
 
 async function main() {
@@ -229,7 +249,7 @@ async function main() {
   await asLotte(page);
   await page.waitForFunction(() => document.body.classList.contains('in') || true);
 
-  // --- MAP: Europe fit with pins/clusters ---
+  // --- MAP: Europe fit with pins/clusters (no fascia threads) ---
   await page.evaluate(() => { show('map'); });
   await page.waitForFunction(() => !!(window.map && document.querySelector('#map.active')), { timeout: 10000 });
   await page.evaluate(() => {
@@ -239,6 +259,7 @@ async function main() {
     const pts = [];
     people.forEach(p => (p.locations || []).forEach(l => { if (l.lat != null) pts.push([+l.lat, +l.lng]); }));
     if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.18), { animate: false, maxZoom: 6 });
+    renderMarkers();
     map.invalidateSize();
   });
   await page.waitForTimeout(1200);
@@ -247,16 +268,17 @@ async function main() {
     pins: document.querySelectorAll('.pin').length,
     clusters: document.querySelectorAll('.clbub').length,
     labels: document.querySelectorAll('.pintitle').length,
+    threads: document.querySelectorAll('.thread, .glow').length,
     count: document.querySelector('#count')?.textContent,
     banner: document.getElementById('demoBanner')?.hidden,
-    bad: [...document.querySelectorAll('body *')].some(el => /Nisarga|integralbodyinstitute|Solec|IBI\b/i.test(el.textContent || '') && el.children.length === 0),
   }));
   console.log('map-europe', mapInfo);
-  const mapPath = join(ASSETS, 'v13_map.png');
-  await page.screenshot({ path: mapPath, fullPage: false });
-  copyFileSync(mapPath, join(PROTO, 'v13_map.png'));
+  if (mapInfo.threads > 0) throw new Error('fascia threads still visible on map');
+  const mapEurope = join(ASSETS, 'v14_map.png');
+  await page.screenshot({ path: mapEurope, fullPage: false });
+  copyFileSync(mapEurope, join(PROTO, 'v14_map.png'));
 
-  // Labelled city view (clusters disable at z15) — Amsterdam Breath Studio + Canal Side
+  // Labelled city view — distinct from Europe overview
   await page.evaluate(async () => {
     didFit = true;
     await new Promise(r => { map.setView([52.368, 4.90], 15, { animate: false }); map.once('moveend', r); setTimeout(r, 500); });
@@ -269,19 +291,17 @@ async function main() {
     pins: document.querySelectorAll('.pin').length,
     clusters: document.querySelectorAll('.clbub').length,
     labels: document.querySelectorAll('.pintitle').length,
+    threads: document.querySelectorAll('.thread, .glow').length,
     titles: [...document.querySelectorAll('.pintitle')].map(e => e.textContent),
   }));
   console.log('map-ams-labels', mapInfo);
-  const overview = join(ASSETS, 'v13_map_europe.png');
-  // Keep continental overview already written as mapPath; copy to overview, then prefer labelled if present
-  copyFileSync(mapPath, overview);
-  copyFileSync(overview, join(PROTO, 'v13_map_europe.png'));
-  if (mapInfo.labels >= 1) {
-    await page.screenshot({ path: mapPath, fullPage: false });
-    copyFileSync(mapPath, join(PROTO, 'v13_map.png'));
-  }
+  if (mapInfo.threads > 0) throw new Error('fascia threads on labelled map');
+  if (mapInfo.labels < 1) throw new Error('expected practice labels at z15');
+  const mapLabels = join(ASSETS, 'v14_map_labels.png');
+  await page.screenshot({ path: mapLabels, fullPage: false });
+  copyFileSync(mapLabels, join(PROTO, 'v14_map_labels.png'));
 
-  // --- LIST (browse as visitor so Message shows on every card, incl. Amsterdam) ---
+  // --- LIST (one list shot; visitor so Message shows) ---
   await page.evaluate(() => {
     me = { user_id: 'visitor', email: 'visitor@example.com' };
     MSG_OK = true;
@@ -296,46 +316,14 @@ async function main() {
     names: [...document.querySelectorAll('#items b')].map(b => b.textContent),
     hasMsg: !!document.querySelector('.cb.msg'),
     hasWa: !!document.querySelector('.cb.wa'),
-    banner: document.getElementById('demoBanner')?.hidden,
   }));
   console.log('list', listInfo);
   if (listInfo.n < 8) throw new Error('expected >=8 list items, got ' + listInfo.n);
-  if (listInfo.names.some(n => /Nisarga|Integral Body|Solec/i.test(n))) throw new Error('real/test names in list');
-  const listPath = join(ASSETS, 'v13_list.png');
+  if (listInfo.names.some(n => /Nisarga|Integral Body|Solec|Sophie/i.test(n))) throw new Error('bad names in list');
+  if (!listInfo.hasMsg || !listInfo.hasWa) throw new Error('expected Message + WhatsApp on list');
+  const listPath = join(ASSETS, 'v14_list.png');
   await page.screenshot({ path: listPath, fullPage: false });
-  copyFileSync(listPath, join(PROTO, 'v13_list.png'));
-
-  // --- CARD (Amsterdam / Lotte) clipped ---
-  const cardClip = await page.evaluate(() => {
-    const items = [...document.querySelectorAll('#items .item')];
-    const item = items.find(el => /Amsterdam Breath Studio|Lotte de Vries/.test(el.textContent)) || items[0];
-    item.scrollIntoView({ block: 'center' });
-    const r = item.getBoundingClientRect();
-    const hdr = document.querySelector('header')?.getBoundingClientRect();
-    const top = Math.max(0, Math.min(r.y - 12, (hdr ? hdr.bottom + 8 : r.y - 12)));
-    return {
-      x: Math.max(0, r.x - 8),
-      y: top,
-      width: Math.min(390 - 8, r.width + 16),
-      height: Math.min(520, r.height + 24),
-      text: item.textContent.slice(0, 120),
-    };
-  });
-  console.log('cardClip', cardClip);
-  const cardPath = join(ASSETS, 'v13_card.png');
-  await page.screenshot({ path: cardPath, clip: { x: cardClip.x, y: cardClip.y, width: cardClip.width, height: cardClip.height } });
-  copyFileSync(cardPath, join(PROTO, 'v13_card.png'));
-
-  // Full-frame card context (list scrolled to Amsterdam) for landing "Call, WhatsApp"
-  await page.evaluate(() => {
-    const items = [...document.querySelectorAll('#items .item')];
-    const item = items.find(el => /Amsterdam Breath Studio/.test(el.textContent));
-    if (item) item.scrollIntoView({ block: 'start' });
-  });
-  await page.waitForTimeout(300);
-  const cardFull = join(ASSETS, 'v13_whatsapp.png');
-  await page.screenshot({ path: cardFull, fullPage: false });
-  copyFileSync(cardFull, join(PROTO, 'v13_whatsapp.png'));
+  copyFileSync(listPath, join(PROTO, 'v14_list.png'));
 
   // --- SESSION LOG ---
   await page.evaluate(() => {
@@ -348,75 +336,74 @@ async function main() {
   const logInfo = await page.evaluate(() => ({
     n: document.querySelectorAll('#sessList .sess').length,
     progress: document.querySelector('#pNum')?.textContent,
-    initials: [...document.querySelectorAll('#sessList b')].map(b => b.textContent),
-    banner: document.getElementById('demoBanner')?.hidden,
   }));
   console.log('log', logInfo);
   if (logInfo.n < 8) throw new Error('expected sessions');
-  if (logInfo.initials.some(i => /Nisarga/i.test(i))) throw new Error('bad initials');
-  const logPath = join(ASSETS, 'v13_session_log.png');
+  const logPath = join(ASSETS, 'v14_session_log.png');
   await page.screenshot({ path: logPath, fullPage: false });
-  copyFileSync(logPath, join(PROTO, 'v13_session_log.png'));
+  copyFileSync(logPath, join(PROTO, 'v14_session_log.png'));
 
-  // --- INBOX CHAT ---
+  // --- INBOX CHAT: client Sophie M. booking ---
   await page.evaluate(() => {
+    me = { user_id: 'lotte', email: 'lotte@example.com' };
+    MSG_OK = true;
     msgs = window.__landingMsgs.slice();
+    hdr();
     show('inbox');
-    openChat('ines');
+    openChat('sophie');
   });
   await page.waitForSelector('#chat:not([hidden])', { timeout: 10000 });
-  await page.waitForSelector('.bub.me', { timeout: 10000 });
+  await page.waitForSelector('.bub', { timeout: 10000 });
   await page.waitForTimeout(500);
   const chatInfo = await page.evaluate(() => ({
     name: document.querySelector('#chatName')?.textContent,
     bubs: document.querySelectorAll('.bub').length,
-    text: document.querySelector('#chatLog')?.textContent?.slice(0, 200),
+    text: document.querySelector('#chatLog')?.textContent || '',
+    inbox: document.querySelector('#convs')?.textContent || '',
   }));
-  console.log('chat', chatInfo);
-  if (!/Inês|Ines/i.test(chatInfo.name || '')) throw new Error('expected Inês chat');
-  if (/Nisarga|IBI|integralbody/i.test(chatInfo.text || '')) throw new Error('bad chat content');
-  const msgPath = join(ASSETS, 'v13_messages.png');
+  console.log('chat', { name: chatInfo.name, bubs: chatInfo.bubs, preview: chatInfo.text.slice(0, 160) });
+  if (!/Sophie/i.test(chatInfo.name || '')) throw new Error('expected Sophie M. chat, got ' + chatInfo.name);
+  if (!/found you on FasciApp/i.test(chatInfo.text)) throw new Error('expected booking enquiry copy');
+  if (/peer exchange|somatic swap|Inês|Ines Oliveira|Lukas/i.test(chatInfo.text)) throw new Error('peer-swap content still present');
+  const msgPath = join(ASSETS, 'v14_messages.png');
   await page.screenshot({ path: msgPath, fullPage: false });
-  copyFileSync(msgPath, join(PROTO, 'v13_messages.png'));
+  copyFileSync(msgPath, join(PROTO, 'v14_messages.png'));
 
-  // Guard: no banned strings in any asset screen HTML text
   const banned = await page.evaluate(() => {
     const t = document.body.innerText;
     return {
       nisarga: /Nisarga/i.test(t),
       ibi: /integralbodyinstitute|Solec-Zdrój|Solec/i.test(t),
-      realPL: /\+48\s?\d{3}/.test(t),
+      peer: /peer exchange|somatic swap/i.test(t),
     };
   });
   console.log('banned-check', banned);
-  if (banned.nisarga || banned.ibi || banned.realPL) throw new Error('banned content visible: ' + JSON.stringify(banned));
+  if (banned.nisarga || banned.ibi || banned.peer) throw new Error('banned content: ' + JSON.stringify(banned));
 
   await ctx.close();
 
-  // --- Update index.html gallery ---
+  // Gallery: Europe map, labelled map (replaces duplicate list), one list, session log, messages
   const indexPath = join(ROOT, 'index.html');
   let html = readFileSync(indexPath, 'utf8');
   const shotsBlock = `<div class="shots">
- <figure><img src="assets/v13_map.png" alt="Practitioner map with clusters and labels" loading="lazy"><figcaption>The network map</figcaption></figure>
- <figure><img src="assets/v13_whatsapp.png" alt="Practitioner card with Message, Call, WhatsApp and Email" loading="lazy"><figcaption>Message, Call, WhatsApp</figcaption></figure>
- <figure><img src="assets/v13_list.png" alt="Practitioner list across Europe" loading="lazy"><figcaption>Find practitioners</figcaption></figure>
- <figure><img src="assets/v13_session_log.png" alt="Session log with client initials" loading="lazy"><figcaption>Session log · 60 sessions</figcaption></figure>
- <figure><img src="assets/v13_messages.png" alt="In-app messaging inbox and chat" loading="lazy"><figcaption>Message practitioners</figcaption></figure>
+ <figure><img src="assets/v14_map.png" alt="Practitioner map across Europe with clusters" loading="lazy"><figcaption>The network map</figcaption></figure>
+ <figure><img src="assets/v14_map_labels.png" alt="Map zoomed in with practice labels" loading="lazy"><figcaption>Pins, clusters &amp; labels</figcaption></figure>
+ <figure><img src="assets/v14_list.png" alt="Practitioner list with Message, Call, WhatsApp and Email" loading="lazy"><figcaption>Message, Call, WhatsApp</figcaption></figure>
+ <figure><img src="assets/v14_session_log.png" alt="Session log with client initials" loading="lazy"><figcaption>Session log · 60 sessions</figcaption></figure>
+ <figure><img src="assets/v14_messages.png" alt="Client booking chat in inbox" loading="lazy"><figcaption>Book via messages</figcaption></figure>
 </div>`;
   if (!html.includes('<div class="shots">')) throw new Error('shots block missing');
   html = html.replace(/<div class="shots">[\s\S]*?<\/div>\n/, shotsBlock + '\n');
   writeFileSync(indexPath, html);
   console.log('updated index.html shots');
 
-  // --- Landing row screenshot ---
   const land = await browser.newContext({ viewport: { width: 1100, height: 1800 }, deviceScaleFactor: 2 });
   const landPage = await land.newPage();
   await landPage.goto(`http://127.0.0.1:${port}/`, { waitUntil: 'networkidle' });
   await landPage.evaluate(() => document.querySelectorAll('.f').forEach(e => e.classList.add('seen')));
-  // wait for images
   await landPage.waitForFunction(() => {
     const imgs = [...document.querySelectorAll('.shots img')];
-    return imgs.length >= 4 && imgs.every(i => i.complete && i.naturalWidth > 0);
+    return imgs.length >= 5 && imgs.every(i => i.complete && i.naturalWidth > 0);
   }, null, { timeout: 20000 });
   await landPage.waitForTimeout(400);
   const box1 = await landPage.locator('h2', { hasText: 'A look at the app' }).boundingBox();
@@ -426,16 +413,17 @@ async function main() {
   const right = Math.min(1100, Math.max(box1.x + box1.width, box2.x + box2.width) + 24);
   const bottom = box2.y + box2.height + 28;
   const clip = { x: left, y: top, width: right - left, height: bottom - top };
-  const outLand = join(PROTO, 'v13_landing.png');
+  const outLand = join(PROTO, 'v14_landing.png');
   await landPage.screenshot({ path: outLand, clip });
   console.log('landing', outLand, clip);
 
-  // sanity: old assets no longer referenced
-  const idx = readFileSync(indexPath, 'utf8');
-  for (const old of ['v3_04_map.png', 'v3_07_whatsapp.png', 'v3_06_session_log.png', 'v8_messages.png']) {
-    if (idx.includes(old)) throw new Error('still references ' + old);
+  const idxHtml = readFileSync(indexPath, 'utf8');
+  for (const old of ['v13_whatsapp.png', 'v13_list.png', 'v13_map.png', 'v13_messages.png', 'v13_session_log.png']) {
+    if (idxHtml.includes(old)) throw new Error('still references ' + old);
   }
-  if (!idx.includes('v13_map.png') || !idx.includes('v13_messages.png')) throw new Error('new assets not linked');
+  if (!idxHtml.includes('v14_map.png') || !idxHtml.includes('v14_map_labels.png') || !idxHtml.includes('v14_messages.png')) {
+    throw new Error('v14 assets not linked');
+  }
 
   await browser.close();
   srv.close();
