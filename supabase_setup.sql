@@ -22,6 +22,8 @@ create table if not exists public.practitioners (
 -- for databases created before v0.5:
 alter table public.practitioners add column if not exists whatsapp boolean not null default false;
 
+-- v0.7: open modality tags are stored in mods text[]
+
 alter table public.practitioners enable row level security;
 
 -- Anyone (even not logged in) can see listings that opted in

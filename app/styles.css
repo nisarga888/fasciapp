@@ -77,3 +77,5 @@ select[name=country]:invalid{color:#9fb3b5}
 .cb.call{background:#C99E67;color:#02191E!important}.cb.wa{background:#25D366;border-color:#25D366;color:#fff!important}
 #mailBox{margin-bottom:12px}.grid2.wide{display:grid}
 .grid2 .full{grid-column:auto}
+
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}.tag{border:1px solid #c99e67;background:#fff;color:#8a6a3c;border-radius:14px;padding:5px 11px;font-size:13px;cursor:pointer}.tag.on{background:#c99e67;color:#fff}.addtag{display:flex;gap:6px;margin-bottom:8px}.addtag input{flex:1}.mk{display:inline-block;font-size:10px;color:#6b7b7a;background:#eef3f2;border-radius:8px;padding:1px 6px;margin:2px 4px 0 0;text-decoration:none}

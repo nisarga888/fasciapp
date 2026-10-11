@@ -11,7 +11,6 @@
   <button id="goLook" class="big gold"><span class="ic">🔍</span><span><b>Just looking</b><small>Find a practitioner near me · no login needed</small></span></button>
   <button id="goPract" class="big outline"><span class="ic">📍</span><span><b>Practitioner</b><small>Add me to the map</small></span></button>
  </div>
- <p class="founding">founding school: Integral Body Institute</p>
 </section>
 <section id="auth" class="screen">
  <button class="back" data-go="splash">← Back</button>
@@ -25,12 +24,12 @@
  </form>
  <p class="muted center">Just want to find someone? <a href="#" id="authLook">Browse the map without an account</a></p>
 </section>
-<header id="hdr"><span class="hb"><img src="logo.svg" alt=""><span><b>Fasci<span class="t">App</span></b><small>Find your practitioner</small></span></span>
+<header id="hdr"><span class="hb"><img src="logo.svg" alt=""><span><b>Fasci<span class="t">App</span></b><small>Bodywork &amp; breathwork near you</small></span></span>
  <span class="hbtns"><button id="hEdit" class="ghost sm">Edit my profile</button><button id="hOut" class="ghost sm">Log out</button><button id="hIn" class="gold sm">Sign in</button></span></header>
 <main>
 <section id="map" class="screen">
  <div class="bar"><button id="near" class="gold sm">📍 Near me</button>
- <select id="filter"><option value="">All methods</option><option>MER</option><option>BBTRS</option><option>Other</option></select></div>
+ <select id="filter"><option value="">All practices</option></select></div>
  <div id="count" class="count"></div><div id="leaf"></div>
 </section>
 <section id="list" class="screen"><h2>Practitioners</h2><p id="from" class="muted"></p><div id="items"></div></section>
@@ -40,7 +39,7 @@
   <p id="who" class="muted"></p>
   <div class="ph"><img id="phPrev" class="av big" hidden alt=""><label class="phbtn">📷 Add profile photo<input type="file" id="photo" accept="image/*" hidden></label></div>
   <input name="name" placeholder="Full name" required>
-  <div class="checks"><label><input type="checkbox" name="mod" value="MER"> MER</label><label><input type="checkbox" name="mod" value="BBTRS"> BBTRS</label><label><input type="checkbox" name="mod" value="Other"> Other</label></div>
+  <div class="lbl">What do you practise? <small class="muted">(pick any, or add your own)</small></div><div id="modBox" class="tags"></div><div class="addtag"><input id="modNew" placeholder="Add your own, e.g. Shiatsu" maxlength="40"><button type="button" id="modAdd" class="ghost sm">+ Add</button></div>
   <input name="address" placeholder="Street address"><input name="city" placeholder="City" required>
   <select name="country" required><option value="">Country *</option><optgroup label="Europe"><option>Austria</option><option>Belgium</option><option>Bulgaria</option><option>Croatia</option><option>Cyprus</option><option>Czechia</option><option>Denmark</option><option>Estonia</option><option>Finland</option><option>France</option><option>Germany</option><option>Greece</option><option>Hungary</option><option>Iceland</option><option>Ireland</option><option>Italy</option><option>Latvia</option><option>Lithuania</option><option>Luxembourg</option><option>Malta</option><option>Netherlands</option><option>Norway</option><option>Poland</option><option>Portugal</option><option>Romania</option><option>Serbia</option><option>Slovakia</option><option>Slovenia</option><option>Spain</option><option>Sweden</option><option>Switzerland</option><option>Ukraine</option><option>United Kingdom</option></optgroup><optgroup label="Other countries"><option>Argentina</option><option>Australia</option><option>Brazil</option><option>Canada</option><option>Chile</option><option>China</option><option>Colombia</option><option>Egypt</option><option>India</option><option>Indonesia</option><option>Israel</option><option>Japan</option><option>Mexico</option><option>Morocco</option><option>New Zealand</option><option>Philippines</option><option>Singapore</option><option>South Africa</option><option>South Korea</option><option>Thailand</option><option>Turkey</option><option>United Arab Emirates</option><option>United States</option><option>Vietnam</option><option>Other</option></optgroup></select>
   <div class="phone"><input name="prefix" placeholder="+48" inputmode="tel" maxlength="5" aria-label="Country code"><span id="ccTag" class="cc"></span><input name="phone" placeholder="Phone number" inputmode="tel"></div>
@@ -68,7 +67,7 @@
   <div class="grid2 wide"><button id="pdfBtn" class="gold big1">⬇ Export PDF</button><button id="mailToggle" type="button" class="outline big1">✉️ Send by email</button></div>
   <div id="mailBox" hidden><form id="mailForm" class="card">
    <b>Send session log by email</b>
-   <label class="lbl">To<input name="to" type="email" required list="mailSug"></label><datalist id="mailSug"><option value="info@integralbodyinstitute.com"></datalist>
+   <label class="lbl">To<input name="to" type="email" required></label>
    <label class="lbl">Subject<input name="subject" required></label>
    <label class="lbl">Message<textarea name="msg" rows="4"></textarea></label>
    <button class="gold">Send with my email app</button>
