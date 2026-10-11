@@ -5,6 +5,7 @@ const LAST_EMAIL_KEY="fyp_last_email";
 function rememberEmail(em){try{if(em)localStorage.setItem(LAST_EMAIL_KEY,em)}catch(e){}}
 function lastEmail(){try{return localStorage.getItem(LAST_EMAIL_KEY)||""}catch(e){return""}}
 function fillLastEmail(){const el=$("#email");if(el&&!el.value)el.value=lastEmail()}
+const CFG=window.FASCIAPP_CONFIG||{};const MSG_ON=!!(CFG.FEATURES&&CFG.FEATURES.messaging);
 var MSG_OK=false,msgs=[],chatWith=null,pollT=null,unsub=null,pendingChat=null;
 let me=null,people=[],here=null,map,layer,threads,photoData=null,signUpMode=true,didFit=false,labelZoom=8,lastLabels=null;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -51,8 +52,8 @@ window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("a
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
 let showT=null;function afterShow(t){try{if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;return}loadProf()})()}
- if(t==="log")loadLog();if(t==="inbox")renderInbox()}catch(e){console.warn(e)}}
-function hdr(){$("#tabInbox").hidden=false;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
+ if(t==="log")loadLog();if(t==="learn")renderLearn();if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
+function hdr(){$("#tabInbox").hidden=!MSG_ON;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 const PKEY="fa_people_v1";function cachedPeople(){try{const j=JSON.parse(localStorage.getItem(PKEY)||"null");return Array.isArray(j)?j:null}catch(e){return null}}
 function paintFromCache(){const c=cachedPeople();if(!c||people.length)return false;people=c;fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true);return true}
 async function refresh(){try{people=await DB.list();try{localStorage.setItem(PKEY,JSON.stringify(people))}catch(e){}}catch(e){console.warn(e);if(!people.length)people=cachedPeople()||[]}fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true)}
@@ -123,7 +124,7 @@ function link(u){if(!u)return"";const h=/^https?:\/\//.test(u)?u:"https://"+u;re
 function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</span>`).join("");
  const dg=String(p.phone||"").replace(/\D/g,"");
  const msgIc=`<span class="msgIc" aria-hidden="true"><svg class="msgRing" viewBox="0 0 24 24" width="16" height="16"><circle cx="20" cy="12" r="1.1" fill="currentColor"/><circle cx="17.7" cy="17.7" r="1.1" fill="currentColor"/><circle cx="12" cy="20" r="1.1" fill="currentColor"/><circle cx="6.3" cy="17.7" r="1.1" fill="currentColor"/><circle cx="4" cy="12" r="1.1" fill="currentColor"/><circle cx="6.3" cy="6.3" r="1.1" fill="currentColor"/><circle cx="12" cy="4" r="1.1" fill="currentColor"/><circle cx="17.7" cy="6.3" r="1.1" fill="currentColor"/></svg><svg class="msgBub" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h11a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3H12l-3.2 2.8V17H4.5a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3z"/></svg></span>`;
- const canMsg=!!(p.user_id&&(!me||p.user_id!==me.user_id));
+ const canMsg=MSG_ON&&MSG_OK&&!!(p.user_id&&(!me||p.user_id!==me.user_id));
  const msgBtn=canMsg?`<button type="button" class="cb msg" data-msg="${esc(p.user_id)}">${msgIc} Message on FasciApp</button>`:"";
  const wa=p.phone&&p.whatsapp&&dg?`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`:"";
  const mail=p.email?`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`:"";
@@ -464,7 +465,7 @@ function mergeMsg(m){if(!m||!m.id)return;const i=msgs.findIndex(x=>x.id===m.id);
  else{const t=msgs.findIndex(x=>x.pending&&x.sender===m.sender&&x.recipient===m.recipient&&x.body===m.body);if(t>=0)msgs[t]=m;else msgs.push(m)}
  msgs.sort((a,b)=>a.created_at.localeCompare(b.created_at))}
 let msgUid=null,lastPull=0;
-async function msgInit(){if(me&&msgUid!==me.user_id){try{msgs=JSON.parse(localStorage.getItem(MKEY())||"[]")}catch(e){msgs=[]}}
+async function msgInit(){if(!MSG_ON){MSG_OK=false;return}if(me&&msgUid!==me.user_id){try{msgs=JSON.parse(localStorage.getItem(MKEY())||"[]")}catch(e){msgs=[]}}
  if(me&&msgs.length){MSG_OK=true;paintMsgs()}
  try{MSG_OK=!!(DB.msgOk&&await DB.msgOk())}catch(e){MSG_OK=false}hdr();renderMarkers();renderList();
  if(MSG_OK&&me){if(msgUid!==me.user_id){if(unsub)unsub();unsub=DB.onMsg?DB.onMsg(ev=>{const m=ev&&ev.new;if(m&&m.id){mergeMsg(m);saveMsgs();paintMsgs()}else pullMsgs()},me.user_id):null;msgUid=me.user_id}
@@ -501,3 +502,26 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now(
 setInterval(()=>{if(!document.hidden&&Date.now()-lastPull>110000)pullMsgs()},120000);
 
 document.addEventListener("visibilitychange",()=>document.documentElement.classList.toggle("bg-hidden",document.hidden));
+
+// ===== Learn (study zone) — content in learn.js =====
+(function(){const l=CFG.LEARN_LABEL||"Lab",T=CFG.LEARN_TITLE||"Fascia Lab";const a=$("#learnLbl"),h=$("#learnH"),b=$("#tabLearn");if(a)a.textContent=l;if(h)h.textContent=T;if(b)b.setAttribute("aria-label",T)})();
+function ytId(v){v=String(v||"").trim();const m=v.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([A-Za-z0-9_-]{11})/);if(m)return m[1];return /^[A-Za-z0-9_-]{11}$/.test(v)?v:""}
+const LOCK='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+function labCover(x,id){const vid=x.type==="youtube";const img=x.cover||(id?`https://i.ytimg.com/vi/${id}/hqdefault.jpg`:"");
+ if(img)return `<img src="${esc(img)}" alt="" loading="lazy">`+(vid?'<span class="lplay" aria-hidden="true">▶</span>':"");
+ return `<div class="lcov ${vid?"v":"b"}"><svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true">${vid?'<circle cx="32" cy="32" r="22" fill="none" stroke="#5FC9C3" stroke-width="2" stroke-dasharray="2 5"/><path d="M27 22l16 10-16 10z" fill="#C99E67"/>':'<path d="M14 14c6-2 12-2 18 2v34c-6-4-12-4-18-2z M50 14c-6-2-12-2-18 2v34c6-4 12-4 18-2z" fill="none" stroke="#C99E67" stroke-width="2" stroke-linejoin="round"/>'}</svg><span>${esc(x.title)}</span></div>`}
+function renderLearn(){const box=$("#learnList");if(!box)return;const items=(window.FASCIAPP_LEARN||[]).filter(x=>x&&x.title);
+ if(!items.length){box.innerHTML=`<div class="card center"><p><b>Videos and guides coming soon</b></p></div>`;return}
+ const secs=[];items.forEach(x=>{const k=x.section||"More";let s=secs.find(q=>q.k===k);if(!s)secs.push(s={k,l:[]});s.l.push(x)});
+ box.innerHTML=secs.map(s=>`<h3 class="lsec">${esc(s.k)}</h3><div class="lgrid">${s.l.map(x=>{
+  const id=x.type==="youtube"?ytId(x.youtubeId||x.url):"";const ready=x.type==="youtube"?!!id:!!x.url;const locked=!x.public&&!me;
+  const badge=`<span class="ltag t">${x.type==="youtube"?"Video":"PDF"}</span>`;
+  const state=(!x.public?`<span class="ltag lk">${LOCK} ${locked?"Locked":"Members"}</span>`:'<span class="ltag free">Free</span>')+(!ready?'<span class="ltag soon">Coming soon</span>':"");
+  const act=!ready?"":locked?'data-unlock="1"':x.type==="youtube"?`data-yt="${esc(id)}"`:`data-pdf="${esc(x.url)}"`;
+  const foot=!ready?"Coming soon":locked?"Sign in to unlock":x.type==="youtube"?"Play video":"Open PDF ↗";
+  return `<button type="button" class="lcard${ready?"":" lph"}${locked?" locked":""}" ${act} ${ready?"":"disabled"} aria-label="${esc(x.title)}: ${foot}">
+   <div class="lthumb">${labCover(x,locked?"":id)}${locked?`<span class="lockov">${LOCK}</span>`:""}</div>
+   <div class="lbody"><div class="lbadges">${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`).join("")}
+document.addEventListener("click",e=>{const y=e.target.closest(".lcard[data-yt]");if(y){const t=y.querySelector(".lthumb");if(!t.querySelector("iframe"))t.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${y.dataset.yt}?autoplay=1&rel=0&playsinline=1" title="YouTube video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;return}
+ const pd=e.target.closest(".lcard[data-pdf]");if(pd){window.open(pd.dataset.pdf,"_blank","noopener");return}
+ if(e.target.closest("[data-unlock]")){fillLastEmail();setMode(false);show("auth")}});

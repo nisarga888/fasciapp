@@ -248,3 +248,20 @@ body.in{position:fixed;top:0;bottom:0;left:0;right:0;width:100%;max-width:480px;
 body.in > main{overscroll-behavior:contain}
 #map.screen.active{height:100%;max-height:100%}
 #map .bar{position:relative;z-index:2}
+/* v0.20 Fascia Lab */
+.lsec{margin:18px 0 8px;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:#C99E67}
+.lgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lcard{display:flex;flex-direction:column;text-align:left;padding:0;border:1px solid #c99e6744;border-radius:14px;overflow:hidden;background:#0a2a30;color:var(--tx);font:inherit;min-width:0}
+.lcard:disabled{cursor:default}.lcard.lph{opacity:.85}
+.lthumb{position:relative;aspect-ratio:16/10;background:#02191E;overflow:hidden}
+.lthumb img,.lthumb iframe{width:100%;height:100%;object-fit:cover;border:0;display:block}
+.lcov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px;text-align:center;font-size:12px;font-weight:600;color:#C99E67;
+ background:radial-gradient(circle at 50% 40%,#5FC9C333,transparent 60%),linear-gradient(160deg,#0d3a40,#02191E)}
+.lcov.b{background:radial-gradient(circle at 50% 40%,#C99E6733,transparent 60%),linear-gradient(160deg,#2a2418,#02191E)}
+.lplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:#000a;color:#fff;display:flex;align-items:center;justify-content:center}
+.lockov{position:absolute;right:8px;top:8px;width:26px;height:26px;border-radius:50%;background:#000a;color:#fff;display:flex;align-items:center;justify-content:center}
+.lbody{display:flex;flex-direction:column;gap:3px;padding:10px 10px 12px}.lbody b{font-size:14px;line-height:1.25}.lbody small{font-size:11.5px;line-height:1.3}.lby{color:#5FC9C3}
+.lbadges{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:2px}
+.ltag{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:9px;border:1px solid #c99e6766;color:#C99E67}
+.ltag.lk{border-color:#5FC9C355;color:#5FC9C3}.ltag.soon{border-color:#9fb3b555;color:#9fb3b5}.ltag.free{border-color:#5FC9C3;color:#5FC9C3}
+.lfoot{margin-top:6px;font-size:12px;font-weight:600;color:#C99E67}

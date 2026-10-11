@@ -13,7 +13,7 @@ await p.waitForFunction(()=>document.querySelectorAll('.leaflet-marker-icon,.ite
 const kB=Math.round(Object.values(bytes).reduce((a,b)=>a+b,0)/1024);
 await p.click('#goPract');await p.fill('#email',kv.email);await p.fill('#pw',kv.password);await p.press('#pw','Enter');
 await p.waitForFunction(()=>document.body.classList.contains('in')&&!document.getElementById('auth').classList.contains('active'),null,{timeout:20000});await p.waitForTimeout(3000);
-let s=Date.now();await p.click('nav#tabs button[data-t=inbox]');await p.waitForFunction(()=>document.querySelector('#convs').children.length>0);const inbox=Date.now()-s;
+let s=Date.now();await p.click('nav#tabs button[data-t=learn]');await p.waitForFunction(()=>document.querySelector('#convs').children.length>0);const inbox=Date.now()-s;
 const me=await p.evaluate(()=>me.user_id);
 await p.evaluate(id=>openChat(id),me);await p.waitForTimeout(800);
 const before=await p.evaluate(()=>document.querySelectorAll('#chatLog .bub').length);
