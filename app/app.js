@@ -261,18 +261,30 @@ function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));if(here)ps.sor
 async function loadProf(){waTouched=false;$("#needLogin").hidden=!!me;$("#profForm").hidden=!me;if(!me)return;myMods=[];renderTags();setExtra([]);$("#who").textContent="Signed in as "+me.email;
  const p=await DB.mine().catch(()=>null);const f=$("#profForm");if(!p)return;["name","practice_name","address","city","country","email","website","bio"].forEach(k=>{if(f[k])f[k].value=p[k]||""});splitPhone(p.phone,p.country);f.whatsapp.checked=!!p.whatsapp;waTouched=true;
  f.label.value=(p.locations?.[0]?.label)||"";setExtra((p.locations||[]).slice(1));f.consent.checked=!!p.consent;myMods=(p.mods||[]).slice();renderTags();if(p.photo){$("#phPrev").src=p.photo;$("#phPrev").hidden=false}}
-async function geocode(addr,city,country){try{const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&accept-language=en&limit=1&q="+encodeURIComponent([addr,city,country].filter(c=>c&&c!=="Other").join(", ")));const j=await r.json();if(j[0])return[+j[0].lat,+j[0].lon,"address",j[0].display_name.split(", ").pop()]}catch(e){}
- const c=CITY[city.trim().toLowerCase()];return c?[c[0],c[1],"city",null]:null}
+const CCEN={Austria:[47.6,14.1],Belgium:[50.6,4.6],Bulgaria:[42.7,25.3],Croatia:[45.1,15.6],Cyprus:[35.0,33.2],Czechia:[49.8,15.5],Denmark:[56.0,9.5],Estonia:[58.7,25.0],Finland:[62.0,25.7],France:[46.6,2.4],Germany:[51.1,10.4],Greece:[39.3,22.0],Hungary:[47.2,19.4],Iceland:[64.9,-18.6],Ireland:[53.2,-8.2],Italy:[42.8,12.6],Latvia:[56.9,24.9],Lithuania:[55.3,23.9],Luxembourg:[49.8,6.1],Malta:[35.9,14.4],Netherlands:[52.2,5.5],Norway:[61.4,8.8],Poland:[52.1,19.4],Portugal:[39.6,-8.0],Romania:[45.9,25.0],Serbia:[44.0,20.9],Slovakia:[48.7,19.7],Slovenia:[46.1,14.8],Spain:[40.2,-3.6],Sweden:[62.0,15.0],Switzerland:[46.8,8.2],Ukraine:[49.0,31.4],"United Kingdom":[54.0,-2.5],Argentina:[-34.6,-64.0],Australia:[-25.7,134.5],Brazil:[-10.8,-52.9],Canada:[56.0,-96.8],Chile:[-33.4,-70.7],China:[35.0,103.8],Colombia:[4.1,-73.1],Egypt:[26.6,30.8],India:[22.9,79.6],Indonesia:[-2.2,117.4],Israel:[31.4,35.0],Japan:[36.5,138.0],Mexico:[23.9,-102.5],Morocco:[31.8,-7.1],"New Zealand":[-41.8,172.8],Philippines:[12.9,121.8],Singapore:[1.35,103.82],"South Africa":[-29.0,25.1],"South Korea":[36.4,127.9],Thailand:[15.1,101.0],Turkey:[39.1,35.2],"United Arab Emirates":[23.9,54.3],"United States":[39.8,-98.6],Vietnam:[16.6,106.3]};
+async function geoTry(q){if(!q)return null;
+ try{const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&accept-language=en&limit=1&email=info%40bodyawareness.ee&q="+encodeURIComponent(q),{headers:{Accept:"application/json"}});if(r.ok){const j=await r.json();if(j[0])return[+j[0].lat,+j[0].lon]}}catch(e){}
+ try{const r=await fetch("https://photon.komoot.io/api/?limit=1&lang=en&q="+encodeURIComponent(q));if(r.ok){const j=await r.json();const c=j.features&&j.features[0]&&j.features[0].geometry.coordinates;if(c)return[c[1],c[0]]}}catch(e){}
+ return null}
+async function geocode(addr,city,country){addr=(addr||"").trim();city=(city||"").trim();const ct=country&&country!=="Other"?country:"";
+ const qs=[];const add=q=>{if(q&&!qs.includes(q))qs.push(q)};
+ if(addr)add([addr,city,ct].filter(Boolean).join(", "));
+ if(city){add([city,ct].filter(Boolean).join(", "));add(city)}
+ for(const q of qs){const g=await geoTry(q);if(g)return[g[0],g[1],q===qs[0]&&addr?"address":"city",null]}
+ const c=city&&typeof CITY!=="undefined"?CITY[city.toLowerCase()]:null;if(c)return[c[0],c[1],"city",null];
+ if(ct&&CCEN[ct])return[CCEN[ct][0],CCEN[ct][1],"country",null];
+ if(ct){const g=await geoTry(ct);if(g)return[g[0],g[1],"country",null]}
+ return null}
 $("#profForm").onsubmit=async e=>{e.preventDefault();const f=e.target,st=$("#status");st.textContent="Locating your address…";
  const old=await DB.mine().catch(()=>null)||{};
  const p={name:f.name.value.trim(),practice_name:(f.practice_name&&f.practice_name.value||"").trim(),address:f.address.value.trim(),city:f.city.value.trim(),phone:e164(f.prefix.value,f.phone.value),whatsapp:f.whatsapp.checked,email:f.email.value.trim(),website:f.website.value.trim(),bio:f.bio.value.trim(),consent:f.consent.checked,country:f.country.value,mods:myMods.slice(),photo:photoData||old.photo||null};
- const g=await geocode(p.address,p.city,p.country);if(!g){st.textContent="Could not find that place. Check the city name.";return}
+ let g=await geocode(p.address,p.city,p.country);let soft="";if(!g){g=[54.5,15.3,"none"];soft=" We couldn’t find the exact place, so your pin is approximate. You can edit the city any time."}else if(g[2]==="country"&&p.city)soft=" We couldn’t find “"+p.city+"”, so your pin is at the centre of "+p.country+".";
  Object.assign(p,{lat:g[0],lng:g[1]});p.locations=[{label:f.label.value.trim(),address:p.address,city:p.city,country:p.country,lat:g[0],lng:g[1]}];
  for(const b of $$("#extraLocs .xloc")){const l={label:b.querySelector("[data-k=label]").value.trim(),address:b.querySelector("[data-k=address]").value.trim(),city:b.querySelector("[data-k=city]").value.trim(),country:b.querySelector("[data-k=country]").value};
-  if(!l.city)continue;st.textContent="Locating "+l.city+"…";await new Promise(r=>setTimeout(r,1100));const gg=await geocode(l.address,l.city,l.country);if(!gg){st.textContent="Could not find "+l.city+". Check the city name.";return}l.lat=gg[0];l.lng=gg[1];p.locations.push(l)}
+  if(!l.city&&!l.country)continue;st.textContent="Locating "+l.city+"…";await new Promise(r=>setTimeout(r,1100));const gg=await geocode(l.address,l.city,l.country);if(!gg)continue;l.lat=gg[0];l.lng=gg[1];p.locations.push(l)}
  try{await DB.save(p);await refresh();
   const tip=p.consent?"":" Tip: tick “show publicly” so others can find you.";
-  st.textContent=`Saved ✓${tip}`;
+  st.textContent=`Saved ✓${soft}${tip}`;
   showToast("Saved ✓");
   didFit=true;
   show("map");
@@ -407,7 +419,7 @@ function tag(){const f=$("#profForm");$("#ccTag").textContent=ISO[f.country.valu
 
 // ===== extra locations (max 3 total) =====
 function xlocHtml(l={}){const opts=$("#profForm").country.innerHTML;return `<div class="xloc"><div class="xh"><b>Another location</b><button type="button" class="ghost sm xdel" aria-label="Remove">✕</button></div>
- <input data-k="label" hidden tabindex="-1" aria-hidden="true" maxlength="40"><input data-k="address" placeholder="Street address (optional)"><input data-k="city" placeholder="City" required><select data-k="country" required>${opts}</select></div>`}
+ <input data-k="label" hidden tabindex="-1" aria-hidden="true" maxlength="40"><input data-k="address" placeholder="Street address (optional)"><input data-k="city" placeholder="City (optional)"><select data-k="country" required>${opts}</select></div>`}
 function addXloc(l={}){const box=$("#extraLocs");if(box.children.length>=2)return;box.insertAdjacentHTML("beforeend",xlocHtml());const b=box.lastElementChild;
  ["label","address","city","country"].forEach(k=>b.querySelector(`[data-k=${k}]`).value=l[k]||"");b.querySelector(".xdel").onclick=()=>{b.remove();xbtn()};xbtn()}
 function xbtn(){$("#addLoc").hidden=$("#extraLocs").children.length>=2}
