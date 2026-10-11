@@ -272,3 +272,6 @@ body.in > main{overscroll-behavior:contain}
 .vx{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid #fff5;background:#fff1;color:#fff;font-size:18px}
 .vplayer{width:100%;aspect-ratio:16/9;background:#000}.vplayer iframe{width:100%;height:100%;border:0;display:block}
 .vyt{display:block;text-align:center;padding:14px;color:#C99E67;font-weight:600;text-decoration:none}
+/* v0.20.10: last row never hidden behind the tab bar; equal card heights */
+body.in #learn.screen,body.in #list.screen,body.in #profile.screen,body.in #log.screen{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px) + 24px)}
+.lgrid{align-items:stretch}.lcard{height:100%}.lbody{flex:1}.lfoot{margin-top:auto;padding-top:6px}
