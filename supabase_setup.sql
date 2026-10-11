@@ -62,6 +62,7 @@ create table if not exists public.sessions (
   initials text not null check (char_length(initials) between 1 and 4),
   date date not null,
   duration integer not null check (duration > 0),
+  format text not null default 'In person' check (format in ('In person','Online')),
   comment text,
   created_at timestamptz not null default now()
 );
@@ -97,3 +98,7 @@ create policy "recipient marks read" on public.messages for update to authentica
 revoke update on public.messages from authenticated, anon;
 grant update (read_at) on public.messages to authenticated;
 grant select, insert on public.messages to authenticated;
+
+-- If sessions already exists without format:
+-- alter table public.sessions add column if not exists format text;
+-- update public.sessions set format = 'In person' where format is null;
