@@ -203,3 +203,14 @@ html.safari-browser body.in > nav#tabs{padding-bottom:calc(10px + env(safe-area-
 .logoMark .logoRing{transform-box:fill-box;transform-origin:center;animation:logoSpin 14s linear infinite}
 @media(prefers-reduced-motion:reduce){.logoMark .logoRing{animation:none}}
 .biglogo.logoMark{width:150px;height:150px;filter:drop-shadow(0 0 18px #5FC9C355)}
+
+/* v0.17.4 session form grid */
+#sessForm .sessGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;margin-top:8px}
+#sessForm .sessCol{display:flex;flex-direction:column;gap:10px;min-width:0}
+#sessForm .lbl{margin:0}
+#sessForm .lbl input,
+#sessForm .lbl select{width:100%;height:56px;min-height:56px;box-sizing:border-box;padding:14px 12px;line-height:1.2;border-radius:10px;font:inherit}
+#sessForm .lbl select{-webkit-appearance:none;appearance:none;background-color:#02191E;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%23C99E67' d='M1 1l5 5 5-5'/></svg>");background-repeat:no-repeat;background-position:right 14px center;background-size:12px 8px;padding-right:36px;color:var(--tx)}
+#sessForm .sessComment{display:flex;flex-direction:column;gap:6px;margin-top:10px;width:100%}
+#sessForm .sessComment textarea{width:100%;min-height:72px;box-sizing:border-box;padding:14px 12px;border-radius:10px;resize:vertical}
+@media(max-width:360px){#sessForm .sessGrid{grid-template-columns:1fr}}
