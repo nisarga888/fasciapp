@@ -73,8 +73,12 @@ select[name=country]:invalid{color:#9fb3b5}
 .phone{display:flex;gap:6px;align-items:center;position:relative}.phone [name=prefix]{width:78px;flex:none}.phone [name=phone]{flex:1;min-width:0}
 .cc{position:absolute;left:58px;top:50%;transform:translateY(-50%);font-size:9px;color:#9fb3b5;pointer-events:none}
 .cbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.cb{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:16px;font-size:12px;font-weight:600;text-decoration:none!important;border:1px solid #C99E67;color:#C99E67!important}
-.cb.call{background:#C99E67;color:#02191E!important;border-color:#C99E67}.cb.wa{background:#0E7A6C;border-color:#0E7A6C;color:#fff!important}.cb.mail{background:#fff8ee;color:#4a3210!important;border-color:#C99E67}
+.cbsMsg{display:flex;margin-top:8px}
+.cbsRow{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;margin-top:6px}
+.cbsRow .cb{justify-content:center;width:100%;box-sizing:border-box}
+.cb{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:16px;font-size:12px;font-weight:600;text-decoration:none!important;border:1px solid #C99E67;color:#C99E67!important}
+.cb.wa{background:#0E7A6C;border-color:#0E7A6C;color:#fff!important}.cb.mail{background:#fff8ee;color:#4a3210!important;border-color:#C99E67}
+a.tel{color:var(--teal);text-decoration:underline;text-underline-offset:2px;font-weight:600}
 #mailBox{margin-bottom:12px}.grid2.wide{display:grid}
 .grid2 .full{grid-column:auto}
 
@@ -85,7 +89,13 @@ select[name=country]:invalid{color:#9fb3b5}
 
 footer.legal{text-align:center;font-size:11px;opacity:.7;padding:18px 10px 90px}footer.legal a{color:inherit}
 
-.cb.msg{background:#C99E67;color:#02191E!important;border:1px solid #C99E67;cursor:pointer;font:inherit;font-weight:700}.cb.msg svg{flex:none;display:block}
+.cb.msg{flex:1;width:100%;justify-content:center;background:#C99E67;color:#02191E!important;border:1px solid #C99E67;cursor:pointer;font:inherit;font-weight:700;padding:10px 14px;border-radius:14px;font-size:13px}
+.cb.msg .msgIc{position:relative;width:18px;height:18px;flex:none;display:inline-block}
+.cb.msg .msgRing{position:absolute;inset:0;color:#0a2a30;opacity:.85}
+.cb.msg .msgBub{position:absolute;left:50%;top:50%;width:13px;height:13px;transform:translate(-50%,-48%);stroke:#02191E}
+@keyframes msgRingSpin{to{transform:rotate(360deg)}}
+.cb.msg .msgRing{transform-origin:center;animation:msgRingSpin 10s linear infinite}
+@media(prefers-reduced-motion:reduce){.cb.msg .msgRing{animation:none}}
 .badge{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:#d9534f;color:#fff;font-size:11px;font-style:normal;line-height:18px;text-align:center}
 nav button{position:relative}nav .badge{position:absolute;top:2px;right:18%}
 .conv{cursor:pointer}

@@ -5,7 +5,7 @@ const LAST_EMAIL_KEY="fyp_last_email";
 function rememberEmail(em){try{if(em)localStorage.setItem(LAST_EMAIL_KEY,em)}catch(e){}}
 function lastEmail(){try{return localStorage.getItem(LAST_EMAIL_KEY)||""}catch(e){return""}}
 function fillLastEmail(){const el=$("#email");if(el&&!el.value)el.value=lastEmail()}
-var MSG_OK=false,msgs=[],chatWith=null,pollT=null,unsub=null;
+var MSG_OK=false,msgs=[],chatWith=null,pollT=null,unsub=null,pendingChat=null;
 let me=null,people=[],here=null,map,layer,threads,photoData=null,signUpMode=true,didFit=false,labelZoom=8,lastLabels=null;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const all=()=>DEMO.concat(people);
@@ -90,7 +90,7 @@ $("#resetForm").onsubmit=async e=>{e.preventDefault();const a=$("#newPw").value,
   try{const u=new URL(location.href);u.searchParams.delete("reset");history.replaceState({},"",u.pathname+u.search+u.hash.replace(/access_token=[^&]+/g,""))}catch(e){}
   hdr();await refresh();msgInit();setTimeout(()=>show("profile"),600)}catch(err){m.textContent=err.message||"Could not update password."}};
 $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please confirm you are 18+ and accept the Terms and Privacy Policy.";return}m.textContent="…";
- try{me=signUpMode?await DB.signUp(em,pw):await DB.signIn(em,pw);rememberEmail(em);m.textContent="";hdr();await refresh();msgInit();show("profile")}catch(err){m.textContent=err.message}};
+ try{me=signUpMode?await DB.signUp(em,pw):await DB.signIn(em,pw);rememberEmail(em);m.textContent="";hdr();await refresh();await msgInit();const next=pendingChat;pendingChat=null;if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
 
 // helpers
 function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(p.lng-from[1]);const a=Math.sin(dl/2)**2+Math.cos(r(from[0]))*Math.cos(r(p.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
@@ -115,9 +115,14 @@ function cardHead(p){const pn=String(p.practice_name||"").trim();return pn?`<b>$
 function link(u){if(!u)return"";const h=/^https?:\/\//.test(u)?u:"https://"+u;return `<a href="${esc(h)}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\//,""))}</a>`}
 function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</span>`).join("");
  const dg=String(p.phone||"").replace(/\D/g,"");
- const msgIc=`<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h11a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3H12l-3.2 2.8V17H4.5a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3z"/></svg>`;
- const btns=[MSG_OK&&p.user_id&&(!me||p.user_id!==me.user_id)&&`<button type="button" class="cb msg" data-msg="${esc(p.user_id)}">${msgIc} Message</button>`,p.phone&&`<a class="cb call" href="tel:${esc(p.phone)}">📞 Call</a>`,p.phone&&p.whatsapp&&dg&&`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`,p.email&&`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`].filter(Boolean).join("");
- const c=p.consent?(p.phone?`<br>${esc(p.phone)}`:"")+(p.website?`<br>🌐 ${link(p.website)}`:"")+(btns?`<div class="cbs">${btns}</div>`:""):"<br><i>Not public yet</i>";
+ const msgIc=`<span class="msgIc" aria-hidden="true"><svg class="msgRing" viewBox="0 0 24 24" width="16" height="16"><circle cx="20" cy="12" r="1.1" fill="currentColor"/><circle cx="17.7" cy="17.7" r="1.1" fill="currentColor"/><circle cx="12" cy="20" r="1.1" fill="currentColor"/><circle cx="6.3" cy="17.7" r="1.1" fill="currentColor"/><circle cx="4" cy="12" r="1.1" fill="currentColor"/><circle cx="6.3" cy="6.3" r="1.1" fill="currentColor"/><circle cx="12" cy="4" r="1.1" fill="currentColor"/><circle cx="17.7" cy="6.3" r="1.1" fill="currentColor"/></svg><svg class="msgBub" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h11a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3H12l-3.2 2.8V17H4.5a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3z"/></svg></span>`;
+ const canMsg=!!(p.user_id&&(!me||p.user_id!==me.user_id));
+ const msgBtn=canMsg?`<button type="button" class="cb msg" data-msg="${esc(p.user_id)}">${msgIc} Message on FasciApp</button>`:"";
+ const wa=p.phone&&p.whatsapp&&dg?`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`:"";
+ const mail=p.email?`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`:"";
+ const phone=p.phone?`<br><a class="tel" href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`:"";
+ const cbs=(msgBtn?`<div class="cbs cbsMsg">${msgBtn}</div>`:"")+(wa||mail?`<div class="cbs cbsRow">${wa}${mail}</div>`:"");
+ const c=p.consent?phone+(p.website?`<br>🌐 ${link(p.website)}`:"")+cbs:"<br><i>Not public yet</i>";
   return `<div class="row">${av(p)}<div>${cardHead(p)}<br>${pills}<br>${(p.locations&&p.locations.length?p.locations:[p]).map(l=>"📍 "+locTxt(l)).join("<br>")}${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
 function pinModsHtml(p){const mods=(p.mods||[]).map(m=>String(m||"").trim()).filter(Boolean);if(!mods.length)return"";
  const show=mods.slice(0,2),extra=mods.length-2;
@@ -422,7 +427,7 @@ function renderInbox(){const box=$("#convs");
  if(!MSG_OK){box.innerHTML="<p class=muted>Messaging is not available right now. Try again later.</p>";return}
  const cs=convs();box.innerHTML=cs.map(c=>{const p=all().find(x=>x.user_id===c.o)||{name:nameOf(c.o)};return `<div class="item conv" data-c="${esc(c.o)}"><div class="row">${av(p)}<div><b>${esc(p.name)}</b>${c.un?` <span class="badge">${c.un}</span>`:""}<br><small class=muted>${esc(c.last.body.slice(0,80))}</small></div></div></div>`}).join("")||"<p class=muted>No messages yet. Open a practitioner on the map and tap Message.</p>";
  $$("#convs .conv").forEach(d=>d.onclick=()=>openChat(d.dataset.c))}
-async function openChat(id){if(!me){show("auth");return}chatWith=id;$("#chatName").textContent=nameOf(id);$("#chat").hidden=false;renderChat();$("#chatTxt").focus();
+async function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;chatWith=id;$("#chatName").textContent=nameOf(id);$("#chat").hidden=false;renderChat();$("#chatTxt").focus();
  if(DB.onMsg&&!unsub)unsub=DB.onMsg(()=>pullMsgs());clearInterval(pollT);pollT=setInterval(pullMsgs,20000);
  if(msgs.some(m=>m.sender===id&&m.recipient===me.user_id&&!m.read_at)){try{await DB.markRead(id)}catch(e){}await pullMsgs()}}
 function closeChat(){chatWith=null;$("#chat").hidden=true;clearInterval(pollT);pollT=null}
