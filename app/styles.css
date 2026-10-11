@@ -275,3 +275,10 @@ body.in > main{overscroll-behavior:contain}
 /* v0.20.10: last row never hidden behind the tab bar; equal card heights */
 body.in #learn.screen,body.in #list.screen,body.in #profile.screen,body.in #log.screen{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px) + 24px)}
 .lgrid{align-items:stretch}.lcard{height:100%}.lbody{flex:1}.lfoot{margin-top:auto;padding-top:6px}
+/* v0.22 What's new card + Lab dot */
+.newsSlot{flex:none}.newsSlot:empty{display:none}
+.newsCard{position:relative;background:linear-gradient(135deg,#0d3a40,#0a2a30);border:1px solid #C99E6766;border-radius:16px;padding:10px 44px 10px 14px;margin:0 0 10px}
+.newsCard small{color:#5FC9C3;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}.newsCard p{margin:3px 0 8px;font-size:15px;font-weight:600;line-height:1.3}
+.newsGo{background:#C99E67;color:#02191E;border:0;border-radius:18px;padding:7px 14px;font:inherit;font-weight:700;font-size:13px}
+.newsX{position:absolute;right:6px;top:6px;width:36px;height:36px;border-radius:50%;border:0;background:#ffffff14;color:#cfdcdc;font-size:14px}
+nav#tabs .ndot{position:absolute;top:calc(50% - 22px);right:calc(50% - 19px);width:9px;height:9px;border-radius:50%;background:#C99E67;box-shadow:0 0 0 2px #011114}
