@@ -1,6 +1,7 @@
 const CITY={tallinn:[59.437,24.7536],warsaw:[52.2297,21.0122],warszawa:[52.2297,21.0122],krakow:[50.0647,19.945],"kraków":[50.0647,19.945],kielce:[50.8661,20.6286],berlin:[52.52,13.405],lesvos:[39.2645,26.2777],mytilene:[39.1047,26.5552]};
 const DEMO=[];
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+let MSG_OK=false,msgs=[],chatWith=null,pollT=null,unsub=null;
 let me=null,people=[],here=null,map,layer,photoData=null,signUpMode=true;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const all=()=>DEMO.concat(people);
@@ -11,8 +12,8 @@ $("#modAdd").onclick=addTag;$("#modNew").onkeydown=e=>{if(e.key==="Enter"){e.pre
 function fillFilter(){const f=$("#filter"),v=f.value,set=[...new Set(SUG.concat(all().flatMap(p=>p.mods||[])))];f.innerHTML=`<option value="">All practices</option>`+set.map(m=>`<option${m===v?" selected":""}>${esc(m)}</option>`).join("")}
 
 function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
- $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));if(t==="map"){initMap();setTimeout(()=>map.invalidateSize(),50)}if(t==="list")renderList();if(t==="profile")loadProf();if(t==="log")loadLog();window.scrollTo(0,0)}
-function hdr(){$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
+ $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));if(t==="map"){initMap();setTimeout(()=>map.invalidateSize(),50)}if(t==="list")renderList();if(t==="profile")loadProf();if(t==="log")loadLog();if(t==="inbox")renderInbox();window.scrollTo(0,0)}
+function hdr(){$("#tabInbox").hidden=!(MSG_OK&&me);$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 async function refresh(){try{people=await DB.list()}catch(e){console.warn(e);people=[]}fillFilter();renderMarkers();renderList()}
 
 // navigation
@@ -21,7 +22,7 @@ $("#goPract").onclick=()=>me?show("profile"):show("auth");
 $$("[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.go));
 $$("nav button").forEach(b=>b.onclick=()=>show(b.dataset.t));
 $("#hIn").onclick=()=>show("auth");$("#hEdit").onclick=()=>show("profile");
-async function logout(){await DB.signOut();me=null;photoData=null;hdr();await refresh();show("splash")}
+async function logout(){await DB.signOut();me=null;msgs=[];closeChat();photoData=null;hdr();await refresh();show("splash")}
 $("#hOut").onclick=logout;$("#pOut").onclick=logout;
 
 // auth
@@ -30,7 +31,7 @@ function setMode(up){signUpMode=up;$("#tabUp").classList.toggle("on",up);$("#tab
  $("#pw").autocomplete=up?"new-password":"current-password";$("#agreeL").hidden=!up}
 $("#tabUp").onclick=()=>setMode(true);$("#tabIn").onclick=()=>setMode(false);
 $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please agree to the Terms and Privacy Policy.";return}m.textContent="…";
- try{me=signUpMode?await DB.signUp(em,pw):await DB.signIn(em,pw);m.textContent="";hdr();await refresh();show("profile")}catch(err){m.textContent=err.message}};
+ try{me=signUpMode?await DB.signUp(em,pw):await DB.signIn(em,pw);m.textContent="";hdr();await refresh();msgInit();show("profile")}catch(err){m.textContent=err.message}};
 
 // helpers
 function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(p.lng-from[1]);const a=Math.sin(dl/2)**2+Math.cos(r(from[0]))*Math.cos(r(p.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
@@ -43,7 +44,7 @@ function av(p,cls=""){return p.photo?`<img class="av ${cls}" src="${esc(p.photo)
 function link(u){if(!u)return"";const h=/^https?:\/\//.test(u)?u:"https://"+u;return `<a href="${esc(h)}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\//,""))}</a>`}
 function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</span>`).join("");
  const dg=String(p.phone||"").replace(/\D/g,"");
- const btns=[p.phone&&`<a class="cb call" href="tel:${esc(p.phone)}">📞 Call</a>`,p.phone&&p.whatsapp&&dg&&`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`,p.email&&`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`].filter(Boolean).join("");
+ const btns=[MSG_OK&&p.user_id&&(!me||p.user_id!==me.user_id)&&`<button type="button" class="cb msg" data-msg="${esc(p.user_id)}">💬 Message</button>`,p.phone&&`<a class="cb call" href="tel:${esc(p.phone)}">📞 Call</a>`,p.phone&&p.whatsapp&&dg&&`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`,p.email&&`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`].filter(Boolean).join("");
  const c=p.consent?(p.phone?`<br>${esc(p.phone)}`:"")+(p.website?`<br>🌐 ${link(p.website)}`:"")+(btns?`<div class="cbs">${btns}</div>`:""):"<br><i>Not public yet</i>";
   return `<div class="row">${av(p)}<div><b>${esc(p.name)}</b><br>${pills}<br>${(p.locations&&p.locations.length?p.locations:[p]).map(l=>"📍 "+locTxt(l)).join("<br>")}${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
 
@@ -90,7 +91,7 @@ $("#photo").onchange=e=>{const file=e.target.files[0];if(!file)return;const r=ne
  c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,s,s);photoData=c.toDataURL("image/jpeg",.85);$("#phPrev").src=photoData;$("#phPrev").hidden=false};im.src=r.result};r.readAsDataURL(file)};
 
 // start
-(async()=>{$("#demoBanner").hidden=DB.mode!=="local";me=await DB.session().catch(()=>null);hdr();await refresh()})();
+(async()=>{$("#demoBanner").hidden=DB.mode!=="local";me=await DB.session().catch(()=>null);hdr();await refresh();msgInit()})();
 
 // ===== Session log =====
 const GOAL=60;let sess=[],editId=null;
@@ -166,3 +167,27 @@ function addXloc(l={}){const box=$("#extraLocs");if(box.children.length>=2)retur
 function xbtn(){$("#addLoc").hidden=$("#extraLocs").children.length>=2}
 function setExtra(ls){$("#extraLocs").innerHTML="";ls.slice(0,2).forEach(addXloc);xbtn()}
 $("#addLoc").onclick=()=>addXloc();
+
+// ===== in-app messages =====
+const nameOf=id=>{const p=all().find(x=>x.user_id===id);return p?p.name:"FasciApp member"};
+async function msgInit(){try{MSG_OK=!!(DB.msgOk&&await DB.msgOk())}catch(e){MSG_OK=false}hdr();renderMarkers();renderList();if(MSG_OK&&me)await pullMsgs()}
+async function pullMsgs(){if(!MSG_OK||!me)return;try{msgs=await DB.msgs()}catch(e){return}
+ const un=msgs.filter(m=>m.recipient===me.user_id&&!m.read_at).length;const b=$("#unread");b.textContent=un;b.hidden=!un;
+ if(chatWith)renderChat();if($("#inbox").classList.contains("active"))renderInbox()}
+function convs(){const c={};msgs.forEach(m=>{const o=m.sender===me.user_id?m.recipient:m.sender;(c[o]=c[o]||[]).push(m)});
+ return Object.entries(c).map(([o,l])=>({o,last:l[l.length-1],un:l.filter(m=>m.recipient===me.user_id&&!m.read_at).length})).sort((a,b)=>b.last.created_at.localeCompare(a.last.created_at))}
+function renderInbox(){const box=$("#convs");if(!me){box.innerHTML="<p class=muted>Sign in to see your messages.</p>";return}
+ const cs=convs();box.innerHTML=cs.map(c=>{const p=all().find(x=>x.user_id===c.o)||{name:nameOf(c.o)};return `<div class="item conv" data-c="${esc(c.o)}"><div class="row">${av(p)}<div><b>${esc(p.name)}</b>${c.un?` <span class="badge">${c.un}</span>`:""}<br><small class=muted>${esc(c.last.body.slice(0,80))}</small></div></div></div>`}).join("")||"<p class=muted>No messages yet. Open a practitioner on the map and tap 💬 Message.</p>";
+ $$("#convs .conv").forEach(d=>d.onclick=()=>openChat(d.dataset.c))}
+async function openChat(id){if(!me){show("auth");return}chatWith=id;$("#chatName").textContent=nameOf(id);$("#chat").hidden=false;renderChat();$("#chatTxt").focus();
+ if(DB.onMsg&&!unsub)unsub=DB.onMsg(()=>pullMsgs());clearInterval(pollT);pollT=setInterval(pullMsgs,20000);
+ if(msgs.some(m=>m.sender===id&&m.recipient===me.user_id&&!m.read_at)){try{await DB.markRead(id)}catch(e){}await pullMsgs()}}
+function closeChat(){chatWith=null;$("#chat").hidden=true;clearInterval(pollT);pollT=null}
+function renderChat(){const l=msgs.filter(m=>(m.sender===chatWith&&m.recipient===me.user_id)||(m.recipient===chatWith&&m.sender===me.user_id));
+ const b=$("#chatLog");b.innerHTML=l.map(m=>`<div class="bub ${m.sender===me.user_id?"me":"them"}">${esc(m.body)}<small>${new Date(m.created_at).toLocaleString([], {dateStyle:"short",timeStyle:"short"})}</small></div>`).join("")||"<p class='muted center'>Say hello 👋</p>";b.scrollTop=b.scrollHeight;
+ if(l.some(m=>m.sender===chatWith&&!m.read_at))DB.markRead(chatWith).catch(()=>{})}
+document.addEventListener("click",e=>{const t=e.target.closest("[data-msg]");if(t){e.preventDefault();openChat(t.dataset.msg)}});
+$("#chatX").onclick=closeChat;
+$("#chatForm").onsubmit=async e=>{e.preventDefault();const t=$("#chatTxt"),v=t.value.trim().slice(0,1000);if(!v)return;$("#chatErr").textContent="";
+ try{await DB.sendMsg(chatWith,v);t.value="";await pullMsgs()}catch(err){$("#chatErr").textContent="Could not send: "+err.message}};
+setInterval(()=>{if(!document.hidden&&!chatWith)pullMsgs()},60000);

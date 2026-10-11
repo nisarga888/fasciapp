@@ -1,0 +1,20 @@
+{
+  "name": "fasciapp-repo",
+  "version": "1.0.0",
+  "description": "Demo prototype – Integral Body Institute. Fascia connects us all.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nisarga888/fasciapp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nisarga888/fasciapp/issues"
+  },
+  "homepage": "https://github.com/nisarga888/fasciapp#readme"
+}

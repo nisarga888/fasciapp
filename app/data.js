@@ -27,7 +27,8 @@ const local={mode:"local",
  async sessions(){const s=await this.session();if(!s)return[];return (LS.get("fyp_sessions",{})[s.user_id]||[]).slice().sort(cmp)},
  async saveSession(x){const s=await this.session();const all=LS.get("fyp_sessions",{}),l=all[s.user_id]||[];const i=l.findIndex(r=>r.id===x.id);
   const row={...pickS(x),id:x.id||crypto.randomUUID(),user_id:s.user_id,created_at:i>=0?l[i].created_at:new Date().toISOString()};if(i>=0)l[i]=row;else l.push(row);all[s.user_id]=l;LS.set("fyp_sessions",all);return row},
- async deleteSession(id){const s=await this.session();const all=LS.get("fyp_sessions",{});all[s.user_id]=(all[s.user_id]||[]).filter(r=>r.id!==id);LS.set("fyp_sessions",all)}};
+ async deleteSession(id){const s=await this.session();const all=LS.get("fyp_sessions",{});all[s.user_id]=(all[s.user_id]||[]).filter(r=>r.id!==id);LS.set("fyp_sessions",all)},
+ async msgOk(){return false}};
 
 let noLocCol=false;
 function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
@@ -48,7 +49,12 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   async sessions(){const s=await sess();if(!s)return[];return chk(await sb.from("sessions").select("*").eq("user_id",s.user_id)).sort(cmp)},
   async saveSession(x){const s=await sess();const row={...pickS(x),user_id:s.user_id};
    return x.id?chk(await sb.from("sessions").update(row).eq("id",x.id).select().single()):chk(await sb.from("sessions").insert(row).select().single())},
-  async deleteSession(id){chk(await sb.from("sessions").delete().eq("id",id))}};
+  async deleteSession(id){chk(await sb.from("sessions").delete().eq("id",id))},
+  async msgOk(){const r=await sb.from("messages").select("id").limit(1);return !r.error},
+  async msgs(){const s=await sess();if(!s)return[];return chk(await sb.from("messages").select("*").or(`sender.eq.${s.user_id},recipient.eq.${s.user_id}`).order("created_at").limit(1000))},
+  async sendMsg(to,body){const s=await sess();return chk(await sb.from("messages").insert({sender:s.user_id,recipient:to,body}).select().single())},
+  async markRead(from){const s=await sess();chk(await sb.from("messages").update({read_at:new Date().toISOString()}).eq("recipient",s.user_id).eq("sender",from).is("read_at",null))},
+  onMsg(cb){try{const ch=sb.channel("msgs").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},cb).subscribe();return ()=>sb.removeChannel(ch)}catch(e){return ()=>{}}}};
 }
 window.DB=(cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY&&window.supabase)?supa():local;
 })();

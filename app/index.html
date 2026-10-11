@@ -51,6 +51,9 @@
   <button type="button" id="pOut" class="ghost">Log out</button>
  </form>
 </section>
+<section id="inbox" class="screen"><h2>Messages</h2><div id="convs"></div></section>
+<div id="chat" class="chat" hidden><div class="chatH"><b id="chatName"></b><button type="button" id="chatX" class="ghost sm" aria-label="Close">✕</button></div>
+ <div id="chatLog" class="chatLog"></div><form id="chatForm" class="chatF"><textarea id="chatTxt" rows="2" maxlength="1000" placeholder="Write a message…"></textarea><button class="gold">Send</button></form><p id="chatErr" class="msg"></p></div>
 <section id="log" class="screen"><h2>Session log</h2>
  <div id="logNeed" class="card center" hidden><p>Sign in as a practitioner to keep your training session log.</p><button class="gold big1" data-go="auth">Sign in / Create account</button></div>
  <div id="logBox" hidden>
@@ -78,7 +81,7 @@
 </section>
 </main>
 <footer class="legal">© 2026 Integral Body Institute. All rights reserved.<br><a href="../terms.html">Terms and Conditions</a> · <a href="../privacy.html">Privacy Policy</a></footer>
-<nav id="tabs"><button data-t="map">🗺<span>Map</span></button><button data-t="list">☰<span>List</span></button><button data-t="profile">👤<span>My profile</span></button><button data-t="log">✎<span>Log</span></button></nav>
+<nav id="tabs"><button data-t="map">🗺<span>Map</span></button><button data-t="list">☰<span>List</span></button><button data-t="profile">👤<span>My profile</span></button><button data-t="inbox" id="tabInbox" hidden>💬<span>Inbox</span><i id="unread" class="badge" hidden>0</i></button><button data-t="log">✎<span>Log</span></button></nav>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>

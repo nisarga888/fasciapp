@@ -84,3 +84,14 @@ select[name=country]:invalid{color:#9fb3b5}
 #addLoc{margin:6px 0}
 
 footer.legal{text-align:center;font-size:11px;opacity:.7;padding:18px 10px 90px}footer.legal a{color:inherit}
+
+.cb.msg{background:#2a9d96;color:#fff;border:0;cursor:pointer;font:inherit}
+.badge{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:#d9534f;color:#fff;font-size:11px;font-style:normal;line-height:18px;text-align:center}
+nav button{position:relative}nav .badge{position:absolute;top:2px;right:18%}
+.conv{cursor:pointer}
+.chat{position:fixed;left:8px;right:8px;bottom:70px;max-width:480px;margin:auto;max-height:70vh;display:flex;flex-direction:column;background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.3);z-index:2000;padding:10px}
+.chat[hidden]{display:none}.chatH{display:flex;justify-content:space-between;align-items:center;padding:4px 6px}
+.chatLog{flex:1;overflow:auto;padding:6px;display:flex;flex-direction:column;gap:6px;min-height:120px}
+.bub{max-width:80%;padding:7px 10px;border-radius:12px;white-space:pre-wrap;word-break:break-word}.bub small{display:block;font-size:10px;opacity:.6}
+.bub.me{align-self:flex-end;background:#C99E67;color:#02191e}.bub.them{align-self:flex-start;background:#e8f3f2}
+.chatF{display:flex;gap:6px}.chatF textarea{flex:1;margin:0}
