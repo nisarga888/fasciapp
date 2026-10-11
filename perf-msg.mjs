@@ -5,6 +5,9 @@ const url=process.argv[2];const b=await chromium.launch({executablePath:'/usr/bi
 const c=await b.newContext({...devices['iPhone 13'],serviceWorkers:'block'});const p=await c.newPage();
 const cdp=await c.newCDPSession(p);await cdp.send('Network.enable');await cdp.send('Network.emulateNetworkConditions',{offline:false,latency:150,downloadThroughput:1.6e6/8*4,uploadThroughput:750e3/8*4});
 let bytes={};cdp.on('Network.loadingFinished',e=>{bytes[e.requestId]=e.encodedDataLength});
+// Never send a real message: fake the insert with a realistic 4G round-trip (600 ms).
+await p.route(/\/rest\/v1\/messages/,async r=>{if(r.request().method()!=='POST')return r.continue();const b=r.request().postDataJSON();await new Promise(x=>setTimeout(x,600));
+ r.fulfill({status:201,contentType:'application/json',body:JSON.stringify({id:'00000000-0000-4000-8000-'+String(Date.now()).slice(-12),...b,created_at:new Date().toISOString(),read_at:null})})});
 const t0=Date.now();await p.goto(url,{waitUntil:'load'});const load=Date.now()-t0;
 await p.waitForFunction(()=>document.querySelectorAll('.leaflet-marker-icon,.item').length>0||true);await p.waitForTimeout(2500);
 const kB=Math.round(Object.values(bytes).reduce((a,b)=>a+b,0)/1024);
@@ -14,7 +17,10 @@ let s=Date.now();await p.click('nav#tabs button[data-t=inbox]');await p.waitForF
 const me=await p.evaluate(()=>me.user_id);
 await p.evaluate(id=>openChat(id),me);await p.waitForTimeout(800);
 const before=await p.evaluate(()=>document.querySelectorAll('#chatLog .bub').length);
-s=Date.now();await p.fill('#chatTxt','perf test '+new Date().toISOString());await p.press('#chatTxt','Enter');
-await p.waitForFunction(n=>document.querySelectorAll('#chatLog .bub').length>n,before,{timeout:20000});const send=Date.now()-s;
+const txt='perf test '+Date.now();await p.fill('#chatTxt',txt);
+const getDone=p.waitForResponse(r=>/rest\/v1\/messages/.test(r.url())&&r.request().method()==='GET',{timeout:20000}).catch(()=>null);
+s=Date.now();await p.click('#chatForm button');
+// new app: bubble appears; old app: shows it only after insert + full refetch of messages
+await Promise.race([p.waitForFunction(t=>document.getElementById('chatLog').textContent.includes(t),txt,{timeout:20000}),getDone.then(r=>r&&r.finished())]);const send=Date.now()-s;
 s=Date.now();await p.click('#chatX');await p.click('nav#tabs button[data-t=map]');await p.waitForFunction(()=>document.getElementById('map').classList.contains('active'));const tab=Date.now()-s;
 console.log(JSON.stringify({load_ms:load,first_load_kB:kB,inbox_open_ms:inbox,send_visible_ms:send,tab_switch_ms:tab}));await b.close();
