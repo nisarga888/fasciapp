@@ -50,11 +50,14 @@ const local={mode:"local",
 
 
 let noLocCol=false,noPracticeCol=false,noFormatCol=false;
-function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY,{
+  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage,storageKey:"fasciapp-auth"}
+ });
  const sess=async()=>{const {data}=await sb.auth.getSession();const u=data.session?.user;return u?{user_id:u.id,email:u.email}:null};
  const chk=({data,error})=>{if(error)throw new Error(error.message);return data};
  // Probe once whether practice_name column exists (anon can SELECT).
- (async()=>{try{const r=await sb.from("practitioners").select("practice_name").limit(1);if(r.error&&/practice_name/.test(r.error.message||"")){noPracticeCol=true;console.warn("FasciApp: run `alter table public.practitioners add column if not exists practice_name text;` — storing practice_name inside locations jsonb for now")}}catch(e){}})();
+ (async()=>{try{const r=await sb.from("practitioners").select("practice_name").limit(1);if(r.error&&/practice_name/.test(r.error.message||"")){noPracticeCol=true;console.warn("FasciApp: run `alter table public.practitioners add column if not exists practice_name text;` — storing practice_name inside locations jsonb for now")}}catch(e){}
+  try{const r=await sb.from("sessions").select("format").limit(1);if(r.error&&/format/i.test(r.error.message||"")){noFormatCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists format text;` — packing format into comment for now")}}catch(e){}})();
  return {mode:"supabase",
   session:sess,
   async signUp(email,pw){const d=chk(await sb.auth.signUp({email,password:pw}));if(!d.session)throw new Error("Account created. Check your email to confirm it, then sign in.");return sess()},
@@ -91,7 +94,7 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
    let row={...base,user_id:s.user_id};
    if(noFormatCol){row={...row,comment:packComment(base.format,base.comment)};delete row.format}
    let r=await write(row);
-   if(r.error&&/format/i.test(r.error.message||"")){noFormatCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists format text;` — packing format into comment for now");
+   if(r.error&&(/format/i.test(r.error.message||"")||/Could not find.*column/i.test(r.error.message||""))){noFormatCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists format text;` — packing format into comment for now");
     row={...base,user_id:s.user_id,comment:packComment(base.format,base.comment)};delete row.format;r=await write(row)}
    return unpackSession(chk(r))},
   async deleteSession(id){chk(await sb.from("sessions").delete().eq("id",id))},
