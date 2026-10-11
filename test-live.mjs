@@ -177,16 +177,16 @@ async function main() {
 
   // Map markers: filter by name via evaluating pins of our person vs markers
   await page2.click('nav button[data-t=map]');
-  await page2.waitForTimeout(500);
-  const mapCheck = await page2.evaluate((name) => {
-    const p = (window.people || []).find(x => x.name === name);
-    const pinFn = window.pins || ((pp) => (pp.locations && pp.locations.length ? pp.locations : [pp]).filter(l => l.lat != null));
-    // pins is not on window — reimplement
-    const locs = (p?.locations && p.locations.length ? p.locations : [p]).filter(l => l && l.lat != null);
+  await page2.waitForTimeout(800);
+  const mapCheck = await page2.evaluate(async (name) => {
+    const list = await window.DB.list();
+    const p = list.find(x => x.name === name);
+    const locs = (p?.locations && p.locations.length ? p.locations : []).filter(l => l && l.lat != null);
     return { found: !!p, pinCount: locs.length, markerDom: document.querySelectorAll('.leaflet-marker-icon').length };
   }, NAME);
   log('map', mapCheck);
   if (!mapCheck.found || mapCheck.pinCount < 2) fail('map pins missing in data', mapCheck);
+  if (mapCheck.markerDom < 2) fail('expected >=2 map markers', mapCheck);
 
   // Re-login, verify session persists
   await page2.click('#hIn');

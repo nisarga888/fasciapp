@@ -22,6 +22,10 @@ create table if not exists public.practitioners (
 -- for databases created before v0.5:
 alter table public.practitioners add column if not exists whatsapp boolean not null default false;
 
+-- v0.8: up to 3 work locations [{label,address,city,country,lat,lng}, ...]
+alter table public.practitioners add column if not exists locations jsonb;
+
+
 -- v0.7: open modality tags are stored in mods text[]
 
 alter table public.practitioners enable row level security;
