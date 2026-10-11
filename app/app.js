@@ -9,7 +9,11 @@ const SUG=['MER', 'BBTRS', 'Biodynamic Breathwork', 'Breathwork', 'Massage', 'Cr
 function renderTags(){const set=[...new Set(SUG.concat(myMods))];$("#modBox").innerHTML=set.map(m=>`<button type="button" class="tag${myMods.includes(m)?" on":""}" data-m="${esc(m)}">${esc(m)}</button>`).join("");$$("#modBox .tag").forEach(b=>b.onclick=()=>{const m=b.dataset.m;myMods=myMods.includes(m)?myMods.filter(x=>x!==m):myMods.concat(m);renderTags()})}
 function addTag(){const v=$("#modNew").value.trim().replace(/\s+/g," ");if(v&&!myMods.some(x=>x.toLowerCase()===v.toLowerCase()))myMods.push(v);$("#modNew").value="";renderTags()}
 $("#modAdd").onclick=addTag;$("#modNew").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addTag()}};
-function fillFilter(){const f=$("#filter"),v=f.value,set=[...new Set(SUG.concat(all().flatMap(p=>p.mods||[])))];f.innerHTML=`<option value="">All practices</option>`+set.map(m=>`<option${m===v?" selected":""}>${esc(m)}</option>`).join("")}
+function fillFilter(){const set=[...new Set(SUG.concat(all().flatMap(p=>p.mods||[])))];
+ const opts=`<option value="">All practices</option>`+set.map(m=>`<option>${esc(m)}</option>`).join("");
+ const v=($("#filter")&&$("#filter").value)||($("#listFilter")&&$("#listFilter").value)||"";
+ [["filter"],["listFilter"]].forEach(([id])=>{const el=$(`#${id}`);if(!el)return;el.innerHTML=opts;if([...el.options].some(o=>o.value===v||o.textContent===v))el.value=v})}
+function syncModFilter(fromId){const src=$(`#${fromId}`);if(!src)return;const v=src.value;["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(el&&el!==src)el.value=v});renderMarkers();renderList()}
 
 window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();if(t==="profile")loadProf();if(t==="log")loadLog();if(t==="inbox")renderInbox();window.scrollTo(0,0)}
@@ -57,7 +61,12 @@ function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(
 function dist(p,from=here){if(!from)return null;const ds=pins(p).map(l=>dist1(l,from));return ds.length?Math.min(...ds):null}
 const pins=p=>(p.locations&&p.locations.length?p.locations:[p]).filter(l=>l.lat!=null);
 const locTxt=l=>[l.city,l.country].filter(Boolean).join(", ");
-function filtered(){const f=$("#filter").value;return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f)))}
+function fold(s){try{return String(s||"").normalize("NFD").replace(/\p{M}/gu,"").toLowerCase()}catch(e){return String(s||"").toLowerCase()}}
+function placeHit(p,q){if(!q)return true;const locs=(p.locations&&p.locations.length)?p.locations:[p];
+ return locs.some(l=>fold([l.city,l.country,l.address,l.label].filter(Boolean).join(" ")).includes(q))}
+function placeQ(){const el=$("#qPlace");return fold(el?el.value.trim():"")}
+function filtered(){const f=($("#filter")&&$("#filter").value)||($("#listFilter")&&$("#listFilter").value)||"";const q=placeQ();
+ return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f))&&placeHit(p,q))}
 function initials(n){return String(n||"?").split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase()}
 function av(p,cls=""){return p.photo?`<img class="av ${cls}" src="${esc(p.photo)}" alt="">`:`<span class="av ${cls}">${esc(initials(p.name))}</span>`}
 function practiceTitle(p){return String(p.practice_name||"").trim()||String(p.name||"").trim()||"Practitioner"}
@@ -160,7 +169,11 @@ function renderMarkers(){count();if(!layer)return;layer.clearLayers();if(threads
  if(layer.addLayers)layer.addLayers(ms);else ms.forEach(m=>m.addTo(layer));
  if(here)L.circleMarker(here,{radius:7,color:"#fff",weight:3,fillColor:"#2a9d96",fillOpacity:1}).bindPopup("You are here").addTo(threads||layer);
  if(ps.length&&!didFit)fitPins(true)}
-$("#filter").onchange=()=>{renderMarkers();renderList()};
+$("#filter")&&($("#filter").onchange=()=>syncModFilter("filter"));
+$("#listFilter")&&($("#listFilter").onchange=()=>syncModFilter("listFilter"));
+$("#qPlace")&&($("#qPlace").oninput=()=>{renderList()});
+$("#listClear")&&($("#listClear").onclick=()=>{const q=$("#qPlace");if(q)q.value="";["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(el)el.value=""});renderMarkers();renderList()});
+$("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show("map");didFit=false;setTimeout(()=>{fitPins(true);map&&map.invalidateSize()},100)});
 function geoOnce(){return new Promise(resolve=>{if(!navigator.geolocation||!window.isSecureContext)return resolve(null);
   navigator.geolocation.getCurrentPosition(pos=>resolve([pos.coords.latitude,pos.coords.longitude]),()=>resolve(null),{enableHighAccuracy:false,timeout:8000,maximumAge:3e5})})}
 async function ipLoc(){for(const url of["https://ipapi.co/json/","https://get.geojs.io/v1/ip/geo.json"]){try{const ctrl=typeof AbortController!=="undefined"?new AbortController():null;const t=ctrl?setTimeout(()=>ctrl.abort(),4500):null;const r=await fetch(url,ctrl?{signal:ctrl.signal}:{});if(t)clearTimeout(t);if(!r.ok)continue;const j=await r.json();const lat=+(j.latitude??j.lat),lng=+(j.longitude??j.lng??j.lon);if(Number.isFinite(lat)&&Number.isFinite(lng))return[lat,lng]}catch(e){}}return null}
@@ -187,8 +200,11 @@ $("#nearCity")&&($("#nearCity").onsubmit=async e=>{e.preventDefault();const f=e.
  m.textContent="Looking up "+city+"…";const g=await geocode("",city,"");if(!g){m.textContent="Could not find that city. Try another spelling.";showToast("City not found");return}
  applyNear(g[0],g[1])});
 function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));if(here)ps.sort((a,b)=>a.d-b.d);
+ const n=ps.length,q=($("#qPlace")&&$("#qPlace").value.trim())||"",mod=($("#listFilter")&&$("#listFilter").value)||($("#filter")&&$("#filter").value)||"";
+ const lc=$("#listCount");if(lc)lc.textContent=n?`${n} practitioner${n===1?"":"s"}`:"No practitioners";
+ const clr=$("#listClear");if(clr)clr.hidden=!(q||mod);
  $("#from").textContent=here?"Sorted by distance from you":"Tap 📍 Near me on the map to sort by distance";
- $("#items").innerHTML=ps.map(({p,d})=>`<div class="item">${d!=null?`<span class="d">${Math.round(d)} km</span>`:""}${card(p)}</div>`).join("")||"<p class=muted>No practitioners here yet.</p>"}
+ $("#items").innerHTML=ps.map(({p,d})=>`<div class="item">${d!=null?`<span class="d">${Math.round(d)} km</span>`:""}${card(p)}</div>`).join("")||"<p class=muted>No practitioners match your search.</p>"}
 
 // profile
 async function loadProf(){waTouched=false;$("#needLogin").hidden=!!me;$("#profForm").hidden=!me;if(!me)return;myMods=[];renderTags();setExtra([]);$("#who").textContent="Signed in as "+me.email;

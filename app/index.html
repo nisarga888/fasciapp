@@ -62,7 +62,19 @@
  </form>
  <div id="count" class="count"></div><div id="leaf"></div>
 </section>
-<section id="list" class="screen"><h2>Practitioners</h2><p id="from" class="muted"></p><div id="items"></div></section>
+<section id="list" class="screen"><h2>Practitioners</h2>
+ <div id="listSearch" class="listSearch">
+  <input id="qPlace" type="search" placeholder="City or country" autocomplete="address-level2" enterkeyhint="search">
+  <select id="listFilter" aria-label="Practice modality"><option value="">All practices</option></select>
+  <div class="listSearchMeta">
+   <span id="listCount" class="muted">0 practitioners</span>
+   <span class="listSearchActs">
+    <button type="button" id="listClear" class="ghost sm" hidden>Clear</button>
+    <button type="button" id="listToMap" class="gold sm">Show on map</button>
+   </span>
+  </div>
+ </div>
+ <p id="from" class="muted"></p><div id="items"></div></section>
 <section id="profile" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><h2>My practitioner profile</h2>
  <div id="needLogin" class="card center" hidden><p>Sign in or create an account to add yourself to the map.</p><button class="gold big1" data-go="auth">Sign in / Create account</button></div>
  <form id="profForm" class="card" hidden>

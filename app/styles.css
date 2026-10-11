@@ -179,3 +179,10 @@ html.safari-browser body.in > nav#tabs{padding-bottom:calc(10px + env(safe-area-
 .nearCity .row2{display:flex;gap:8px;align-items:center;margin-top:6px}
 .nearCity input{flex:1;min-width:0}
 .nearCity .msg{margin:6px 0 0;font-size:13px;color:var(--mut)}
+
+/* v0.15 list search */
+.listSearch{position:sticky;top:0;z-index:5;margin:0 -16px 12px;padding:10px 16px 12px;background:linear-gradient(#02191ef8 70%,#02191e00);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.listSearch #qPlace,.listSearch #listFilter{width:100%;margin:0 0 8px;box-sizing:border-box}
+.listSearchMeta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.listSearchActs{display:flex;gap:8px;align-items:center}
+#listCount{font-size:13px}
