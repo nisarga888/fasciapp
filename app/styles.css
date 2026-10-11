@@ -224,3 +224,10 @@ html.safari-browser body.in > nav#tabs{padding-bottom:calc(10px + env(safe-area-
 #sessForm .sessComment{display:flex;flex-direction:column;gap:6px;margin-top:10px;width:100%}
 #sessForm .sessComment textarea{width:100%;min-height:72px;box-sizing:border-box;padding:14px 12px;border-radius:10px;resize:vertical}
 @media(max-width:360px){#sessForm .sessGrid{grid-template-columns:1fr}}
+/* v0.18.5 responsiveness: no tap delay, map never paints over header/tab bar */
+html{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button,a,[data-go],nav#tabs button,#logoHome{touch-action:manipulation;cursor:pointer}
+nav#tabs svg,nav#tabs span,#logoHome *{pointer-events:none}
+#leaf,.leaflet-container{position:relative;z-index:0;isolation:isolate}
+body.in > header,body.in > nav#tabs{transform:translateZ(0)}
+.toast{pointer-events:none}

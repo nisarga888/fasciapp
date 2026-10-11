@@ -48,9 +48,10 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(place){const q=$("#qPlace");if(q){q.value=place;hit=true}}
  if(hit){renderMarkers();renderList();show("list");return true}return false}catch(e){return false}}
 window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
- $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
+ $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
+let showT=null;function afterShow(t){try{if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;return}loadProf()})()}
- if(t==="log")loadLog();if(t==="inbox")renderInbox();window.scrollTo(0,0)}
+ if(t==="log")loadLog();if(t==="inbox")renderInbox()}catch(e){console.warn(e)}}
 function hdr(){$("#tabInbox").hidden=false;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 async function refresh(){try{people=await DB.list()}catch(e){console.warn(e);people=[]}fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true)}
 
@@ -303,10 +304,12 @@ function setupSafariChrome(){const ua=navigator.userAgent||"";
  const standalone=!!(navigator.standalone||window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches);
  if(safari&&!standalone)document.documentElement.classList.add("safari-browser");
  const sync=()=>{if(!window.visualViewport)return;
-  const vv=window.visualViewport;const gap=Math.max(0,Math.round(window.innerHeight-vv.height-vv.offsetTop));
+  const vv=window.visualViewport;const ae=document.activeElement,typing=ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName);const gap=typing?Math.min(400,Math.max(0,Math.round(window.innerHeight-vv.height-vv.offsetTop))):0;
   document.documentElement.style.setProperty("--vv-bottom",gap+"px")};
  if(window.visualViewport){visualViewport.addEventListener("resize",sync);visualViewport.addEventListener("scroll",sync);sync()}
- addEventListener("orientationchange",()=>setTimeout(sync,300))}
+ addEventListener("orientationchange",()=>setTimeout(sync,300));
+ document.addEventListener("focusout",()=>setTimeout(()=>{sync();if(document.body.classList.contains("in")&&window.scrollY)window.scrollTo(0,0)},120));
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden)sync()});addEventListener("pageshow",sync)}
 (async()=>{
  setupSafariChrome();
  $("#demoBanner").hidden=DB.mode!=="local";
@@ -349,7 +352,10 @@ $("#sessForm").onsubmit=async e=>{e.preventDefault();const f=e.target,m=$("#sfMs
  if(!x.initials)return m.textContent="Please add the client initials.";if(!x.duration)return m.textContent="Please add the duration.";if(!x.format)return m.textContent="Please choose In person or Online.";if(!x.session_type)return m.textContent="Please choose MER or BBTRS.";
  try{await DB.saveSession(x);m.textContent=editId?"Saved ✓":"Session added ✓";resetSF();sess=await DB.sessions();renderLog()}catch(err){m.textContent="Could not save: "+err.message}};
 async function logoData(){try{const b=await (await fetch("icon-192-v3.png")).blob();return await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(b)})}catch(e){return null}}
-async function buildPdf(){if(!window.jspdf){alert("PDF library could not load. Check your internet connection.");return null}
+function loadScript(u){return new Promise((ok,no)=>{const s=document.createElement("script");s.src=u;s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+let pdfLib=null;function loadPdfLib(){if(window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API.autoTable)return Promise.resolve();
+ return pdfLib=pdfLib||loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").then(()=>loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js")).catch(e=>{pdfLib=null;throw e})}
+async function buildPdf(){try{await loadPdfLib()}catch(e){}if(!window.jspdf){alert("PDF library could not load. Check your internet connection.");return null}
  const prof=await DB.mine().catch(()=>null)||{};
  const fullName=String(prof.name||"").trim()||(me&&me.email)||"Practitioner";
  const email=String((me&&me.email)||prof.email||"").trim();
