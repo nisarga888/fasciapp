@@ -9,11 +9,30 @@ const SUG=['MER', 'BBTRS', 'Biodynamic Breathwork', 'Breathwork', 'Massage', 'Cr
 function renderTags(){const set=[...new Set(SUG.concat(myMods))];$("#modBox").innerHTML=set.map(m=>`<button type="button" class="tag${myMods.includes(m)?" on":""}" data-m="${esc(m)}">${esc(m)}</button>`).join("");$$("#modBox .tag").forEach(b=>b.onclick=()=>{const m=b.dataset.m;myMods=myMods.includes(m)?myMods.filter(x=>x!==m):myMods.concat(m);renderTags()})}
 function addTag(){const v=$("#modNew").value.trim().replace(/\s+/g," ");if(v&&!myMods.some(x=>x.toLowerCase()===v.toLowerCase()))myMods.push(v);$("#modNew").value="";renderTags()}
 $("#modAdd").onclick=addTag;$("#modNew").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addTag()}};
-function fillFilter(){const set=[...new Set(SUG.concat(all().flatMap(p=>p.mods||[])))];
- const opts=`<option value="">All practices</option>`+set.map(m=>`<option>${esc(m)}</option>`).join("");
+function mappedPeople(){return all().filter(p=>pins(p).length)}
+function modCounts(){const m=new Map();mappedPeople().forEach(p=>{[...new Set(p.mods||[])].forEach(mod=>{if(!mod)return;m.set(mod,(m.get(mod)||0)+1)})});
+ return[...m.entries()].sort((a,b)=>a[0].localeCompare(b[0],"en",{sensitivity:"base"}))}
+function placeOptions(){const cityMap=new Map(),countryMap=new Map();
+ mappedPeople().forEach(p=>{const locs=(p.locations&&p.locations.length)?p.locations:[p];const seenC=new Set(),seenCo=new Set();
+  locs.forEach(l=>{const city=String(l.city||"").trim(),country=String(l.country||"").trim();
+   if(city&&country){const k=fold(city)+"|"+fold(country);if(!seenC.has(k)){seenC.add(k);const o=cityMap.get(k)||{city,country,n:0};o.n++;cityMap.set(k,o)}}
+   if(country){const k=fold(country);if(!seenCo.has(k)){seenCo.add(k);const o=countryMap.get(k)||{country,n:0};o.n++;countryMap.set(k,o)}}})});
+ return{cities:[...cityMap.values()].sort((a,b)=>{const c=a.city.localeCompare(b.city,"en",{sensitivity:"base"});return c||a.country.localeCompare(b.country,"en",{sensitivity:"base"})}),
+  countries:[...countryMap.values()].sort((a,b)=>a.country.localeCompare(b.country,"en",{sensitivity:"base"}))}}
+function fillFilter(){const mods=modCounts();const opts=`<option value="">All practices</option>`+mods.map(([m,n])=>`<option value="${esc(m)}">${esc(m)} (${n})</option>`).join("");
  const v=($("#filter")&&$("#filter").value)||($("#listFilter")&&$("#listFilter").value)||"";
- [["filter"],["listFilter"]].forEach(([id])=>{const el=$(`#${id}`);if(!el)return;el.innerHTML=opts;if([...el.options].some(o=>o.value===v||o.textContent===v))el.value=v})}
+ ["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;el.innerHTML=opts;if([...el.options].some(o=>o.value===v))el.value=v;else el.value=""})}
 function syncModFilter(fromId){const src=$(`#${fromId}`);if(!src)return;const v=src.value;["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(el&&el!==src)el.value=v});renderMarkers();renderList()}
+function closePlaceMenu(){const m=$("#placeMenu"),i=$("#qPlace");if(m)m.hidden=true;if(i)i.setAttribute("aria-expanded","false")}
+function openPlaceMenu(){renderPlaceMenu();const m=$("#placeMenu"),i=$("#qPlace");if(m)m.hidden=false;if(i)i.setAttribute("aria-expanded","true")}
+function renderPlaceMenu(){const box=$("#placeMenu");if(!box)return;const q=fold(($("#qPlace")&&$("#qPlace").value)||"");const {cities,countries}=placeOptions();
+ const rows=[];
+ cities.forEach(c=>{const label=`${c.city}, ${c.country}`,fl=fold(label);if(!q||fl.includes(q)||fold(c.city).includes(q)||fold(c.country).includes(q))rows.push({label,value:label,n:c.n,kind:"city"})});
+ countries.forEach(c=>{const label=c.country,fl=fold(label);if(!q||fl.includes(q))rows.push({label,value:label,n:c.n,kind:"country"})});
+ // de-dupe exact same value preferring city rows already added — country rows still useful
+ if(!rows.length){box.innerHTML=`<li class="empty">No matching places</li>`;return}
+ box.innerHTML=rows.map(r=>`<li role="option"><button type="button" data-place="${esc(r.value)}" data-kind="${r.kind}"><span>${esc(r.label)} <span class="n">(${r.n})</span></span></button></li>`).join("");
+ $$("#placeMenu button").forEach(b=>b.onclick=()=>{const i=$("#qPlace");if(i)i.value=b.dataset.place;closePlaceMenu();renderList();renderMarkers()})}
 
 window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();if(t==="profile")loadProf();if(t==="log")loadLog();if(t==="inbox")renderInbox();window.scrollTo(0,0)}
@@ -63,7 +82,12 @@ const pins=p=>(p.locations&&p.locations.length?p.locations:[p]).filter(l=>l.lat!
 const locTxt=l=>[l.city,l.country].filter(Boolean).join(", ");
 function fold(s){try{return String(s||"").normalize("NFD").replace(/\p{M}/gu,"").toLowerCase()}catch(e){return String(s||"").toLowerCase()}}
 function placeHit(p,q){if(!q)return true;const locs=(p.locations&&p.locations.length)?p.locations:[p];
- return locs.some(l=>fold([l.city,l.country,l.address,l.label].filter(Boolean).join(" ")).includes(q))}
+ const {cities,countries}=placeOptions();
+ const exactCity=cities.find(c=>fold(`${c.city}, ${c.country}`)===q);
+ if(exactCity)return locs.some(l=>fold(l.city)===fold(exactCity.city)&&fold(l.country)===fold(exactCity.country));
+ const exactCo=countries.find(c=>fold(c.country)===q);
+ if(exactCo)return locs.some(l=>fold(l.country)===fold(exactCo.country));
+ return locs.some(l=>fold([l.city,l.country,l.address].filter(Boolean).join(" ")).includes(q))}
 function placeQ(){const el=$("#qPlace");return fold(el?el.value.trim():"")}
 function filtered(){const f=($("#filter")&&$("#filter").value)||($("#listFilter")&&$("#listFilter").value)||"";const q=placeQ();
  return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f))&&placeHit(p,q))}
@@ -171,8 +195,12 @@ function renderMarkers(){count();if(!layer)return;layer.clearLayers();if(threads
  if(ps.length&&!didFit)fitPins(true)}
 $("#filter")&&($("#filter").onchange=()=>syncModFilter("filter"));
 $("#listFilter")&&($("#listFilter").onchange=()=>syncModFilter("listFilter"));
-$("#qPlace")&&($("#qPlace").oninput=()=>{renderList()});
-$("#listClear")&&($("#listClear").onclick=()=>{const q=$("#qPlace");if(q)q.value="";["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(el)el.value=""});renderMarkers();renderList()});
+$("#qPlace")&&($("#qPlace").onfocus=()=>openPlaceMenu());
+$("#qPlace")&&($("#qPlace").onclick=()=>openPlaceMenu());
+$("#qPlace")&&($("#qPlace").oninput=()=>{openPlaceMenu();renderList()});
+$("#qPlace")&&($("#qPlace").onkeydown=e=>{if(e.key==="Escape")closePlaceMenu()});
+document.addEventListener("click",e=>{const c=$("#placeCombo");if(c&&!c.contains(e.target))closePlaceMenu()});
+$("#listClear")&&($("#listClear").onclick=()=>{const q=$("#qPlace");if(q)q.value="";["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(el)el.value=""});closePlaceMenu();renderMarkers();renderList()});
 $("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show("map");didFit=false;setTimeout(()=>{fitPins(true);map&&map.invalidateSize()},100)});
 function geoOnce(){return new Promise(resolve=>{if(!navigator.geolocation||!window.isSecureContext)return resolve(null);
   navigator.geolocation.getCurrentPosition(pos=>resolve([pos.coords.latitude,pos.coords.longitude]),()=>resolve(null),{enableHighAccuracy:false,timeout:8000,maximumAge:3e5})})}

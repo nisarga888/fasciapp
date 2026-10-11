@@ -182,7 +182,18 @@ html.safari-browser body.in > nav#tabs{padding-bottom:calc(10px + env(safe-area-
 
 /* v0.15 list search */
 .listSearch{position:sticky;top:0;z-index:5;margin:0 -16px 12px;padding:10px 16px 12px;background:linear-gradient(#02191ef8 70%,#02191e00);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.listSearch #qPlace,.listSearch #listFilter{width:100%;margin:0 0 8px;box-sizing:border-box}
+.listSearch .combo,.listSearch #listFilter{width:100%;margin:0 0 8px;box-sizing:border-box}
+.listSearch #qPlace{width:100%;margin:0;box-sizing:border-box}
 .listSearchMeta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .listSearchActs{display:flex;gap:8px;align-items:center}
 #listCount{font-size:13px}
+
+/* v0.16 combobox */
+.combo{position:relative}
+.comboMenu{position:absolute;left:0;right:0;top:calc(100% + 4px);max-height:220px;overflow:auto;-webkit-overflow-scrolling:touch;margin:0;padding:6px 0;list-style:none;background:#0a2a30;border:1px solid #c99e6766;border-radius:14px;box-shadow:0 12px 28px #0008;z-index:40}
+.comboMenu li{margin:0}
+.comboMenu button{display:flex;width:100%;text-align:left;gap:8px;align-items:baseline;justify-content:space-between;padding:10px 14px;border:0;background:none;color:var(--gold);font:inherit;cursor:pointer}
+.comboMenu button:active,.comboMenu button:hover,.comboMenu button.on{background:#12343a}
+.comboMenu .n{color:var(--mut);font-size:12px;flex:none}
+.comboMenu .empty{padding:10px 14px;color:var(--mut);font-size:13px}
+#map .bar select#filter{min-width:0}

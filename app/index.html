@@ -64,7 +64,10 @@
 </section>
 <section id="list" class="screen"><h2>Practitioners</h2>
  <div id="listSearch" class="listSearch">
-  <input id="qPlace" type="search" placeholder="City or country" autocomplete="address-level2" enterkeyhint="search">
+  <div class="combo" id="placeCombo">
+   <input id="qPlace" type="search" placeholder="City or country" autocomplete="off" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="placeMenu">
+   <ul id="placeMenu" class="comboMenu" hidden role="listbox"></ul>
+  </div>
   <select id="listFilter" aria-label="Practice modality"><option value="">All practices</option></select>
   <div class="listSearchMeta">
    <span id="listCount" class="muted">0 practitioners</span>
