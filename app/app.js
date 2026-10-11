@@ -2,7 +2,7 @@ const CITY={tallinn:[59.437,24.7536],warsaw:[52.2297,21.0122],warszawa:[52.2297,
 const DEMO=[];
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
 var MSG_OK=false,msgs=[],chatWith=null,pollT=null,unsub=null;
-let me=null,people=[],here=null,map,layer,photoData=null,signUpMode=true;
+let me=null,people=[],here=null,map,layer,photoData=null,signUpMode=true,didFit=false;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const all=()=>DEMO.concat(people);
 const SUG=['MER', 'BBTRS', 'Biodynamic Breathwork', 'Breathwork', 'Massage', 'Craniosacral', 'Somatic therapy', 'Trauma therapy', 'Yoga'];let myMods=[];
@@ -12,9 +12,9 @@ $("#modAdd").onclick=addTag;$("#modNew").onkeydown=e=>{if(e.key==="Enter"){e.pre
 function fillFilter(){const f=$("#filter"),v=f.value,set=[...new Set(SUG.concat(all().flatMap(p=>p.mods||[])))];f.innerHTML=`<option value="">All practices</option>`+set.map(m=>`<option${m===v?" selected":""}>${esc(m)}</option>`).join("")}
 
 function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
- $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));if(t==="map"){initMap();setTimeout(()=>map.invalidateSize(),50)}if(t==="list")renderList();if(t==="profile")loadProf();if(t==="log")loadLog();if(t==="inbox")renderInbox();window.scrollTo(0,0)}
+ $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();if(t==="profile")loadProf();if(t==="log")loadLog();if(t==="inbox")renderInbox();window.scrollTo(0,0)}
 function hdr(){$("#tabInbox").hidden=!(MSG_OK&&me);$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
-async function refresh(){try{people=await DB.list()}catch(e){console.warn(e);people=[]}fillFilter();renderMarkers();renderList()}
+async function refresh(){try{people=await DB.list()}catch(e){console.warn(e);people=[]}fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true)}
 
 // navigation
 $("#goLook").onclick=()=>show("map");$("#authLook").onclick=e=>{e.preventDefault();show("map")};
@@ -88,12 +88,18 @@ function drawThreads(ps){const seen=new Set();ps.forEach(p=>ps.filter(q=>q!==p).
  L.polyline(c,{color:"#B8873F",weight:2.6,opacity:1,className:"thread",interactive:false}).addTo(layer)}))}
 function count(){const a=all(),c=new Set(a.map(p=>(p.country||p.city||"").trim().toLowerCase()).filter(Boolean));
  $("#count").innerHTML=a.length?`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"} joined the network`:"Be the first practitioner on the map ✨"}
+function fitPins(force){if(!map)return;const pts=[];filtered().forEach(p=>pins(p).forEach(l=>{if(l.lat!=null&&l.lng!=null)pts.push([+l.lat,+l.lng])}));
+ if(!pts.length)return;if(!force&&didFit)return;
+ try{if(pts.length===1)map.setView(pts[0],10,{animate:false});
+ else map.fitBounds(L.latLngBounds(pts),{padding:[56,56],maxZoom:10,animate:false});
+ didFit=true;setTimeout(()=>map&&map.invalidateSize(),60)}catch(e){console.warn(e)}}
 function renderMarkers(){count();if(!layer)return;layer.clearLayers();const ps=filtered();drawThreads(ps);
  const entries=[];ps.forEach(p=>pins(p).forEach(l=>entries.push({p,l})));
  spiderfy(entries).forEach(({p,lat,lng,side})=>{L.marker([lat,lng],{icon:pinIcon(p,side)}).bindPopup(card(p)).addTo(layer)});
- if(here)L.circleMarker(here,{radius:7,color:"#fff",weight:3,fillColor:"#2a9d96",fillOpacity:1}).bindPopup("You are here").addTo(layer)}
+ if(here)L.circleMarker(here,{radius:7,color:"#fff",weight:3,fillColor:"#2a9d96",fillOpacity:1}).bindPopup("You are here").addTo(layer);
+ if(ps.length&&!didFit)fitPins(true)}
 $("#filter").onchange=()=>{renderMarkers();renderList()};
-$("#near").onclick=()=>{if(!navigator.geolocation)return alert("Location is not available in this browser");navigator.geolocation.getCurrentPosition(pos=>{here=[pos.coords.latitude,pos.coords.longitude];map.setView(here,7);renderMarkers()},()=>alert("Could not get your location. Allow location access and try again."))};
+$("#near").onclick=()=>{if(!navigator.geolocation)return alert("Location is not available in this browser");navigator.geolocation.getCurrentPosition(pos=>{here=[pos.coords.latitude,pos.coords.longitude];didFit=true;map.setView(here,7);renderMarkers()},()=>alert("Could not get your location. Allow location access and try again."))};
 function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));if(here)ps.sort((a,b)=>a.d-b.d);
  $("#from").textContent=here?"Sorted by distance from you":"Tap 📍 Near me on the map to sort by distance";
  $("#items").innerHTML=ps.map(({p,d})=>`<div class="item">${d!=null?`<span class="d">${Math.round(d)} km</span>`:""}${card(p)}</div>`).join("")||"<p class=muted>No practitioners here yet.</p>"}
@@ -116,7 +122,15 @@ $("#photo").onchange=e=>{const file=e.target.files[0];if(!file)return;const r=ne
  c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,s,s);photoData=c.toDataURL("image/jpeg",.85);$("#phPrev").src=photoData;$("#phPrev").hidden=false};im.src=r.result};r.readAsDataURL(file)};
 
 // start
-(async()=>{$("#demoBanner").hidden=DB.mode!=="local";me=await DB.session().catch(()=>null);hdr();await refresh();msgInit()})();
+(async()=>{
+ $("#demoBanner").hidden=DB.mode!=="local";
+ me=await DB.session().catch(()=>null);hdr();
+ await refresh();
+ // If we somehow booted in local mode while config has Supabase, reload once after libs settle
+ if(DB.mode==="local"&&window.FASCIAPP_CONFIG&&FASCIAPP_CONFIG.SUPABASE_URL&&window.supabase&&!sessionStorage.getItem("fa_sb_retry")){
+  sessionStorage.setItem("fa_sb_retry","1");location.reload();return}
+ msgInit();
+})();
 
 // ===== Session log =====
 const GOAL=60;let sess=[],editId=null;

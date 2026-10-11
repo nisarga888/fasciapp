@@ -82,4 +82,9 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   onMsg(cb){try{const ch=sb.channel("msgs").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},cb).subscribe();return ()=>sb.removeChannel(ch)}catch(e){return ()=>{}}}};
 }
 window.DB=(cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY&&window.supabase)?supa():local;
+// Re-bind if supabase-js arrived after data.js (Safari / slow CDN)
+if(window.DB&&window.DB.mode==="local"&&cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY){
+  const tryBind=()=>{if(window.supabase){window.DB=supa();return true}return false};
+  if(!tryBind()){let n=0;const t=setInterval(()=>{if(tryBind()||++n>40)clearInterval(t)},50)}
+}
 })();
