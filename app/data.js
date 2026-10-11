@@ -17,8 +17,9 @@ const pick=p=>Object.fromEntries(FIELDS.map(k=>[k,p[k]??null]));
 // otherwise packed as JSON into the `address` text column (graceful fallback). Old single-location rows are migrated on read.
 // practice_name: preferred as its own column; if missing, embedded on locations[0].practice_name (jsonb fallback).
 // website2: stored on locations[0].website2 (jsonb) so no DDL is needed; a website2 column is read too if it ever exists.
-function stripLocMeta(L){return (L||[]).map(({practice_name:_,website2:__,...rest})=>rest)}
-function embedW2(L,w2){w2=(w2||"").trim();if(!w2)return L;if(!L.length)return [{label:"",address:"",city:"",country:"",lat:null,lng:null,website2:w2}];return [{...L[0],website2:w2},...L.slice(1)]}
+function stripLocMeta(L){return (L||[]).map(({practice_name:_,website2:__,instagram:___,...rest})=>rest)}
+function embedW2(L,w2,ig){const m={};w2=(w2||"").trim();ig=(ig||"").trim();if(w2)m.website2=w2;if(ig)m.instagram=ig;if(!w2&&!ig)return L;
+ if(!L.length)return [{label:"",address:"",city:"",country:"",lat:null,lng:null,...m}];return [{...L[0],...m},...L.slice(1)]}
 function embedPractice(L,practice_name){
  L=stripLocMeta(L);const pn=(practice_name||"").trim()||null;
  if(!pn)return L;if(!L.length)return [{label:"",address:"",city:"",country:"",lat:null,lng:null,practice_name:pn}];
@@ -26,10 +27,10 @@ function embedPractice(L,practice_name){
 function norm(p){if(!p)return p;let L=Array.isArray(p.locations)?p.locations:null,addr=p.address;
  if(!L&&typeof addr==="string"&&addr.startsWith("[{")){try{L=JSON.parse(addr)}catch(e){}}
  if(L&&L.length){addr=L[0].address||""}else L=(p.city||p.lat!=null)?[{label:"",address:addr||"",city:p.city||"",country:p.country||"",lat:p.lat,lng:p.lng}]:[];
- const fromLoc=(L[0]&&L[0].practice_name)||"";const website2=String(p.website2||(L[0]&&L[0].website2)||"").trim()||null;
+ const fromLoc=(L[0]&&L[0].practice_name)||"";const website2=String(p.website2||(L[0]&&L[0].website2)||"").trim()||null;const instagram=String(p.instagram||(L[0]&&L[0].instagram)||"").trim()||null;
  const practice_name=String(p.practice_name||fromLoc||"").trim()||null;
  L=stripLocMeta(L).slice(0,3);
- return {...p,practice_name,website2,address:addr,locations:L}}
+ return {...p,practice_name,website2,instagram,address:addr,locations:L}}
 window.normLocs=norm;
 
 const local={mode:"local",
@@ -79,18 +80,18 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
    const upsert=async row=>{const r=await sb.from("practitioners").upsert(row,{onConflict:"user_id"}).select().single();return r};
    // Prefer locations column + practice_name column
    if(!noLocCol){
-    const w2=p.website2;let row={...base0,user_id:s.user_id,locations:embedW2(L,w2)};
-    if(noPracticeCol){delete row.practice_name;row.locations=embedW2(embedPractice(L,pn),w2)}
+    const w2=p.website2;let row={...base0,user_id:s.user_id,locations:embedW2(L,w2,p.instagram)};
+    if(noPracticeCol){delete row.practice_name;row.locations=embedW2(embedPractice(L,pn),w2,p.instagram)}
     let r=await upsert(row);
     if(r.error&&/practice_name/.test(r.error.message||"")){
      noPracticeCol=true;console.warn("FasciApp: run `alter table public.practitioners add column if not exists practice_name text;` — storing practice_name inside locations jsonb for now");
-     delete row.practice_name;row.locations=embedW2(embedPractice(L,pn),w2);r=await upsert(row)}
+     delete row.practice_name;row.locations=embedW2(embedPractice(L,pn),w2,p.instagram);r=await upsert(row)}
     if(!r.error)return norm(r.data);
     if(!/locations/.test(r.error.message||""))throw new Error(r.error.message);
     noLocCol=true;console.warn("FasciApp: run `alter table practitioners add column if not exists locations jsonb;` — using address fallback")}
    // Address-packing fallback (also carries practice_name inside the JSON)
-   const packedL=embedW2(embedPractice(L,pn),p.website2);
-   const packed=packedL.length>1||pn||p.website2?JSON.stringify(packedL):base0.address;
+   const packedL=embedW2(embedPractice(L,pn),p.website2,p.instagram);
+   const packed=packedL.length>1||pn||p.website2||p.instagram?JSON.stringify(packedL):base0.address;
    const row={...base0,user_id:s.user_id,address:packed};delete row.practice_name;
    return norm(chk(await upsert(row)))},
   async sessions(){const s=await sess();if(!s)return[];return chk(await sb.from("sessions").select("*").eq("user_id",s.user_id)).map(unpackSession).sort(cmp)},

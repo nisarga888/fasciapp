@@ -241,3 +241,4 @@ body.in > header,body.in > nav#tabs{transform:translateZ(0)}
 @keyframes logoSpinL{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.logoWrap .logoRingSvg{animation:none}}
 html.bg-hidden .logoWrap .logoRingSvg{animation-play-state:paused}
+.igl{display:inline-flex;align-items:center;gap:4px}.igl svg{flex:none}
