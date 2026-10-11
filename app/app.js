@@ -34,6 +34,12 @@ function renderPlaceMenu(){const box=$("#placeMenu");if(!box)return;const q=fold
  box.innerHTML=rows.map(r=>`<li role="option"><button type="button" data-place="${esc(r.value)}" data-kind="${r.kind}"><span>${esc(r.label)} <span class="n">(${r.n})</span></span></button></li>`).join("");
  $$("#placeMenu button").forEach(b=>b.onclick=()=>{const i=$("#qPlace");if(i)i.value=b.dataset.place;closePlaceMenu();renderList();renderMarkers()})}
 
+
+function applyDeepLink(){try{const sp=new URLSearchParams(location.search);const practice=(sp.get("practice")||sp.get("mod")||"").trim();const place=(sp.get("place")||sp.get("city")||"").trim();
+ if(!practice&&!place)return false;fillFilter();let hit=false;
+ if(practice){const want=fold(practice);["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;const opt=[...el.options].find(o=>o.value&&(fold(o.value)===want||fold(o.value).includes(want)||want.includes(fold(o.value))));if(opt){el.value=opt.value;hit=true}})}
+ if(place){const q=$("#qPlace");if(q){q.value=place;hit=true}}
+ if(hit){renderMarkers();renderList();show("list");return true}return false}catch(e){return false}}
 window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();if(t==="profile")loadProf();if(t==="log")loadLog();if(t==="inbox")renderInbox();window.scrollTo(0,0)}
 function hdr(){$("#tabInbox").hidden=false;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
@@ -277,6 +283,7 @@ function setupSafariChrome(){const ua=navigator.userAgent||"";
  $("#demoBanner").hidden=DB.mode!=="local";
  me=await DB.session().catch(()=>null);hdr();
  await refresh();
+ applyDeepLink();
  if(DB.mode==="local"&&window.FASCIAPP_CONFIG&&FASCIAPP_CONFIG.SUPABASE_URL&&window.supabase&&!sessionStorage.getItem("fa_sb_retry")){
   sessionStorage.setItem("fa_sb_retry","1");location.reload();return}
  msgInit();
