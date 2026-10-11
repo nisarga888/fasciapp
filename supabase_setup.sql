@@ -63,6 +63,7 @@ create table if not exists public.sessions (
   date date not null,
   duration integer not null check (duration > 0),
   format text not null default 'In person' check (format in ('In person','Online')),
+  session_type text not null default 'MER' check (session_type in ('MER','BBTRS')),
   comment text,
   created_at timestamptz not null default now()
 );
@@ -102,3 +103,6 @@ grant select, insert on public.messages to authenticated;
 -- If sessions already exists without format:
 -- alter table public.sessions add column if not exists format text;
 -- update public.sessions set format = 'In person' where format is null;
+
+-- If sessions already exists without session_type:
+-- alter table public.sessions add column if not exists session_type text;

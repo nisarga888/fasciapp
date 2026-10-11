@@ -3,12 +3,14 @@
 const cfg=window.FASCIAPP_CONFIG||{};
 const LS={get:(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
 const FIELDS=["name","practice_name","mods","address","city","country","lat","lng","phone","email","website","bio","photo","consent","whatsapp"];
-const SF=["initials","date","duration","format","comment"];const pickS=x=>Object.fromEntries(SF.map(k=>[k,x[k]===""?null:(x[k]??null)]));
-const FMT_RE=/^⟦(In person|Online)⟧\s*/;
-function unpackSession(row){if(!row)return row;let format=row.format,comment=row.comment||"";
- if(!format){const m=FMT_RE.exec(comment);if(m){format=m[1];comment=comment.slice(m[0].length)}else format="In person"}
- return{...row,format,comment}}
-function packComment(format,comment){const c=String(comment||"").replace(FMT_RE,"");return "⟦"+(format||"In person")+"⟧ "+c}
+const SF=["initials","date","duration","format","session_type","comment"];const pickS=x=>Object.fromEntries(SF.map(k=>[k,x[k]===""?null:(x[k]??null)]));
+const META_RE=/^⟦([^⟧]*)⟧\s*/;
+function unpackSession(row){if(!row)return row;let format=row.format,session_type=row.session_type,comment=row.comment||"";
+ if(!format||!session_type){const m=META_RE.exec(comment);if(m){const parts=String(m[1]||"").split("|");
+  if(!format)format=(parts[0]||"").trim()||"In person";if(!session_type)session_type=(parts[1]||"").trim()||"MER";comment=comment.slice(m[0].length)}}
+ if(!format)format="In person";if(!session_type)session_type="MER";
+ return{...row,format,session_type,comment}}
+function packMeta(format,session_type,comment){const c=String(comment||"").replace(META_RE,"");return "⟦"+(format||"In person")+"|"+(session_type||"MER")+"⟧ "+c}
 const cmp=(a,b)=>(a.date+a.created_at).localeCompare(b.date+b.created_at);
 const pick=p=>Object.fromEntries(FIELDS.map(k=>[k,p[k]??null]));
 // Multi-location: up to 3 {label,address,city,country,lat,lng}. Stored in `locations` jsonb when the column exists,
@@ -40,7 +42,7 @@ const local={mode:"local",
   all[s.user_id]=row;LS.set("fyp_profiles2",all);return norm(row)},
  async sessions(){const s=await this.session();if(!s)return[];return (LS.get("fyp_sessions",{})[s.user_id]||[]).map(unpackSession).slice().sort(cmp)},
  async saveSession(x){const s=await this.session();const all=LS.get("fyp_sessions",{}),l=all[s.user_id]||[];const i=l.findIndex(r=>r.id===x.id);
-  const base=pickS(x);if(!base.format)base.format="In person";const row={...base,id:x.id||crypto.randomUUID(),user_id:s.user_id,created_at:i>=0?l[i].created_at:new Date().toISOString()};if(i>=0)l[i]=row;else l.push(row);all[s.user_id]=l;LS.set("fyp_sessions",all);return unpackSession(row)},
+  const base=pickS(x);if(!base.format)base.format="In person";if(!base.session_type)base.session_type="MER";const row={...base,id:x.id||crypto.randomUUID(),user_id:s.user_id,created_at:i>=0?l[i].created_at:new Date().toISOString()};if(i>=0)l[i]=row;else l.push(row);all[s.user_id]=l;LS.set("fyp_sessions",all);return unpackSession(row)},
  async deleteSession(id){const s=await this.session();const all=LS.get("fyp_sessions",{});all[s.user_id]=(all[s.user_id]||[]).filter(r=>r.id!==id);LS.set("fyp_sessions",all)},
  async msgOk(){return false},
  async resetPassword(email){throw new Error("Password reset needs the live FasciApp server. Open the app at app.bodyawareness.ee and try again.")},
@@ -49,7 +51,7 @@ const local={mode:"local",
 
 
 
-let noLocCol=false,noPracticeCol=false,noFormatCol=false;
+let noLocCol=false,noPracticeCol=false,noFormatCol=false,noSessionTypeCol=false;
 function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY,{
   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage,storageKey:"fasciapp-auth"}
  });
@@ -57,7 +59,8 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
  const chk=({data,error})=>{if(error)throw new Error(error.message);return data};
  // Probe once whether practice_name column exists (anon can SELECT).
  (async()=>{try{const r=await sb.from("practitioners").select("practice_name").limit(1);if(r.error&&/practice_name/.test(r.error.message||"")){noPracticeCol=true;console.warn("FasciApp: run `alter table public.practitioners add column if not exists practice_name text;` — storing practice_name inside locations jsonb for now")}}catch(e){}
-  try{const r=await sb.from("sessions").select("format").limit(1);if(r.error&&/format/i.test(r.error.message||"")){noFormatCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists format text;` — packing format into comment for now")}}catch(e){}})();
+  try{const r=await sb.from("sessions").select("format").limit(1);if(r.error&&/format/i.test(r.error.message||"")){noFormatCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists format text;` — packing format into comment for now")}}catch(e){}
+  try{const r=await sb.from("sessions").select("session_type").limit(1);if(r.error&&/session_type/i.test(r.error.message||"")){noSessionTypeCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists session_type text;` — packing session_type into comment for now")}}catch(e){}})();
  return {mode:"supabase",
   session:sess,
   async signUp(email,pw){const d=chk(await sb.auth.signUp({email,password:pw}));if(!d.session)throw new Error("Account created. Check your email to confirm it, then sign in.");return sess()},
@@ -89,13 +92,15 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
    const row={...base0,user_id:s.user_id,address:packed};delete row.practice_name;
    return norm(chk(await upsert(row)))},
   async sessions(){const s=await sess();if(!s)return[];return chk(await sb.from("sessions").select("*").eq("user_id",s.user_id)).map(unpackSession).sort(cmp)},
-  async saveSession(x){const s=await sess();const base=pickS(x);if(!base.format)base.format="In person";
+  async saveSession(x){const s=await sess();const base=pickS(x);if(!base.format)base.format="In person";if(!base.session_type)base.session_type="MER";
    const write=async row=>{const q=x.id?sb.from("sessions").update(row).eq("id",x.id).select().single():sb.from("sessions").insert(row).select().single();return await q};
-   let row={...base,user_id:s.user_id};
-   if(noFormatCol){row={...row,comment:packComment(base.format,base.comment)};delete row.format}
+   const applyPack=row=>{let o={...row};if(noFormatCol||noSessionTypeCol){o.comment=packMeta(base.format,base.session_type,base.comment);if(noFormatCol)delete o.format;if(noSessionTypeCol)delete o.session_type}return o};
+   let row=applyPack({...base,user_id:s.user_id});
    let r=await write(row);
-   if(r.error&&(/format/i.test(r.error.message||"")||/Could not find.*column/i.test(r.error.message||""))){noFormatCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists format text;` — packing format into comment for now");
-    row={...base,user_id:s.user_id,comment:packComment(base.format,base.comment)};delete row.format;r=await write(row)}
+   if(r.error){const msg=r.error.message||"";
+    if(/session_type/i.test(msg)){noSessionTypeCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists session_type text;` — packing session_type into comment for now")}
+    if(/format/i.test(msg)&&!/session_type/i.test(msg)){noFormatCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists format text;` — packing format into comment for now")}
+    if(/format|session_type|Could not find.*column/i.test(msg)){row=applyPack({...base,user_id:s.user_id});r=await write(row)}}
    return unpackSession(chk(r))},
   async deleteSession(id){chk(await sb.from("sessions").delete().eq("id",id))},
   async msgOk(){const r=await sb.from("messages").select("id").limit(1);return !r.error},
