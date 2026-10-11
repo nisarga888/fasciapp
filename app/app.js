@@ -171,7 +171,31 @@ function renderMarkers(){count();if(!layer)return;layer.clearLayers();if(threads
  if(here)L.circleMarker(here,{radius:7,color:"#fff",weight:3,fillColor:"#2a9d96",fillOpacity:1}).bindPopup("You are here").addTo(threads||layer);
  if(ps.length&&!didFit)fitPins(true)}
 $("#filter").onchange=()=>{renderMarkers();renderList()};
-$("#near").onclick=()=>{if(!navigator.geolocation)return alert("Location is not available in this browser");navigator.geolocation.getCurrentPosition(pos=>{here=[pos.coords.latitude,pos.coords.longitude];didFit=true;map.setView(here,7);renderMarkers()},()=>alert("Could not get your location. Allow location access and try again."))};
+function geoOnce(){return new Promise(resolve=>{if(!navigator.geolocation||!window.isSecureContext)return resolve(null);
+  navigator.geolocation.getCurrentPosition(pos=>resolve([pos.coords.latitude,pos.coords.longitude]),()=>resolve(null),{enableHighAccuracy:false,timeout:8000,maximumAge:3e5})})}
+async function ipLoc(){for(const url of["https://ipapi.co/json/","https://get.geojs.io/v1/ip/geo.json"]){try{const ctrl=typeof AbortController!=="undefined"?new AbortController():null;const t=ctrl?setTimeout(()=>ctrl.abort(),4500):null;const r=await fetch(url,ctrl?{signal:ctrl.signal}:{});if(t)clearTimeout(t);if(!r.ok)continue;const j=await r.json();const lat=+(j.latitude??j.lat),lng=+(j.longitude??j.lng??j.lon);if(Number.isFinite(lat)&&Number.isFinite(lng))return[lat,lng]}catch(e){}}return null}
+function showNearCity(msg){const box=$("#nearCity");if(!box)return;box.hidden=false;const m=$("#nearCityMsg");if(m)m.textContent=msg||"Location needs a hint — type your city."}
+function hideNearCity(){const box=$("#nearCity");if(box)box.hidden=true;const m=$("#nearCityMsg");if(m)m.textContent=""}
+function openNearestCard(p,loc){if(!map||!p||!loc)return;try{L.popup({maxWidth:320,className:"faPop"}).setLatLng([+loc.lat,+loc.lng]).setContent(card(p)).openOn(map)}catch(e){console.warn(e)}}
+function applyNear(lat,lng){here=[+lat,+lng];didFit=true;hideNearCity();if(!map)initMap();show("map");renderMarkers();renderList();
+ const ranked=filtered().map(p=>({p,d:dist(p)})).filter(x=>x.d!=null).sort((a,b)=>a.d-b.d);const best=ranked[0];
+ if(!best){map.setView(here,7,{animate:false});showToast("Location set");return}
+ const loc=pins(best.p)[0]||best.p;const km=Math.round(best.d);const name=practiceTitle(best.p);
+ const open=()=>openNearestCard(best.p,loc);
+ map.once("moveend",()=>setTimeout(open,80));
+ try{map.fitBounds(L.latLngBounds([here,[+loc.lat,+loc.lng]]).pad(.45),{animate:false,maxZoom:11})}catch(e){map.setView([+loc.lat,+loc.lng],10,{animate:false})}
+ setTimeout(open,500);showToast(`Closest: ${name}, ${km} km`)}
+async function nearMe(){const btn=$("#near");if(btn)btn.disabled=true;try{
+  showToast("Finding your location…");
+  let pos=await geoOnce();if(!pos)pos=await ipLoc();
+  if(pos){applyNear(pos[0],pos[1]);return}
+  showNearCity("Couldn’t detect your location. Type your city instead.");showToast("Type your city below")}
+ catch(e){showNearCity("Type your city to find practitioners nearby.");showToast("Type your city below")}
+ finally{if(btn)btn.disabled=false}}
+$("#near").onclick=()=>nearMe();
+$("#nearCity")&&($("#nearCity").onsubmit=async e=>{e.preventDefault();const f=e.target,m=$("#nearCityMsg"),city=(f.city.value||"").trim();if(!city){m.textContent="Please enter a city.";return}
+ m.textContent="Looking up "+city+"…";const g=await geocode("",city,"");if(!g){m.textContent="Could not find that city. Try another spelling.";showToast("City not found");return}
+ applyNear(g[0],g[1])});
 function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));if(here)ps.sort((a,b)=>a.d-b.d);
  $("#from").textContent=here?"Sorted by distance from you":"Tap 📍 Near me on the map to sort by distance";
  $("#items").innerHTML=ps.map(({p,d})=>`<div class="item">${d!=null?`<span class="d">${Math.round(d)} km</span>`:""}${card(p)}</div>`).join("")||"<p class=muted>No practitioners here yet.</p>"}

@@ -53,6 +53,13 @@
 <section id="map" class="screen">
  <div class="bar"><button id="near" class="gold sm">📍 Near me</button>
  <select id="filter"><option value="">All practices</option></select></div>
+ <form id="nearCity" class="nearCity" hidden>
+  <label class="lbl">Type your city
+   <span class="row2"><input name="city" type="text" placeholder="e.g. Amsterdam" autocomplete="address-level2" required>
+   <button type="submit" class="gold sm">Go</button></span>
+  </label>
+  <p id="nearCityMsg" class="msg"></p>
+ </form>
  <div id="count" class="count"></div><div id="leaf"></div>
 </section>
 <section id="list" class="screen"><h2>Practitioners</h2><p id="from" class="muted"></p><div id="items"></div></section>

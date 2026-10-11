@@ -174,3 +174,8 @@ button.hb:active{opacity:.85}
 /* Safari browser: keep tab bar above floating toolbar */
 html.safari-browser{--safari-extra:56px}
 html.safari-browser body.in > nav#tabs{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px) + var(--vv-bottom))}
+
+.nearCity{margin:0 12px 8px;padding:10px 12px;border:1px solid #c99e6744;border-radius:14px;background:#02191ecc}
+.nearCity .row2{display:flex;gap:8px;align-items:center;margin-top:6px}
+.nearCity input{flex:1;min-width:0}
+.nearCity .msg{margin:6px 0 0;font-size:13px;color:var(--mut)}
