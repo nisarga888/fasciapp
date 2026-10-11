@@ -242,3 +242,9 @@ body.in > header,body.in > nav#tabs{transform:translateZ(0)}
 @media(prefers-reduced-motion:reduce){.logoWrap .logoRingSvg{animation:none}}
 html.bg-hidden .logoWrap .logoRingSvg{animation-play-state:paused}
 .igl{display:inline-flex;align-items:center;gap:4px}.igl svg{flex:none}
+/* v0.19.3: lock the page on iOS; only <main> scrolls; map fills the rest */
+html:has(body.in){height:100%;overflow:hidden;overscroll-behavior:none}
+body.in{position:fixed;top:0;bottom:0;left:0;right:0;width:100%;max-width:480px;margin:0 auto;height:100dvh;overscroll-behavior:none}
+body.in > main{overscroll-behavior:contain}
+#map.screen.active{height:100%;max-height:100%}
+#map .bar{position:relative;z-index:2}
