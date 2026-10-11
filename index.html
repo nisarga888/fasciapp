@@ -18,7 +18,7 @@ h1{font-size:44px;font-weight:700;margin:6px 0 16px;letter-spacing:-.5px;color:v
 .by{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mut);margin-top:22px}
 h2{font-weight:400;color:var(--gold);text-align:center;font-size:28px;margin:54px 0 20px}
 .feats{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.f{background:var(--card);border:1px solid #C99E6733;border-radius:18px;padding:20px}.f .i{font-size:28px}.f b{display:block;margin:6px 0 4px;font-size:17px}.f p{margin:0;color:var(--mut);font-size:14px}
+.f{background:var(--card);border:1px solid #C99E6733;border-radius:18px;padding:20px}.f b{display:block;margin:6px 0 4px;font-size:17px}.f p{margin:0;color:var(--mut);font-size:14px}
 .f.soon{border-style:dashed}.badge{display:inline-block;font-size:10px;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--teal);color:var(--teal);border-radius:10px;padding:1px 8px;margin-left:6px;vertical-align:middle}
 .shots{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 4px 18px;justify-content:center}
 .shots figure{margin:0;flex:0 0 220px;scroll-snap-align:center;text-align:center}.shots img{width:220px;border-radius:28px;border:6px solid #11343a;box-shadow:0 18px 40px #0008}
@@ -31,6 +31,11 @@ h2{font-weight:400;color:var(--gold);text-align:center;font-size:28px;margin:54p
 .muted{color:var(--mut);font-size:13px}[hidden]{display:none!important}
 footer{text-align:center;color:var(--mut);font-size:12px;padding:50px 0 34px}footer a{color:var(--teal)}
 @media(max-width:520px){h1{font-size:38px}.shots{justify-content:flex-start}.btn{width:100%;justify-content:center}}
+.f .i{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);background:radial-gradient(circle,#5FC9C322 0,#0a2a30 70%);border:1px solid #C99E6744;box-shadow:0 0 18px #5FC9C333,inset 0 0 12px #5FC9C322;animation:glow 4s ease-in-out infinite}
+.f .i svg{width:46px;height:46px;filter:drop-shadow(0 0 3px #5FC9C388)}.f .i .t{stroke:var(--teal)}
+.f .i .d{stroke-dasharray:100;stroke-dashoffset:0}.f:not(.seen) .i .d{stroke-dashoffset:100}.f.seen .i .d{transition:stroke-dashoffset 1.8s ease}
+@keyframes glow{50%{box-shadow:0 0 28px #5FC9C355,inset 0 0 16px #5FC9C333}}
+@media(prefers-reduced-motion:reduce){.f .i{animation:none}.f .i .d{stroke-dashoffset:0!important;transition:none!important}}
 </style></head><body>
 <div class="wrap">
 <section class="hero">
@@ -43,10 +48,10 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:50px 0 34px}foo
 
 <h2>What's inside</h2>
 <div class="feats">
- <div class="f"><div class="i">🗺️</div><b>Free practitioner map</b><p>Find bodywork and breathwork practitioners nearby, then call, WhatsApp or email them in one tap. Practitioners add themselves for free.</p></div>
- <div class="f"><div class="i">📒</div><b>Session log for students</b><p>Track your 60 training sessions with client initials, date, duration and notes. Export as PDF or send it by email.</p></div>
- <div class="f soon"><div class="i">🧍</div><b>Body assessment <span class="badge">soon</span></b><p>Body reading and fascial patterns to help plan each session.</p></div>
- <div class="f soon"><div class="i">🌬️</div><b>Breath practices <span class="badge">soon</span></b><p>Coherent breathing, guided unwinding and daily practice.</p></div>
+ <div class="f"><div class="i"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="21" stroke-dasharray="1.5 3.5" opacity=".55"/><path pathLength="100" class="d" d="M24 35s-8-7.5-8-13a8 8 0 0 1 16 0c0 5.5-8 13-8 13z"/><circle cx="24" cy="22" r="2.6"/><path pathLength="100" class="d t" d="M10 30c4 1 6 4 9 5M38 30c-4 1-6 4-9 5M12 16c3 1 4 3 5 5M36 16c-3 1-4 3-5 5"/><circle class="t" cx="10" cy="30" r="1.3"/><circle class="t" cx="38" cy="30" r="1.3"/><circle class="t" cx="12" cy="16" r="1.3"/><circle class="t" cx="36" cy="16" r="1.3"/></svg></div><b>Free practitioner map</b><p>Find bodywork and breathwork practitioners nearby, then call, WhatsApp or email them in one tap. Practitioners add themselves for free.</p></div>
+ <div class="f"><div class="i"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="21" stroke-dasharray="1.5 3.5" opacity=".55"/><rect pathLength="100" class="d" x="15" y="12" width="19" height="25" rx="2.5"/><path d="M19 12v25"/><path pathLength="100" class="d t" d="M22 19c3 1.5 6-1.5 9 0M22 24c3 1.5 6-1.5 9 0M22 29c3 1.5 6-1.5 9 0"/><path d="M13 17h4M13 24h4M13 31h4"/></svg></div><b>Session log for students</b><p>Track your 60 training sessions with client initials, date, duration and notes. Export as PDF or send it by email.</p></div>
+ <div class="f soon"><div class="i"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="21" stroke-dasharray="1.5 3.5" opacity=".55"/><circle cx="24" cy="12.5" r="3"/><path pathLength="100" class="d" d="M24 16v11M24 27l-4 10M24 27l4 10M17 19l7-2 7 2M17 19l-2 8M31 19l2 8"/><path pathLength="100" class="d t" d="M19 21c3 3 7 3 10 0M20 26c2.5 2 5.5 2 8 0M21 31c2-1 4-1 6 0"/></svg></div><b>Body assessment <span class="badge">soon</span></b><p>Body reading and fascial patterns to help plan each session.</p></div>
+ <div class="f soon"><div class="i"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="21" stroke-dasharray="1.5 3.5" opacity=".55"/><path pathLength="100" class="d" d="M24 24c0-2 2.5-2.6 3.4-1 1.4 2.5-1.4 5.5-4.4 4.5-4-1.3-4-7 0-8.8 5.2-2.3 10 2.2 9 7.3-1.2 6.3-9.5 8.4-14 4.4"/><path pathLength="100" class="d t" d="M10 33c3-2 5 2 8 0M30 15c3-2 5 2 8 0M9 17c2.5-1.6 4.5 1.6 7 0"/></svg></div><b>Breath practices <span class="badge">soon</span></b><p>Coherent breathing, guided unwinding and daily practice.</p></div>
 </div>
 
 <h2>A look at the app</h2>
@@ -87,4 +92,5 @@ let dp=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e;$
 $("#instBtn").onclick=async()=>{if(!dp)return;dp.prompt();const r=await dp.userChoice;dp=null;$("#instBtn").hidden=true;if(r.outcome==="accepted")$("#instOk").hidden=false;else $("#aSteps").hidden=false};
 addEventListener("appinstalled",()=>{$("#instBtn").hidden=true;$("#aSteps").hidden=true;$("#instOk").hidden=false});
 if(matchMedia("(display-mode: standalone)").matches)location.replace("app/");
-</script></body></html>
+</script><script>(function(){var c=document.querySelectorAll('.f');if(!('IntersectionObserver'in window)||matchMedia('(prefers-reduced-motion:reduce)').matches){c.forEach(function(e){e.classList.add('seen')});return}var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('seen');o.unobserve(e.target)}})},{threshold:.15});c.forEach(function(e){o.observe(e)})})();</script>
+</body></html>
