@@ -156,6 +156,25 @@ function pinIcon(p,side,loc,withLabel){if(withLabel==null)withLabel=labelsOn();
 // map
 function clusterIcon(cluster){const n=cluster.getChildCount(),size=n<8?40:n<20?48:56;
  return L.divIcon({html:`<div class="clbub" style="--s:${size}px"><b>${n}</b></div>`,className:"clicon",iconSize:[size,size],iconAnchor:[size/2,size/2]})}
+// Lightweight pixel-grid clustering (replaces leaflet.markercluster).
+const LiteCluster=L.LayerGroup.extend({initialize(o){L.LayerGroup.prototype.initialize.call(this);this.o=o||{};this.src=[];this.shown=L.layerGroup()},
+ onAdd(m){this._m=m;this.shown.addTo(m);m.on("zoomend",this._draw,this);this._draw()},
+ onRemove(m){m.off("zoomend",this._draw,this);this.shown.remove()},
+ clearLayers(){this.src=[];this.shown.clearLayers();return this},
+ addLayers(ms){this.src=this.src.concat(ms);this._draw();return this},
+ addLayer(m){return this.addLayers([m])},
+ _draw(){const m=this._m;if(!m)return;this.shown.clearLayers();const z=m.getZoom(),R=this.o.radius||48;
+  if(z>=(this.o.off||15)){this.src.forEach(x=>this.shown.addLayer(x));return}
+  const groups=[];this.src.forEach(x=>{const pt=m.project(x.getLatLng(),z);let g=null;
+   for(const c of groups){if(Math.abs(c.x-pt.x)<R&&Math.abs(c.y-pt.y)<R){g=c;break}}
+   if(g){g.k.push(x);g.x=(g.x*(g.k.length-1)+pt.x)/g.k.length;g.y=(g.y*(g.k.length-1)+pt.y)/g.k.length}else groups.push({x:pt.x,y:pt.y,k:[x]})});
+  groups.forEach(g=>{if(g.k.length===1){this.shown.addLayer(g.k[0]);return}
+   const n=g.k.length,size=n<8?40:n<20?48:56,ll=m.unproject(L.point(g.x,g.y),z);
+   const c=L.marker(ll,{icon:L.divIcon({html:`<div class="clbub" style="--s:${size}px"><b>${n}</b></div>`,className:"clicon",iconSize:[size,size],iconAnchor:[size/2,size/2]}),zIndexOffset:1000});
+   c.on("click",()=>{const b=L.latLngBounds(g.k.map(x=>x.getLatLng()));let need;try{need=m.getBoundsZoom(b,false,L.point(48,48))}catch(e){need=z}
+    if(need<=z+0.01||b.getNorthEast().equals(b.getSouthWest())){const u=new Map();g.k.forEach(x=>{const d=x.options.fa;if(d&&d.p)u.set(d.p.id||d.p.user_id||d.p.name,d.p)});if(u.size)openClusterSheet([...u.values()])}
+    else m.fitBounds(b,{padding:[48,48],maxZoom:Math.min(16,need)})});
+   this.shown.addLayer(c)})}});
 function initMap(){if(map)return renderMarkers();map=L.map("leaf",{zoomControl:true,attributionControl:false}).setView([50,18],4);
  const att='Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors';
  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",{attribution:att,maxZoom:16,className:"base"}).addTo(map);
@@ -163,10 +182,7 @@ function initMap(){if(map)return renderMarkers();map=L.map("leaf",{zoomControl:t
  const Info=L.Control.extend({options:{position:"bottomright"},onAdd(){const d=L.DomUtil.create("div","infoc");d.innerHTML=`<button title="Map credits" aria-label="Map credits">i</button><span hidden>${att} · <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a></span>`;
  L.DomEvent.disableClickPropagation(d);d.firstChild.onclick=()=>{d.lastChild.hidden=!d.lastChild.hidden};return d}});new Info().addTo(map);
  threads=L.layerGroup().addTo(map);
- if(typeof L.markerClusterGroup==="function"){
-  layer=L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:48,spiderfyOnMaxZoom:true,zoomToBoundsOnClick:true,disableClusteringAtZoom:15,iconCreateFunction:clusterIcon});
-  layer.on("clusterclick",onClusterClick);
- }else{layer=L.layerGroup()}
+ layer=new LiteCluster({radius:48,off:15});
  layer.addTo(map);window.map=map;window.layer=layer;
  map.on("zoomend",()=>{const on=labelsOn();if(on!==lastLabels){lastLabels=on;renderMarkers()}});
  renderMarkers()}
