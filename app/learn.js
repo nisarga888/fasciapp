@@ -12,12 +12,14 @@
 // An item with no youtubeId / url shows as "Coming soon".
 // Videos verified via YouTube oEmbed on 11 Oct 2026 (embeddable). "title" = YouTube title as given (bold-Unicode letters shown as plain text).
 window.FASCIAPP_LEARN = [
-  { section: "Videos", title: "Myofascial Energetic Release Training With founder Satyarthi Peloquin", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER · 2:46", type: "youtube", youtubeId: "crpUWY3Bi5M", public: true },
-  { section: "Videos", title: "Myofascial Energetic Release: Revolutionary New Elements", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER · 7:31", type: "youtube", youtubeId: "7b0ziT10Zpw", public: false },
-  { section: "Videos", title: "Psoas Release for Low Back Pain | Myofascial Energetic Release Demo with Satyarthi Peloquin", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER demo · 6:19", type: "youtube", youtubeId: "b4vg4Y_yIMw", public: false },
-  { section: "Videos", title: "Discover the Power of BBTRS®: Explained by Founder Giten Tonkov", by: "Biodynamic Breathwork Trauma Release Institute", line: "BBTRS · 3:14", type: "youtube", youtubeId: "OG9VhxyYjOY", public: true },
-  { section: "Videos", title: "Introduction to BioDynamic Breathwork & Trauma Release System.", by: "Biodynamic Breathwork Trauma Release Institute", line: "BBTRS · 3:11", type: "youtube", youtubeId: "JcWmW2VZ5FU", public: false },
-  { section: "Videos", title: "Biodynamic Breathwork (BBTRS)-Home practice demo with founder Giten Tonkov", by: "Biodynamic Breathwork Trauma Release Institute", line: "BBTRS home practice · 21:27", type: "youtube", youtubeId: "_XN7MuIcOls", public: false },
+  { section: "MER videos", title: "Myofascial Energetic Release Training With founder Satyarthi Peloquin", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER · 2:46", type: "youtube", youtubeId: "crpUWY3Bi5M", public: true },
+  { section: "MER videos", title: "Myofascial Energetic Release: Revolutionary New Elements", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER · 7:31", type: "youtube", youtubeId: "7b0ziT10Zpw", public: false },
+  { section: "MER videos", title: "Psoas Release for Low Back Pain | Myofascial Energetic Release Demo with Satyarthi Peloquin", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER demo · 6:19", type: "youtube", youtubeId: "b4vg4Y_yIMw", public: false },
+  { section: "BBTRS videos", title: "Discover the Power of BBTRS®: Explained by Founder Giten Tonkov", by: "Biodynamic Breathwork Trauma Release Institute", line: "BBTRS · 3:14", type: "youtube", youtubeId: "OG9VhxyYjOY", public: true },
+  { section: "BBTRS videos", title: "Introduction to BioDynamic Breathwork & Trauma Release System.", by: "Biodynamic Breathwork Trauma Release Institute", line: "BBTRS · 3:11", type: "youtube", youtubeId: "JcWmW2VZ5FU", public: false },
+  { section: "BBTRS videos", title: "Biodynamic Breathwork (BBTRS)-Home practice demo with founder Giten Tonkov", by: "Biodynamic Breathwork Trauma Release Institute", line: "BBTRS home practice · 21:27", type: "youtube", youtubeId: "_XN7MuIcOls", public: false },
+  // Fascia & anatomy (oEmbed-checked 11 Oct 2026; 6 others requested were not embeddable and are left out)
+  { section: "Fascia & anatomy", title: "Strolling under the Skin", by: "UKyOrtho", line: "Fascia & anatomy", type: "youtube", youtubeId: "eW0lvOVKDxE", public: true },
   { section: "Ebooks", title: "The Issue Lives in the Tissue", by: "Nisarga Eryk Dobosz", line: "Free Trauma Release ebook. PDF download.", type: "pdf", url: "lab/issue-lives-in-the-tissue.pdf", cover: "lab/issue-lives-in-the-tissue-cover.jpg", public: false },
   { section: "Ebooks", title: "Feel to Heal", by: "Giten Tonkov", line: "Releasing trauma through body awareness and breathwork practice", type: "pdf", url: "lab/feel-to-heal.pdf", cover: "lab/feel-to-heal-cover.jpg?v=2", public: false },
   // Free live sessions: official pages, checked 11 Oct 2026
