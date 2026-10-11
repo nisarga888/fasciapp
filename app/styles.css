@@ -96,3 +96,23 @@ nav button{position:relative}nav .badge{position:absolute;top:2px;right:18%}
 .bub{max-width:80%;padding:7px 10px;border-radius:12px;white-space:pre-wrap;word-break:break-word}.bub small{display:block;font-size:10px;opacity:.6}
 .bub.me{align-self:flex-end;background:#C99E67;color:#02191e}.bub.them{align-self:flex-start;background:#e8f3f2}
 .chatF{display:flex;gap:6px}.chatF textarea{flex:1;margin:0}
+
+/* v0.9.2 map + tab icons */
+body.in{display:flex;flex-direction:column;height:100dvh;max-height:100dvh;overflow:hidden}
+body.in > .banner{flex:none}
+body.in > header{flex:none}
+body.in > main{flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
+body.in > footer.legal{display:none}
+body.in > nav#tabs{position:relative;flex:none;left:auto;right:auto;bottom:auto;width:100%;max-width:480px;margin:0 auto;z-index:1100;display:flex;background:#011114;border-top:1px solid #c99e6744;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));align-items:stretch}
+body.in .screen{padding:16px 16px 20px}
+#map.screen.active{display:flex;flex-direction:column;height:100%;min-height:100%;max-height:100%;padding:12px 12px 8px;box-sizing:border-box;overflow:hidden}
+#map .bar{flex:none;margin-bottom:8px}#map #count{flex:none;margin:0 0 8px}
+#leaf{flex:1 1 auto;min-height:0;height:auto!important;width:100%;border-radius:16px;margin:0;border:1px solid #C99E6766;overflow:hidden;background:#e9efee}
+nav#tabs button{flex:1;min-width:0;border:0;background:none;color:#6f8587;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;border-radius:0;padding:6px 2px 4px;position:relative;font-size:inherit}
+nav#tabs button svg{width:22px;height:22px;display:block;stroke:currentColor;flex:none;opacity:.85}
+nav#tabs button span{font-size:10px;line-height:1.15;letter-spacing:.15px;font-weight:500;white-space:nowrap}
+nav#tabs button.on{color:var(--gold)}
+nav#tabs button.on svg{opacity:1;filter:drop-shadow(0 0 5px #5FC9C3aa) drop-shadow(0 0 1px #C99E67)}
+nav#tabs .badge{position:absolute;top:2px;right:calc(50% - 18px);min-width:16px;height:16px;line-height:16px;padding:0 4px;font-size:10px}
+:root{--nav-h:calc(58px + env(safe-area-inset-bottom,0px))}
+.chat{bottom:calc(8px + var(--nav-h))}

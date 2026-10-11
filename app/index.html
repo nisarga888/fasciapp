@@ -81,7 +81,13 @@
 </section>
 </main>
 <footer class="legal">© 2026 Integral Body Institute. All rights reserved.<br><a href="../terms.html">Terms and Conditions</a> · <a href="../privacy.html">Privacy Policy</a></footer>
-<nav id="tabs"><button data-t="map">🗺<span>Map</span></button><button data-t="list">☰<span>List</span></button><button data-t="profile">👤<span>My profile</span></button><button data-t="inbox" id="tabInbox" hidden>💬<span>Inbox</span><i id="unread" class="badge" hidden>0</i></button><button data-t="log">✎<span>Log</span></button></nav>
+<nav id="tabs">
+<button data-t="map" aria-label="Map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.2-5.6-6.2-10.2a6.2 6.2 0 1 1 12.4 0C18.2 15.4 12 21 12 21z"/><circle cx="12" cy="10.8" r="2.1"/><path d="M6 15.5c2 .8 3.2 2.2 4.5 2.8M18 15.5c-2 .8-3.2 2.2-4.5 2.8" opacity=".55"/></svg><span>Map</span></button>
+<button data-t="list" aria-label="List"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 7h11M9 12h11M9 17h11"/><circle cx="5" cy="7" r="1.15"/><circle cx="5" cy="12" r="1.15"/><circle cx="5" cy="17" r="1.15"/></svg><span>List</span></button>
+<button data-t="profile" aria-label="My profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.2"/><path d="M5.2 19c1.6-3.3 3.9-4.6 6.8-4.6s5.2 1.3 6.8 4.6"/></svg><span>My profile</span></button>
+<button data-t="inbox" id="tabInbox" aria-label="Inbox" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7.5h11a3.2 3.2 0 0 1 3.2 3.2v4a3.2 3.2 0 0 1-3.2 3.2h-4.2L8.2 21.5V17.9H5A3.2 3.2 0 0 1 1.8 14.7v-4A3.2 3.2 0 0 1 5 7.5z"/><path d="M7.5 12h6.5M7.5 14.6h4" opacity=".7"/></svg><span>Inbox</span><i id="unread" class="badge" hidden>0</i></button>
+<button data-t="log" aria-label="Log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.8h8.2A2.2 2.2 0 0 1 18.4 6v12a2.2 2.2 0 0 1-2.2 2.2H8A2.2 2.2 0 0 1 5.8 18V6A2.2 2.2 0 0 1 8 3.8z"/><path d="M9.5 9h5.5M9.5 12.5h5.5M9.5 16h3.5"/><path d="M14.8 3.8v16.4" opacity=".45"/></svg><span>Log</span></button>
+</nav>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
