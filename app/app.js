@@ -2,7 +2,7 @@ const CITY={tallinn:[59.437,24.7536],warsaw:[52.2297,21.0122],warszawa:[52.2297,
 const DEMO=[];
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
 var MSG_OK=false,msgs=[],chatWith=null,pollT=null,unsub=null;
-let me=null,people=[],here=null,map,layer,photoData=null,signUpMode=true,didFit=false;
+let me=null,people=[],here=null,map,layer,threads,photoData=null,signUpMode=true,didFit=false,labelZoom=8,lastLabels=null;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const all=()=>DEMO.concat(people);
 const SUG=['MER', 'BBTRS', 'Biodynamic Breathwork', 'Breathwork', 'Massage', 'Craniosacral', 'Somatic therapy', 'Trauma therapy', 'Yoga'];let myMods=[];
@@ -11,7 +11,7 @@ function addTag(){const v=$("#modNew").value.trim().replace(/\s+/g," ");if(v&&!m
 $("#modAdd").onclick=addTag;$("#modNew").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addTag()}};
 function fillFilter(){const f=$("#filter"),v=f.value,set=[...new Set(SUG.concat(all().flatMap(p=>p.mods||[])))];f.innerHTML=`<option value="">All practices</option>`+set.map(m=>`<option${m===v?" selected":""}>${esc(m)}</option>`).join("")}
 
-function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
+window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();if(t==="profile")loadProf();if(t==="log")loadLog();if(t==="inbox")renderInbox();window.scrollTo(0,0)}
 function hdr(){$("#tabInbox").hidden=!(MSG_OK&&me);$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 async function refresh(){try{people=await DB.list()}catch(e){console.warn(e);people=[]}fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true)}
@@ -68,7 +68,10 @@ function spiderfy(entries){const TH=0.0009,used=new Set(),placed=entries.map(e=>
  for(let oi=1;oi<order.length;oi++){const cur=placed[order[oi]],prev=placed[order[oi-1]];
   if(Math.abs(cur.lat-prev.lat)<.55&&Math.abs(cur.lng-prev.lng)<.55&&cur.side===prev.side)cur.side=prev.side==="right"?"left":"right"}
  return placed}
-function pinIcon(p,side,loc){const title=practiceTitle(p),mods=pinModsHtml(p);
+function labelsOn(){return!!map&&map.getZoom()>=labelZoom}
+function pinIcon(p,side,loc,withLabel){if(withLabel==null)withLabel=labelsOn();
+ if(!withLabel){return L.divIcon({className:"avm",html:`<div class="pin bare">${av(p)}</div>`,iconSize:[44,44],iconAnchor:[22,22]})}
+ const title=practiceTitle(p),mods=pinModsHtml(p);
  const locLab=String(loc&&loc.label||"").trim();
  const tLow=title.toLowerCase(),nLow=String(p.name||"").toLowerCase();
  const showLoc=!!locLab&&locLab.toLowerCase()!==tLow&&locLab.toLowerCase()!==nLow;
@@ -77,34 +80,63 @@ function pinIcon(p,side,loc){const title=practiceTitle(p),mods=pinModsHtml(p);
  return L.divIcon({className:"avm",html,iconSize:[188,78],iconAnchor:side==="left"?[166,39]:[22,39]})}
 
 // map
+function clusterIcon(cluster){const n=cluster.getChildCount(),size=n<8?40:n<20?48:56;
+ return L.divIcon({html:`<div class="clbub" style="--s:${size}px"><b>${n}</b></div>`,className:"clicon",iconSize:[size,size],iconAnchor:[size/2,size/2]})}
 function initMap(){if(map)return renderMarkers();map=L.map("leaf",{zoomControl:true,attributionControl:false}).setView([50,18],4);
  const att='Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors';
  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",{attribution:att,maxZoom:16,className:"base"}).addTo(map);
  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",{maxZoom:16,className:"labels"}).addTo(map);
  const Info=L.Control.extend({options:{position:"bottomright"},onAdd(){const d=L.DomUtil.create("div","infoc");d.innerHTML=`<button title="Map credits" aria-label="Map credits">i</button><span hidden>${att} · <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a></span>`;
  L.DomEvent.disableClickPropagation(d);d.firstChild.onclick=()=>{d.lastChild.hidden=!d.lastChild.hidden};return d}});new Info().addTo(map);
- layer=L.layerGroup().addTo(map);renderMarkers()}
+ threads=L.layerGroup().addTo(map);
+ if(typeof L.markerClusterGroup==="function"){
+  layer=L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:48,spiderfyOnMaxZoom:true,zoomToBoundsOnClick:true,disableClusteringAtZoom:15,iconCreateFunction:clusterIcon});
+  layer.on("clusterclick",onClusterClick);
+ }else{layer=L.layerGroup()}
+ layer.addTo(map);window.map=map;window.layer=layer;
+ map.on("zoomend",()=>{const on=labelsOn();if(on!==lastLabels){lastLabels=on;renderMarkers()}});
+ renderMarkers()}
+function onClusterClick(e){if(!map||!e.layer)return;const cluster=e.layer,bounds=cluster.getBounds();
+ let needZ;try{needZ=map.getBoundsZoom(bounds,false,L.point(48,48))}catch(err){needZ=map.getZoom()}
+ // At (or beyond) the zoom that would separate them → show list sheet
+ if(needZ<=map.getZoom()+0.01){const kids=cluster.getAllChildMarkers()||[];const uniq=new Map();
+  kids.forEach(m=>{const d=m.options&&m.options.fa;if(d&&d.p)uniq.set(d.p.id||d.p.user_id||d.p.name,d.p)});
+  if(uniq.size){openClusterSheet([...uniq.values()]);}}}
+function openClusterSheet(list){const sheet=$("#areaSheet"),back=$("#sheetBackdrop"),box=$("#sheetList");
+ if(!sheet)return;$("#sheetSub").textContent=list.length+" practitioner"+(list.length>1?"s":"");
+ box.innerHTML=list.map(p=>`<div class="item sheetItem" data-id="${esc(p.id||p.user_id||"")}">${card(p)}</div>`).join("");
+ sheet.hidden=false;back.hidden=false;
+ $$("#sheetList .sheetItem").forEach(el=>el.onclick=()=>{const id=el.dataset.id;const p=list.find(x=>(x.id||x.user_id)===id)||list[0];closeClusterSheet();if(p&&map){const loc=pins(p)[0];if(loc)map.setView([loc.lat,loc.lng],14);}})}
+function closeClusterSheet(){const s=$("#areaSheet"),b=$("#sheetBackdrop");if(s)s.hidden=true;if(b)b.hidden=true}
+document.addEventListener("click",e=>{if(e.target&&(e.target.id==="sheetX"||e.target.id==="sheetBackdrop"))closeClusterSheet()});
 function curve(a,b){const pts=[],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,dx=b[0]-a[0],dy=b[1]-a[1],c=[mx-dy*.2,my+dx*.2];
  for(let t=0;t<=1.001;t+=.05)pts.push([(1-t)**2*a[0]+2*(1-t)*t*c[0]+t*t*b[0],(1-t)**2*a[1]+2*(1-t)*t*c[1]+t*t*b[1]]);return pts}
-function drawThreads(ps){const seen=new Set();ps.forEach(p=>ps.filter(q=>q!==p).map(q=>[q,dist(q,[p.lat,p.lng])]).sort((x,y)=>x[1]-y[1]).slice(0,3).forEach(([q])=>{
- const k=[p.id,q.id].sort().join("|");if(seen.has(k))return;seen.add(k);const c=curve([p.lat,p.lng],[q.lat,q.lng]);
- L.polyline(c,{color:"#2a9d96",weight:9,opacity:.28,className:"glow",interactive:false}).addTo(layer);
- L.polyline(c,{color:"#B8873F",weight:2.6,opacity:1,className:"thread",interactive:false}).addTo(layer)}))}
+function drawThreads(ps){const dest=threads||layer;if(!dest)return;const seen=new Set();ps.forEach(p=>ps.filter(q=>q!==p).map(q=>[q,dist(q,[p.lat,p.lng])]).sort((x,y)=>x[1]-y[1]).slice(0,3).forEach(([q])=>{
+ const k=[p.id,q.id].sort().join("|");if(seen.has(k))return;seen.add(k);if(p.lat==null||q.lat==null)return;const c=curve([p.lat,p.lng],[q.lat,q.lng]);
+ L.polyline(c,{color:"#2a9d96",weight:9,opacity:.28,className:"glow",interactive:false}).addTo(dest);
+ L.polyline(c,{color:"#B8873F",weight:2.6,opacity:1,className:"thread",interactive:false}).addTo(dest)}))}
 function count(){const a=all(),c=new Set(a.map(p=>(p.country||p.city||"").trim().toLowerCase()).filter(Boolean));
  $("#count").innerHTML=a.length?`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"} joined the network`:"Be the first practitioner on the map ✨"}
 function fitPins(force){if(!map)return;const pts=[];filtered().forEach(p=>pins(p).forEach(l=>{if(l.lat!=null&&l.lng!=null)pts.push([+l.lat,+l.lng])}));
  if(!pts.length)return;if(!force&&didFit)return;
  try{if(pts.length===1)map.setView(pts[0],10,{animate:false});
  else{const b=L.latLngBounds(pts),span=Math.max(Math.abs(b.getNorth()-b.getSouth()),Math.abs(b.getEast()-b.getWest()));
-  if(span>6){// far-apart locations (e.g. Tallinn + Lesvos): focus densest local cluster
-   let best=pts[0],bestN=0;pts.forEach(a=>{const n=pts.filter(c=>Math.abs(a[0]-c[0])<1.2&&Math.abs(a[1]-c[1])<1.2).length;if(n>bestN){bestN=n;best=a}});
+  if(span>6){let best=pts[0],bestN=0;pts.forEach(a=>{const n=pts.filter(c=>Math.abs(a[0]-c[0])<1.2&&Math.abs(a[1]-c[1])<1.2).length;if(n>bestN){bestN=n;best=a}});
    map.setView(best,10,{animate:false})}
   else map.fitBounds(b,{padding:[56,56],maxZoom:10,animate:false})}
- didFit=true;setTimeout(()=>map&&map.invalidateSize(),60)}catch(e){console.warn(e)}}
-function renderMarkers(){count();if(!layer)return;layer.clearLayers();const ps=filtered();drawThreads(ps);
- const entries=[];ps.forEach(p=>pins(p).forEach(l=>entries.push({p,l})));
- spiderfy(entries).forEach(({p,l,lat,lng,side})=>{L.marker([lat,lng],{icon:pinIcon(p,side,l)}).bindPopup(card(p)).addTo(layer)});
- if(here)L.circleMarker(here,{radius:7,color:"#fff",weight:3,fillColor:"#2a9d96",fillOpacity:1}).bindPopup("You are here").addTo(layer);
+ didFit=true;lastLabels=labelsOn();setTimeout(()=>map&&map.invalidateSize(),60)}catch(e){console.warn(e)}}
+function labelSides(entries){const sides=new Map();const order=entries.map((e,i)=>i).sort((a,b)=>entries[a].lng-entries[b].lng||entries[a].lat-entries[b].lat);
+ order.forEach((ix,oi)=>{let side="right";if(oi){const cur=entries[ix],prev=entries[order[oi-1]];
+  if(Math.abs(cur.lat-prev.lat)<.55&&Math.abs(cur.lng-prev.lng)<.55)side=sides.get(order[oi-1])==="right"?"left":"right"}
+  sides.set(ix,side)});return sides}
+function renderMarkers(){count();if(!layer)return;layer.clearLayers();if(threads)threads.clearLayers();const ps=filtered();drawThreads(ps);
+ const entries=[];ps.forEach(p=>pins(p).forEach(l=>{if(l.lat!=null&&l.lng!=null)entries.push({p,l,lat:+l.lat,lng:+l.lng})}));
+ const sides=labelSides(entries),withLabel=labelsOn();lastLabels=withLabel;
+ const ms=entries.map((e,i)=>{const side=sides.get(i)||"right";
+  const m=L.marker([e.lat,e.lng],{icon:pinIcon(e.p,side,e.l,withLabel),fa:{p:e.p,l:e.l}});
+  m.bindPopup(()=>card(e.p));return m});
+ if(layer.addLayers)layer.addLayers(ms);else ms.forEach(m=>m.addTo(layer));
+ if(here)L.circleMarker(here,{radius:7,color:"#fff",weight:3,fillColor:"#2a9d96",fillOpacity:1}).bindPopup("You are here").addTo(threads||layer);
  if(ps.length&&!didFit)fitPins(true)}
 $("#filter").onchange=()=>{renderMarkers();renderList()};
 $("#near").onclick=()=>{if(!navigator.geolocation)return alert("Location is not available in this browser");navigator.geolocation.getCurrentPosition(pos=>{here=[pos.coords.latitude,pos.coords.longitude];didFit=true;map.setView(here,7);renderMarkers()},()=>alert("Could not get your location. Allow location access and try again."))};
