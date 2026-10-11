@@ -13,7 +13,7 @@ function fillFilter(){const f=$("#filter"),v=f.value,set=[...new Set(SUG.concat(
 
 window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();if(t==="profile")loadProf();if(t==="log")loadLog();if(t==="inbox")renderInbox();window.scrollTo(0,0)}
-function hdr(){$("#tabInbox").hidden=!(MSG_OK&&me);$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
+function hdr(){$("#tabInbox").hidden=false;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 async function refresh(){try{people=await DB.list()}catch(e){console.warn(e);people=[]}fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true)}
 
 // navigation
@@ -26,10 +26,28 @@ async function logout(){await DB.signOut();me=null;msgs=[];closeChat();photoData
 $("#hOut").onclick=logout;$("#pOut").onclick=logout;
 
 // auth
-function setMode(up){signUpMode=up;$("#tabUp").classList.toggle("on",up);$("#tabIn").classList.toggle("on",!up);
+function showAuthMain(){$("#authForm").hidden=false;$("#forgotForm").hidden=true;$("#resetForm").hidden=true;$("#authLook").parentElement.hidden=false}
+function showForgot(){$("#authForm").hidden=true;$("#forgotForm").hidden=false;$("#resetForm").hidden=true;$("#authTitle").textContent="Reset your password";
+ $("#forgotMsg").textContent="";$("#forgotEmail").value=$("#email").value||"";$("#forgotEmail").focus()}
+function showResetForm(){show("auth");$("#authForm").hidden=true;$("#forgotForm").hidden=true;$("#resetForm").hidden=false;
+ $("#authTitle").textContent="Set new password";$$(".seg").forEach(s=>s.hidden=true);
+ $("#authLook").parentElement.hidden=true;$("#resetMsg").textContent="";$("#newPw").value="";$("#newPw2").value=""}
+function setMode(up){signUpMode=up;showAuthMain();$$(".seg").forEach(s=>s.hidden=false);
+ $("#tabUp").classList.toggle("on",up);$("#tabIn").classList.toggle("on",!up);
  $("#authTitle").textContent=up?"Create your practitioner account":"Welcome back";$("#authBtn").textContent=up?"Create account":"Sign in";$("#authMsg").textContent="";
- $("#pw").autocomplete=up?"new-password":"current-password";$("#agreeL").hidden=!up}
+ $("#pw").autocomplete=up?"new-password":"current-password";$("#agreeL").hidden=!up;$("#forgotWrap").hidden=up}
 $("#tabUp").onclick=()=>setMode(true);$("#tabIn").onclick=()=>setMode(false);
+$("#forgotLink").onclick=e=>{e.preventDefault();showForgot()};
+$("#forgotBack").onclick=()=>{setMode(false)};
+$("#forgotForm").onsubmit=async e=>{e.preventDefault();const em=$("#forgotEmail").value.trim().toLowerCase(),m=$("#forgotMsg");
+ if(!em){m.textContent="Please enter your email.";return}m.textContent="Sending…";
+ try{await DB.resetPassword(em);m.textContent="Check your email — we sent a link to set a new password. It may take a minute to arrive."}catch(err){m.textContent=err.message||"Could not send the reset link."}};
+$("#resetForm").onsubmit=async e=>{e.preventDefault();const a=$("#newPw").value,b=$("#newPw2").value,m=$("#resetMsg");
+ if(a.length<6){m.textContent="Use at least 6 characters.";return}if(a!==b){m.textContent="The two passwords do not match.";return}
+ m.textContent="Saving…";
+ try{me=await DB.updatePassword(a);m.textContent="Password updated ✓ You are signed in.";
+  try{const u=new URL(location.href);u.searchParams.delete("reset");history.replaceState({},"",u.pathname+u.search+u.hash.replace(/access_token=[^&]+/g,""))}catch(e){}
+  hdr();await refresh();msgInit();setTimeout(()=>show("profile"),600)}catch(err){m.textContent=err.message||"Could not update password."}};
 $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please confirm you are 18+ and accept the Terms and Privacy Policy.";return}m.textContent="…";
  try{me=signUpMode?await DB.signUp(em,pw):await DB.signIn(em,pw);m.textContent="";hdr();await refresh();msgInit();show("profile")}catch(err){m.textContent=err.message}};
 
@@ -115,7 +133,20 @@ function drawThreads(ps){const dest=threads||layer;if(!dest)return;const seen=ne
  const k=[p.id,q.id].sort().join("|");if(seen.has(k))return;seen.add(k);if(p.lat==null||q.lat==null)return;const c=curve([p.lat,p.lng],[q.lat,q.lng]);
  L.polyline(c,{color:"#2a9d96",weight:9,opacity:.28,className:"glow",interactive:false}).addTo(dest);
  L.polyline(c,{color:"#B8873F",weight:2.6,opacity:1,className:"thread",interactive:false}).addTo(dest)}))}
-function count(){const a=all(),c=new Set(a.map(p=>(p.country||p.city||"").trim().toLowerCase()).filter(Boolean));
+const CITY_CC={tallinn:"estonia",warsaw:"poland",warszawa:"poland",krakow:"poland","kraków":"poland",kielce:"poland",berlin:"germany",lesvos:"greece","lesvos island":"greece",mytilene:"greece",helsinki:"finland",riga:"latvia",vilnius:"lithuania",stockholm:"sweden",oslo:"norway",copenhagen:"denmark",athens:"greece",thessaloniki:"greece"};
+const CC_ALIAS={usa:"united states",us:"united states","u.s.":"united states","u.s.a.":"united states",uk:"united kingdom","great britain":"united kingdom",england:"united kingdom",czechia:"czech republic",holland:"netherlands","ελλάς":"greece","ελλάδα":"greece"};
+function normCountry(c){c=String(c||"").trim().toLowerCase();if(!c)return"";return CC_ALIAS[c]||c}
+function guessCountry(lat,lng){if(lat==null||lng==null)return"";
+ if(lat>57.5&&lat<60.5&&lng>21&&lng<29)return"estonia";
+ if(lat>38.8&&lat<41.8&&lng>19&&lng<29.5)return"greece";
+ if(lat>49&&lat<55&&lng>14&&lng<25)return"poland";
+ if(lat>47&&lat<55.5&&lng>5&&lng<16)return"germany";
+ if(lat>59.5&&lat<70.5&&lng>10&&lng<32)return"finland";
+ return""}
+function countriesOf(p){const set=new Set();const locs=(p.locations&&p.locations.length)?p.locations:[{country:p.country,city:p.city,lat:p.lat,lng:p.lng}];
+ locs.forEach(l=>{let c=normCountry(l.country);if(!c)c=normCountry(CITY_CC[(l.city||"").trim().toLowerCase()]);
+  if(!c)c=guessCountry(l.lat!=null?+l.lat:null,l.lng!=null?+l.lng:null);if(c)set.add(c)});return set}
+function count(){const a=all(),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
  $("#count").innerHTML=a.length?`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"} joined the network`:"Be the first practitioner on the map ✨"}
 function fitPins(force){if(!map)return;const pts=[];filtered().forEach(p=>pins(p).forEach(l=>{if(l.lat!=null&&l.lng!=null)pts.push([+l.lat,+l.lng])}));
  if(!pts.length)return;if(!force&&didFit)return;
@@ -166,10 +197,15 @@ $("#photo").onchange=e=>{const file=e.target.files[0];if(!file)return;const r=ne
  $("#demoBanner").hidden=DB.mode!=="local";
  me=await DB.session().catch(()=>null);hdr();
  await refresh();
- // If we somehow booted in local mode while config has Supabase, reload once after libs settle
  if(DB.mode==="local"&&window.FASCIAPP_CONFIG&&FASCIAPP_CONFIG.SUPABASE_URL&&window.supabase&&!sessionStorage.getItem("fa_sb_retry")){
   sessionStorage.setItem("fa_sb_retry","1");location.reload();return}
  msgInit();
+ // Password recovery: link lands on /app/?reset=1 (Supabase also fires PASSWORD_RECOVERY)
+ let recovery=false;
+ const wantReset=(()=>{try{return new URLSearchParams(location.search).get("reset")==="1"}catch(e){return false}})();
+ if(DB.onAuth)DB.onAuth((event)=>{if(event==="PASSWORD_RECOVERY"){recovery=true;showResetForm()}});
+ if(wantReset){// give the client a moment to pick up hash tokens from the email link
+  setTimeout(async()=>{if(recovery)return;const s=await DB.session().catch(()=>null);if(s||wantReset)showResetForm()},400)}
 })();
 
 // ===== Session log =====
@@ -255,7 +291,10 @@ async function pullMsgs(){if(!MSG_OK||!me)return;try{msgs=await DB.msgs()}catch(
  if(chatWith)renderChat();if($("#inbox").classList.contains("active"))renderInbox()}
 function convs(){const c={};msgs.forEach(m=>{const o=m.sender===me.user_id?m.recipient:m.sender;(c[o]=c[o]||[]).push(m)});
  return Object.entries(c).map(([o,l])=>({o,last:l[l.length-1],un:l.filter(m=>m.recipient===me.user_id&&!m.read_at).length})).sort((a,b)=>b.last.created_at.localeCompare(a.last.created_at))}
-function renderInbox(){const box=$("#convs");if(!me){box.innerHTML="<p class=muted>Sign in to see your messages.</p>";return}
+function renderInbox(){const box=$("#convs");
+ if(!me){box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1" data-go="auth">Sign in</button></div>`;
+  box.querySelector("[data-go]")&&(box.querySelector("[data-go]").onclick=()=>show("auth"));return}
+ if(!MSG_OK){box.innerHTML="<p class=muted>Messaging is not available right now. Try again later.</p>";return}
  const cs=convs();box.innerHTML=cs.map(c=>{const p=all().find(x=>x.user_id===c.o)||{name:nameOf(c.o)};return `<div class="item conv" data-c="${esc(c.o)}"><div class="row">${av(p)}<div><b>${esc(p.name)}</b>${c.un?` <span class="badge">${c.un}</span>`:""}<br><small class=muted>${esc(c.last.body.slice(0,80))}</small></div></div></div>`}).join("")||"<p class=muted>No messages yet. Open a practitioner on the map and tap Message.</p>";
  $$("#convs .conv").forEach(d=>d.onclick=()=>openChat(d.dataset.c))}
 async function openChat(id){if(!me){show("auth");return}chatWith=id;$("#chatName").textContent=nameOf(id);$("#chat").hidden=false;renderChat();$("#chatTxt").focus();

@@ -37,7 +37,12 @@ const local={mode:"local",
  async saveSession(x){const s=await this.session();const all=LS.get("fyp_sessions",{}),l=all[s.user_id]||[];const i=l.findIndex(r=>r.id===x.id);
   const row={...pickS(x),id:x.id||crypto.randomUUID(),user_id:s.user_id,created_at:i>=0?l[i].created_at:new Date().toISOString()};if(i>=0)l[i]=row;else l.push(row);all[s.user_id]=l;LS.set("fyp_sessions",all);return row},
  async deleteSession(id){const s=await this.session();const all=LS.get("fyp_sessions",{});all[s.user_id]=(all[s.user_id]||[]).filter(r=>r.id!==id);LS.set("fyp_sessions",all)},
- async msgOk(){return false}};
+ async msgOk(){return false},
+ async resetPassword(email){throw new Error("Password reset needs the live FasciApp server. Open the app at app.bodyawareness.ee and try again.")},
+ async updatePassword(){throw new Error("Password reset needs the live FasciApp server.")},
+ onAuth(){return ()=>{}}};
+
+
 
 let noLocCol=false,noPracticeCol=false;
 function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
@@ -50,6 +55,10 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   async signUp(email,pw){const d=chk(await sb.auth.signUp({email,password:pw}));if(!d.session)throw new Error("Account created. Check your email to confirm it, then sign in.");return sess()},
   async signIn(email,pw){chk(await sb.auth.signInWithPassword({email,password:pw}));return sess()},
   async signOut(){await sb.auth.signOut()},
+  async resetPassword(email){const redirectTo=location.origin.replace(/\/$/,"")+"/app/?reset=1";
+   chk(await sb.auth.resetPasswordForEmail(email,{redirectTo}));return true},
+  async updatePassword(password){chk(await sb.auth.updateUser({password}));return sess()},
+  onAuth(cb){try{const {data:{subscription}}=sb.auth.onAuthStateChange((event,session)=>cb(event,session));return ()=>subscription.unsubscribe()}catch(e){return ()=>{}}},
   async list(){return chk(await sb.from("practitioners").select("*").order("created_at")).map(norm)},
   async mine(){const s=await sess();if(!s)return null;return norm(chk(await sb.from("practitioners").select("*").eq("user_id",s.user_id).maybeSingle()))},
   async save(p){const s=await sess();const pn=(p.practice_name||"").trim()||null;let L=stripLocMeta(p.locations||[]);
