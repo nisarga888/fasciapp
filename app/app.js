@@ -35,7 +35,9 @@ function renderPlaceMenu(){const box=$("#placeMenu");if(!box)return;const q=fold
  $$("#placeMenu button").forEach(b=>b.onclick=()=>{const i=$("#qPlace");if(i)i.value=b.dataset.place;closePlaceMenu();renderList();renderMarkers()})}
 
 
-function applyDeepLink(){try{const sp=new URLSearchParams(location.search);const practice=(sp.get("practice")||sp.get("mod")||"").trim();const place=(sp.get("place")||sp.get("city")||"").trim();
+function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
+ if(sp.get("join")==="1"){if(me){show("profile");return true}setMode(true);show("auth");return true}
+ const practice=(sp.get("practice")||sp.get("mod")||"").trim();const place=(sp.get("place")||sp.get("city")||"").trim();
  if(!practice&&!place)return false;fillFilter();let hit=false;
  if(practice){const want=fold(practice);["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;const opt=[...el.options].find(o=>o.value&&(fold(o.value)===want||fold(o.value).includes(want)||want.includes(fold(o.value))));if(opt){el.value=opt.value;hit=true}})}
  if(place){const q=$("#qPlace");if(q){q.value=place;hit=true}}
