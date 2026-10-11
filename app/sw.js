@@ -1,7 +1,7 @@
 // FasciApp service worker. Bump VERSION on every release.
 // App JS/CSS: network-first so Safari/PWA picks up updates. Other shell: cache-first.
-const VERSION="fasciapp-v0.18.0";
-const SHELL=["./","index.html","styles.css","app.js","data.js","config.js","logo.svg","manifest.json","icon-192-v3.png","icon-512-v3.png","apple-touch-icon-v3.png",
+const VERSION="fasciapp-v0.18.1";
+const SHELL=["./","index.html","styles.css","app.js","data.js","config.js","logo.svg","manifest.json","icon-192-v4.png","icon-512-v4.png","apple-touch-icon-v4.png","favicon-32-v4.png","favicon-16-v4.png","icon-512-maskable-v4.png",
  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css","https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
  "https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css",
  "https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css",
