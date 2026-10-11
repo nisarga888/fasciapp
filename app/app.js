@@ -20,7 +20,7 @@ async function refresh(){try{people=await DB.list()}catch(e){console.warn(e);peo
 $("#goLook").onclick=()=>show("map");$("#authLook").onclick=e=>{e.preventDefault();show("map")};
 $("#goPract").onclick=()=>me?show("profile"):show("auth");
 $$("[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.go));
-const logoHome=$("#logoHome");if(logoHome)logoHome.onclick=()=>{if(document.body.classList.contains("in"))show("map")};
+const logoHome=$("#logoHome");if(logoHome)logoHome.onclick=()=>show("splash");
 $$("nav button").forEach(b=>b.onclick=()=>show(b.dataset.t));
 $("#hIn").onclick=()=>show("auth");$("#hEdit").onclick=()=>show("profile");
 async function logout(){await DB.signOut();me=null;msgs=[];closeChat();photoData=null;hdr();await refresh();show("splash")}
