@@ -41,9 +41,10 @@ function renderPlaceMenu(){const box=$("#placeMenu");if(!box)return;const q=fold
 
 function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(sp.get("join")==="1"){if(me){show("profile");return true}setMode(true);show("auth");return true}
+ if(sp.get("search")==="1"){show("list");const q=$("#qPlace");if(q){requestAnimationFrame(()=>{q.focus();if(typeof openPlaceMenu==="function")openPlaceMenu()})}return true}
  const practice=(sp.get("practice")||sp.get("mod")||"").trim();const place=(sp.get("place")||sp.get("city")||"").trim();
- if(!practice&&!place)return false;fillFilter();let hit=false;
- if(practice){const want=fold(practice);["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;const opt=[...el.options].find(o=>o.value&&(fold(o.value)===want||fold(o.value).includes(want)||want.includes(fold(o.value))));if(opt){el.value=opt.value;hit=true}})}
+ let hit=false;
+ if(practice){["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(el){el.value=practice;hit=true}});if(typeof syncModFilter==="function")syncModFilter()}
  if(place){const q=$("#qPlace");if(q){q.value=place;hit=true}}
  if(hit){renderMarkers();renderList();show("list");return true}return false}catch(e){return false}}
 window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
