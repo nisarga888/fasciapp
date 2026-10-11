@@ -2,7 +2,7 @@
 *{box-sizing:border-box}body{margin:0;font-family:Montserrat,sans-serif;background:var(--bg);color:var(--tx);max-width:480px;margin:auto;min-height:100vh}
 .screen{display:none;padding:16px 16px 90px}.screen.active{display:block}
 #splash{text-align:center;padding-top:48px}#splash h1{font-weight:300;font-size:34px;letter-spacing:1px;margin:8px 0;color:var(--gold)}
-.logo{font-size:52px;color:var(--gold)}.tag{color:var(--mut);margin-bottom:24px}.founding{font-size:11px;color:var(--mut);letter-spacing:1px;text-transform:uppercase;margin-top:28px}
+.logo{font-size:52px;color:var(--gold)}.founding{font-size:11px;color:var(--mut);letter-spacing:1px;text-transform:uppercase;margin-top:28px}
 .card{background:var(--card);border:1px solid #c99e6733;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;text-align:left}
 input,select,textarea{font:inherit;padding:12px;border-radius:10px;border:1px solid #c99e6744;background:#02191E;color:var(--tx)}
 button{font:inherit;cursor:pointer;border-radius:24px;padding:12px;border:1px solid var(--gold)}.gold{background:var(--gold);color:var(--bg);font-weight:600}.ghost{background:none;color:var(--gold)}.sm{padding:6px 14px;font-size:13px}
@@ -20,6 +20,7 @@ h2{font-weight:400;color:var(--gold)}.muted{color:var(--mut);font-size:13px}
 .biglogo{width:150px;height:150px;filter:drop-shadow(0 0 18px #5FC9C355)}
 .brandline{letter-spacing:4px;text-transform:uppercase;font-size:12px;color:#5FC9C3;margin-top:6px}
 .slogan{font-style:italic;color:var(--gold);margin:4px 0}
+.tagline{display:inline-block;margin:10px 0 24px;padding:8px 16px;border-radius:999px;background:rgba(49,163,163,0.12);border:1px solid rgba(95,201,195,0.55);color:var(--gold);font-size:13px;line-height:1.35;max-width:92%}
 .hb{display:flex;gap:10px;align-items:center}.hb img{width:34px}.hb small{display:block;font-size:10px;letter-spacing:2px;color:#5FC9C3;text-transform:uppercase}
 .count{font-size:12px;color:var(--mut);margin:-2px 0 8px;text-align:center}.count b{color:var(--gold)}
 #leaf{background:#02191E;border:1px solid #c99e6733;height:calc(100vh - 235px)}
@@ -89,7 +90,7 @@ footer.legal{text-align:center;font-size:11px;opacity:.7;padding:18px 10px 90px}
 .badge{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:#d9534f;color:#fff;font-size:11px;font-style:normal;line-height:18px;text-align:center}
 nav button{position:relative}nav .badge{position:absolute;top:2px;right:18%}
 .conv{cursor:pointer}
-.chat{position:fixed;left:8px;right:8px;bottom:70px;max-width:480px;margin:auto;max-height:70vh;display:flex;flex-direction:column;background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.3);z-index:2000;padding:10px}
+.chat{position:fixed;left:8px;right:8px;bottom:70px;max-width:480px;margin:auto;max-height:70vh;display:flex;flex-direction:column;background:#fff;color:#02191e;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.3);z-index:2000;padding:10px}
 .chat[hidden]{display:none}.chatH{display:flex;justify-content:space-between;align-items:center;padding:4px 6px}
 .chatLog{flex:1;overflow:auto;padding:6px;display:flex;flex-direction:column;gap:6px;min-height:120px}
 .bub{max-width:80%;padding:7px 10px;border-radius:12px;white-space:pre-wrap;word-break:break-word}.bub small{display:block;font-size:10px;opacity:.6}
