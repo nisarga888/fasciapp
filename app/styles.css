@@ -118,10 +118,15 @@ nav#tabs .badge{position:absolute;top:2px;right:calc(50% - 18px);min-width:16px;
 .chat{bottom:calc(8px + var(--nav-h))}
 
 /* v0.9.3 practice labels */
-.pin{position:relative;display:flex;align-items:center;gap:5px;height:48px;pointer-events:none}
+.pin{position:relative;display:flex;align-items:center;gap:5px;min-height:48px;height:auto;pointer-events:none}
 .pin.left{flex-direction:row-reverse}
 .pin .av{pointer-events:auto;flex:none;box-shadow:0 2px 10px #02191E55,0 0 0 3px #fff8}
-.pinlab{pointer-events:none;background:#0a2a30f2;color:#C99E67;font:600 11px/1.25 Montserrat,sans-serif;padding:4px 9px;border-radius:999px;border:1px solid #C99E6788;white-space:nowrap;max-width:118px;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 10px #02191E66;letter-spacing:.2px}
+.pinlab{pointer-events:none;display:flex;flex-direction:column;gap:2px;background:#0a2a30f2;color:#C99E67;padding:4px 8px;border-radius:12px;border:1px solid #C99E6788;max-width:128px;box-shadow:0 2px 10px #02191E66}
+.pintitle{font:600 11px/1.2 Montserrat,sans-serif;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:112px}
+.pinmods{display:flex;flex-wrap:wrap;align-items:center;gap:2px;line-height:1}
+.pinmods i{font-style:normal;font:600 9px/1.1 Montserrat,sans-serif;color:#5FC9C3;background:#5FC9C328;border:1px solid #5FC9C355;padding:1px 5px;border-radius:6px;white-space:nowrap}
+.pinmods i.more{color:#C99E67;background:#C99E6722;border-color:#C99E6755}
+.pinmods .dot{color:#C99E6788;font-size:9px;padding:0 1px}
 .who{color:#6b7b7a;font-size:13px}
 .leaflet-popup-content .who{color:#5a6a69}
 .avm{background:transparent!important;border:0!important}

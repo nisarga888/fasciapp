@@ -50,16 +50,27 @@ function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</
  const btns=[MSG_OK&&p.user_id&&(!me||p.user_id!==me.user_id)&&`<button type="button" class="cb msg" data-msg="${esc(p.user_id)}">${msgIc} Message</button>`,p.phone&&`<a class="cb call" href="tel:${esc(p.phone)}">📞 Call</a>`,p.phone&&p.whatsapp&&dg&&`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`,p.email&&`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`].filter(Boolean).join("");
  const c=p.consent?(p.phone?`<br>${esc(p.phone)}`:"")+(p.website?`<br>🌐 ${link(p.website)}`:"")+(btns?`<div class="cbs">${btns}</div>`:""):"<br><i>Not public yet</i>";
   return `<div class="row">${av(p)}<div>${cardHead(p)}<br>${pills}<br>${(p.locations&&p.locations.length?p.locations:[p]).map(l=>"📍 "+locTxt(l)).join("<br>")}${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
-function pinSides(entries){const sides=new Map();
- entries.sort((a,b)=>a.l.lng-b.l.lng||a.l.lat-b.l.lat);
- for(let i=0;i<entries.length;i++){const e=entries[i],k=e.l.lat+"|"+e.l.lng+"|"+(e.p.id||e.p.user_id||i);
-  let side="right";
-  if(i){const prev=entries[i-1],dlat=Math.abs(e.l.lat-prev.l.lat),dlng=Math.abs(e.l.lng-prev.l.lng);
-   if(dlat<.6&&dlng<.6){const pk=prev.l.lat+"|"+prev.l.lng+"|"+(prev.p.id||prev.p.user_id||i-1);side=sides.get(pk)==="right"?"left":"right"}}
-  sides.set(k,side)}return sides}
-function pinIcon(p,side){const label=practiceTitle(p);
- const html=`<div class="pin ${side==="left"?"left":""}">${av(p)}<span class="pinlab">${esc(label)}</span></div>`;
- return L.divIcon({className:"avm",html,iconSize:[168,48],iconAnchor:side==="left"?[146,24]:[22,24]})}
+function pinModsHtml(p){const mods=(p.mods||[]).map(m=>String(m||"").trim()).filter(Boolean);if(!mods.length)return"";
+ const show=mods.slice(0,2),extra=mods.length-2;
+ const chips=show.map(m=>`<i>${esc(m)}</i>`).join('<span class="dot">·</span>');
+ const more=extra>0?`<span class="dot">·</span><i class="more">+${extra}</i>`:"";
+ return `<span class="pinmods">${chips}${more}</span>`}
+function spiderfy(entries){const TH=0.0009,used=new Set(),placed=entries.map(e=>({p:e.p,l:e.l,lat:e.l.lat,lng:e.l.lng,side:"right"}));
+ for(let i=0;i<entries.length;i++){if(used.has(i))continue;const group=[i];used.add(i);
+  for(let j=i+1;j<entries.length;j++){if(used.has(j))continue;
+   const a=entries[i].l,b=entries[j].l;if(Math.abs(a.lat-b.lat)<TH&&Math.abs(a.lng-b.lng)<TH){group.push(j);used.add(j)}}
+  if(group.length===1)continue;
+  const n=group.length,cx=group.reduce((s,ix)=>s+entries[ix].l.lat,0)/n,cy=group.reduce((s,ix)=>s+entries[ix].l.lng,0)/n;
+  const r=0.0011+Math.max(0,n-2)*0.00025,cos=Math.cos(cx*Math.PI/180)||1;
+  group.forEach((ix,k)=>{const ang=-Math.PI/2+(2*Math.PI*k)/n;placed[ix].lat=cx+r*Math.cos(ang);placed[ix].lng=cy+(r*Math.sin(ang))/cos;placed[ix].side=Math.sin(ang)>=0?"right":"left"})}
+ // Near (but not clustered) neighbours: alternate label side
+ const order=[...placed.keys()].sort((a,b)=>placed[a].lng-placed[b].lng||placed[a].lat-placed[b].lat);
+ for(let oi=1;oi<order.length;oi++){const cur=placed[order[oi]],prev=placed[order[oi-1]];
+  if(Math.abs(cur.lat-prev.lat)<.55&&Math.abs(cur.lng-prev.lng)<.55&&cur.side===prev.side)cur.side=prev.side==="right"?"left":"right"}
+ return placed}
+function pinIcon(p,side){const label=practiceTitle(p),mods=pinModsHtml(p);
+ const html=`<div class="pin ${side==="left"?"left":""}">${av(p)}<span class="pinlab"><span class="pintitle">${esc(label)}</span>${mods}</span></div>`;
+ return L.divIcon({className:"avm",html,iconSize:[172,62],iconAnchor:side==="left"?[150,31]:[22,31]})}
 
 // map
 function initMap(){if(map)return renderMarkers();map=L.map("leaf",{zoomControl:true,attributionControl:false}).setView([50,18],4);
@@ -78,9 +89,8 @@ function drawThreads(ps){const seen=new Set();ps.forEach(p=>ps.filter(q=>q!==p).
 function count(){const a=all(),c=new Set(a.map(p=>(p.country||p.city||"").trim().toLowerCase()).filter(Boolean));
  $("#count").innerHTML=a.length?`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"} joined the network`:"Be the first practitioner on the map ✨"}
 function renderMarkers(){count();if(!layer)return;layer.clearLayers();const ps=filtered();drawThreads(ps);
- const entries=[];ps.forEach(p=>pins(p).forEach(l=>entries.push({p,l})));const sides=pinSides(entries.slice());
- entries.forEach(({p,l},i)=>{const k=l.lat+"|"+l.lng+"|"+(p.id||p.user_id||i);const side=sides.get(k)||"right";
-  L.marker([l.lat,l.lng],{icon:pinIcon(p,side)}).bindPopup(card(p)).addTo(layer)});
+ const entries=[];ps.forEach(p=>pins(p).forEach(l=>entries.push({p,l})));
+ spiderfy(entries).forEach(({p,lat,lng,side})=>{L.marker([lat,lng],{icon:pinIcon(p,side)}).bindPopup(card(p)).addTo(layer)});
  if(here)L.circleMarker(here,{radius:7,color:"#fff",weight:3,fillColor:"#2a9d96",fillOpacity:1}).bindPopup("You are here").addTo(layer)}
 $("#filter").onchange=()=>{renderMarkers();renderList()};
 $("#near").onclick=()=>{if(!navigator.geolocation)return alert("Location is not available in this browser");navigator.geolocation.getCurrentPosition(pos=>{here=[pos.coords.latitude,pos.coords.longitude];map.setView(here,7);renderMarkers()},()=>alert("Could not get your location. Allow location access and try again."))};
