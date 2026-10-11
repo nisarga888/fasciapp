@@ -21,6 +21,6 @@ window.FASCIAPP_LEARN = [
   { section: "Ebooks", title: "The Issue Lives in the Tissue", by: "Nisarga Eryk Dobosz", line: "Free Trauma Release ebook. PDF download.", type: "pdf", url: "lab/issue-lives-in-the-tissue.pdf", cover: "lab/issue-lives-in-the-tissue-cover.jpg", public: false },
   { section: "Ebooks", title: "Feel2Heal", by: "Giten Tonkov", line: "PDF download.", type: "pdf", url: "", public: false },
   // Free live sessions: official pages, checked 11 Oct 2026
-  { section: "Free live sessions", title: "Free online breathwork", by: "BBTRS® · Biodynamic Breathwork", line: "Free online community sessions, twice a month.", type: "link", cta: "Sign up", url: "https://biodynamicbreath.com/find-breathwork-training?type=free_event&field_location_target_id=All&month=All", public: true },
+  { section: "Free live sessions", title: "Free online breathwork", by: "BBTRS® · Biodynamic Breathwork", line: "Free online community sessions, twice a month.", type: "link", cta: "Sign up", url: "https://biodynamicbreath.com/find-breathwork-training", public: true },
   { section: "Free live sessions", title: "Free Sunday meditations", by: "MER® · Myofascial Energetic Release", line: "Free online group session, every Sunday.", type: "link", cta: "Sign up", url: "https://www.myofascialtrainings.com/online-courses/group-sessions", public: true }
 ];
