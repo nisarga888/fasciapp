@@ -524,6 +524,16 @@ function renderLearn(){const box=$("#learnList");if(!box)return;const items=(win
   return `<button type="button" class="lcard${ready?"":" lph"}${locked?" locked":""}" ${act} ${ready?"":"disabled"} aria-label="${esc(x.title)}: ${lk?esc(x.cta||"Sign up"):foot}">
    <div class="lthumb">${labCover(x,id)}${locked?`<span class="lockov">${LOCK}</span>`:""}</div>
    <div class="lbody"><div class="lbadges">${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`).join("")}
-document.addEventListener("click",e=>{const y=e.target.closest(".lcard[data-yt]");if(y){const t=y.querySelector(".lthumb");if(!t.querySelector("iframe"))t.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${y.dataset.yt}?autoplay=1&rel=0&playsinline=1" title="YouTube video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;return}
+document.addEventListener("click",e=>{const y=e.target.closest(".lcard[data-yt]");if(y){openVideo(y.dataset.yt,(y.querySelector(".lbody b")||{}).textContent||"Video");return}
+ if(e.target.closest("[data-vclose]")){closeVideo();return}
  const pd=e.target.closest(".lcard[data-pdf]");if(pd){window.open(pd.dataset.pdf,"_blank","noopener");return}
  if(e.target.closest("[data-unlock]")){fillLastEmail();setMode(false);show("auth")}});
+
+// Full-screen-style video viewer: iframe created on open, destroyed on close
+function openVideo(id,title){closeVideo();const d=document.createElement("div");d.id="vModal";d.className="vmodal";d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");d.setAttribute("aria-label",title);
+ d.innerHTML=`<div class="vbox"><div class="vtop"><b>${esc(title)}</b><button type="button" class="vx" data-vclose="1" aria-label="Close video">✕</button></div>
+ <div class="vplayer"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=0&modestbranding=1" title="${esc(title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
+ <a class="vyt" href="https://www.youtube.com/watch?v=${encodeURIComponent(id)}" target="_blank" rel="noopener">Open in YouTube ↗</a></div>`;
+ d.addEventListener("click",e=>{if(e.target===d)closeVideo()});document.body.appendChild(d)}
+function closeVideo(){const d=document.getElementById("vModal");if(d){const f=d.querySelector("iframe");if(f)f.src="about:blank";d.remove()}}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeVideo()});
