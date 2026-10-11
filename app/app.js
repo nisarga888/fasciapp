@@ -1,7 +1,7 @@
 const CITY={tallinn:[59.437,24.7536],warsaw:[52.2297,21.0122],warszawa:[52.2297,21.0122],krakow:[50.0647,19.945],"kraków":[50.0647,19.945],kielce:[50.8661,20.6286],berlin:[52.52,13.405],lesvos:[39.2645,26.2777],mytilene:[39.1047,26.5552]};
 const DEMO=[];
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
-let MSG_OK=false,msgs=[],chatWith=null,pollT=null,unsub=null;
+var MSG_OK=false,msgs=[],chatWith=null,pollT=null,unsub=null;
 let me=null,people=[],here=null,map,layer,photoData=null,signUpMode=true;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const all=()=>DEMO.concat(people);
@@ -30,7 +30,7 @@ function setMode(up){signUpMode=up;$("#tabUp").classList.toggle("on",up);$("#tab
  $("#authTitle").textContent=up?"Create your practitioner account":"Welcome back";$("#authBtn").textContent=up?"Create account":"Sign in";$("#authMsg").textContent="";
  $("#pw").autocomplete=up?"new-password":"current-password";$("#agreeL").hidden=!up}
 $("#tabUp").onclick=()=>setMode(true);$("#tabIn").onclick=()=>setMode(false);
-$("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please agree to the Terms and Privacy Policy.";return}m.textContent="…";
+$("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please confirm you are 18+ and accept the Terms and Privacy Policy.";return}m.textContent="…";
  try{me=signUpMode?await DB.signUp(em,pw):await DB.signIn(em,pw);m.textContent="";hdr();await refresh();msgInit();show("profile")}catch(err){m.textContent=err.message}};
 
 // helpers
@@ -41,12 +41,25 @@ const locTxt=l=>[l.city,l.country].filter(Boolean).join(", ")+(l.label?` <small 
 function filtered(){const f=$("#filter").value;return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f)))}
 function initials(n){return String(n||"?").split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase()}
 function av(p,cls=""){return p.photo?`<img class="av ${cls}" src="${esc(p.photo)}" alt="">`:`<span class="av ${cls}">${esc(initials(p.name))}</span>`}
+function practiceTitle(p){return String(p.practice_name||"").trim()||String(p.name||"").trim()||"Practitioner"}
+function cardHead(p){const pn=String(p.practice_name||"").trim();return pn?`<b>${esc(pn)}</b><br><span class="who">${esc(p.name||"")}</span>`:`<b>${esc(p.name||"")}</b>`}
 function link(u){if(!u)return"";const h=/^https?:\/\//.test(u)?u:"https://"+u;return `<a href="${esc(h)}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\//,""))}</a>`}
 function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</span>`).join("");
  const dg=String(p.phone||"").replace(/\D/g,"");
- const btns=[MSG_OK&&p.user_id&&(!me||p.user_id!==me.user_id)&&`<button type="button" class="cb msg" data-msg="${esc(p.user_id)}">💬 Message</button>`,p.phone&&`<a class="cb call" href="tel:${esc(p.phone)}">📞 Call</a>`,p.phone&&p.whatsapp&&dg&&`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`,p.email&&`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`].filter(Boolean).join("");
+ const msgIc=`<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h11a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3H12l-3.2 2.8V17H4.5a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3z"/></svg>`;
+ const btns=[MSG_OK&&p.user_id&&(!me||p.user_id!==me.user_id)&&`<button type="button" class="cb msg" data-msg="${esc(p.user_id)}">${msgIc} Message</button>`,p.phone&&`<a class="cb call" href="tel:${esc(p.phone)}">📞 Call</a>`,p.phone&&p.whatsapp&&dg&&`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`,p.email&&`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`].filter(Boolean).join("");
  const c=p.consent?(p.phone?`<br>${esc(p.phone)}`:"")+(p.website?`<br>🌐 ${link(p.website)}`:"")+(btns?`<div class="cbs">${btns}</div>`:""):"<br><i>Not public yet</i>";
-  return `<div class="row">${av(p)}<div><b>${esc(p.name)}</b><br>${pills}<br>${(p.locations&&p.locations.length?p.locations:[p]).map(l=>"📍 "+locTxt(l)).join("<br>")}${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
+  return `<div class="row">${av(p)}<div>${cardHead(p)}<br>${pills}<br>${(p.locations&&p.locations.length?p.locations:[p]).map(l=>"📍 "+locTxt(l)).join("<br>")}${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
+function pinSides(entries){const sides=new Map();
+ entries.sort((a,b)=>a.l.lng-b.l.lng||a.l.lat-b.l.lat);
+ for(let i=0;i<entries.length;i++){const e=entries[i],k=e.l.lat+"|"+e.l.lng+"|"+(e.p.id||e.p.user_id||i);
+  let side="right";
+  if(i){const prev=entries[i-1],dlat=Math.abs(e.l.lat-prev.l.lat),dlng=Math.abs(e.l.lng-prev.l.lng);
+   if(dlat<.6&&dlng<.6){const pk=prev.l.lat+"|"+prev.l.lng+"|"+(prev.p.id||prev.p.user_id||i-1);side=sides.get(pk)==="right"?"left":"right"}}
+  sides.set(k,side)}return sides}
+function pinIcon(p,side){const label=practiceTitle(p);
+ const html=`<div class="pin ${side==="left"?"left":""}">${av(p)}<span class="pinlab">${esc(label)}</span></div>`;
+ return L.divIcon({className:"avm",html,iconSize:[168,48],iconAnchor:side==="left"?[146,24]:[22,24]})}
 
 // map
 function initMap(){if(map)return renderMarkers();map=L.map("leaf",{zoomControl:true,attributionControl:false}).setView([50,18],4);
@@ -65,7 +78,9 @@ function drawThreads(ps){const seen=new Set();ps.forEach(p=>ps.filter(q=>q!==p).
 function count(){const a=all(),c=new Set(a.map(p=>(p.country||p.city||"").trim().toLowerCase()).filter(Boolean));
  $("#count").innerHTML=a.length?`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"} joined the network`:"Be the first practitioner on the map ✨"}
 function renderMarkers(){count();if(!layer)return;layer.clearLayers();const ps=filtered();drawThreads(ps);
- ps.forEach(p=>pins(p).forEach(l=>L.marker([l.lat,l.lng],{icon:L.divIcon({className:"avm",html:av(p),iconSize:[44,44],iconAnchor:[22,22]})}).bindPopup(card(p)).addTo(layer)));
+ const entries=[];ps.forEach(p=>pins(p).forEach(l=>entries.push({p,l})));const sides=pinSides(entries.slice());
+ entries.forEach(({p,l},i)=>{const k=l.lat+"|"+l.lng+"|"+(p.id||p.user_id||i);const side=sides.get(k)||"right";
+  L.marker([l.lat,l.lng],{icon:pinIcon(p,side)}).bindPopup(card(p)).addTo(layer)});
  if(here)L.circleMarker(here,{radius:7,color:"#fff",weight:3,fillColor:"#2a9d96",fillOpacity:1}).bindPopup("You are here").addTo(layer)}
 $("#filter").onchange=()=>{renderMarkers();renderList()};
 $("#near").onclick=()=>{if(!navigator.geolocation)return alert("Location is not available in this browser");navigator.geolocation.getCurrentPosition(pos=>{here=[pos.coords.latitude,pos.coords.longitude];map.setView(here,7);renderMarkers()},()=>alert("Could not get your location. Allow location access and try again."))};
@@ -75,13 +90,13 @@ function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));if(here)ps.sor
 
 // profile
 async function loadProf(){waTouched=false;$("#needLogin").hidden=!!me;$("#profForm").hidden=!me;if(!me)return;myMods=[];renderTags();setExtra([]);$("#who").textContent="Signed in as "+me.email;
- const p=await DB.mine().catch(()=>null);const f=$("#profForm");if(!p)return;["name","address","city","country","email","website","bio"].forEach(k=>f[k].value=p[k]||"");splitPhone(p.phone,p.country);f.whatsapp.checked=!!p.whatsapp;waTouched=true;
+ const p=await DB.mine().catch(()=>null);const f=$("#profForm");if(!p)return;["name","practice_name","address","city","country","email","website","bio"].forEach(k=>{if(f[k])f[k].value=p[k]||""});splitPhone(p.phone,p.country);f.whatsapp.checked=!!p.whatsapp;waTouched=true;
  f.label.value=(p.locations?.[0]?.label)||"";setExtra((p.locations||[]).slice(1));f.consent.checked=!!p.consent;myMods=(p.mods||[]).slice();renderTags();if(p.photo){$("#phPrev").src=p.photo;$("#phPrev").hidden=false}}
 async function geocode(addr,city,country){try{const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&accept-language=en&limit=1&q="+encodeURIComponent([addr,city,country].filter(c=>c&&c!=="Other").join(", ")));const j=await r.json();if(j[0])return[+j[0].lat,+j[0].lon,"address",j[0].display_name.split(", ").pop()]}catch(e){}
  const c=CITY[city.trim().toLowerCase()];return c?[c[0],c[1],"city",null]:null}
 $("#profForm").onsubmit=async e=>{e.preventDefault();const f=e.target,st=$("#status");st.textContent="Locating your address…";
  const old=await DB.mine().catch(()=>null)||{};
- const p={name:f.name.value.trim(),address:f.address.value.trim(),city:f.city.value.trim(),phone:e164(f.prefix.value,f.phone.value),whatsapp:f.whatsapp.checked,email:f.email.value.trim(),website:f.website.value.trim(),bio:f.bio.value.trim(),consent:f.consent.checked,country:f.country.value,mods:myMods.slice(),photo:photoData||old.photo||null};
+ const p={name:f.name.value.trim(),practice_name:(f.practice_name&&f.practice_name.value||"").trim(),address:f.address.value.trim(),city:f.city.value.trim(),phone:e164(f.prefix.value,f.phone.value),whatsapp:f.whatsapp.checked,email:f.email.value.trim(),website:f.website.value.trim(),bio:f.bio.value.trim(),consent:f.consent.checked,country:f.country.value,mods:myMods.slice(),photo:photoData||old.photo||null};
  const g=await geocode(p.address,p.city,p.country);if(!g){st.textContent="Could not find that place. Check the city name.";return}
  Object.assign(p,{lat:g[0],lng:g[1]});p.locations=[{label:f.label.value.trim(),address:p.address,city:p.city,country:p.country,lat:g[0],lng:g[1]}];
  for(const b of $$("#extraLocs .xloc")){const l={label:b.querySelector("[data-k=label]").value.trim(),address:b.querySelector("[data-k=address]").value.trim(),city:b.querySelector("[data-k=city]").value.trim(),country:b.querySelector("[data-k=country]").value};
@@ -177,7 +192,7 @@ async function pullMsgs(){if(!MSG_OK||!me)return;try{msgs=await DB.msgs()}catch(
 function convs(){const c={};msgs.forEach(m=>{const o=m.sender===me.user_id?m.recipient:m.sender;(c[o]=c[o]||[]).push(m)});
  return Object.entries(c).map(([o,l])=>({o,last:l[l.length-1],un:l.filter(m=>m.recipient===me.user_id&&!m.read_at).length})).sort((a,b)=>b.last.created_at.localeCompare(a.last.created_at))}
 function renderInbox(){const box=$("#convs");if(!me){box.innerHTML="<p class=muted>Sign in to see your messages.</p>";return}
- const cs=convs();box.innerHTML=cs.map(c=>{const p=all().find(x=>x.user_id===c.o)||{name:nameOf(c.o)};return `<div class="item conv" data-c="${esc(c.o)}"><div class="row">${av(p)}<div><b>${esc(p.name)}</b>${c.un?` <span class="badge">${c.un}</span>`:""}<br><small class=muted>${esc(c.last.body.slice(0,80))}</small></div></div></div>`}).join("")||"<p class=muted>No messages yet. Open a practitioner on the map and tap 💬 Message.</p>";
+ const cs=convs();box.innerHTML=cs.map(c=>{const p=all().find(x=>x.user_id===c.o)||{name:nameOf(c.o)};return `<div class="item conv" data-c="${esc(c.o)}"><div class="row">${av(p)}<div><b>${esc(p.name)}</b>${c.un?` <span class="badge">${c.un}</span>`:""}<br><small class=muted>${esc(c.last.body.slice(0,80))}</small></div></div></div>`}).join("")||"<p class=muted>No messages yet. Open a practitioner on the map and tap Message.</p>";
  $$("#convs .conv").forEach(d=>d.onclick=()=>openChat(d.dataset.c))}
 async function openChat(id){if(!me){show("auth");return}chatWith=id;$("#chatName").textContent=nameOf(id);$("#chat").hidden=false;renderChat();$("#chatTxt").focus();
  if(DB.onMsg&&!unsub)unsub=DB.onMsg(()=>pullMsgs());clearInterval(pollT);pollT=setInterval(pullMsgs,20000);
