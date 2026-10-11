@@ -197,6 +197,10 @@
 if("serviceWorker" in navigator&&navigator.serviceWorker){
   let refreshing=false;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{if(refreshing)return;refreshing=true;location.reload()});
-  addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
+  const watchSW=reg=>{if(!reg)return;reg.update().catch(()=>{});
+   document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")reg.update().catch(()=>{})});
+   setInterval(()=>reg.update().catch(()=>{}),30*60*1000)};
+  addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").then(watchSW).catch(()=>{});
+   navigator.serviceWorker.getRegistration().then(r=>{if(r)r.update().catch(()=>{})})});
 }
 </script></body></html>

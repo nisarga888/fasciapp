@@ -68,10 +68,22 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:50px 0 34px}foo
 @keyframes glow{50%{box-shadow:0 0 28px #5FC9C355,inset 0 0 16px #5FC9C333}}
 @media(prefers-reduced-motion:reduce){.f .i{animation:none}.f .i .d{stroke-dashoffset:0!important;transition:none!important}}
 
-.seoFind{max-width:720px;margin:0 auto 10px;background:var(--card);border:1px solid #C99E6733;border-radius:18px;padding:22px 24px;text-align:center}
-.seoLead{color:#d7e2e1;font-size:15px;margin:0 0 16px;line-height:1.55}
-.seoLinks{margin:12px 0 0;font-size:15px;line-height:1.8}.seoLinks a{color:var(--teal);text-decoration:none;font-weight:600}.seoLinks a:hover{text-decoration:underline;color:var(--gold)}
-.seoLbl{display:inline-block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.seoFind{max-width:760px;margin:0 auto 10px;background:var(--card);border:1px solid #C99E6733;border-radius:22px;padding:26px 22px 24px;text-align:center}
+.liveCount{margin:0 0 10px;font-size:15px;font-weight:600;color:var(--teal);letter-spacing:.2px}
+.seoLead{color:#d7e2e1;font-size:14px;margin:0 0 20px;line-height:1.5}
+.seoBlock{margin-top:18px;text-align:left}
+.seoLbl{display:block;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--mut);margin:0 0 10px;text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{display:inline-flex;align-items:center;padding:8px 14px;border-radius:999px;border:1px solid #C99E6755;background:#02191E;color:var(--gold);font:600 13px Montserrat,sans-serif;text-decoration:none;transition:background .15s,border-color .15s,color .15s}
+.chip:hover{border-color:var(--teal);color:var(--teal);background:#0a2a30}
+.chipJoin{border-style:dashed;color:var(--teal);border-color:#5FC9C388}
+.chipJoin:hover{background:#5FC9C322;color:#fff}
+.worldTabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:0 0 14px}
+.worldTab{font:600 12px Montserrat,sans-serif;border:1px solid #c99e6744;background:transparent;color:var(--mut);padding:8px 12px;border-radius:999px;cursor:pointer}
+.worldTab.on{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.worldPanel{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.worldPanel[hidden]{display:none!important}
+@media(max-width:520px){.seoFind{padding:22px 14px}.chip{font-size:12px;padding:7px 12px}}
 .slogan{font-size:22px;font-weight:600;color:var(--teal);margin:8px auto 14px;max-width:560px;line-height:1.35;letter-spacing:.2px}
 .heroBtns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:22px}
 .heroBtns .btn{margin:0}
@@ -117,12 +129,82 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:50px 0 34px}foo
 </div>
 
 
-<h2 id="find">Find practitioners by practice</h2>
-<section class="seoFind" aria-label="Browse practitioners by practice and city">
- <p class="seoLead">Looking for <strong>myofascial release</strong>, <strong>BBTRS</strong>, <strong>breathwork</strong>, <strong>craniosacral</strong>, <strong>somatic therapy</strong>, <strong>massage</strong> or <strong>yoga</strong>? Open FasciApp filtered by practice or city — trauma-informed practitioners near you.</p>
- <p class="seoLinks"><span class="seoLbl">Practices</span><br><a href="app/?practice=MER">MER</a> · <a href="app/?practice=BBTRS">BBTRS</a> · <a href="app/?practice=Breathwork">Breathwork</a> · <a href="app/?practice=Craniosacral">Craniosacral</a> · <a href="app/?practice=Somatic%20therapy">Somatic therapy</a> · <a href="app/?practice=Massage">Massage</a> · <a href="app/?practice=Yoga">Yoga</a></p>
- <p class="seoLinks"><span class="seoLbl">Cities</span><br><a href="app/?place=Tallinn">Tallinn</a> · <a href="app/?place=Amsterdam">Amsterdam</a> · <a href="app/?place=Berlin">Berlin</a> · <a href="app/?place=Lisbon">Lisbon</a> · <a href="app/?place=Barcelona">Barcelona</a> · <a href="app/?place=Copenhagen">Copenhagen</a> · <a href="app/?place=Vienna">Vienna</a> · <a href="app/?place=Athens">Athens</a></p>
+<h2 id="find">Find practitioners worldwide</h2>
+<section class="seoFind" aria-label="Browse practitioners by practice and place worldwide">
+ <p class="liveCount" id="liveCount">Practitioners worldwide and growing</p>
+ <p class="seoLead">Bodywork, breathwork and trauma-informed care — open the map filtered by practice or city.</p>
+ <div class="seoBlock">
+  <span class="seoLbl">Practices</span>
+  <div class="chips">
+  <a class="chip" href="app/?practice=MER">MER</a>
+  <a class="chip" href="app/?practice=BBTRS">BBTRS</a>
+  <a class="chip" href="app/?practice=Breathwork">Breathwork</a>
+  <a class="chip" href="app/?practice=Myofascial%20release">Myofascial release</a>
+  <a class="chip" href="app/?practice=Craniosacral">Craniosacral</a>
+  <a class="chip" href="app/?practice=Somatic%20therapy">Somatic therapy</a>
+  <a class="chip" href="app/?practice=Trauma%20therapy">Trauma therapy</a>
+  <a class="chip" href="app/?practice=NARM">NARM</a>
+  <a class="chip" href="app/?practice=Compassionate%20Inquiry">Compassionate Inquiry</a>
+  <a class="chip" href="app/?practice=Massage">Massage</a>
+  <a class="chip" href="app/?practice=Lomi%20Lomi">Lomi Lomi</a>
+  <a class="chip" href="app/?practice=Shiatsu">Shiatsu</a>
+  <a class="chip" href="app/?practice=Thai%20massage">Thai massage</a>
+  <a class="chip" href="app/?practice=Rolfing">Rolfing</a>
+  <a class="chip" href="app/?practice=Osteopathy">Osteopathy</a>
+  <a class="chip" href="app/?practice=Reflexology">Reflexology</a>
+  <a class="chip" href="app/?practice=Yoga">Yoga</a>
+  <a class="chip" href="app/?practice=Meditation">Meditation</a>
+  <a class="chip" href="app/?practice=Sound%20healing">Sound healing</a>
+  <a class="chip" href="app/?practice=Reiki">Reiki</a>
+  <a class="chip" href="app/?practice=Pilates">Pilates</a>
+  <a class="chip" href="app/?practice=Feldenkrais">Feldenkrais</a>
+  <a class="chip chipJoin" href="app/?join=1">+ any practice</a>
+  </div>
+ </div>
+ <div class="seoBlock">
+  <span class="seoLbl">Worldwide 🌍</span>
+  <div class="worldTabs" role="tablist" aria-label="Continents">
+   <button type="button" class="worldTab on" data-world="Europe" aria-selected="true">Europe</button><button type="button" class="worldTab" data-world="Asia" aria-selected="false">Asia</button><button type="button" class="worldTab" data-world="Americas" aria-selected="false">Americas</button><button type="button" class="worldTab" data-world="Africa" aria-selected="false">Africa</button><button type="button" class="worldTab" data-world="Oceania" aria-selected="false">Oceania</button>
+  </div>
+  <div class="worldPanel" data-panel="Europe">
+   <a class="chip" href="app/?place=Tallinn">Tallinn</a>
+   <a class="chip" href="app/?place=Berlin">Berlin</a>
+   <a class="chip" href="app/?place=Lisbon">Lisbon</a>
+   <a class="chip" href="app/?place=Amsterdam">Amsterdam</a>
+   <a class="chip" href="app/?place=Barcelona">Barcelona</a>
+   <a class="chip" href="app/?place=Athens">Athens</a>
+  </div><div class="worldPanel" data-panel="Asia" hidden>
+   <a class="chip" href="app/?place=Bali">Bali</a>
+   <a class="chip" href="app/?place=Bangkok">Bangkok</a>
+   <a class="chip" href="app/?place=Tokyo">Tokyo</a>
+   <a class="chip" href="app/?place=Goa">Goa</a>
+   <a class="chip" href="app/?place=Tel%20Aviv">Tel Aviv</a>
+   <a class="chip" href="app/?place=Singapore">Singapore</a>
+  </div><div class="worldPanel" data-panel="Americas" hidden>
+   <a class="chip" href="app/?place=New%20York">New York</a>
+   <a class="chip" href="app/?place=Mexico%20City">Mexico City</a>
+   <a class="chip" href="app/?place=São%20Paulo">São Paulo</a>
+   <a class="chip" href="app/?place=Buenos%20Aires">Buenos Aires</a>
+   <a class="chip" href="app/?place=Vancouver">Vancouver</a>
+   <a class="chip" href="app/?place=Lima">Lima</a>
+  </div><div class="worldPanel" data-panel="Africa" hidden>
+   <a class="chip" href="app/?place=Cape%20Town">Cape Town</a>
+   <a class="chip" href="app/?place=Marrakech">Marrakech</a>
+   <a class="chip" href="app/?place=Nairobi">Nairobi</a>
+   <a class="chip" href="app/?place=Cairo">Cairo</a>
+   <a class="chip" href="app/?place=Lagos">Lagos</a>
+   <a class="chip" href="app/?place=Dakar">Dakar</a>
+  </div><div class="worldPanel" data-panel="Oceania" hidden>
+   <a class="chip" href="app/?place=Sydney">Sydney</a>
+   <a class="chip" href="app/?place=Melbourne">Melbourne</a>
+   <a class="chip" href="app/?place=Auckland">Auckland</a>
+   <a class="chip" href="app/?place=Wellington">Wellington</a>
+   <a class="chip" href="app/?place=Honolulu">Honolulu</a>
+   <a class="chip" href="app/?place=Perth">Perth</a>
+  </div>
+ </div>
 </section>
+
 
 <h2>A look at the app</h2>
 <div class="shots">
@@ -165,4 +247,45 @@ $("#instBtn").onclick=async()=>{if(!dp)return;dp.prompt();const r=await dp.userC
 addEventListener("appinstalled",()=>{$("#instBtn").hidden=true;$("#aSteps").hidden=true;$("#instOk").hidden=false});
 if(matchMedia("(display-mode: standalone)").matches)location.replace("app/");
 </script><script>(function(){var c=document.querySelectorAll('.f');if(!('IntersectionObserver'in window)||matchMedia('(prefers-reduced-motion:reduce)').matches){c.forEach(function(e){e.classList.add('seen')});return}var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('seen');o.unobserve(e.target)}})},{threshold:.15});c.forEach(function(e){o.observe(e)})})();</script>
+
+<script src="app/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('.worldTab').forEach(function(btn){
+    btn.onclick=function(){
+      document.querySelectorAll('.worldTab').forEach(function(b){b.classList.toggle('on',b===btn);b.setAttribute('aria-selected',b===btn?'true':'false')});
+      var id=btn.getAttribute('data-world');
+      document.querySelectorAll('.worldPanel').forEach(function(p){p.hidden=p.getAttribute('data-panel')!==id});
+    };
+  });
+  var el=document.getElementById('liveCount');
+  async function loadCount(){
+    try{
+      var cfg=window.FASCIAPP_CONFIG||{};
+      if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY||!window.supabase)throw new Error('no sb');
+      var sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+      var r=await sb.from('practitioners').select('country,city,locations,lat,lng').eq('consent',true);
+      if(r.error)throw r.error;
+      var rows=r.data||[];
+      var countries=new Set();
+      var CITY_CC={tallinn:'estonia',berlin:'germany',lisbon:'portugal',amsterdam:'netherlands',bali:'indonesia',bangkok:'thailand',sydney:'australia','new york':'united states','mexico city':'mexico','cape town':'south africa',athens:'greece',barcelona:'spain'};
+      rows.forEach(function(p){
+        var locs=Array.isArray(p.locations)&&p.locations.length?p.locations:[{country:p.country,city:p.city,lat:p.lat,lng:p.lng}];
+        locs.forEach(function(l){
+          var c=(l.country||'').trim().toLowerCase();
+          if(!c){c=CITY_CC[(l.city||'').trim().toLowerCase()]||''}
+          if(c)countries.add(c);
+        });
+      });
+      var n=countries.size, pcount=rows.length;
+      if(n>0) el.textContent='Practitioners in '+n+' countr'+(n===1?'y':'ies')+' and growing';
+      else if(pcount>0) el.textContent=pcount+' practitioner'+(pcount===1?'':'s')+' and growing';
+      else el.textContent='Practitioners worldwide and growing';
+    }catch(e){ el.textContent='Practitioners worldwide and growing'; }
+  }
+  loadCount();
+})();
+</script>
+
 </body></html>
