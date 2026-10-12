@@ -49,7 +49,7 @@ const local={mode:"local",
   const base=pickS(x);if(!base.format)base.format="In person";if(!base.session_type)base.session_type="MER";const row={...base,id:x.id||crypto.randomUUID(),user_id:s.user_id,created_at:i>=0?l[i].created_at:new Date().toISOString()};if(i>=0)l[i]=row;else l.push(row);all[s.user_id]=l;LS.set("fyp_sessions",all);return unpackSession(row)},
  async deleteSession(id){const s=await this.session();const all=LS.get("fyp_sessions",{});all[s.user_id]=(all[s.user_id]||[]).filter(r=>r.id!==id);LS.set("fyp_sessions",all)},
  async msgOk(){return false},
- async resetPassword(email){throw new Error("Password reset needs the live FasciApp server. Open the app at app.bodyawareness.ee and try again.")},
+ async resetPassword(email){throw new Error("Password reset needs the live FasciApp server. Open the app at fasciapp.app and try again.")},
  async updatePassword(){throw new Error("Password reset needs the live FasciApp server.")},
  onAuth(){return ()=>{}}};
 
