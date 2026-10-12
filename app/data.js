@@ -25,12 +25,21 @@ function embedPractice(L,practice_name){
  L=stripLocMeta(L);const pn=(practice_name||"").trim()||null;
  if(!pn)return L;if(!L.length)return [{label:"",address:"",city:"",country:"",lat:null,lng:null,practice_name:pn}];
  return [{...L[0],practice_name:pn},...L.slice(1)]}
-function norm(p){if(!p)return p;let L=Array.isArray(p.locations)?p.locations:null,addr=p.address;
+// Canonical country names: local-language names, aliases and ISO codes -> one English name.
+const CANON=(()=>{const g={Austria:"at|österreich|osterreich",Belgium:"be|belgië|belgie|belgique|belgien",Bulgaria:"bg|българия",Croatia:"hr|hrvatska",Cyprus:"cy|κύπρος",Czechia:"cz|czech republic|česko|cesko|česká republika",Denmark:"dk|danmark",Estonia:"ee|eesti|estland",Finland:"fi|suomi",France:"fr",Germany:"de|deutschland|niemcy",Greece:"gr|ελλάδα|ελλάς|hellas",Hungary:"hu|magyarország|magyarorszag",Iceland:"is|ísland",Ireland:"ie|éire|eire",Italy:"it|italia",Latvia:"lv|latvija",Lithuania:"lt|lietuva",Luxembourg:"lu|lëtzebuerg",Malta:"mt",Netherlands:"nl|nederland|holland|the netherlands",Norway:"no|norge|noreg",Poland:"pl|polska",Portugal:"pt",Romania:"ro|românia",Serbia:"rs|srbija|србија",Slovakia:"sk|slovensko",Slovenia:"si|slovenija",Spain:"es|españa|espana",Sweden:"se|sverige",Switzerland:"ch|schweiz|suisse|svizzera",Ukraine:"ua|україна",
+"United Kingdom":"gb|uk|great britain|england|scotland|wales|britain",Argentina:"ar",Australia:"au",Brazil:"br|brasil",Canada:"ca",Chile:"cl",China:"cn|中国",Colombia:"co",Egypt:"eg",India:"in|bharat|भारत",Indonesia:"id",Israel:"il",Japan:"jp|日本",Mexico:"mx|méxico",Morocco:"ma",
+"New Zealand":"nz",Philippines:"ph",Singapore:"sg","South Africa":"za","South Korea":"kr|korea|대한민국",Thailand:"th",Turkey:"tr|türkiye|turkiye",
+"United Arab Emirates":"ae|uae","United States":"us|usa|u.s.|u.s.a.|united states of america|america",Vietnam:"vn|viet nam|việt nam"};
+ const m={};for(const[k,v]of Object.entries(g)){m[k.toLowerCase()]=k;v.split("|").forEach(a=>m[a]=k)}return m})();
+function canonCountry(c){const s=String(c||"").trim();if(!s)return"";return CANON[s.toLowerCase()]||s}
+function canonP(p){if(!p)return p;const o={...p};if(o.country!=null)o.country=canonCountry(o.country);if(Array.isArray(o.locations))o.locations=o.locations.map(l=>l&&l.country!=null?{...l,country:canonCountry(l.country)}:l);return o}
+window.canonCountry=canonCountry;
+function norm(p){if(!p)return p;p=canonP(p);let L=Array.isArray(p.locations)?p.locations:null,addr=p.address;
  if(!L&&typeof addr==="string"&&addr.startsWith("[{")){try{L=JSON.parse(addr)}catch(e){}}
  if(L&&L.length){addr=L[0].address||""}else L=(p.city||p.lat!=null)?[{label:"",address:addr||"",city:p.city||"",country:p.country||"",lat:p.lat,lng:p.lng}]:[];
  const fromLoc=(L[0]&&L[0].practice_name)||"";const website2=String(p.website2||(L[0]&&L[0].website2)||"").trim()||null;const instagram=String(p.instagram||(L[0]&&L[0].instagram)||"").trim()||null;const l0=L[0]||{};const news_optin=!!(p.news_optin??l0.news_optin),news_optin_at=p.news_optin_at||l0.news_optin_at||null,news_optout_at=p.news_optout_at||l0.news_optout_at||null;
  const practice_name=String(p.practice_name||fromLoc||"").trim()||null;
- L=stripLocMeta(L).slice(0,3);
+ L=stripLocMeta(L).slice(0,3).map(l=>l&&l.country!=null?{...l,country:canonCountry(l.country)}:l);
  return {...p,practice_name,website2,instagram,news_optin,news_optin_at,news_optout_at,address:addr,locations:L}}
 window.normLocs=norm;
 
@@ -42,7 +51,7 @@ const local={mode:"local",
  async signOut(){localStorage.removeItem("fyp_session")},
  async list(){const s=await this.session();return Object.values(LS.get("fyp_profiles2",{})).filter(p=>p.consent||(s&&p.user_id===s.user_id)).map(norm)},
  async mine(){const s=await this.session();return s?norm(LS.get("fyp_profiles2",{})[s.user_id]||null):null},
- async save(p){const s=await this.session();const all=LS.get("fyp_profiles2",{});const row={...pick(p),locations:p.locations||null,id:all[s.user_id]?.id||crypto.randomUUID(),user_id:s.user_id,created_at:all[s.user_id]?.created_at||new Date().toISOString()};
+ async save(p){p=canonP(p);const s=await this.session();const all=LS.get("fyp_profiles2",{});const row={...pick(p),locations:p.locations||null,id:all[s.user_id]?.id||crypto.randomUUID(),user_id:s.user_id,created_at:all[s.user_id]?.created_at||new Date().toISOString()};
   all[s.user_id]=row;LS.set("fyp_profiles2",all);return norm(row)},
  async sessions(){const s=await this.session();if(!s)return[];return (LS.get("fyp_sessions",{})[s.user_id]||[]).map(unpackSession).slice().sort(cmp)},
  async saveSession(x){const s=await this.session();const all=LS.get("fyp_sessions",{}),l=all[s.user_id]||[];const i=l.findIndex(r=>r.id===x.id);
@@ -76,7 +85,7 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   onAuth(cb){try{const {data:{subscription}}=sb.auth.onAuthStateChange((event,session)=>cb(event,session));return ()=>subscription.unsubscribe()}catch(e){return ()=>{}}},
   async list(){return chk(await sb.from("practitioners").select("*").order("created_at")).map(norm)},
   async mine(){const s=await sess();if(!s)return null;return norm(chk(await sb.from("practitioners").select("*").eq("user_id",s.user_id).maybeSingle()))},
-  async save(p){const s=await sess();const pn=(p.practice_name||"").trim()||null;let L=stripLocMeta(p.locations||[]);
+  async save(p){p=canonP(p);const s=await sess();const pn=(p.practice_name||"").trim()||null;let L=stripLocMeta(p.locations||[]);
    const base0=pick(p);base0.practice_name=pn;
    const upsert=async row=>{const r=await sb.from("practitioners").upsert(row,{onConflict:"user_id"}).select().single();return r};
    // Prefer locations column + practice_name column

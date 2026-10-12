@@ -109,7 +109,7 @@ function dist(p,from=here){if(!from)return null;const ds=pins(p).map(l=>dist1(l,
 const pins=p=>(p.locations&&p.locations.length?p.locations:[p]).filter(l=>l.lat!=null);
 const locTxt=l=>[l.city,l.country].filter(Boolean).join(", ");
 function fold(s){try{return String(s||"").normalize("NFD").replace(/\p{M}/gu,"").toLowerCase()}catch(e){return String(s||"").toLowerCase()}}
-function placeHit(p,q){if(!q)return true;const locs=(p.locations&&p.locations.length)?p.locations:[p];
+function placeHit(p,q){if(!q)return true;{const cq=fold(window.canonCountry?canonCountry(q):q);if(cq!==q&&cq)q=cq}const locs=(p.locations&&p.locations.length)?p.locations:[p];
  const {cities,countries}=placeOptions();
  const exactCity=cities.find(c=>fold(`${c.city}, ${c.country}`)===q);
  if(exactCity)return locs.some(l=>fold(l.city)===fold(exactCity.city)&&fold(l.country)===fold(exactCity.country));
@@ -211,7 +211,7 @@ function closeClusterSheet(){const s=$("#areaSheet"),b=$("#sheetBackdrop");if(s)
 document.addEventListener("click",e=>{if(e.target&&(e.target.id==="sheetX"||e.target.id==="sheetBackdrop"))closeClusterSheet()});
 const CITY_CC={tallinn:"estonia",warsaw:"poland",warszawa:"poland",krakow:"poland","kraków":"poland",kielce:"poland",berlin:"germany",lesvos:"greece","lesvos island":"greece",mytilene:"greece",helsinki:"finland",riga:"latvia",vilnius:"lithuania",stockholm:"sweden",oslo:"norway",copenhagen:"denmark",athens:"greece",thessaloniki:"greece"};
 const CC_ALIAS={usa:"united states",us:"united states","u.s.":"united states","u.s.a.":"united states",uk:"united kingdom","great britain":"united kingdom",england:"united kingdom",czechia:"czech republic",holland:"netherlands","ελλάς":"greece","ελλάδα":"greece"};
-function normCountry(c){c=String(c||"").trim().toLowerCase();if(!c)return"";return CC_ALIAS[c]||c}
+function normCountry(c){c=String((window.canonCountry?canonCountry(c):c)||"").trim().toLowerCase();if(!c)return"";return CC_ALIAS[c]||c}
 function guessCountry(lat,lng){if(lat==null||lng==null)return"";
  if(lat>57.5&&lat<60.5&&lng>21&&lng<29)return"estonia";
  if(lat>38.8&&lat<41.8&&lng>19&&lng<29.5)return"greece";
