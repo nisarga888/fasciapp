@@ -282,3 +282,7 @@ body.in #learn.screen,body.in #list.screen,body.in #profile.screen,body.in #log.
 .newsGo{background:#C99E67;color:#02191E;border:0;border-radius:18px;padding:7px 14px;font:inherit;font-weight:700;font-size:13px}
 .newsX{position:absolute;right:6px;top:6px;width:36px;height:36px;border-radius:50%;border:0;background:#ffffff14;color:#cfdcdc;font-size:14px}
 nav#tabs .ndot{position:absolute;top:calc(50% - 22px);right:calc(50% - 19px);width:9px;height:9px;border-radius:50%;background:#C99E67;box-shadow:0 0 0 2px #011114}
+.quoteSlot{flex:none}.quoteCard{display:block;width:100%;text-align:left;font:inherit;color:inherit;background:linear-gradient(135deg,#0d3a40,#0a2a30);border:1px solid #5FC9C333;border-radius:16px;padding:10px 14px;margin:0 0 10px;cursor:pointer}
+.quoteCard small{color:#C99E67;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}.quoteCard p{margin:3px 0 4px;font-size:15px;font-style:italic;line-height:1.35}
+.quoteCard span,.quotePrev span{color:#9fb8b8;font-size:12px}.quoteCard em{display:block;font-style:normal;color:#5FC9C3;font-size:12px;margin-top:4px}
+.quotePrev{list-style:none;margin:-4px 0 10px;padding:4px 14px;max-height:180px;overflow-y:auto;-webkit-overflow-scrolling:touch;border-left:2px solid #C99E6744}.quotePrev li{padding:6px 0;border-bottom:1px solid #ffffff10}.quotePrev p{margin:0 0 2px;font-size:13px;font-style:italic;line-height:1.35}
