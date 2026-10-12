@@ -545,7 +545,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeVideo()});
 const NEWS_DIS="fa_news_dismissed",LAB_SEEN="fa_lab_seen";
 function newsList(k){try{return JSON.parse(localStorage.getItem(k)||"[]")}catch(e){return[]}}
 function renderNews(){const n=window.FASCIAPP_NEWS;const dis=n&&newsList(NEWS_DIS).includes(n.id);
- $$(".newsSlot").forEach(s=>{s.innerHTML=n&&!dis?`<div class="newsCard" role="status"><small>What’s new</small><p>${esc(n.text)}</p>${n.button?`<button type="button" class="newsGo" data-tab="${esc(n.tab||"learn")}">${esc(n.button)} →</button>`:""}<button type="button" class="newsX" aria-label="Dismiss">✕</button></div>`:""});
+ $$(".newsSlot").forEach(s=>{s.innerHTML=n&&!dis?`<div class="newsCard" role="status"><small>What’s new</small><p>${esc(n.text)}</p>${n.button&&(n.tab||"learn")!==(s.closest(".screen")||{}).id?`<button type="button" class="newsGo" data-tab="${esc(n.tab||"learn")}">${esc(n.button)} →</button>`:""}<button type="button" class="newsX" aria-label="Dismiss">✕</button></div>`:""});
  const dot=$("#labDot");if(dot)dot.hidden=!(n&&localStorage.getItem(LAB_SEEN)!==n.id)}
 document.addEventListener("click",e=>{const n=window.FASCIAPP_NEWS;if(!n)return;
  if(e.target.closest(".newsX")){const d=newsList(NEWS_DIS);if(!d.includes(n.id)){d.push(n.id);localStorage.setItem(NEWS_DIS,JSON.stringify(d.slice(-20)))}renderNews();return}
