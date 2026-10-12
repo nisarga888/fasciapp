@@ -5,4 +5,4 @@
 //   button: button label (leave "" for no button)
 //   tab:    tab the button opens: "learn" (Fascia Lab), "map", "list", "profile", "log"
 // Set window.FASCIAPP_NEWS = null; to show no card.
-window.FASCIAPP_NEWS = { id: "feel-to-heal-2026-10-11", text: "New in Fascia Lab: Feel to Heal, the ebook by Giten Tonkov", button: "Open Lab", tab: "learn" };
+window.FASCIAPP_NEWS = { id: "feel-to-heal-2026-10-11", text: "New in Fascia Lab: Feel to Heal, the book by Giten Tonkov", button: "Open Lab", tab: "learn" };
