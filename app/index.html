@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 
-<link rel="stylesheet" href="styles.css?v=0.23.14"></head><body>
+<link rel="stylesheet" href="styles.css?v=0.23.15"></head><body>
 <div id="demoBanner" class="banner" hidden>Demo mode: saved on this device</div>
 <section id="splash" class="screen active">
  <svg class="biglogo logoMark" width="150" height="150" aria-hidden="true" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -89,6 +89,7 @@
 </header>
 <main>
 <section id="map" class="screen">
+ <div class="newsSlot"></div>
  <div class="bar"><button id="near" class="gold sm">📍 Near me</button>
  <select id="filter"><option value="">All locations</option></select></div>
  <form id="nearCity" class="nearCity" hidden>
@@ -133,7 +134,7 @@
   <button type="button" id="pOut" class="ghost">Log out</button>
  </form>
 </section>
-<section id="learn" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><div class="newsSlot"></div><h2 id="learnH">Fascia Lab</h2><p class="muted">Videos and ebooks on MER®, BBTRS®, breath and the body. Sign in to unlock members’ material.</p><div id="learnList"></div></section>
+<section id="learn" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><div class="quoteSlot"></div><h2 id="learnH">Fascia Lab</h2><p class="muted">Videos and ebooks on MER®, BBTRS®, breath and the body. Sign in to unlock members’ material.</p><div id="learnList"></div></section>
 <section id="inbox" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><h2>Messages</h2><div id="convs"></div></section>
 <div id="chat" class="chat" hidden><div class="chatH"><b id="chatName"></b><button type="button" id="chatX" class="ghost sm" aria-label="Close">✕</button></div>
  <div id="chatLog" class="chatLog"></div><form id="chatForm" class="chatF"><textarea id="chatTxt" rows="2" maxlength="1000" placeholder="Write a message…"></textarea><button class="gold">Send</button></form><p id="chatErr" class="msg"></p></div>
@@ -190,9 +191,9 @@
 
 
 
-<script src="config.js?v=0.23.14"></script>
+<script src="config.js?v=0.23.15"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="learn.js?v=0.23.14"></script><script src="news.js?v=0.23.14"></script><script src="quotes.js?v=0.23.14"></script><script src="data.js?v=0.23.14"></script><script src="app.js?v=0.23.14"></script>
+<script src="learn.js?v=0.23.15"></script><script src="news.js?v=0.23.15"></script><script src="quotes.js?v=0.23.15"></script><script src="data.js?v=0.23.15"></script><script src="app.js?v=0.23.15"></script>
 <script>
 if("serviceWorker" in navigator&&navigator.serviceWorker){
   // Never reload while the user is using the app: apply a new version only when the app is in the background or on next open.

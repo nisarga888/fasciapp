@@ -17,8 +17,8 @@ window.FASCIAPP_QUOTES = [
  function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
  function render(){const Q=window.FASCIAPP_QUOTES||[];if(!Q.length)return;const w=isoWeek(new Date()),i=w%Q.length,q=Q[i];
   const prev=[];for(let k=1;k<Q.length;k++){const p=Q[(i-k+Q.length*2)%Q.length];prev.push(`<li><p>“${esc(p.text)}”</p><span>${esc(p.by)}</span></li>`)}
-  const map=document.getElementById("map");if(!map)return;let s=map.querySelector(".quoteSlot");
-  if(!s){s=document.createElement("div");s.className="quoteSlot";const n=map.querySelector(".newsSlot");n?n.after(s):map.prepend(s)}
+  const lab=document.getElementById("learn");if(!lab)return;let s=lab.querySelector(".quoteSlot");
+  if(!s){s=document.createElement("div");s.className="quoteSlot";const h=lab.querySelector("#learnH")||lab.querySelector("h2");h?h.before(s):lab.prepend(s)}
   s.innerHTML=`<button type="button" class="quoteCard" aria-expanded="false"><small>Quote of the week</small><p>“${esc(q.text)}”</p><span>${esc(q.by)}</span><em>Earlier quotes ▾</em></button><ul class="quotePrev" hidden>${prev.join("")}</ul>`;
   const b=s.querySelector(".quoteCard"),l=s.querySelector(".quotePrev");
   b.onclick=()=>{const o=l.hidden;l.hidden=!o;b.setAttribute("aria-expanded",o);b.querySelector("em").textContent=o?"Hide earlier quotes ▴":"Earlier quotes ▾"}}
