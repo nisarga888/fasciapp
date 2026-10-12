@@ -26,9 +26,12 @@ function placeOptions(){const cityMap=new Map(),countryMap=new Map();
   countries:[...countryMap.values()].sort((a,b)=>a.country.localeCompare(b.country,"en",{sensitivity:"base"}))}}
 function fillFilter(){try{fillPlaces()}catch(e){}
 const mods=modCounts();const opts=`<option value="">All practices</option>`+mods.map(([m,n])=>`<option value="${esc(m)}">${esc(m)} (${n})</option>`).join("");
- const v=($("#filter")&&$("#filter").value)||($("#listFilter")&&$("#listFilter").value)||"";
- ["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;el.innerHTML=opts;if([...el.options].some(o=>o.value===v))el.value=v;else el.value=""})}
-function syncModFilter(fromId){const src=$(`#${fromId}`);if(!src)return;const v=src.value;["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(el&&el!==src)el.value=v});renderMarkers();renderList()}
+ const lf=$("#listFilter");if(lf){const v=lf.value;lf.innerHTML=opts;lf.value=[...lf.options].some(o=>o.value===v)?v:""}
+ const cf=$("#filter");if(cf){const v=cf.value;cf.innerHTML=`<option value="">All locations</option>`+placeOptions().countries.map(c=>`<option value="${esc(c.country)}">${esc(c.country)} (${c.n})</option>`).join("");cf.value=[...cf.options].some(o=>o.value===v)?v:""}}
+function syncModFilter(){renderMarkers();renderList()}
+const mpins=p=>{const c=fold(mapCountry());return c?pins(p).filter(l=>fold(String(l.country||"").trim())===c):pins(p)};
+const mapCountry=()=>($("#filter")&&$("#filter").value)||"";
+function mapPeople(){const c=fold(mapCountry());const ps=filtered();if(!c)return ps;return ps.filter(p=>((p.locations&&p.locations.length)?p.locations:[p]).some(l=>fold(String(l.country||"").trim())===c))}
 // Location filter: native <select> (iOS picker). Values: "co:<country>", "ci:<city>|<country>", "free:<text>" (deep links)
 function closePlaceMenu(){}function openPlaceMenu(){}
 function fillPlaces(){const el=$("#qPlace");if(!el||el.tagName!=="SELECT")return;const v=el.value;const {cities,countries}=placeOptions();
@@ -51,7 +54,7 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(sp.get("search")==="1"){show("list");const q=$("#qPlace");if(q)requestAnimationFrame(()=>{try{q.focus();q.showPicker&&q.showPicker()}catch(e){}});return true}
  const practice=(sp.get("practice")||sp.get("mod")||"").trim();const place=(sp.get("place")||sp.get("city")||"").trim();
  if(!practice&&!place)return false;fillFilter();let hit=false;
- if(practice){const want=fold(practice);["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;const opt=[...el.options].find(o=>o.value&&(fold(o.value)===want||fold(o.value).includes(want)||want.includes(fold(o.value))));if(opt){el.value=opt.value;hit=true}})}
+ if(practice){const want=fold(practice);["listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;const opt=[...el.options].find(o=>o.value&&(fold(o.value)===want||fold(o.value).includes(want)||want.includes(fold(o.value))));if(opt){el.value=opt.value;hit=true}})}
  if(place){setPlace(place);hit=true}
  if(hit){renderMarkers();renderList();show("list");return true}return false}catch(e){return false}}
 window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
@@ -117,7 +120,7 @@ function placeHit(p,q){if(!q)return true;{const cq=fold(window.canonCountry?cano
  if(exactCo)return locs.some(l=>fold(l.country)===fold(exactCo.country));
  return locs.some(l=>fold([l.city,l.country,l.address].filter(Boolean).join(" ")).includes(q))}
 function placeQ(){const el=$("#qPlace");return fold(el?el.value.trim():"")}
-function filtered(){const f=($("#filter")&&$("#filter").value)||($("#listFilter")&&$("#listFilter").value)||"";const q=placeQ();
+function filtered(){const f=($("#listFilter")&&$("#listFilter").value)||"";const q=placeQ();
  return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f))&&placeOk(p))}
 function initials(n){return String(n||"?").split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase()}
 function av(p,cls=""){return p.photo?`<img class="av ${cls}" src="${esc(p.photo)}" alt="">`:`<span class="av ${cls}">${esc(initials(p.name))}</span>`}
@@ -222,13 +225,13 @@ function guessCountry(lat,lng){if(lat==null||lng==null)return"";
 function countriesOf(p){const set=new Set();const locs=(p.locations&&p.locations.length)?p.locations:[{country:p.country,city:p.city,lat:p.lat,lng:p.lng}];
  locs.forEach(l=>{let c=normCountry(l.country);if(!c)c=normCountry(CITY_CC[(l.city||"").trim().toLowerCase()]);
   if(!c)c=guessCountry(l.lat!=null?+l.lat:null,l.lng!=null?+l.lng:null);if(c)set.add(c)});return set}
-function count(){const a=all().filter(p=>pins(p).length),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
+function count(){const mc=mapCountry();if(mc){const n=mapPeople().length;$("#count").innerHTML=`<b>${n}</b> practitioner${n===1?"":"s"} in <b>${esc(mc)}</b>`;return}const a=all().filter(p=>pins(p).length),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
  $("#count").innerHTML=a.length?`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"} joined the network`:"Be the first practitioner on the map ✨"}
-function fitPins(force){if(!map)return;const pts=[];filtered().forEach(p=>pins(p).forEach(l=>{if(l.lat!=null&&l.lng!=null)pts.push([+l.lat,+l.lng])}));
+function fitPins(force){if(!map)return;const pts=[];mapPeople().forEach(p=>mpins(p).forEach(l=>{if(l.lat!=null&&l.lng!=null)pts.push([+l.lat,+l.lng])}));
  if(!pts.length)return;if(!force&&didFit)return;
  try{if(pts.length===1)map.setView(pts[0],10,{animate:false});
  else{const b=L.latLngBounds(pts),span=Math.max(Math.abs(b.getNorth()-b.getSouth()),Math.abs(b.getEast()-b.getWest()));
-  if(span>6){let best=pts[0],bestN=0;pts.forEach(a=>{const n=pts.filter(c=>Math.abs(a[0]-c[0])<1.2&&Math.abs(a[1]-c[1])<1.2).length;if(n>bestN){bestN=n;best=a}});
+  if(span>6&&!mapCountry()){let best=pts[0],bestN=0;pts.forEach(a=>{const n=pts.filter(c=>Math.abs(a[0]-c[0])<1.2&&Math.abs(a[1]-c[1])<1.2).length;if(n>bestN){bestN=n;best=a}});
    map.setView(best,10,{animate:false})}
   else map.fitBounds(b,{padding:[56,56],maxZoom:10,animate:false})}
  didFit=true;lastLabels=labelsOn();setTimeout(()=>map&&map.invalidateSize(),60)}catch(e){console.warn(e)}}
@@ -236,8 +239,8 @@ function labelSides(entries){const sides=new Map();const order=entries.map((e,i)
  order.forEach((ix,oi)=>{let side="right";if(oi){const cur=entries[ix],prev=entries[order[oi-1]];
   if(Math.abs(cur.lat-prev.lat)<.55&&Math.abs(cur.lng-prev.lng)<.55)side=sides.get(order[oi-1])==="right"?"left":"right"}
   sides.set(ix,side)});return sides}
-function renderMarkers(){count();if(!layer)return;layer.clearLayers();if(threads)threads.clearLayers();const ps=filtered();
- const entries=[];ps.forEach(p=>pins(p).forEach(l=>{if(l.lat!=null&&l.lng!=null)entries.push({p,l,lat:+l.lat,lng:+l.lng})}));
+function renderMarkers(){count();if(!layer)return;layer.clearLayers();if(threads)threads.clearLayers();const ps=mapPeople();
+ const entries=[];ps.forEach(p=>mpins(p).forEach(l=>{if(l.lat!=null&&l.lng!=null)entries.push({p,l,lat:+l.lat,lng:+l.lng})}));
  const sides=labelSides(entries),withLabel=labelsOn();lastLabels=withLabel;
  const ms=entries.map((e,i)=>{const side=sides.get(i)||"right";
   const m=L.marker([e.lat,e.lng],{icon:pinIcon(e.p,side,e.l,withLabel),fa:{p:e.p,l:e.l}});
@@ -245,11 +248,11 @@ function renderMarkers(){count();if(!layer)return;layer.clearLayers();if(threads
  if(layer.addLayers)layer.addLayers(ms);else ms.forEach(m=>m.addTo(layer));
  if(here)L.circleMarker(here,{radius:7,color:"#fff",weight:3,fillColor:"#2a9d96",fillOpacity:1}).bindPopup("You are here").addTo(threads||layer);
  if(ps.length&&!didFit)fitPins(true)}
-$("#filter")&&($("#filter").onchange=()=>syncModFilter("filter"));
+$("#filter")&&($("#filter").onchange=()=>{renderMarkers();fitPins(true)});
 $("#listFilter")&&($("#listFilter").onchange=()=>syncModFilter("listFilter"));
 $("#qPlace")&&($("#qPlace").onchange=()=>{renderList();renderMarkers()});
 document.addEventListener("click",e=>{const c=$("#placeCombo");if(c&&!c.contains(e.target))closePlaceMenu()});
-$("#listClear")&&($("#listClear").onclick=()=>{const q=$("#qPlace");if(q)q.value="";["filter","listFilter"].forEach(id=>{const el=$(`#${id}`);if(el)el.value=""});closePlaceMenu();renderMarkers();renderList()});
+$("#listClear")&&($("#listClear").onclick=()=>{const q=$("#qPlace");if(q)q.value="";{const el=$("#listFilter");if(el)el.value=""};closePlaceMenu();renderMarkers();renderList()});
 $("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show("map");didFit=false;setTimeout(()=>{fitPins(true);map&&map.invalidateSize()},100)});
 function geoOnce(){return new Promise(resolve=>{if(!navigator.geolocation||!window.isSecureContext)return resolve(null);
   navigator.geolocation.getCurrentPosition(pos=>resolve([pos.coords.latitude,pos.coords.longitude]),()=>resolve(null),{enableHighAccuracy:false,timeout:8000,maximumAge:3e5})})}
@@ -277,7 +280,7 @@ $("#nearCity")&&($("#nearCity").onsubmit=async e=>{e.preventDefault();const f=e.
  m.textContent="Looking up "+city+"…";const g=await geocode("",city,"");if(!g){m.textContent="Could not find that city. Try another spelling.";showToast("City not found");return}
  applyNear(g[0],g[1])});
 function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));if(here)ps.sort((a,b)=>a.d-b.d);
- const _pe=$("#qPlace"),n=ps.length,q=(_pe&&_pe.value&&_pe.selectedOptions[0]?_pe.selectedOptions[0].textContent.replace(/\s*\(\d+\)$/,""):""),mod=($("#listFilter")&&$("#listFilter").value)||($("#filter")&&$("#filter").value)||"";
+ const _pe=$("#qPlace"),n=ps.length,q=(_pe&&_pe.value&&_pe.selectedOptions[0]?_pe.selectedOptions[0].textContent.replace(/\s*\(\d+\)$/,""):""),mod=($("#listFilter")&&$("#listFilter").value)||"";
  const lc=$("#listCount");if(lc)lc.textContent=n?`${n} practitioner${n===1?"":"s"}`:"No practitioners";
  const clr=$("#listClear");if(clr)clr.hidden=!(q||mod);
  $("#from").textContent=here?"Sorted by distance from you":"Tap 📍 Near me on the map to sort by distance";
