@@ -2,7 +2,7 @@
 (function(){
 const cfg=window.FASCIAPP_CONFIG||{};
 const LS={get:(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
-const FIELDS=["name","practice_name","mods","address","city","country","lat","lng","phone","email","website","bio","photo","consent","whatsapp"];
+const FIELDS=["name","practice_name","mods","address","city","country","lat","lng","phone","email","website","bio","photo","consent","whatsapp","news_optin","news_optin_at"];
 const SF=["initials","date","duration","format","session_type","comment"];const pickS=x=>Object.fromEntries(SF.map(k=>[k,x[k]===""?null:(x[k]??null)]));
 const META_RE=/^⟦([^⟧]*)⟧\s*/;
 function unpackSession(row){if(!row)return row;let format=row.format,session_type=row.session_type,comment=row.comment||"";
@@ -51,7 +51,7 @@ const local={mode:"local",
  async signOut(){localStorage.removeItem("fyp_session")},
  async list(){const s=await this.session();return Object.values(LS.get("fyp_profiles2",{})).filter(p=>p.consent||(s&&p.user_id===s.user_id)).map(norm)},
  async mine(){const s=await this.session();return s?norm(LS.get("fyp_profiles2",{})[s.user_id]||null):null},
- async save(p){p=canonP(p);const s=await this.session();const all=LS.get("fyp_profiles2",{});const row={...pick(p),locations:p.locations||null,id:all[s.user_id]?.id||crypto.randomUUID(),user_id:s.user_id,created_at:all[s.user_id]?.created_at||new Date().toISOString()};
+ async save(p){p=canonP(p);const s=await this.session();const all=LS.get("fyp_profiles2",{});const row={...pick(p),news_optin:!!p.news_optin,news_optin_at:p.news_optin?(p.news_optin_at||new Date().toISOString()):null,news_optout_at:p.news_optout_at||null,locations:p.locations||null,id:all[s.user_id]?.id||crypto.randomUUID(),user_id:s.user_id,created_at:all[s.user_id]?.created_at||new Date().toISOString()};
   all[s.user_id]=row;LS.set("fyp_profiles2",all);return norm(row)},
  async sessions(){const s=await this.session();if(!s)return[];return (LS.get("fyp_sessions",{})[s.user_id]||[]).map(unpackSession).slice().sort(cmp)},
  async saveSession(x){const s=await this.session();const all=LS.get("fyp_sessions",{}),l=all[s.user_id]||[];const i=l.findIndex(r=>r.id===x.id);
@@ -64,7 +64,7 @@ const local={mode:"local",
 
 
 
-let noLocCol=false,noPracticeCol=false,noFormatCol=false,noSessionTypeCol=false;
+let noLocCol=false,noPracticeCol=false,noNewsCol=false,noFormatCol=false,noSessionTypeCol=false;
 function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY,{
   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage,storageKey:"fasciapp-auth"}
  });
@@ -72,6 +72,7 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
  const chk=({data,error})=>{if(error)throw new Error(error.message);return data};
  // Probe once whether practice_name column exists (anon can SELECT).
  (async()=>{try{const r=await sb.from("practitioners").select("practice_name").limit(1);if(r.error&&/practice_name/.test(r.error.message||"")){noPracticeCol=true;console.warn("FasciApp: run `alter table public.practitioners add column if not exists practice_name text;` — storing practice_name inside locations jsonb for now")}}catch(e){}
+  try{const r=await sb.from("practitioners").select("news_optin").limit(1);if(r.error&&/news_optin/.test(r.error.message||"")){noNewsCol=true;console.warn("FasciApp: run news_optin columns SQL — storing news opt-in inside locations jsonb for now")}}catch(e){}
   try{const r=await sb.from("sessions").select("format").limit(1);if(r.error&&/format/i.test(r.error.message||"")){noFormatCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists format text;` — packing format into comment for now")}}catch(e){}
   try{const r=await sb.from("sessions").select("session_type").limit(1);if(r.error&&/session_type/i.test(r.error.message||"")){noSessionTypeCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists session_type text;` — packing session_type into comment for now")}}catch(e){}})();
  return {mode:"supabase",
@@ -87,22 +88,29 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   async mine(){const s=await sess();if(!s)return null;return norm(chk(await sb.from("practitioners").select("*").eq("user_id",s.user_id).maybeSingle()))},
   async save(p){p=canonP(p);const s=await sess();const pn=(p.practice_name||"").trim()||null;let L=stripLocMeta(p.locations||[]);
    const base0=pick(p);base0.practice_name=pn;
+   base0.news_optin=!!p.news_optin;base0.news_optin_at=p.news_optin?(p.news_optin_at||new Date().toISOString()):null;
    const upsert=async row=>{const r=await sb.from("practitioners").upsert(row,{onConflict:"user_id"}).select().single();return r};
-   // Prefer locations column + practice_name column
+   const newsEmbed=()=>noNewsCol?newsMeta(p):null;
+   const dropNewsCols=row=>{if(noNewsCol){delete row.news_optin;delete row.news_optin_at}return row};
+   // Prefer locations column + practice_name / news_optin columns
    if(!noLocCol){
-    const w2=p.website2;let row={...base0,user_id:s.user_id,locations:embedW2(L,w2,p.instagram,newsMeta(p))};
-    if(noPracticeCol){delete row.practice_name;row.locations=embedW2(embedPractice(L,pn),w2,p.instagram,newsMeta(p))}
+    const w2=p.website2;let row=dropNewsCols({...base0,user_id:s.user_id,locations:embedW2(L,w2,p.instagram,newsEmbed())});
+    if(noPracticeCol){delete row.practice_name;row.locations=embedW2(embedPractice(L,pn),w2,p.instagram,newsEmbed())}
     let r=await upsert(row);
+    if(r.error&&/news_optin/.test(r.error.message||"")){
+     noNewsCol=true;console.warn("FasciApp: run news_optin columns SQL — storing news opt-in inside locations jsonb for now");
+     row=dropNewsCols({...base0,user_id:s.user_id,locations:embedW2(noPracticeCol?embedPractice(L,pn):L,w2,p.instagram,newsMeta(p))});
+     if(noPracticeCol)delete row.practice_name;r=await upsert(row)}
     if(r.error&&/practice_name/.test(r.error.message||"")){
      noPracticeCol=true;console.warn("FasciApp: run `alter table public.practitioners add column if not exists practice_name text;` — storing practice_name inside locations jsonb for now");
-     delete row.practice_name;row.locations=embedW2(embedPractice(L,pn),w2,p.instagram,newsMeta(p));r=await upsert(row)}
+     delete row.practice_name;row.locations=embedW2(embedPractice(L,pn),w2,p.instagram,newsEmbed());row=dropNewsCols(row);r=await upsert(row)}
     if(!r.error)return norm(r.data);
     if(!/locations/.test(r.error.message||""))throw new Error(r.error.message);
     noLocCol=true;console.warn("FasciApp: run `alter table practitioners add column if not exists locations jsonb;` — using address fallback")}
-   // Address-packing fallback (also carries practice_name inside the JSON)
-   const packedL=embedW2(embedPractice(L,pn),p.website2,p.instagram,newsMeta(p));
+   // Address-packing fallback (also carries practice_name / news opt-in inside the JSON when columns missing)
+   const packedL=embedW2(embedPractice(L,pn),p.website2,p.instagram,newsEmbed()||(p.news_optin||p.news_optout_at?newsMeta(p):null));
    const packed=packedL.length>1||pn||p.website2||p.instagram||p.news_optin||p.news_optout_at?JSON.stringify(packedL):base0.address;
-   const row={...base0,user_id:s.user_id,address:packed};delete row.practice_name;
+   const row=dropNewsCols({...base0,user_id:s.user_id,address:packed});delete row.practice_name;
    return norm(chk(await upsert(row)))},
   async sessions(){const s=await sess();if(!s)return[];return chk(await sb.from("sessions").select("*").eq("user_id",s.user_id)).map(unpackSession).sort(cmp)},
   async saveSession(x){const s=await sess();const base=pickS(x);if(!base.format)base.format="In person";if(!base.session_type)base.session_type="MER";
