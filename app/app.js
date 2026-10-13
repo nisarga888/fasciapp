@@ -15,8 +15,12 @@ function renderTags(){const set=[...new Set(SUG.concat(myMods))];$("#modBox").in
 function addTag(){const v=$("#modNew").value.trim().replace(/\s+/g," ");if(v&&!myMods.some(x=>x.toLowerCase()===v.toLowerCase()))myMods.push(v);$("#modNew").value="";renderTags()}
 $("#modAdd").onclick=addTag;$("#modNew").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addTag()}};
 function mappedPeople(){return all().filter(p=>pins(p).length)}
+function modPinRank(m){const s=fold(String(m||"").replace(/®/g,"")).trim();
+ if(s==="bbtrs"||s.startsWith("bbtrs "))return 0;
+ if(s==="mer"||s==="myofascial energetic release"||s.startsWith("mer ")||s.startsWith("myofascial energetic release"))return 1;
+ return 2}
 function modCounts(){const m=new Map();mappedPeople().forEach(p=>{[...new Set(p.mods||[])].forEach(mod=>{if(!mod)return;m.set(mod,(m.get(mod)||0)+1)})});
- return[...m.entries()].sort((a,b)=>a[0].localeCompare(b[0],"en",{sensitivity:"base"}))}
+ return[...m.entries()].sort((a,b)=>{const ra=modPinRank(a[0]),rb=modPinRank(b[0]);return ra!==rb?ra-rb:a[0].localeCompare(b[0],"en",{sensitivity:"base"})})}
 function placeOptions(){const cityMap=new Map(),countryMap=new Map();
  mappedPeople().forEach(p=>{const locs=(p.locations&&p.locations.length)?p.locations:[p];const seenC=new Set(),seenCo=new Set();
   locs.forEach(l=>{const city=String(l.city||"").trim(),country=String(l.country||"").trim();
