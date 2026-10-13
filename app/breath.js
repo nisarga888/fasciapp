@@ -216,7 +216,7 @@
           const icon = p.viz === "wave" ? "wave" : p.viz === "box" ? "box" : "ball";
           return `<button type="button" class="breathCaroCard" role="listitem" data-breath-open="${esc(id)}" aria-label="${esc(p.title)}: ${esc(p.tag||"")}">
             <div class="breathCaroArt ${icon}" aria-hidden="true">${p.tag?`<span class="breathUseTag">${esc(p.tag)}</span>`:""}${isLocked(id)?`<span class="breathLock">${LOCKI}</span>`:""}</div>
-            ${window.FA_isNew&&FA_isNew("breath:"+id)?FA_NEW_TAG+" ":""}${FREE[id]?'<span class="ltag free">Free</span>':`<span class="ltag lk">${isLocked(id)?LOCKI+' ':''}Members</span>`}
+            <span class="breathTags">${window.FA_isNew&&FA_isNew("breath:"+id)?FA_NEW_TAG:""}${FREE[id]?'<span class="ltag free">Free</span>':`<span class="ltag lk">${isLocked(id)?LOCKI+' ':''}Members</span>`}</span>
             <b>${esc(p.title)}</b>
             <small>${esc(p.line)}</small>
             <span class="breathCaroCta">Open →</span>
