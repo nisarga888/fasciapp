@@ -177,6 +177,30 @@
   }
 
   /* ——— Lab carousel ——— */
+  const FREE = { coherent: 1 };
+  const LOCKI = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  function isLocked(id) { return !FREE[id] && !(window.faSignedIn && window.faSignedIn()); }
+  function showUnlock(id) {
+    const el = ensureRoot();
+    el.innerHTML = `
+      <div class="breathOverlay breathUnlockBg" role="dialog" aria-modal="true" aria-label="Unlock breathing practices">
+        <div class="breathUnlock">
+          <button type="button" class="breathX" data-breath-close="1" aria-label="Close">✕</button>
+          <span class="breathUnlockIc">${LOCKI}</span>
+          <b>Sign up free to unlock all breathing practices</b>
+          <p class="muted">Coherent breathing is open to everyone. Create a free account to use Longer exhale and Box breathing too.</p>
+          <div class="breathUnlockBtns">
+            <button type="button" class="gold" data-breath-auth="up">Sign up free</button>
+            <button type="button" class="outline" data-breath-auth="in">Sign in</button>
+          </div>
+        </div>
+      </div>`;
+    el.onclick = e => {
+      if (e.target.closest("[data-breath-close]") || e.target.classList.contains("breathUnlockBg")) { closeAll(); return; }
+      const a = e.target.closest("[data-breath-auth]");
+      if (a) { closeAll(); if (window.faAuthFor) window.faAuthFor(a.getAttribute("data-breath-auth") === "up", id); }
+    };
+  }
   function mountLab() {
     const box = document.getElementById("learnList");
     if (!box) return;
@@ -192,8 +216,8 @@
           const p = PRACTICES[id];
           const icon = p.viz === "wave" ? "wave" : p.viz === "box" ? "box" : "ball";
           return `<button type="button" class="breathCaroCard" role="listitem" data-breath-open="${esc(id)}" aria-label="${esc(p.title)}: ${esc(p.tag||"")}">
-            <div class="breathCaroArt ${icon}" aria-hidden="true">${p.tag?`<span class="breathUseTag">${esc(p.tag)}</span>`:""}</div>
-            <span class="ltag free">Free</span>
+            <div class="breathCaroArt ${icon}" aria-hidden="true">${p.tag?`<span class="breathUseTag">${esc(p.tag)}</span>`:""}${isLocked(id)?`<span class="breathLock">${LOCKI}</span>`:""}</div>
+            ${isLocked(id)?`<span class="ltag lk">${LOCKI} Sign in</span>`:FREE[id]?'<span class="ltag free">Free</span>':'<span class="ltag free">Free</span>'}
             <b>${esc(p.title)}</b>
             <small>${esc(p.line)}</small>
             <span class="breathCaroCta">Open →</span>
@@ -226,6 +250,7 @@
   function openIntro(id) {
     const p = PRACTICES[id];
     if (!p) return;
+    if (isLocked(id)) { showUnlock(id); return; }
     stop(false);
     muteAudio(true);
     currentId = id;
@@ -278,6 +303,7 @@
   function openPlayer(id) {
     const p = PRACTICES[id];
     if (!p) return;
+    if (isLocked(id)) { showUnlock(id); return; }
     reduce = prefersReduce();
     elapsedBefore = 0; startedAt = 0; running = false;
     currentId = id;
