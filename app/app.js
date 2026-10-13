@@ -472,7 +472,7 @@ $("#addLoc").onclick=()=>addXloc();
 
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.25";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.26";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -539,5 +539,5 @@ function renderNews(){const n=window.FASCIAPP_NEWS;const dis=n&&newsList(NEWS_DI
  const dot=$("#labDot");if(dot)dot.hidden=!(n&&localStorage.getItem(LAB_SEEN)!==n.id)}
 document.addEventListener("click",e=>{const n=window.FASCIAPP_NEWS;if(!n)return;
  if(e.target.closest(".newsX")){const d=newsList(NEWS_DIS);if(!d.includes(n.id)){d.push(n.id);localStorage.setItem(NEWS_DIS,JSON.stringify(d.slice(-20)))}renderNews();return}
- const g=e.target.closest(".newsGo");if(g)show(g.dataset.tab)});
+ const g=e.target.closest(".newsGo");if(g){show(g.dataset.tab);if(n.breath&&g.dataset.tab==="learn")setTimeout(()=>{try{window.FasciBreath&&FasciBreath.openIntro(n.breath)}catch(x){}},150)}});
 renderNews();

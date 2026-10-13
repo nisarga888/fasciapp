@@ -4,5 +4,6 @@
 //   text:   one short line
 //   button: button label (leave "" for no button)
 //   tab:    tab the button opens: "learn" (Fascia Lab), "map", "list", "profile", "log"
+//   breath: optional breathing practice to open in the Lab: "coherent", "longer" or "box"
 // Set window.FASCIAPP_NEWS = null; to show no card.
-window.FASCIAPP_NEWS = { id: "feel-to-heal-2026-10-11", text: "New in Fascia Lab: Feel to Heal, the book by Giten Tonkov", button: "Open Lab", tab: "learn" };
+window.FASCIAPP_NEWS = { id: "coherent-sleep-2026-10-13", text: "New in the Lab: Coherent breathing for sleep. 6 in, 6 out through the nose, 5 minutes with music.", button: "Try it", tab: "learn", breath: "coherent" };
