@@ -404,3 +404,4 @@ nav#tabs .ndot{position:absolute;top:calc(50% - 22px);right:calc(50% - 19px);wid
 
 .ltag.new{background:#E0B04A;color:#1a1408;border:0;border-radius:999px;padding:2px 8px;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;line-height:1.4;display:inline-block}
 .breathTags{display:flex;align-items:center;gap:6px;margin:10px 12px 0}.breathTags .ltag{margin:0}
+.lcard,.breathCaroCard{position:relative}.ltag.new{position:absolute;top:8px;right:8px;z-index:3;margin:0;box-shadow:0 2px 6px #0008}

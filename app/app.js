@@ -479,7 +479,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.38";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.39";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -521,8 +521,8 @@ function renderLearn(){const box=$("#learnList");if(!box)return;const items=(win
   const act=!ready?"":locked?'data-unlock="1"':breath?'data-breath="menu"':x.type==="youtube"?`data-yt="${esc(id)}"`:`data-pdf="${esc(x.url)}"`;
   const foot=!ready?"Coming soon":locked?"Sign in to unlock":breath?"Open practices →":x.type==="youtube"?"Play video":lk?`<span class="lcta">${esc(x.cta||"Open")} ↗</span>`:"Open PDF ↗";
   return `<button type="button" class="lcard${ready?"":" lph"}${locked?" locked":""}" ${act} ${ready?"":"disabled"} aria-label="${esc(x.title)}: ${lk?esc(x.cta||"Open"):foot}">
-   <div class="lthumb">${labCover(x,id)}${locked?`<span class="lockov">${LOCK}</span>`:""}</div>
-   <div class="lbody"><div class="lbadges">${window.FA_isNew&&FA_isNew(x.title,x.newUntil)?FA_NEW_TAG:""}${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`}).join("");if(window.FasciBreath&&FasciBreath.mountLab)try{FasciBreath.mountLab()}catch(e){}}
+   ${window.FA_isNew&&FA_isNew(x.title,x.newUntil)?FA_NEW_TAG:""}<div class="lthumb">${labCover(x,id)}${locked?`<span class="lockov">${LOCK}</span>`:""}</div>
+   <div class="lbody"><div class="lbadges">${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`}).join("");if(window.FasciBreath&&FasciBreath.mountLab)try{FasciBreath.mountLab()}catch(e){}}
 document.addEventListener("click",e=>{const y=e.target.closest(".lcard[data-yt]");if(y){openVideo(y.dataset.yt,(y.querySelector(".lbody b")||{}).textContent||"Video");return}
  if(e.target.closest("[data-vclose]")){closeVideo();return}
  const br=e.target.closest(".lcard[data-breath]");if(br&&window.FasciBreath){window.FasciBreath.openMenu();return}
