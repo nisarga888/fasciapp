@@ -64,7 +64,7 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
 window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||(t==="log"&&b.dataset.t==="profile")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
 let showT=null;function afterShow(t){try{if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
- if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#logCard").hidden=true;return}logCard();loadProf()})()}
+ if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}logCard();profEdit=false;loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
 function hdr(){$("#tabInbox").hidden=!MSG_ON;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 const PKEY="fa_people_v1";function cachedPeople(){try{const j=JSON.parse(localStorage.getItem(PKEY)||"null");return Array.isArray(j)?j:null}catch(e){return null}}
@@ -293,7 +293,11 @@ function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));if(here)ps.sor
  $("#items").innerHTML=ps.map(({p,d})=>`<div class="item">${d!=null?`<span class="d">${Math.round(d)} km</span>`:""}${card(p)}</div>`).join("")||"<p class=muted>No practitioners match your search.</p>"}
 
 // profile
-async function loadProf(){waTouched=false;$("#needLogin").hidden=!!me;$("#profForm").hidden=!me;if(!me)return;myMods=[];renderTags();setExtra([]);$("#who").textContent="Signed in as "+me.email;
+let profEdit=false;
+async function loadProf(){await fillProf();if(!me)return;const p=await DB.mine().catch(()=>null);const has=!!(p&&(p.name||p.address||p.city));const v=$("#profView"),f=$("#profForm");$("#pCancel").hidden=!has;
+ if(has&&!profEdit){v.innerHTML=`<div class="item myCard">${card(p)}</div><p class="muted myCardNote">${p.consent?"This is how your card appears on the map and list.":"Your card is not public yet. Tick “Show me publicly” in Edit profile to appear on the map."}</p><div class="grid2"><button type="button" class="gold" id="pEditBtn">Edit profile</button><button type="button" class="ghost" id="pOut2">Log out</button></div>`;v.hidden=false;f.hidden=true;$("#pEditBtn").onclick=()=>{profEdit=true;v.hidden=true;f.hidden=false;window.scrollTo(0,0)};$("#pOut2").onclick=()=>logout()}
+ else{v.hidden=true;f.hidden=false}}
+async function fillProf(){waTouched=false;$("#needLogin").hidden=!!me;$("#profForm").hidden=!me;if(!me)return;myMods=[];renderTags();setExtra([]);$("#who").textContent="Signed in as "+me.email;
  const p=await DB.mine().catch(()=>null);const f=$("#profForm");if(!p){if(f.news_optin)f.news_optin.checked=!!me.news_optin;return}["name","practice_name","address","city","country","email","website","website2","bio"].forEach(k=>{if(f[k])f[k].value=p[k]||""});if(f.instagram)f.instagram.value=igHandle(p.instagram)?"@"+igHandle(p.instagram):"";splitPhone(p.phone,p.country);f.whatsapp.checked=!!p.whatsapp;waTouched=true;
  f.label.value=(p.locations?.[0]?.label)||"";setExtra((p.locations||[]).slice(1));f.consent.checked=!!p.consent;if(f.news_optin)f.news_optin.checked=!!p.news_optin;myMods=(p.mods||[]).slice();renderTags();if(p.photo){$("#phPrev").src=p.photo;$("#phPrev").hidden=false}}
 const CCEN={Austria:[47.6,14.1],Belgium:[50.6,4.6],Bulgaria:[42.7,25.3],Croatia:[45.1,15.6],Cyprus:[35.0,33.2],Czechia:[49.8,15.5],Denmark:[56.0,9.5],Estonia:[58.7,25.0],Finland:[62.0,25.7],France:[46.6,2.4],Germany:[51.1,10.4],Greece:[39.3,22.0],Hungary:[47.2,19.4],Iceland:[64.9,-18.6],Ireland:[53.2,-8.2],Italy:[42.8,12.6],Latvia:[56.9,24.9],Lithuania:[55.3,23.9],Luxembourg:[49.8,6.1],Malta:[35.9,14.4],Netherlands:[52.2,5.5],Norway:[61.4,8.8],Poland:[52.1,19.4],Portugal:[39.6,-8.0],Romania:[45.9,25.0],Serbia:[44.0,20.9],Slovakia:[48.7,19.7],Slovenia:[46.1,14.8],Spain:[40.2,-3.6],Sweden:[62.0,15.0],Switzerland:[46.8,8.2],Ukraine:[49.0,31.4],"United Kingdom":[54.0,-2.5],Argentina:[-34.6,-64.0],Australia:[-25.7,134.5],Brazil:[-10.8,-52.9],Canada:[56.0,-96.8],Chile:[-33.4,-70.7],China:[35.0,103.8],Colombia:[4.1,-73.1],Egypt:[26.6,30.8],India:[22.9,79.6],Indonesia:[-2.2,117.4],Israel:[31.4,35.0],Japan:[36.5,138.0],Mexico:[23.9,-102.5],Morocco:[31.8,-7.1],"New Zealand":[-41.8,172.8],Philippines:[12.9,121.8],Singapore:[1.35,103.82],"South Africa":[-29.0,25.1],"South Korea":[36.4,127.9],Thailand:[15.1,101.0],Turkey:[39.1,35.2],"United Arab Emirates":[23.9,54.3],"United States":[39.8,-98.6],Vietnam:[16.6,106.3]};
@@ -323,9 +327,7 @@ $("#profForm").onsubmit=async e=>{e.preventDefault();const f=e.target,st=$("#sta
   st.textContent=`Saved ✓${soft}${tip}`;
   showToast("Saved ✓");
   didFit=true;
-  show("map");
-  const loc=(p.locations&&p.locations[0])||p;
-  setTimeout(()=>{if(map&&loc.lat!=null){map.setView([+loc.lat,+loc.lng],13,{animate:false});map.invalidateSize()}},120);
+  profEdit=false;await loadProf();try{$("#profile").scrollIntoView({block:"start"})}catch(x){}
  }catch(err){st.textContent="Could not save: "+err.message}};
 $("#photo").onchange=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas"),s=256,m=Math.min(im.width,im.height);c.width=c.height=s;
  c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,s,s);photoData=c.toDataURL("image/jpeg",.85);$("#phPrev").src=photoData;$("#phPrev").hidden=false};im.src=r.result};r.readAsDataURL(file)};
@@ -474,7 +476,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.30";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.31";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -541,5 +543,7 @@ function renderNews(){const n=window.FASCIAPP_NEWS;const dis=n&&newsList(NEWS_DI
  const dot=$("#labDot");if(dot)dot.hidden=!(n&&localStorage.getItem(LAB_SEEN)!==n.id)}
 document.addEventListener("click",e=>{const n=window.FASCIAPP_NEWS;if(!n)return;
  if(e.target.closest(".newsX")){const d=newsList(NEWS_DIS);if(!d.includes(n.id)){d.push(n.id);localStorage.setItem(NEWS_DIS,JSON.stringify(d.slice(-20)))}renderNews();return}
- const g=e.target.closest(".newsGo");if(g){show(g.dataset.tab);if(n.breath&&g.dataset.tab==="learn")setTimeout(()=>{try{window.FasciBreath&&FasciBreath.openIntro(n.breath)}catch(x){}},150)}});
+ const g=e.target.closest(".newsGo");if(g){show(g.dataset.tab);try{const m=document.querySelector("main");if(m)m.scrollTop=0}catch(x){}if(n.breath&&g.dataset.tab==="learn")setTimeout(()=>{try{window.FasciBreath&&FasciBreath.openIntro(n.breath)}catch(x){}},150)}});
 renderNews();
+
+$("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()};
