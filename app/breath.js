@@ -14,11 +14,11 @@
       tag: "For sleep",
       line: "6 seconds in · 6 seconds out · 5 minutes",
       phases: [
-        { name: "Breathe in", ms: 6000, kind: "in" },
-        { name: "Breathe out", ms: 6000, kind: "out" }
+        { name: "Inhale through the nose", ms: 6000, kind: "in" },
+        { name: "Exhale through the nose", ms: 6000, kind: "out" }
       ],
       viz: "ball",
-      desc: "Among all the breathing techniques I have explored, coherent breathing is the one that has most changed my day-to-day life. It is elegantly simple: breathe in and out at a steady, even, slow rhythm — about six seconds in and six seconds out, around five or six breaths a minute. When stress makes the nervous system feel chaotic, this even pace invites more harmony, the kind of balance we see everywhere in nature.",
+      desc: "Coherent breathing means breathing in and out at a steady, even, slow pace: about six seconds in and six seconds out, around five or six breaths a minute. Breathe in and out through the nose, softly and low into the belly. Research on slow breathing (often around six breaths a minute) suggests it can increase heart rate variability (HRV), which is often used as a sign of how flexibly the nervous system adapts. Many people find the even rhythm steadying when stress makes the mind feel scattered.",
       why: [
         "Slow breathing around six breaths a minute is linked with higher heart rate variability (HRV), a sign of a more flexible, adaptable nervous system.",
         "An even inhale and exhale can feel steadying when the mind is racing.",
@@ -31,11 +31,11 @@
       tag: "For energy",
       line: "In 4 · out 6 · 5 minutes",
       phases: [
-        { name: "Breathe in", ms: 4000, kind: "in" },
-        { name: "Breathe out", ms: 6000, kind: "out" }
+        { name: "Inhale through the nose", ms: 4000, kind: "in" },
+        { name: "Exhale through the nose", ms: 6000, kind: "out" }
       ],
       viz: "wave",
-      desc: "Your heart naturally speeds up a little as you breathe in and slows a little as you breathe out. Many people find that simply letting the exhale be longer than the inhale is one of the quickest ways to invite the body's \"brake\" to engage. This is the practice I reach for most often — into a meeting, a queue, a difficult conversation or bed. Breathe in for 4, out for 6, smooth and unhurried, like a long, slow wave going back out to sea.",
+      desc: "The heart naturally speeds up a little on the in-breath and slows a little on the out-breath. Letting the exhale be longer than the inhale works with this natural rhythm, and many people find it one of the quickest ways to help the body settle. Inhale through the nose for 4, exhale through the nose for 6, smooth and unhurried, like a long, slow wave going back out to sea. It needs no special setup, so it can be used before a meeting, in a queue, before a difficult conversation or at bedtime.",
       why: [
         "A longer exhale works with the natural slowing of the heart on the out-breath (respiratory sinus arrhythmia).",
         "It is a simple place to start when life speeds up — no special setup needed.",
@@ -48,14 +48,14 @@
       tag: "For stress",
       line: "In 4 · hold 4 · out 4 · hold 4 · 5 minutes",
       phases: [
-        { name: "Breathe in", ms: 4000, kind: "in" },
+        { name: "Inhale through the nose", ms: 4000, kind: "in" },
         { name: "Hold", ms: 4000, kind: "hold" },
-        { name: "Breathe out", ms: 4000, kind: "out" },
+        { name: "Exhale through the nose", ms: 4000, kind: "out" },
         { name: "Hold", ms: 4000, kind: "hold" }
       ],
       viz: "box",
       // Programme has no box-with-holds page; equal 4-count echoes Day 8's gentle 4/4 start.
-      desc: "A steady, even rhythm can bring a sense of order when stress feels chaotic. Box breathing uses equal sides — inhale, soft hold, exhale, soft hold — each for a count of four, like tracing a square. Keep every part gentle; the holds are quiet pauses, not a strain. If a hold feels tight, shorten it or return to an easy flowing breath.",
+      desc: "A steady, even rhythm can bring a sense of order when stress feels chaotic. Box breathing uses four equal sides, like tracing a square: inhale through the nose, soft hold, exhale through the nose, soft hold, each for a count of four. Keep every part gentle; the holds are quiet pauses, not a strain. If a hold feels tight, shorten it or return to an easy, flowing nasal breath.",
       why: [
         "Equal counts give the busy mind a simple pattern to follow.",
         "Short, soft holds can create a brief pause between effort and release.",
@@ -88,14 +88,17 @@
     const ctx = new AC();
     const master = ctx.createGain();
     master.gain.value = 0;
-    master.connect(ctx.destination);
+    // limiter: keeps the louder pad from clipping (measured ~-14 LUFS, peak ~-2.3 dBFS)
+    const lim = ctx.createDynamicsCompressor();
+    lim.threshold.value = -3; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.003; lim.release.value = 0.25;
+    master.connect(lim); lim.connect(ctx.destination);
     const filter = ctx.createBiquadFilter();
     filter.type = "lowpass";
     filter.frequency.value = 520;
     filter.Q.value = 0.6;
     filter.connect(master);
     const voiceGain = ctx.createGain();
-    voiceGain.gain.value = 0.22;
+    voiceGain.gain.value = 0.5;
     voiceGain.connect(filter);
     const freqs = [98, 146.83, 196, 293.66]; // G2 E3 G3 D4 — soft pad
     const oscs = [];
@@ -121,12 +124,12 @@
   function applyBreathAudio(kind, e, active) {
     if (!audio || !soundOn) return;
     const t = audio.ctx.currentTime;
-    let level = 0.04;
+    let level = 0.35;
     let freq = 420;
     if (active) {
-      if (kind === "in") { level = 0.07 + 0.11 * e; freq = 400 + 220 * e; }
-      else if (kind === "out") { level = 0.18 - 0.11 * e; freq = 620 - 220 * e; }
-      else { level = 0.1; freq = 480; } // hold — steady soft
+      if (kind === "in") { level = 0.6 + 0.4 * e; freq = 400 + 220 * e; }
+      else if (kind === "out") { level = 1.0 - 0.4 * e; freq = 620 - 220 * e; }
+      else { level = 0.8; freq = 480; } // hold — steady soft
     }
     audio.master.gain.cancelScheduledValues(t);
     audio.master.gain.setTargetAtTime(Math.max(0, level), t, 0.12);
@@ -168,8 +171,8 @@
     else if (audio) {
       const t = audio.ctx.currentTime;
       audio.master.gain.setValueAtTime(0, t);
-      audio.master.gain.linearRampToValueAtTime(0.1, t + 0.2);
-      audio.master.gain.linearRampToValueAtTime(0.05, t + 1);
+      audio.master.gain.linearRampToValueAtTime(0.8, t + 0.2);
+      audio.master.gain.linearRampToValueAtTime(0.5, t + 1);
     }
   }
 
@@ -332,7 +335,7 @@
       let scale = 0.55;
       if (ph.kind === "in") scale = 0.55 + 0.45 * e;
       else if (ph.kind === "out") scale = 1 - 0.45 * e;
-      else scale = ph.name.toLowerCase().includes("out") ? 0.55 : 1;
+      else scale = ph.kind === "out" ? 0.55 : 1;
       if (reduce) {
         ball.style.transition = "transform .35s ease, opacity .35s ease";
         ball.style.transform = `scale(${ph.kind === "in" || (ph.kind === "hold" && scale > 0.7) ? 0.95 : 0.6})`;
@@ -434,7 +437,7 @@
       const t = audio.ctx.currentTime;
       audio.master.gain.cancelScheduledValues(t);
       audio.master.gain.setValueAtTime(Math.max(audio.master.gain.value, 0.02), t);
-      audio.master.gain.linearRampToValueAtTime(0.12, t + 0.35);
+      audio.master.gain.linearRampToValueAtTime(0.8, t + 0.35);
     }
     raf = requestAnimationFrame(tick);
   }
@@ -448,7 +451,7 @@
     if (audio && soundOn) {
       const t = audio.ctx.currentTime;
       audio.master.gain.cancelScheduledValues(t);
-      audio.master.gain.setTargetAtTime(0.03, t, 0.25);
+      audio.master.gain.setTargetAtTime(0.25, t, 0.25);
     }
   }
   function stop() {

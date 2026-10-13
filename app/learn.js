@@ -32,7 +32,7 @@ window.FASCIAPP_LEARN = [
   // (hidden for now, Nisarga 11 Oct: focus on MER and BBTRS) { section: "Fascia & anatomy", title: "Strolling under the Skin", by: "UKyOrtho", line: "Fascia & anatomy", type: "youtube", youtubeId: "eW0lvOVKDxE", public: true },
   { section: "Books", title: "Feel to Heal", by: "Giten Tonkov", line: "Book · releasing trauma through body awareness and breathwork", type: "pdf", url: "lab/feel-to-heal.pdf", cover: "lab/feel-to-heal-cover.jpg?v=2", public: false },
   { section: "Books", title: "The Issue Lives in the Tissue", by: "Nisarga Eryk Dobosz", line: "Free trauma release ebook · PDF download", type: "pdf", url: "lab/issue-lives-in-the-tissue.pdf", cover: "lab/issue-lives-in-the-tissue-cover.jpg", public: false },
-  { section: "Books", title: "Blog", by: "Nisarga Eryk Dobosz", line: "Articles and resources on body, breath and healing", type: "link", cta: "Open blog", url: "https://www.nisarga8.com/resources", public: true },
+  { section: "Books", title: "Blog", by: "Nisarga Eryk Dobosz", line: "Articles and resources on body, breath and healing", type: "link", cta: "Open blog", url: "https://www.nisarga8.com/resources", cover: "lab/blog-cover.webp", public: true },
   // Free live sessions: official pages, checked 11 Oct 2026
   { section: "Listen", title: "Reset of the Nervous System", by: "Giten Tonkov", line: "Guided meditation", type: "link", cta: "Listen", url: "https://open.spotify.com/playlist/3G1i9jdirrgDYO1LUTRurK", cover: "lab/reset-ns.jpg", public: true },
   { section: "Listen", title: "Huberman Lab", by: "Andrew Huberman · Scicomm Media", line: "Science-based tools for health", type: "link", cta: "Listen", url: "https://open.spotify.com/show/79CkJF3UJTHFV8Dse3Oy0P", cover: "lab/pod2.jpg", public: true },
