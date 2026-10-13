@@ -59,6 +59,7 @@ const local={mode:"local",
  async deleteSession(id){const s=await this.session();const all=LS.get("fyp_sessions",{});all[s.user_id]=(all[s.user_id]||[]).filter(r=>r.id!==id);LS.set("fyp_sessions",all)},
  async msgOk(){return false},
  async unreadCount(){return 0},
+ async setNews(on){},
  async resetPassword(email){throw new Error("Password reset needs the live FasciApp server. Open the app at fasciapp.app and try again.")},
  async updatePassword(){throw new Error("Password reset needs the live FasciApp server.")},
  onAuth(){return ()=>{}}};
@@ -83,6 +84,7 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   async signOut(){await sb.auth.signOut()},
   async resetPassword(email){const redirectTo=location.origin.replace(/\/$/,"")+"/app/?reset=1";
    chk(await sb.auth.resetPasswordForEmail(email,{redirectTo}));return true},
+  async setNews(on){chk(await sb.auth.updateUser({data:{news_optin:!!on,news_optin_at:on?new Date().toISOString():null,news_optout_at:on?null:new Date().toISOString()}}));try{const s=await sess();if(s){const r=await sb.from("practitioners").select("user_id").eq("user_id",s.user_id).maybeSingle();if(r.data)await sb.from("practitioners").update({news_optin:!!on,news_optin_at:on?new Date().toISOString():null}).eq("user_id",s.user_id)}}catch(e){}},
   async updatePassword(password){chk(await sb.auth.updateUser({password}));return sess()},
   onAuth(cb){try{const {data:{subscription}}=sb.auth.onAuthStateChange((event,session)=>cb(event,session));return ()=>subscription.unsubscribe()}catch(e){return ()=>{}}},
   async list(){return chk(await sb.from("practitioners").select("*").order("created_at")).map(norm)},

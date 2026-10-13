@@ -54,7 +54,7 @@ function placeOk(p){const v=($("#qPlace")&&$("#qPlace").value)||"";if(!v)return 
  return placeHit(p,fold(v.replace(/^free:/,"")))}
 function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  const tab=(sp.get("tab")||"").toLowerCase();if(tab==="learn"||tab==="lab"){show("learn");return true}
- if(sp.get("join")==="1"){if(me){show("profile");return true}setMode(true);show("auth");return true}
+ if(sp.get("join")==="1"){wantForm=true;if(me){show("profile");return true}setMode(true);show("auth");return true}
  if(sp.get("search")==="1"){show("list");const q=$("#qPlace");if(q)requestAnimationFrame(()=>{try{q.focus();q.showPicker&&q.showPicker()}catch(e){}});return true}
  const practice=(sp.get("practice")||sp.get("mod")||"").trim();const place=(sp.get("place")||sp.get("city")||"").trim();
  if(!practice&&!place)return false;fillFilter();let hit=false;
@@ -64,7 +64,7 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
 window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||(t==="log"&&b.dataset.t==="profile")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
 let showT=null;function afterShow(t){try{if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
- if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}logCard();profEdit=false;loadProf()})()}
+ if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
 function hdr(){$("#tabInbox").hidden=!MSG_ON;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 const PKEY="fa_people_v1";function cachedPeople(){try{const j=JSON.parse(localStorage.getItem(PKEY)||"null");return Array.isArray(j)?j:null}catch(e){return null}}
@@ -293,8 +293,11 @@ function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));if(here)ps.sor
  $("#items").innerHTML=ps.map(({p,d})=>`<div class="item">${d!=null?`<span class="d">${Math.round(d)} km</span>`:""}${card(p)}</div>`).join("")||"<p class=muted>No practitioners match your search.</p>"}
 
 // profile
-let profEdit=false;
-async function loadProf(){await fillProf();if(!me)return;const p=await DB.mine().catch(()=>null);const has=!!(p&&(p.name||p.address||p.city));const v=$("#profView"),f=$("#profForm");$("#pCancel").hidden=!has;
+let profEdit=false,wantForm=false;
+async function loadProf(){await fillProf();if(!me)return;const p=await DB.mine().catch(()=>null);const has=!!(p&&(p.name||p.address||p.city));const v=$("#profView"),f=$("#profForm");$("#pCancel").hidden=false;if(has)logCard();else $("#logCard").hidden=true;{const h=document.querySelector("#profile h2");if(h)h.textContent=(!has&&!profEdit)?"My profile":"My practitioner profile"}
+ if(!has&&!profEdit){v.innerHTML=`<div class="card acct"><b>My account</b><p class="muted">Signed in as ${esc(me.email||"")}</p><label class="consent"><input type="checkbox" id="acctNews"${me.news_optin?" checked":""}> Send me occasional FasciApp news: new breathing practices, free live sessions and videos. Unsubscribe anytime.</label><p id="acctMsg" class="msg"></p></div><button type="button" class="gold big1" id="pListMe">List me as a practitioner</button><button type="button" class="ghost" id="pOut3">Log out</button>`;v.hidden=false;f.hidden=true;
+  $("#acctNews").onchange=async e=>{const on=e.target.checked,m=$("#acctMsg");m.textContent="Saving…";try{await DB.setNews(on);me.news_optin=on;m.textContent=on?"Subscribed ✓":"Unsubscribed ✓"}catch(err){e.target.checked=!on;m.textContent="Could not save: "+err.message}};
+  $("#pListMe").onclick=()=>{profEdit=true;v.hidden=true;f.hidden=false;document.querySelector("#profile h2").textContent="My practitioner profile";window.scrollTo(0,0)};$("#pOut3").onclick=()=>logout();return}
  if(has&&!profEdit){v.innerHTML=`<div class="item myCard">${card(p)}</div><p class="muted myCardNote">${p.consent?"This is how your card appears on the map and list.":"Your card is not public yet. Tick “Show me publicly” in Edit profile to appear on the map."}</p><div class="grid2"><button type="button" class="gold" id="pEditBtn">Edit profile</button><button type="button" class="ghost" id="pOut2">Log out</button></div>`;v.hidden=false;f.hidden=true;$("#pEditBtn").onclick=()=>{profEdit=true;v.hidden=true;f.hidden=false;window.scrollTo(0,0)};$("#pOut2").onclick=()=>logout()}
  else{v.hidden=true;f.hidden=false}}
 async function fillProf(){waTouched=false;$("#needLogin").hidden=!!me;$("#profForm").hidden=!me;if(!me)return;myMods=[];renderTags();setExtra([]);$("#who").textContent="Signed in as "+me.email;
@@ -476,7 +479,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.31";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.32";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}

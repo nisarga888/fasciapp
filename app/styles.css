@@ -400,3 +400,4 @@ nav#tabs .ndot{position:absolute;top:calc(50% - 22px);right:calc(50% - 19px);wid
 .breathOverlay.breathUnlockBg{background:#02191Ee8;align-items:center}
 .lrowLbl{margin:4px 0 8px;font-size:12px;font-weight:600;color:#9fb3b5;letter-spacing:.3px}.lrowLbl+div{margin-bottom:6px}
 #profView .myCard{margin:0 0 8px}.myCardNote{font-size:13px;margin:0 0 12px}#profView .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#profView .acct{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}#profView .acct p{margin:0}#profView .big1{width:100%;margin-bottom:8px}#profView > .ghost{width:100%}
