@@ -526,17 +526,24 @@ function labCover(x,id){const vid=x.type==="youtube";const img=x.cover||(id?`htt
  if(x.type==="link")return `<div class="lcov l"><svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><circle cx="32" cy="32" r="8" fill="#5FC9C3"/><circle cx="32" cy="32" r="16" fill="none" stroke="#5FC9C3" stroke-opacity=".6" stroke-width="2"/><circle cx="32" cy="32" r="24" fill="none" stroke="#C99E67" stroke-opacity=".5" stroke-width="2"/></svg><span>${esc(x.title)}</span></div>`;
  return `<div class="lcov ${vid?"v":"b"}"><svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true">${vid?'<circle cx="32" cy="32" r="22" fill="none" stroke="#5FC9C3" stroke-width="2" stroke-dasharray="2 5"/><path d="M27 22l16 10-16 10z" fill="#C99E67"/>':'<path d="M14 14c6-2 12-2 18 2v34c-6-4-12-4-18-2z M50 14c-6-2-12-2-18 2v34c6-4 12-4 18-2z" fill="none" stroke="#C99E67" stroke-width="2" stroke-linejoin="round"/>'}</svg><span>${esc(x.title)}</span></div>`}
 function renderLearn(){const box=$("#learnList");if(!box)return;const items=(window.FASCIAPP_LEARN||[]).filter(x=>x&&x.title);
- if(!items.length){box.innerHTML=`<div class="card center"><p><b>Videos and guides coming soon</b></p></div>`;return}
+ if(!items.length){box.innerHTML=`<div class="card center"><p><b>Videos and guides coming soon</b></p></div>`;if(window.FasciBreath&&FasciBreath.mountLab)try{FasciBreath.mountLab()}catch(e){}return}
  const secs=[];items.forEach(x=>{const k=x.section||"More";let s=secs.find(q=>q.k===k);if(!s)secs.push(s={k,l:[]});s.l.push(x)});
- box.innerHTML=secs.map(s=>`<h3 class="lsec">${esc(s.k)}</h3><div class="lgrid">${s.l.map(x=>{
+ // Lab order: Breathing practices (injected), Free live sessions, Books, then the rest
+ const LAB_ORDER=["Free live sessions","Books","Listen","Fascia & anatomy","Biodynamic Breathwork Videos","Myofascial Energetic Release Videos"];
+ secs.sort((a,b)=>{const ia=LAB_ORDER.indexOf(a.k),ib=LAB_ORDER.indexOf(b.k);return (ia<0?999:ia)-(ib<0?999:ib)});
+ const CARO=new Set(["Myofascial Energetic Release Videos","Biodynamic Breathwork Videos","Books"]);
+ box.innerHTML=secs.map(s=>{const row=CARO.has(s.k)?"labCarousel":"lgrid";
+  return `<h3 class="lsec">${esc(s.k)}</h3><div class="${row}">${s.l.map(x=>{
   const id=x.type==="youtube"?ytId(x.youtubeId||x.url):"";const breath=x.type==="breath";const ready=breath||(x.type==="youtube"?!!id:!!x.url);const lk=x.type==="link";const locked=!x.public&&!me;
-  const badge=`<span class="ltag t">${breath?"Breath":x.type==="youtube"?"Video":lk?"Live":"PDF"}</span>`;
+  const blog=lk&&/nisarga8\.com\/resources/i.test(String(x.url||""));
+  const isBook=/\bbook\b/i.test(x.line||"")&&!/ebook/i.test(x.line||"");
+  const badge=`<span class="ltag t">${breath?"Breath":x.type==="youtube"?"Video":blog?"Blog":lk?"Live":isBook?"Book":"PDF"}</span>`;
   const state=(!x.public?`<span class="ltag lk">${LOCK} ${locked?"Locked":"Members"}</span>`:'<span class="ltag free">Free</span>')+(!ready?'<span class="ltag soon">Coming soon</span>':"");
   const act=!ready?"":locked?'data-unlock="1"':breath?'data-breath="menu"':x.type==="youtube"?`data-yt="${esc(id)}"`:`data-pdf="${esc(x.url)}"`;
-  const foot=!ready?"Coming soon":locked?"Sign in to unlock":breath?"Open practices →":x.type==="youtube"?"Play video":lk?`<span class="lcta">${esc(x.cta||"Sign up")} ↗</span>`:"Open PDF ↗";
-  return `<button type="button" class="lcard${ready?"":" lph"}${locked?" locked":""}" ${act} ${ready?"":"disabled"} aria-label="${esc(x.title)}: ${lk?esc(x.cta||"Sign up"):foot}">
+  const foot=!ready?"Coming soon":locked?"Sign in to unlock":breath?"Open practices →":x.type==="youtube"?"Play video":lk?`<span class="lcta">${esc(x.cta||"Open")} ↗</span>`:"Open PDF ↗";
+  return `<button type="button" class="lcard${ready?"":" lph"}${locked?" locked":""}" ${act} ${ready?"":"disabled"} aria-label="${esc(x.title)}: ${lk?esc(x.cta||"Open"):foot}">
    <div class="lthumb">${labCover(x,id)}${locked?`<span class="lockov">${LOCK}</span>`:""}</div>
-   <div class="lbody"><div class="lbadges">${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`).join("")}
+   <div class="lbody"><div class="lbadges">${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`}).join("");if(window.FasciBreath&&FasciBreath.mountLab)try{FasciBreath.mountLab()}catch(e){}}
 document.addEventListener("click",e=>{const y=e.target.closest(".lcard[data-yt]");if(y){openVideo(y.dataset.yt,(y.querySelector(".lbody b")||{}).textContent||"Video");return}
  if(e.target.closest("[data-vclose]")){closeVideo();return}
  const br=e.target.closest(".lcard[data-breath]");if(br&&window.FasciBreath){window.FasciBreath.openMenu();return}

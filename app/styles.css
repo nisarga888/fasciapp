@@ -333,3 +333,56 @@ nav#tabs .ndot{position:absolute;top:calc(50% - 22px);right:calc(50% - 19px);wid
   .breathBall{transition:transform .35s ease,opacity .35s ease!important}
   .breathGlow{filter:blur(4px);opacity:.7}
 }
+
+/* Breathing practices v2 — Lab carousel + wave/box viz + intro */
+.breathCaroLead{margin:-2px 0 10px;font-size:13px;line-height:1.4}
+.breathCarousel{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:2px 18px 12px 0;margin:0 -4px;scrollbar-width:none}
+.breathCarousel::-webkit-scrollbar{display:none}
+.breathCaroCard{flex:0 0 78%;scroll-snap-align:start;display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;padding:0 0 12px;border:1px solid #c99e6744;border-radius:16px;overflow:hidden;background:#0a2a30;color:var(--tx);font:inherit;cursor:pointer;min-width:0}
+.breathCaroCard b{padding:0 12px;color:var(--gold);font-size:15px}
+.breathCaroCard small{padding:0 12px;color:var(--mut);font-size:12px;line-height:1.35}
+.breathCaroCard .ltag{margin:10px 12px 0}
+.breathCaroCta{padding:4px 12px 0;color:#5FC9C3;font-size:13px;font-weight:700}
+.breathCaroArt{position:relative;width:100%;aspect-ratio:16/10;background:radial-gradient(circle at 40% 40%,#123940,#02191E 70%)}
+.breathCaroArt.ball{background:
+  radial-gradient(circle at 50% 55%,#5FC9C3cc 0 18%,transparent 19%),
+  radial-gradient(circle at 50% 55%,#C99E6744 0 32%,transparent 33%),
+  radial-gradient(circle at 40% 35%,#0d3a40,#02191E 70%)}
+.breathCaroArt.wave{background:
+  linear-gradient(180deg,transparent 42%,#5FC9C344 50%,transparent 58%),
+  radial-gradient(circle at 40% 35%,#0d3a40,#02191E 70%)}
+.breathCaroArt.box{background:
+  linear-gradient(#C99E6733,#C99E6733) center/46% 46% no-repeat,
+  radial-gradient(circle at 40% 35%,#0d3a40,#02191E 70%);
+  box-shadow:inset 0 0 0 1px #c99e6722}
+.breathIntro .breathIntroLine{text-align:center;color:#5FC9C3;font-size:13px;font-weight:600;margin:0 0 12px}
+.breathDesc{margin:0 0 14px;font-size:14px;line-height:1.5;color:var(--tx)}
+.breathWhy{background:#0a2a30;border:1px solid #c99e6744;border-radius:14px;padding:12px 14px;margin:0 0 16px}
+.breathWhy b{display:block;color:var(--gold);font-size:13px;margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase}
+.breathWhy ul{margin:0;padding-left:18px;color:var(--mut);font-size:13px;line-height:1.45}
+.breathWhy li{margin:0 0 6px}
+.breathGo.big{width:100%;font-size:16px;margin-top:4px}
+.breathViz.wave{width:min(88vw,320px);height:140px;margin:12px auto;position:relative;display:grid;place-items:center}
+.breathWaveSvg{width:100%;height:100%;overflow:visible}
+.breathWavePath{filter:drop-shadow(0 0 6px #5FC9C388)}
+.breathWaveGlow{position:absolute;width:56px;height:56px;border-radius:50%;left:50%;top:50%;margin:-28px 0 0 -28px;background:radial-gradient(circle,#5FC9C3aa,#5FC9C322 55%,transparent 70%);pointer-events:none;transition:none}
+.breathViz.box{width:min(70vw,260px);height:min(70vw,260px);margin:10px auto;display:grid;place-items:center}
+.breathBoxSvg{width:100%;height:100%}
+#breathBoxDot{filter:drop-shadow(0 0 8px #C99E67aa)}
+@media(prefers-reduced-motion:reduce){
+  .breathWaveGlow{transition:transform .35s ease,opacity .35s ease!important}
+}
+
+/* Lab horizontal carousels (MER / BBTRS / Books) — ~2 visible, next peeks */
+.labCarousel{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:2px 28px 12px 0;margin:0 -4px;scrollbar-width:none;align-items:stretch}
+.labCarousel::-webkit-scrollbar{display:none}
+.labCarousel .lcard{flex:0 0 calc(50% - 10px);scroll-snap-align:start;min-width:0;height:auto}
+.labCarousel .lbody{flex:1}
+.breathCarousel .breathCaroCard{flex:0 0 calc(50% - 10px)}
+
+/* Breathing practice use tags (For sleep / stress / energy) */
+.breathUseTag{display:inline-flex;align-items:center;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:4px 10px;border-radius:999px;color:#C99E67;background:rgba(2,25,30,.72);border:1px solid #C99E6788;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 2px 10px #02191E55}
+.breathCaroArt .breathUseTag{position:absolute;left:10px;top:10px;z-index:2}
+.breathIntroHead{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 0 12px}
+.breathIntroHead .breathIntroLine{margin:0}
+.breathIntroHead .breathUseTag{color:#5FC9C3;border-color:#5FC9C366;background:#0a2a30}
