@@ -188,7 +188,7 @@
           <button type="button" class="breathX" data-breath-close="1" aria-label="Close">✕</button>
           <span class="breathUnlockIc">${LOCKI}</span>
           <b>Sign up free to unlock members’ practices and sessions</b>
-          <p class="muted">Coherent breathing is open to everyone. A free account unlocks Longer exhale, Box breathing, Listen and more.</p>
+          <p class="muted">Coherent breathing is open to everyone. A free account unlocks Longer exhale, Box breathing, the Nervous System Reset meditation and more.</p>
           <div class="breathUnlockBtns">
             <button type="button" class="gold" data-breath-auth="up">Sign up free</button>
             <button type="button" class="outline" data-breath-auth="in">Sign in</button>
