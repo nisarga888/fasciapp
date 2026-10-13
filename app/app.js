@@ -108,7 +108,7 @@ $("#resetForm").onsubmit=async e=>{e.preventDefault();const a=$("#newPw").value,
   try{const u=new URL(location.href);u.searchParams.delete("reset");history.replaceState({},"",u.pathname+u.search+u.hash.replace(/access_token=[^&]+/g,""))}catch(e){}
   hdr();await refresh();msgInit();setTimeout(()=>show("profile"),600)}catch(err){m.textContent=err.message||"Could not update password."}};
 $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please confirm you are 18+ and accept the Terms and Privacy Policy.";return}m.textContent="…";
- try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath;pendingChat=null;pendingBreath=null;if(nb){show("learn");setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
+ try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath;pendingChat=null;pendingBreath=null;if(nb){show("learn");if(nb!=="lab")setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
 
 // helpers
 function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(p.lng-from[1]);const a=Math.sin(dl/2)**2+Math.cos(r(from[0]))*Math.cos(r(p.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
@@ -471,10 +471,10 @@ function setExtra(ls){$("#extraLocs").innerHTML="";ls.slice(0,2).forEach(addXloc
 $("#addLoc").onclick=()=>addXloc();
 
 window.faSignedIn=()=>!!me;
-window.faAuthFor=(up,id)=>{pendingBreath=id||null;pendingChat=null;setMode(!!up);show("auth")};
+window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.29";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.30";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -511,8 +511,8 @@ function renderLearn(){const box=$("#learnList");if(!box)return;const items=(win
   const id=x.type==="youtube"?ytId(x.youtubeId||x.url):"";const breath=x.type==="breath";const ready=breath||(x.type==="youtube"?!!id:!!x.url);const lk=x.type==="link";const locked=!x.public&&!me;
   const blog=lk&&/nisarga8\.com\/resources/i.test(String(x.url||""));
   const isBook=/\bbook\b/i.test(x.line||"")&&!/ebook/i.test(x.line||"");
-  const badge=`<span class="ltag t">${breath?"Breath":x.type==="youtube"?"Video":blog?"Blog":lk?"Live":isBook?"Book":"PDF"}</span>`;
-  const state=(!x.public?`<span class="ltag lk">${LOCK} ${locked?"Locked":"Members"}</span>`:'<span class="ltag free">Free</span>')+(!ready?'<span class="ltag soon">Coming soon</span>':"");
+  const badge=s.k==="Listen"?"":`<span class="ltag t">${breath?"Breath":x.type==="youtube"?"Video":blog?"Blog":lk?"Live":isBook?"Book":"PDF"}</span>`;
+  const state=(!x.public?(s.k==="Listen"?`<span class="ltag lk">${locked?LOCK+" ":""}Members</span>`:`<span class="ltag lk">${LOCK} ${locked?"Locked":"Members"}</span>`):'<span class="ltag free">Free</span>')+(!ready?'<span class="ltag soon">Coming soon</span>':"");
   const act=!ready?"":locked?'data-unlock="1"':breath?'data-breath="menu"':x.type==="youtube"?`data-yt="${esc(id)}"`:`data-pdf="${esc(x.url)}"`;
   const foot=!ready?"Coming soon":locked?"Sign in to unlock":breath?"Open practices →":x.type==="youtube"?"Play video":lk?`<span class="lcta">${esc(x.cta||"Open")} ↗</span>`:"Open PDF ↗";
   return `<button type="button" class="lcard${ready?"":" lph"}${locked?" locked":""}" ${act} ${ready?"":"disabled"} aria-label="${esc(x.title)}: ${lk?esc(x.cta||"Open"):foot}">
@@ -522,7 +522,7 @@ document.addEventListener("click",e=>{const y=e.target.closest(".lcard[data-yt]"
  if(e.target.closest("[data-vclose]")){closeVideo();return}
  const br=e.target.closest(".lcard[data-breath]");if(br&&window.FasciBreath){window.FasciBreath.openMenu();return}
  const pd=e.target.closest(".lcard[data-pdf]");if(pd){window.open(pd.dataset.pdf,"_blank","noopener");return}
- if(e.target.closest("[data-unlock]")){fillLastEmail();setMode(false);show("auth")}});
+ if(e.target.closest("[data-unlock]")){if(window.FasciBreath&&FasciBreath.showUnlock)FasciBreath.showUnlock("");else{fillLastEmail();setMode(false);show("auth")}}});
 
 // Full-screen-style video viewer: iframe created on open, destroyed on close
 function openVideo(id,title){closeVideo();const d=document.createElement("div");d.id="vModal";d.className="vmodal";d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");d.setAttribute("aria-label",title);
