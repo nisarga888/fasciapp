@@ -209,8 +209,7 @@
     wrap = document.createElement("div");
     wrap.id = "breathLabSec";
     wrap.innerHTML = `
-      <span class="lEyebrow">Breathe</span><h3 class="lsec hasEb">Breathing practices</h3>
-      <p class="breathCaroLead muted">Three gentle paced practices from <i>Breathe for Stress and Sleep</i>. Swipe to explore.</p>
+      <h3 class="lsec" data-sec="Breathing practices">Breathe</h3>
       <div class="breathCarousel" role="list">
         ${ORDER.map(id => {
           const p = PRACTICES[id];
