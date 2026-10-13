@@ -522,22 +522,24 @@ function ytId(v){v=String(v||"").trim();const m=v.match(/(?:youtu\.be\/|[?&]v=|\
 const LOCK='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 function labCover(x,id){const vid=x.type==="youtube";const img=x.cover||(id?`https://i.ytimg.com/vi/${id}/hqdefault.jpg`:"");
  if(img)return `<img src="${esc(img)}" alt="" loading="lazy">`+(vid?'<span class="lplay" aria-hidden="true">▶</span>':"");
+ if(x.type==="breath")return `<div class="lcov breath"><svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true"><defs><radialGradient id="bg" cx="40%" cy="35%"><stop offset="0%" stop-color="#5FC9C3"/><stop offset="55%" stop-color="#1d7f79"/><stop offset="100%" stop-color="#02191E"/></radialGradient></defs><circle cx="32" cy="32" r="22" fill="url(#bg)" opacity=".95"/><circle cx="32" cy="32" r="14" fill="none" stroke="#C99E67" stroke-opacity=".55" stroke-width="1.5"/><circle cx="32" cy="32" r="6" fill="#C99E67" opacity=".85"/></svg><span>${esc(x.title)}</span></div>`;
  if(x.type==="link")return `<div class="lcov l"><svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><circle cx="32" cy="32" r="8" fill="#5FC9C3"/><circle cx="32" cy="32" r="16" fill="none" stroke="#5FC9C3" stroke-opacity=".6" stroke-width="2"/><circle cx="32" cy="32" r="24" fill="none" stroke="#C99E67" stroke-opacity=".5" stroke-width="2"/></svg><span>${esc(x.title)}</span></div>`;
  return `<div class="lcov ${vid?"v":"b"}"><svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true">${vid?'<circle cx="32" cy="32" r="22" fill="none" stroke="#5FC9C3" stroke-width="2" stroke-dasharray="2 5"/><path d="M27 22l16 10-16 10z" fill="#C99E67"/>':'<path d="M14 14c6-2 12-2 18 2v34c-6-4-12-4-18-2z M50 14c-6-2-12-2-18 2v34c6-4 12-4 18-2z" fill="none" stroke="#C99E67" stroke-width="2" stroke-linejoin="round"/>'}</svg><span>${esc(x.title)}</span></div>`}
 function renderLearn(){const box=$("#learnList");if(!box)return;const items=(window.FASCIAPP_LEARN||[]).filter(x=>x&&x.title);
  if(!items.length){box.innerHTML=`<div class="card center"><p><b>Videos and guides coming soon</b></p></div>`;return}
  const secs=[];items.forEach(x=>{const k=x.section||"More";let s=secs.find(q=>q.k===k);if(!s)secs.push(s={k,l:[]});s.l.push(x)});
  box.innerHTML=secs.map(s=>`<h3 class="lsec">${esc(s.k)}</h3><div class="lgrid">${s.l.map(x=>{
-  const id=x.type==="youtube"?ytId(x.youtubeId||x.url):"";const ready=x.type==="youtube"?!!id:!!x.url;const lk=x.type==="link";const locked=!x.public&&!me;
-  const badge=`<span class="ltag t">${x.type==="youtube"?"Video":lk?"Live":"PDF"}</span>`;
+  const id=x.type==="youtube"?ytId(x.youtubeId||x.url):"";const breath=x.type==="breath";const ready=breath||(x.type==="youtube"?!!id:!!x.url);const lk=x.type==="link";const locked=!x.public&&!me;
+  const badge=`<span class="ltag t">${breath?"Breath":x.type==="youtube"?"Video":lk?"Live":"PDF"}</span>`;
   const state=(!x.public?`<span class="ltag lk">${LOCK} ${locked?"Locked":"Members"}</span>`:'<span class="ltag free">Free</span>')+(!ready?'<span class="ltag soon">Coming soon</span>':"");
-  const act=!ready?"":locked?'data-unlock="1"':x.type==="youtube"?`data-yt="${esc(id)}"`:`data-pdf="${esc(x.url)}"`;
-  const foot=!ready?"Coming soon":locked?"Sign in to unlock":x.type==="youtube"?"Play video":lk?`<span class="lcta">${esc(x.cta||"Sign up")} ↗</span>`:"Open PDF ↗";
+  const act=!ready?"":locked?'data-unlock="1"':breath?'data-breath="menu"':x.type==="youtube"?`data-yt="${esc(id)}"`:`data-pdf="${esc(x.url)}"`;
+  const foot=!ready?"Coming soon":locked?"Sign in to unlock":breath?"Open practices →":x.type==="youtube"?"Play video":lk?`<span class="lcta">${esc(x.cta||"Sign up")} ↗</span>`:"Open PDF ↗";
   return `<button type="button" class="lcard${ready?"":" lph"}${locked?" locked":""}" ${act} ${ready?"":"disabled"} aria-label="${esc(x.title)}: ${lk?esc(x.cta||"Sign up"):foot}">
    <div class="lthumb">${labCover(x,id)}${locked?`<span class="lockov">${LOCK}</span>`:""}</div>
    <div class="lbody"><div class="lbadges">${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`).join("")}
 document.addEventListener("click",e=>{const y=e.target.closest(".lcard[data-yt]");if(y){openVideo(y.dataset.yt,(y.querySelector(".lbody b")||{}).textContent||"Video");return}
  if(e.target.closest("[data-vclose]")){closeVideo();return}
+ const br=e.target.closest(".lcard[data-breath]");if(br&&window.FasciBreath){window.FasciBreath.openMenu();return}
  const pd=e.target.closest(".lcard[data-pdf]");if(pd){window.open(pd.dataset.pdf,"_blank","noopener");return}
  if(e.target.closest("[data-unlock]")){fillLastEmail();setMode(false);show("auth")}});
 

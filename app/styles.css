@@ -286,3 +286,50 @@ nav#tabs .ndot{position:absolute;top:calc(50% - 22px);right:calc(50% - 19px);wid
 .quoteCard small{color:#C99E67;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}.quoteCard p{margin:3px 0 4px;font-size:15px;font-style:italic;line-height:1.35}
 .quoteCard span,.quotePrev span{color:#9fb8b8;font-size:12px}.quoteCard em{display:block;font-style:normal;color:#5FC9C3;font-size:12px;margin-top:4px}
 .quotePrev{list-style:none;margin:-4px 0 10px;padding:4px 14px;max-height:180px;overflow-y:auto;-webkit-overflow-scrolling:touch;border-left:2px solid #C99E6744}.quotePrev li{padding:6px 0;border-bottom:1px solid #ffffff10}.quotePrev p{margin:0 0 2px;font-size:13px;font-style:italic;line-height:1.35}
+
+/* Breathing practices (Lab preview) */
+.lcov.breath{background:radial-gradient(circle at 40% 35%,#123940 0%,#02191E 70%)}
+.breathRoot{position:fixed;inset:0;z-index:3100}
+.breathOverlay{position:absolute;inset:0;background:#02191E;display:flex;align-items:stretch;justify-content:center;padding:env(safe-area-inset-top,8px) 12px env(safe-area-inset-bottom,12px);box-sizing:border-box}
+.breathSheet,.breathStage{width:100%;max-width:420px;margin:0 auto;display:flex;flex-direction:column;min-height:0;color:var(--tx)}
+.breathTop{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 0 10px}
+.breathTop b{flex:1;text-align:center;color:var(--gold);font-weight:600;font-size:16px}
+.breathX,.breathBack{width:40px;height:40px;border-radius:50%;border:1px solid #c99e6755;background:#0a2a30;color:#C99E67;display:inline-flex;align-items:center;justify-content:center;padding:0;font-size:18px;line-height:1}
+.breathLead{margin:0 0 14px;color:var(--mut);font-size:14px;line-height:1.45;text-align:center}
+.breathList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;flex:1;overflow:auto}
+.breathItem{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 14px;border-radius:16px;border:1px solid #c99e6744;background:linear-gradient(145deg,#0d3a40,#0a2a30);color:var(--tx);font:inherit;cursor:pointer}
+.breathItem:disabled,.breathItem.soon{opacity:.72;cursor:default}
+.breathOrb{width:42px;height:42px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 30%,#5FC9C3 0%,#1d7f79 45%,#02191E 100%);box-shadow:0 0 16px #5FC9C366,0 0 0 1px #C99E6755}
+.breathItem.soon .breathOrb{filter:grayscale(.35);opacity:.7;box-shadow:none}
+.breathItemTxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.breathItemTxt b{color:var(--gold);font-weight:600;font-size:15px}
+.breathItemTxt small{color:var(--mut);font-size:12px;line-height:1.35}
+.breathItemCta{flex:none;font-size:12px;font-weight:700;color:#5FC9C3}
+.breathItem.soon .breathItemCta{color:var(--mut);font-weight:600}
+.breathSafe{margin:14px 0 0;font-size:12px;line-height:1.4;color:var(--mut);text-align:center}
+.breathPlayer .breathStage{position:relative;height:100%;justify-content:flex-start}
+.breathRemain{margin:4px 0 0;text-align:center;font-size:13px;letter-spacing:2px;color:#5FC9C3;font-weight:600}
+.breathViz{position:relative;width:min(72vw,280px);height:min(72vw,280px);margin:18px auto 8px;display:grid;place-items:center}
+.breathGlow{position:absolute;inset:8%;border-radius:50%;background:radial-gradient(circle,#5FC9C344 0%,#C99E6722 40%,transparent 70%);filter:blur(8px)}
+.breathBall{width:58%;height:58%;border-radius:50%;transform:scale(.55);
+  background:radial-gradient(circle at 35% 30%,#9aefe8 0%,#5FC9C3 28%,#1d7f79 62%,#0a2a30 100%);
+  box-shadow:0 0 40px #5FC9C388,0 0 80px #C99E6744,inset 0 -10px 24px #02191E55;will-change:transform,opacity}
+.breathCue{margin:6px 0 0;text-align:center;font-size:22px;font-weight:500;color:var(--gold);letter-spacing:.3px}
+.breathCount{margin:2px 0 0;text-align:center;font-size:42px;font-weight:300;color:#5FC9C3;line-height:1.1;min-height:1.1em}
+.breathActions{display:flex;justify-content:center;align-items:center;gap:10px;margin:16px 0 0;flex-wrap:wrap}
+.breathGo{min-width:140px;font-size:16px}
+.breathSound{display:inline-flex;align-items:center;gap:7px;padding:10px 14px;border-radius:24px;border:1px solid #c99e6755;background:#0a2a30;color:#9fb3b5;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.breathSound svg{flex:none;opacity:.9}
+.breathSound.on{color:#5FC9C3;border-color:#5FC9C366;background:#0d3a40}
+.breathSound.on span{color:#5FC9C3}
+.breathEnd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:#02191ecc;backdrop-filter:blur(6px)}
+.breathEnd[hidden]{display:none!important}
+.breathEndCard{background:linear-gradient(160deg,#0d3a40,#0a2a30);border:1px solid #c99e6755;border-radius:20px;padding:22px 18px;text-align:center;max-width:300px;box-shadow:0 16px 40px #0008}
+.breathEndCard b{display:block;color:var(--gold);font-size:20px;font-weight:600;margin-bottom:8px}
+.breathEndCard p{margin:0 0 16px;color:var(--mut);font-size:14px;line-height:1.45}
+.breathEndCard .gold{width:100%;margin-bottom:8px}
+.breathEndCard .ghost{width:100%;border-color:transparent}
+@media(prefers-reduced-motion:reduce){
+  .breathBall{transition:transform .35s ease,opacity .35s ease!important}
+  .breathGlow{filter:blur(4px);opacity:.7}
+}

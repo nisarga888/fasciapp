@@ -12,6 +12,7 @@
 // An item with no youtubeId / url shows as "Coming soon".
 // Videos verified via YouTube oEmbed on 11 Oct 2026 (embeddable). "title" = YouTube title as given (bold-Unicode letters shown as plain text).
 window.FASCIAPP_LEARN = [
+  { section: "Breathing practices", title: "Guided breathing", by: "FasciApp", line: "Calm paced practices · start with Coherent breathing", type: "breath", public: true },
   { section: "MER videos", title: "Myofascial Energetic Release Training With founder Satyarthi Peloquin", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER · 2:46", type: "youtube", youtubeId: "crpUWY3Bi5M", public: true },
   { section: "MER videos", title: "Myofascial Energetic Release: Revolutionary New Elements", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER · 7:31", type: "youtube", youtubeId: "7b0ziT10Zpw", public: false },
   { section: "MER videos", title: "Psoas Release for Low Back Pain | Myofascial Energetic Release Demo with Satyarthi Peloquin", by: "Myofascial Energetic Release by Satyarthi Peloquin", line: "MER demo · 6:19", type: "youtube", youtubeId: "b4vg4Y_yIMw", public: false },
