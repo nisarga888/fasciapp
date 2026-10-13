@@ -138,11 +138,11 @@ function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</
  const dg=String(p.phone||"").replace(/\D/g,"");
  const msgIc=`<span class="msgIc" aria-hidden="true"><svg class="msgRing" viewBox="0 0 24 24" width="16" height="16"><circle cx="20" cy="12" r="1.1" fill="currentColor"/><circle cx="17.7" cy="17.7" r="1.1" fill="currentColor"/><circle cx="12" cy="20" r="1.1" fill="currentColor"/><circle cx="6.3" cy="17.7" r="1.1" fill="currentColor"/><circle cx="4" cy="12" r="1.1" fill="currentColor"/><circle cx="6.3" cy="6.3" r="1.1" fill="currentColor"/><circle cx="12" cy="4" r="1.1" fill="currentColor"/><circle cx="17.7" cy="6.3" r="1.1" fill="currentColor"/></svg><svg class="msgBub" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h11a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3H12l-3.2 2.8V17H4.5a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3z"/></svg></span>`;
  const canMsg=MSG_ON&&MSG_OK&&!!(p.user_id&&(!me||p.user_id!==me.user_id));
- const msgBtn=canMsg?`<button type="button" class="cb msg" data-msg="${esc(p.user_id)}">${msgIc} Message on FasciApp</button>`:"";
+ const msgBtn=canMsg?`<button type="button" class="cb msg" data-msg="${esc(p.user_id)}">${msgIc} Message</button>`:"";
  const wa=p.phone&&p.whatsapp&&dg?`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`:"";
  const mail=p.email?`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`:"";
  const phone=p.phone?`<br><a class="tel" href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`:"";
- const cbs=(msgBtn?`<div class="cbs cbsMsg">${msgBtn}</div>`:"")+(wa||mail?`<div class="cbs cbsRow">${wa}${mail}</div>`:"");
+ const cbs=(msgBtn||wa||mail)?`<div class="cbs cbsRow">${msgBtn}${wa}${mail}</div>`:"";
  const c=p.consent?phone+(p.website?`<br>🌐 ${link(p.website)}`:"")+(p.website2?`<br>🌐 ${link(p.website2)}`:"")+(igHandle(p.instagram)?`<br><a class="igl" href="https://instagram.com/${esc(igHandle(p.instagram))}" target="_blank" rel="noopener" aria-label="Instagram @${esc(igHandle(p.instagram))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @${esc(igHandle(p.instagram))}</a>`:"")+cbs:"<br><i>Not public yet</i>";
   return `<div class="row">${av(p)}<div>${cardHead(p)}<br>${pills}<br>${(p.locations&&p.locations.length?p.locations:[p]).map(l=>"📍 "+locTxt(l)).join("<br>")}${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
 function pinModsHtml(p){const mods=(p.mods||[]).map(m=>String(m||"").trim()).filter(Boolean);if(!mods.length)return"";
@@ -472,7 +472,7 @@ $("#addLoc").onclick=()=>addXloc();
 
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.22";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.23";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}

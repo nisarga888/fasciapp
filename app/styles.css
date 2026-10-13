@@ -388,3 +388,8 @@ nav#tabs .ndot{position:absolute;top:calc(50% - 22px);right:calc(50% - 19px);wid
 .breathIntroHead .breathUseTag{color:#5FC9C3;border-color:#5FC9C366;background:#0a2a30}
 
 .logCard{display:flex;flex-direction:column;gap:8px;width:100%;text-align:left;font:inherit;color:inherit;margin:0 0 14px}.logCard .lcTop,.logCard .lcRow{display:flex;justify-content:space-between;align-items:baseline}.logCard .lcOpen{color:var(--gold);font-weight:600}.logCard #lcNum{color:#C99E67;font-size:18px}.logCard .pbar{display:block}.logCard #lcFill{display:block;height:100%;width:0;background:linear-gradient(90deg,#5FC9C3,#C99E67);transition:width .4s}
+
+/* v0.23.23: Message button same size as WhatsApp / Email */
+.cbsRow{grid-template-columns:repeat(auto-fit,minmax(0,1fr))}
+.cbsRow .cb.msg{flex:none;padding:5px 11px;border-radius:16px;font-size:12px;font-weight:600;gap:6px}
+.cbsRow .cb.msg .msgIc{width:14px;height:14px}.cbsRow .cb.msg .msgBub{width:10px;height:10px}
