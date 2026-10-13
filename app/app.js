@@ -472,7 +472,7 @@ $("#addLoc").onclick=()=>addXloc();
 
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.24";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.25";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -504,7 +504,8 @@ function renderLearn(){const box=$("#learnList");if(!box)return;const items=(win
  secs.sort((a,b)=>{const ia=LAB_ORDER.indexOf(a.k),ib=LAB_ORDER.indexOf(b.k);return (ia<0?999:ia)-(ib<0?999:ib)});
  const CARO=new Set(["Myofascial Energetic Release Videos","Biodynamic Breathwork Videos","Books","Listen"]);
  box.innerHTML=secs.map(s=>{const row=CARO.has(s.k)?"labCarousel":"lgrid";
-  return `<h3 class="lsec">${esc(s.k)}</h3><div class="${row}">${s.l.map(x=>{
+  const eb={"Free live sessions":"Experience","Books":"Read","Biodynamic Breathwork Videos":"Watch"}[s.k];
+  return `${eb?`<span class="lEyebrow">${eb}</span>`:""}<h3 class="lsec${eb?" hasEb":""}">${esc(s.k)}</h3><div class="${row}">${s.l.map(x=>{
   const id=x.type==="youtube"?ytId(x.youtubeId||x.url):"";const breath=x.type==="breath";const ready=breath||(x.type==="youtube"?!!id:!!x.url);const lk=x.type==="link";const locked=!x.public&&!me;
   const blog=lk&&/nisarga8\.com\/resources/i.test(String(x.url||""));
   const isBook=/\bbook\b/i.test(x.line||"")&&!/ebook/i.test(x.line||"");
