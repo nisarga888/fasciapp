@@ -28,14 +28,14 @@
     longer: {
       id: "longer",
       title: "Longer exhale",
-      tag: "For energy",
+      tag: "For stress",
       line: "In 4 · out 6 · 5 minutes",
       phases: [
         { name: "Inhale through the nose", ms: 4000, kind: "in" },
         { name: "Exhale through the nose", ms: 6000, kind: "out" }
       ],
       viz: "wave",
-      desc: "The heart naturally speeds up a little on the in-breath and slows a little on the out-breath. Letting the exhale be longer than the inhale works with this natural rhythm, and many people find it one of the quickest ways to help the body settle. Inhale through the nose for 4, exhale through the nose for 6, smooth and unhurried, like a long, slow wave going back out to sea. It needs no special setup, so it can be used before a meeting, in a queue, before a difficult conversation or at bedtime.",
+      desc: "It is known that the heart speeds up slightly on the in-breath and slows slightly on the out-breath. Research suggests that making the exhale longer than the inhale activates the calming parasympathetic response, which can help ease stress. Inhale through the nose for 4, exhale through the nose for 6, smooth and unhurried. It needs no special setup, so it can be used before a meeting, in a queue, before a difficult conversation or at bedtime.",
       why: [
         "A longer exhale works with the natural slowing of the heart on the out-breath (respiratory sinus arrhythmia).",
         "It is a simple place to start when life speeds up — no special setup needed.",
@@ -45,7 +45,7 @@
     box: {
       id: "box",
       title: "Box breathing",
-      tag: "For stress",
+      tag: "For energy",
       line: "In 4 · hold 4 · out 4 · hold 4 · 5 minutes",
       phases: [
         { name: "Inhale through the nose", ms: 4000, kind: "in" },
@@ -55,7 +55,7 @@
       ],
       viz: "box",
       // Programme has no box-with-holds page; equal 4-count echoes Day 8's gentle 4/4 start.
-      desc: "A steady, even rhythm can bring a sense of order when stress feels chaotic. Box breathing uses four equal sides, like tracing a square: inhale through the nose, soft hold, exhale through the nose, soft hold, each for a count of four. Keep every part gentle; the holds are quiet pauses, not a strain. If a hold feels tight, shorten it or return to an easy, flowing nasal breath.",
+      desc: "Box breathing follows an even 4-4-4-4 rhythm, like tracing a square: inhale through the nose, soft hold, exhale through the nose, soft hold, each for a count of four. Research suggests that a steady, structured rhythm like this supports alertness, focus and steady energy, and it is known to be used by people who need to stay clear-headed under pressure. The holds are quiet pauses, not a strain; if a hold feels tight, shorten it or return to an easy nasal breath.",
       why: [
         "Equal counts give the busy mind a simple pattern to follow.",
         "Short, soft holds can create a brief pause between effort and release.",
