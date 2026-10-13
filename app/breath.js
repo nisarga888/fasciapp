@@ -188,7 +188,7 @@
           <button type="button" class="breathX" data-breath-close="1" aria-label="Close">✕</button>
           <span class="breathUnlockIc">${LOCKI}</span>
           <b>Sign up free to unlock members’ practices and sessions</b>
-          <p class="muted">Coherent breathing is open to everyone. A free account unlocks Longer exhale, Box breathing, the Nervous System Reset meditation and more.</p>
+          <p class="muted">Coherent breathing is open to everyone. A free account unlocks Longer exhale, Box breathing and more.</p>
           <div class="breathUnlockBtns">
             <button type="button" class="gold" data-breath-auth="up">Sign up free</button>
             <button type="button" class="outline" data-breath-auth="in">Sign in</button>
@@ -216,7 +216,7 @@
           const icon = p.viz === "wave" ? "wave" : p.viz === "box" ? "box" : "ball";
           return `<button type="button" class="breathCaroCard" role="listitem" data-breath-open="${esc(id)}" aria-label="${esc(p.title)}: ${esc(p.tag||"")}">
             <div class="breathCaroArt ${icon}" aria-hidden="true">${p.tag?`<span class="breathUseTag">${esc(p.tag)}</span>`:""}${isLocked(id)?`<span class="breathLock">${LOCKI}</span>`:""}</div>
-            ${FREE[id]?'<span class="ltag free">Free</span>':`<span class="ltag lk">${isLocked(id)?LOCKI+' ':''}Members</span>`}
+            ${window.FA_isNew&&FA_isNew("breath:"+id)?FA_NEW_TAG+" ":""}${FREE[id]?'<span class="ltag free">Free</span>':`<span class="ltag lk">${isLocked(id)?LOCKI+' ':''}Members</span>`}
             <b>${esc(p.title)}</b>
             <small>${esc(p.line)}</small>
             <span class="breathCaroCta">Open →</span>
