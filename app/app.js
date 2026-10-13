@@ -62,9 +62,9 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(place){setPlace(place);hit=true}
  if(hit){renderMarkers();renderList();show("list");return true}return false}catch(e){return false}}
 window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
- $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
+ $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||(t==="log"&&b.dataset.t==="profile")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
 let showT=null;function afterShow(t){try{if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
- if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;return}loadProf()})()}
+ if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#logCard").hidden=true;return}logCard();loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
 function hdr(){$("#tabInbox").hidden=!MSG_ON;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 const PKEY="fa_people_v1";function cachedPeople(){try{const j=JSON.parse(localStorage.getItem(PKEY)||"null");return Array.isArray(j)?j:null}catch(e){return null}}
@@ -81,7 +81,7 @@ const logoHome=$("#logoHome");if(logoHome)logoHome.onclick=()=>show("splash");
 $$("nav button").forEach(b=>b.onclick=()=>show(b.dataset.t));
 $("#hIn").onclick=()=>{fillLastEmail();show("auth")};
 $("#hEdit").onclick=async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(me)show("profile");else{fillLastEmail();show("auth")}};
-async function logout(){closeChat();if(unsub){unsub();unsub=null}msgUid=null;me=null;msgs=[];photoData=null;hdr();show("splash");$("#unread").hidden=true;DB.signOut().catch(()=>{}).then(()=>refresh())}
+async function logout(){closeChat();if(unsub){unsub();unsub=null}msgUid=null;me=null;msgs=[];sess=[];sessLoaded=false;photoData=null;hdr();show("splash");$("#unread").hidden=true;DB.signOut().catch(()=>{}).then(()=>refresh())}
 $("#hOut").onclick=logout;$("#pOut").onclick=logout;
 
 // auth
@@ -371,11 +371,13 @@ function setupSafariChrome(){const ua=navigator.userAgent||"";
 })();
 
 // ===== Session log =====
-const GOAL=70;let sess=[],editId=null;
+const GOAL=70;let sess=[],editId=null,sessLoaded=false;
+function paintLogCard(){const n=sess.length;$("#lcNum").textContent=`${n} / ${GOAL}`;$("#lcFill").style.width=Math.min(100,n/GOAL*100)+"%";$("#lcSub").textContent=n>=GOAL?"✓ complete":`${GOAL-n} sessions to go`}
+async function logCard(){$("#logCard").hidden=false;if(!sessLoaded){try{sess=await DB.sessions();sessLoaded=true}catch(e){}}paintLogCard()}
 function fmtD(d){if(!d)return"";const [y,m,dd]=d.split("-");return `${dd}.${m}.${y}`}
 function resetSF(){const f=$("#sessForm");f.reset();{const n=new Date();f.date.value=new Date(n-n.getTimezoneOffset()*6e4).toISOString().slice(0,10)}editId=null;$("#sfTitle").textContent="Add session";$("#sfBtn").textContent="Add session";$("#sfCancel").hidden=true}
 async function loadLog(){$("#logNeed").hidden=!!me;$("#logBox").hidden=!me;if(!me)return;if(!editId)resetSF();try{sess=await DB.sessions()}catch(e){sess=[];$("#sfMsg").textContent="Could not load: "+e.message}renderLog()}
-function renderLog(){const n=sess.length;$("#pNum").textContent=`${n} / ${GOAL} sessions`;$("#pPct").textContent=n>=GOAL?"✓ complete":`${GOAL-n} to go`;$("#pFill").style.width=Math.min(100,n/GOAL*100)+"%";
+function renderLog(){sessLoaded=true;try{paintLogCard()}catch(e){}const n=sess.length;$("#pNum").textContent=`${n} / ${GOAL} sessions`;$("#pPct").textContent=n>=GOAL?"✓ complete":`${GOAL-n} to go`;$("#pFill").style.width=Math.min(100,n/GOAL*100)+"%";
  $("#pdfBtn").disabled=!n;
  $("#sessList").innerHTML=n?sess.map((s,i)=>`<div class="sess"><span class="sn">${i+1}</span><div class="sb"><b>${esc(s.initials)}</b> · ${fmtD(s.date)}${s.duration?" · "+s.duration+" min":""} · ${esc(s.session_type||"MER")} · ${esc(s.format||"In person")}${s.comment?`<br><small>${esc(s.comment)}</small>`:""}</div>
  <span class="sa"><button class="ghost sm" data-ed="${s.id}" aria-label="Edit">✎</button><button class="ghost sm" data-del="${s.id}" aria-label="Delete">🗑</button></span></div>`).join(""):"<p class='muted center'>No sessions yet. Add your first one above.</p>";
@@ -468,51 +470,20 @@ function xbtn(){$("#addLoc").hidden=$("#extraLocs").children.length>=2}
 function setExtra(ls){$("#extraLocs").innerHTML="";ls.slice(0,2).forEach(addXloc);xbtn()}
 $("#addLoc").onclick=()=>addXloc();
 
-// ===== in-app messages =====
-const nameOf=id=>{const p=all().find(x=>x.user_id===id);return p?p.name:"FasciApp member"};
-const MKEY=()=>"fa_msgs_"+(me&&me.user_id);
-function saveMsgs(){try{localStorage.setItem(MKEY(),JSON.stringify(msgs.filter(m=>!m.pending).slice(-300)))}catch(e){}}
-function paintMsgs(){if(!me)return;const un=msgs.filter(m=>m.recipient===me.user_id&&!m.read_at).length;const b=$("#unread");b.textContent=un;b.hidden=!un;
- if(chatWith)renderChat();if($("#inbox").classList.contains("active"))renderInbox()}
-function mergeMsg(m){if(!m||!m.id)return;const i=msgs.findIndex(x=>x.id===m.id);if(i>=0)msgs[i]={...msgs[i],...m};
- else{const t=msgs.findIndex(x=>x.pending&&x.sender===m.sender&&x.recipient===m.recipient&&x.body===m.body);if(t>=0)msgs[t]=m;else msgs.push(m)}
- msgs.sort((a,b)=>a.created_at.localeCompare(b.created_at))}
-let msgUid=null,lastPull=0;
-async function msgInit(){if(!MSG_ON){MSG_OK=false;return}if(me&&msgUid!==me.user_id){try{msgs=JSON.parse(localStorage.getItem(MKEY())||"[]")}catch(e){msgs=[]}}
- if(me&&msgs.length){MSG_OK=true;paintMsgs()}
- try{MSG_OK=!!(DB.msgOk&&await DB.msgOk())}catch(e){MSG_OK=false}hdr();renderMarkers();renderList();
- if(MSG_OK&&me){if(msgUid!==me.user_id){if(unsub)unsub();unsub=DB.onMsg?DB.onMsg(ev=>{const m=ev&&ev.new;if(m&&m.id){mergeMsg(m);saveMsgs();paintMsgs()}else pullMsgs()},me.user_id):null;msgUid=me.user_id}
-  await pullMsgs()}}
-async function pullMsgs(){if(!MSG_OK||!me)return;lastPull=Date.now();let got;try{got=await DB.msgs()}catch(e){return}
- const pend=msgs.filter(m=>m.pending);msgs=got;pend.forEach(p=>{if(!msgs.some(m=>m.sender===p.sender&&m.recipient===p.recipient&&m.body===p.body))msgs.push(p)});
- saveMsgs();paintMsgs()}
-function convs(){const c={};msgs.forEach(m=>{const o=m.sender===me.user_id?m.recipient:m.sender;(c[o]=c[o]||[]).push(m)});
- return Object.entries(c).map(([o,l])=>({o,last:l[l.length-1],un:l.filter(m=>m.recipient===me.user_id&&!m.read_at).length})).sort((a,b)=>b.last.created_at.localeCompare(a.last.created_at))}
-function renderInbox(){const box=$("#convs");
- if(!me){box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1" data-go="auth">Sign in</button></div>`;
-  box.querySelector("[data-go]")&&(box.querySelector("[data-go]").onclick=()=>show("auth"));return}
- if(!MSG_OK){box.innerHTML="<p class=muted>Messaging is not available right now. Try again later.</p>";return}
- const cs=convs();box.innerHTML=cs.map(c=>{const p=all().find(x=>x.user_id===c.o)||{name:nameOf(c.o)};return `<div class="item conv" data-c="${esc(c.o)}"><div class="row">${av(p)}<div><b>${esc(p.name)}</b>${c.un?` <span class="badge">${c.un}</span>`:""}<br><small class=muted>${esc(c.last.body.slice(0,80))}</small></div></div></div>`}).join("")||"<p class=muted>No messages yet. Open a practitioner on the map and tap Message.</p>";
- $$("#convs .conv").forEach(d=>d.onclick=()=>openChat(d.dataset.c))}
-function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;chatWith=id;$("#chatName").textContent=nameOf(id);$("#chat").hidden=false;renderChat();$("#chatTxt").focus();
- if(!unsub&&MSG_OK)msgInit()}
-function closeChat(){chatWith=null;$("#chat").hidden=true}
-function renderChat(){if(!me||!chatWith)return;const all=msgs.filter(m=>(m.sender===chatWith&&m.recipient===me.user_id)||(m.recipient===chatWith&&m.sender===me.user_id));const l=all.slice(-30);
- const b=$("#chatLog");b.innerHTML=l.map(m=>`<div class="bub ${m.sender===me.user_id?"me":"them"}${m.pending?" pend":""}${m.failed?" fail":""}">${esc(m.body)}<small>${m.failed?"Not sent · tap to retry":m.pending?"Sending…":new Date(m.created_at).toLocaleString([], {dateStyle:"short",timeStyle:"short"})}</small></div>`).join("")||"<p class='muted center'>Say hello 👋</p>";b.scrollTop=b.scrollHeight;
- $$("#chatLog .bub.fail").forEach((d,i)=>d.onclick=()=>{const f=l.filter(m=>m.failed)[i];if(f){f.failed=false;sendNow(f);renderChat()}});
- const unread=l.filter(m=>m.sender===chatWith&&!m.read_at);if(unread.length){const now=new Date().toISOString();unread.forEach(m=>m.read_at=now);saveMsgs();
-  const u=msgs.filter(m=>m.recipient===me.user_id&&!m.read_at).length,bd=$("#unread");bd.textContent=u;bd.hidden=!u;DB.markRead(chatWith).catch(()=>{})}}
-function sendNow(tmp){tmp.pending=true;DB.sendMsg(tmp.recipient,tmp.body).then(row=>{const i=msgs.indexOf(tmp);if(i>=0)msgs.splice(i,1);mergeMsg(row);saveMsgs();paintMsgs()})
- .catch(err=>{tmp.pending=false;tmp.failed=true;$("#chatErr").textContent="Could not send: "+err.message;paintMsgs()})}
+// ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
+let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.21";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
+function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
+function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
+ loadInbox().then(I=>I.renderInbox()).catch(()=>{$("#convs").innerHTML="<p class=muted>Messaging is not available right now. Try again later.</p>"})}
+function setBadge(n){const b=$("#unread");if(b){b.textContent=n;b.hidden=!n}}
+async function badgePoll(){if(!MSG_ON||!me||document.hidden||!DB.unreadCount)return;lastBadge=Date.now();try{setBadge(await DB.unreadCount())}catch(e){}}
+async function msgInit(){if(!MSG_ON){MSG_OK=false;return}MSG_OK=true;hdr();renderMarkers();renderList();badgePoll()}
+// unread badge: one tiny count query, at most every 5 min and only when the app is visible
+setInterval(()=>{if(Date.now()-lastBadge>290000)badgePoll()},300000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-lastBadge>300000)badgePoll()});
 document.addEventListener("click",e=>{const t=e.target.closest("[data-msg]");if(t){e.preventDefault();openChat(t.dataset.msg)}});
-$("#chatX").onclick=closeChat;
-$("#chatForm").onsubmit=e=>{e.preventDefault();const t=$("#chatTxt"),v=t.value.trim().slice(0,1000);if(!v||!chatWith)return;$("#chatErr").textContent="";
- const tmp={id:"tmp-"+Date.now()+Math.random(),sender:me.user_id,recipient:chatWith,body:v,created_at:new Date().toISOString(),read_at:null,pending:true};
- msgs.push(tmp);t.value="";renderChat();sendNow(tmp)};
-setInterval(()=>{if(chatWith&&!document.hidden&&!window.RT_OK)pullMsgs()},15000);
-// Realtime does the work; a light safety net catches anything missed (only when visible, max every 2 min).
-document.addEventListener("visibilitychange",()=>{if(!document.hidden&&Date.now()-lastPull>30000)pullMsgs()});
-setInterval(()=>{if(!document.hidden&&Date.now()-lastPull>110000)pullMsgs()},120000);
 
 document.addEventListener("visibilitychange",()=>document.documentElement.classList.toggle("bg-hidden",document.hidden));
 

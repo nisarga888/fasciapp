@@ -58,6 +58,7 @@ const local={mode:"local",
   const base=pickS(x);if(!base.format)base.format="In person";if(!base.session_type)base.session_type="MER";const row={...base,id:x.id||crypto.randomUUID(),user_id:s.user_id,created_at:i>=0?l[i].created_at:new Date().toISOString()};if(i>=0)l[i]=row;else l.push(row);all[s.user_id]=l;LS.set("fyp_sessions",all);return unpackSession(row)},
  async deleteSession(id){const s=await this.session();const all=LS.get("fyp_sessions",{});all[s.user_id]=(all[s.user_id]||[]).filter(r=>r.id!==id);LS.set("fyp_sessions",all)},
  async msgOk(){return false},
+ async unreadCount(){return 0},
  async resetPassword(email){throw new Error("Password reset needs the live FasciApp server. Open the app at fasciapp.app and try again.")},
  async updatePassword(){throw new Error("Password reset needs the live FasciApp server.")},
  onAuth(){return ()=>{}}};
@@ -127,6 +128,7 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   async msgOk(){const r=await sb.from("messages").select("id").limit(1);return !r.error},
   async msgs(){const s=await sess();if(!s)return[];return chk(await sb.from("messages").select("*").or(`sender.eq.${s.user_id},recipient.eq.${s.user_id}`).order("created_at",{ascending:false}).limit(300)).reverse()},
   async sendMsg(to,body){const s=await sess();return chk(await sb.from("messages").insert({sender:s.user_id,recipient:to,body}).select().single())},
+  async unreadCount(){const s=await sess();if(!s)return 0;const r=await sb.from("messages").select("id",{count:"exact",head:true}).eq("recipient",s.user_id).is("read_at",null);if(r.error)throw r.error;return r.count||0},
   async markRead(from){const s=await sess();chk(await sb.from("messages").update({read_at:new Date().toISOString()}).eq("recipient",s.user_id).eq("sender",from).is("read_at",null))},
   onMsg(cb,uid){try{const ch=sb.channel("msgs-"+(uid||"x"));const f=uid?[{filter:"recipient=eq."+uid},{filter:"sender=eq."+uid}]:[{}];f.forEach(o=>ch.on("postgres_changes",{event:"*",schema:"public",table:"messages",...o},cb));window.RT_OK=false;ch.subscribe(st=>{window.RT_OK=st==="SUBSCRIBED"});return ()=>sb.removeChannel(ch)}catch(e){return ()=>{}}}};
 }
