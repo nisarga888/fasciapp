@@ -406,3 +406,4 @@ nav#tabs .ndot{position:absolute;top:calc(50% - 22px);right:calc(50% - 19px);wid
 .breathTags{display:flex;align-items:center;gap:6px;margin:10px 12px 0}.breathTags .ltag{margin:0}
 .lcard,.breathCaroCard{position:relative}.ltag.new{position:absolute;top:8px;right:8px;z-index:3;margin:0;box-shadow:0 2px 6px #0008}
 .chatT{display:flex;flex-direction:column;min-width:0}.chatSub{font-size:11px;color:#9fb3b5;line-height:1.3}
+.breathFor{font-weight:500;font-size:.8em;color:#5FC9C3;white-space:nowrap}

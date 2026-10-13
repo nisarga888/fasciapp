@@ -38,7 +38,7 @@
       desc: "It is known that the heart speeds up slightly on the in-breath and slows slightly on the out-breath. Research suggests that making the exhale longer than the inhale activates the calming parasympathetic response, which can help ease stress. Inhale through the nose for 4, exhale through the nose for 6, smooth and unhurried. It needs no special setup, so it can be used before a meeting, in a queue, before a difficult conversation or at bedtime.",
       why: [
         "A longer exhale works with the natural slowing of the heart on the out-breath (respiratory sinus arrhythmia).",
-        "It is a simple place to start when life speeds up — no special setup needed.",
+        "Research suggests slow, extended exhales can lower stress and help the body shift out of a tense, alert state.",
         "If 4 and 6 feels strained, try 3 and 5; comfort matters more than the numbers."
       ]
     },
@@ -57,8 +57,8 @@
       // Programme has no box-with-holds page; equal 4-count echoes Day 8's gentle 4/4 start.
       desc: "Box breathing follows an even 4-4-4-4 rhythm, like tracing a square: inhale through the nose, soft hold, exhale through the nose, soft hold, each for a count of four. Research suggests that a steady, structured rhythm like this supports alertness, focus and steady energy, and it is known to be used by people who need to stay clear-headed under pressure. The holds are quiet pauses, not a strain; if a hold feels tight, shorten it or return to an easy nasal breath.",
       why: [
-        "Equal counts give the busy mind a simple pattern to follow.",
-        "Short, soft holds can create a brief pause between effort and release.",
+        "Equal counts give the mind a simple pattern to follow, which can support focus and steady energy.",
+        "It is known as a way to stay alert and clear-headed without becoming tense.",
         "Stay soft and nasal where you can; never force or push the breath."
       ]
     }
@@ -217,7 +217,7 @@
           return `<button type="button" class="breathCaroCard" role="listitem" data-breath-open="${esc(id)}" aria-label="${esc(p.title)}: ${esc(p.tag||"")}">
             ${window.FA_isNew&&FA_isNew("breath:"+id)?FA_NEW_TAG:""}<div class="breathCaroArt ${icon}" aria-hidden="true">${p.tag?`<span class="breathUseTag">${esc(p.tag)}</span>`:""}${isLocked(id)?`<span class="breathLock">${LOCKI}</span>`:""}</div>
             <span class="breathTags">${FREE[id]?'<span class="ltag free">Free</span>':`<span class="ltag lk">${isLocked(id)?LOCKI+' ':''}Members</span>`}</span>
-            <b>${esc(p.title)}</b>
+            <b>${esc(p.title)}${p.tag?` <span class="breathFor">· ${esc(p.tag.toLowerCase())}</span>`:""}</b>
             <small>${esc(p.line)}</small>
             <span class="breathCaroCta">Open →</span>
           </button>`;
@@ -255,11 +255,11 @@
     currentId = id;
     const el = ensureRoot();
     el.innerHTML = `
-      <div class="breathOverlay" role="dialog" aria-modal="true" aria-label="${esc(p.title)}">
+      <div class="breathOverlay" role="dialog" aria-modal="true" aria-label="${esc(p.title)}${p.tag?" · "+esc(p.tag.toLowerCase()):""}">
         <div class="breathSheet breathIntro">
           <div class="breathTop">
             <button type="button" class="breathBack" data-breath-close="1" aria-label="Close">←</button>
-            <b>${esc(p.title)}</b>
+            <b>${esc(p.title)}${p.tag?` <span class="breathFor">· ${esc(p.tag.toLowerCase())}</span>`:""}</b>
             <button type="button" class="breathX" data-breath-close="1" aria-label="Close">✕</button>
           </div>
           <div class="breathIntroHead">${p.tag?`<span class="breathUseTag">${esc(p.tag)}</span>`:""}<p class="breathIntroLine">${esc(p.line)}</p></div>
@@ -309,11 +309,11 @@
     muteAudio(true);
     const el = ensureRoot();
     el.innerHTML = `
-      <div class="breathOverlay breathPlayer" role="dialog" aria-modal="true" aria-label="${esc(p.title)}">
+      <div class="breathOverlay breathPlayer" role="dialog" aria-modal="true" aria-label="${esc(p.title)}${p.tag?" · "+esc(p.tag.toLowerCase()):""}">
         <div class="breathStage${reduce ? " reduce" : ""}">
           <div class="breathTop">
             <button type="button" class="breathBack" data-breath-intro="${esc(id)}" aria-label="Back">←</button>
-            <b>${esc(p.title)}</b>
+            <b>${esc(p.title)}${p.tag?` <span class="breathFor">· ${esc(p.tag.toLowerCase())}</span>`:""}</b>
             <button type="button" class="breathX" data-breath-close="1" aria-label="Close">✕</button>
           </div>
           <p class="breathRemain" id="breathRemain">5:00</p>
