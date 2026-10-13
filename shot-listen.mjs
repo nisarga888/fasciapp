@@ -1,0 +1,6 @@
+import {chromium,devices} from '/workspace/ibi/mer-app/fasciapp-repo/node_modules/playwright-core/index.mjs';
+const b=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox']});const c=await b.newContext({...devices['iPhone 13'],serviceWorkers:'block'});const p=await c.newPage();
+await p.goto('https://fasciapp.app/app/?tab=lab&x='+Date.now());await p.waitForTimeout(3500);
+const h=p.locator('h3.lsec[data-sec="Listen"]');await h.scrollIntoViewIfNeeded();await p.evaluate(()=>{const e=document.querySelector('h3.lsec[data-sec="Listen"]');let m=e.parentElement;while(m&&m.scrollHeight<=m.clientHeight+5)m=m.parentElement;if(m)m.scrollTop+=e.getBoundingClientRect().top-90;});await p.waitForTimeout(1200);
+const info=await p.evaluate(()=>{const a=[...document.querySelectorAll('a')].find(x=>x.href.includes('steph-magenta'));const card=a&&(a.closest('.lcard')||a);return{v:document.querySelector('script[src*="learn.js"]')?.src,href:a?.href,target:a?.target,text:card?.innerText,lock:card?.innerHTML.includes('lock')}});
+console.log(JSON.stringify(info));await p.screenshot({path:'/workspace/fasciapp-insta/lab-final/listen-v0.23.34.png'});await b.close();
