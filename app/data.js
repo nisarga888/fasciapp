@@ -69,7 +69,7 @@ let noLocCol=false,noPracticeCol=false,noNewsCol=false,noFormatCol=false,noSessi
 function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY,{
   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage,storageKey:"fasciapp-auth"}
  });
- const sess=async()=>{const {data}=await sb.auth.getSession();const u=data.session?.user;return u?{user_id:u.id,email:u.email}:null};
+ const sess=async()=>{const {data}=await sb.auth.getSession();const u=data.session?.user;return u?{user_id:u.id,email:u.email,news_optin:!!(u.user_metadata&&u.user_metadata.news_optin)}:null};
  const chk=({data,error})=>{if(error)throw new Error(error.message);return data};
  // Probe once whether practice_name column exists (anon can SELECT).
  (async()=>{try{const r=await sb.from("practitioners").select("practice_name").limit(1);if(r.error&&/practice_name/.test(r.error.message||"")){noPracticeCol=true;console.warn("FasciApp: run `alter table public.practitioners add column if not exists practice_name text;` — storing practice_name inside locations jsonb for now")}}catch(e){}
@@ -78,7 +78,7 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   try{const r=await sb.from("sessions").select("session_type").limit(1);if(r.error&&/session_type/i.test(r.error.message||"")){noSessionTypeCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists session_type text;` — packing session_type into comment for now")}}catch(e){}})();
  return {mode:"supabase",
   session:sess,
-  async signUp(email,pw){const d=chk(await sb.auth.signUp({email,password:pw}));if(!d.session)throw new Error("Account created. Check your email to confirm it, then sign in.");return sess()},
+  async signUp(email,pw,opt){const n=!!(opt&&opt.news_optin);const d=chk(await sb.auth.signUp({email,password:pw,options:{data:{news_optin:n,news_optin_at:n?new Date().toISOString():null,signup_source:"fasciapp"}}}));if(!d.session)throw new Error("Account created. Check your email to confirm it, then sign in.");return sess()},
   async signIn(email,pw){chk(await sb.auth.signInWithPassword({email,password:pw}));return sess()},
   async signOut(){await sb.auth.signOut()},
   async resetPassword(email){const redirectTo=location.origin.replace(/\/$/,"")+"/app/?reset=1";

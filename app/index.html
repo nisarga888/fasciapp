@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 
-<link rel="stylesheet" href="styles.css?v=0.23.27"></head><body>
+<link rel="stylesheet" href="styles.css?v=0.23.28"></head><body>
 <div id="demoBanner" class="banner" hidden>Demo mode: saved on this device</div>
 <section id="splash" class="screen active">
  <svg class="biglogo logoMark" width="150" height="150" aria-hidden="true" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -37,13 +37,13 @@
 </section>
 <section id="auth" class="screen">
  <button class="back" data-go="splash">← Back</button>
- <h2 id="authTitle">Create your practitioner account</h2>
+ <h2 id="authTitle">Create your free account</h2>
  <div class="seg"><button id="tabUp" class="on" type="button">Create account</button><button id="tabIn" type="button">Sign in</button></div>
  <form id="authForm" class="card">
   <label class="lbl">Email<input id="email" type="email" autocomplete="email" required></label>
   <label class="lbl" id="pwL">Password<input id="pw" type="password" autocomplete="current-password" required minlength="6" placeholder="at least 6 characters"></label>
   <p id="forgotWrap" class="muted forgot" hidden><a href="#" id="forgotLink">Forgot password?</a></p>
-  <label class="consent" id="agreeL"><input type="checkbox" id="agree"> I'm 18+ and accept the <a href="../terms.html" target="_blank">Terms</a> and <a href="../privacy.html" target="_blank">Privacy Policy</a></label><button id="authBtn" class="gold big1">Create account</button>
+  <label class="consent" id="agreeL"><input type="checkbox" id="agree"> I'm 18+ and accept the <a href="../terms.html" target="_blank">Terms</a> and <a href="../privacy.html" target="_blank">Privacy Policy</a></label><label class="consent" id="newsL"><input type="checkbox" id="newsOpt"> Yes, send me occasional FasciApp news: new breathing practices, free live sessions and videos. Unsubscribe anytime.</label><button id="authBtn" class="gold big1">Create account</button>
   <p id="authMsg" class="msg"></p>
  </form>
  <form id="forgotForm" class="card" hidden>
@@ -192,9 +192,9 @@
 
 
 
-<script src="config.js?v=0.23.27"></script>
+<script src="config.js?v=0.23.28"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="learn.js?v=0.23.27"></script><script src="news.js?v=0.23.27"></script><script src="quotes.js?v=0.23.27"></script><script src="data.js?v=0.23.27"></script><script src="breath.js?v=0.23.27"></script><script src="app.js?v=0.23.27"></script>
+<script src="learn.js?v=0.23.28"></script><script src="news.js?v=0.23.28"></script><script src="quotes.js?v=0.23.28"></script><script src="data.js?v=0.23.28"></script><script src="breath.js?v=0.23.28"></script><script src="app.js?v=0.23.28"></script>
 <script>
 if("serviceWorker" in navigator&&navigator.serviceWorker){
   // Never reload while the user is using the app: apply a new version only when the app is in the background or on next open.
