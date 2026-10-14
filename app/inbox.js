@@ -31,7 +31,7 @@ function renderChat(){if(!me||!chatWith)return;const all=msgs.filter(m=>(m.sende
  $$("#chatLog .bub.fail").forEach((d,i)=>d.onclick=()=>{const f=l.filter(m=>m.failed)[i];if(f){f.failed=false;sendNow(f);renderChat()}});
  const unread=l.filter(m=>m.sender===chatWith&&!m.read_at);if(unread.length){const now=new Date().toISOString();unread.forEach(m=>m.read_at=now);saveMsgs();
   const u=msgs.filter(m=>m.recipient===me.user_id&&!m.read_at).length,bd=$("#unread");bd.textContent=u;bd.hidden=!u;DB.markRead(chatWith).catch(()=>{})}}
-function sendNow(tmp){tmp.pending=true;try{const first=!msgs.some(m=>m!==tmp&&!m.failed&&(m.sender===tmp.recipient||m.recipient===tmp.recipient));window.FA_ev&&FA_ev(first?"conversation_start":"message_sent")}catch(e){}DB.sendMsg(tmp.recipient,tmp.body).then(row=>{const i=msgs.indexOf(tmp);if(i>=0)msgs.splice(i,1);mergeMsg(row);saveMsgs();paintMsgs()})
+function sendNow(tmp){tmp.pending=true;try{const pr=all().find(x=>x.user_id===tmp.recipient);if(pr&&window.FA_ev){const first=!msgs.some(m=>m!==tmp&&!m.failed&&(m.sender===tmp.recipient||m.recipient===tmp.recipient));FA_ev(first?"conversation_start":"message_sent",{pid:pr.id,source:"inbox"})}}catch(e){}DB.sendMsg(tmp.recipient,tmp.body).then(row=>{const i=msgs.indexOf(tmp);if(i>=0)msgs.splice(i,1);mergeMsg(row);saveMsgs();paintMsgs()})
  .catch(err=>{tmp.pending=false;tmp.failed=true;$("#chatErr").textContent="Could not send: "+err.message;paintMsgs()})}
 $("#chatX").onclick=closeChat;
 $("#chatForm").onsubmit=e=>{e.preventDefault();const t=$("#chatTxt"),v=t.value.trim().slice(0,1000);if(!v||!chatWith)return;$("#chatErr").textContent="";
