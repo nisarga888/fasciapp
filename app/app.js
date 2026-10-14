@@ -126,7 +126,7 @@ function placeHit(p,q){if(!q)return true;{const cq=fold(window.canonCountry?cano
  return locs.some(l=>fold([l.city,l.country,l.address].filter(Boolean).join(" ")).includes(q))}
 function placeQ(){const el=$("#qPlace");return fold(el?el.value.trim():"")}
 function filtered(){const f=($("#listFilter")&&$("#listFilter").value)||"";const q=placeQ();
- return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f))&&placeOk(p))}
+ const nq=fold((($("#qName")||{}).value||"").trim());return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f))&&placeOk(p)&&(!nq||fold((p.name||"")+" "+(p.practice_name||"")).includes(nq)))}
 function initials(n){return String(n||"?").split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase()}
 function av(p,cls=""){return p.photo?`<img class="av ${cls}" src="${esc(p.photo)}" alt="">`:`<span class="av ${cls}">${esc(initials(p.name))}</span>`}
 function practiceTitle(p){return String(p.practice_name||"").trim()||String(p.name||"").trim()||"Practitioner"}
@@ -257,9 +257,9 @@ function renderMarkers(){count();if(!layer)return;layer.clearLayers();if(threads
  if(ps.length&&!didFit)fitPins(true)}
 $("#filter")&&($("#filter").onchange=()=>{renderMarkers();fitPins(true)});
 $("#listFilter")&&($("#listFilter").onchange=()=>syncModFilter("listFilter"));
-$("#qPlace")&&($("#qPlace").onchange=()=>{renderList();renderMarkers()});
+$("#qPlace")&&($("#qPlace").onchange=()=>{renderList();renderMarkers()});$("#qName")&&($("#qName").oninput=()=>{renderList();renderMarkers()});
 document.addEventListener("click",e=>{const c=$("#placeCombo");if(c&&!c.contains(e.target))closePlaceMenu()});
-$("#listClear")&&($("#listClear").onclick=()=>{const q=$("#qPlace");if(q)q.value="";{const el=$("#listFilter");if(el)el.value=""};closePlaceMenu();renderMarkers();renderList()});
+$("#listClear")&&($("#listClear").onclick=()=>{const q=$("#qPlace");if(q)q.value="";{const nm=$("#qName");if(nm)nm.value=""};{const el=$("#listFilter");if(el)el.value=""};closePlaceMenu();renderMarkers();renderList()});
 $("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show("map");didFit=false;setTimeout(()=>{fitPins(true);map&&map.invalidateSize()},100)});
 function geoOnce(){return new Promise(resolve=>{if(!navigator.geolocation||!window.isSecureContext)return resolve(null);
   navigator.geolocation.getCurrentPosition(pos=>resolve([pos.coords.latitude,pos.coords.longitude]),()=>resolve(null),{enableHighAccuracy:false,timeout:8000,maximumAge:3e5})})}
@@ -290,7 +290,7 @@ const isAdmin=()=>!!(me&&String(me.email||"").toLowerCase()==="nisarga8@gmail.co
 function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));const adm=!here&&isAdmin();if(here)ps.sort((a,b)=>a.d-b.d);else if(adm)ps.sort((a,b)=>String(b.p.created_at||"").localeCompare(String(a.p.created_at||"")));
  const _pe=$("#qPlace"),n=ps.length,q=(_pe&&_pe.value&&_pe.selectedOptions[0]?_pe.selectedOptions[0].textContent.replace(/\s*\(\d+\)$/,""):""),mod=($("#listFilter")&&$("#listFilter").value)||"";
  const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(adm?" · Newest first (admin)":"");
- const clr=$("#listClear");if(clr)clr.hidden=!(q||mod);
+ const clr=$("#listClear");if(clr)clr.hidden=!(q||mod||(($("#qName")||{}).value||"").trim());
  $("#from").textContent=here?"Sorted by distance from you":"Tap 📍 Near me on the map to sort by distance";
  $("#items").innerHTML=ps.map(({p,d})=>`<div class="item">${d!=null?`<span class="d">${Math.round(d)} km</span>`:""}${card(p)}</div>`).join("")||"<p class=muted>No practitioners match your search.</p>"}
 
@@ -481,7 +481,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.47";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.48";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
