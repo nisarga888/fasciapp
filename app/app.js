@@ -303,7 +303,17 @@ $("#nearCity")&&($("#nearCity").onsubmit=async e=>{e.preventDefault();const f=e.
  m.textContent="Looking up "+city+"…";const g=await geocode("",city,"");if(!g){m.textContent="Could not find that city. Try another spelling.";showToast("City not found");return}
  applyNear(g[0],g[1])});
 const isAdmin=()=>!!(me&&String(me.email||"").toLowerCase()==="nisarga8@gmail.com");
-function renderList(){const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));const adm=!here&&isAdmin();if(here)ps.sort((a,b)=>a.d-b.d);else if(adm)ps.sort((a,b)=>String(b.p.created_at||"").localeCompare(String(a.p.created_at||"")));
+// ===== Newly joined strip (List): latest published practitioners with a photo =====
+let njKey="";const flagOf=c=>{try{const k=Object.keys(CANON).find(x=>x.length===2&&CANON[x]===c);return k?String.fromCodePoint(...[...k.toUpperCase()].map(ch=>127397+ch.charCodeAt(0))):""}catch(e){return""}};
+function renderNewJ(){const box=$("#newJ");if(!box)return;const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,8);
+ const key=ps.map(p=>p.id).join();if(key===njKey)return;njKey=key;box.hidden=ps.length<3;if(box.hidden)return;
+ box.innerHTML=`<div class="njH"><b>Newly joined</b><small>Swipe →</small></div><div class="njRow">${ps.map(p=>{const locs=(p.locations&&p.locations.length?p.locations:[p]);const co=(locs.find(l=>l.country&&l.country!=="Other")||{}).country||"";const fn=String(p.name||"").trim().split(/\s+/)[0]||"";
+  return `<button type="button" class="nj" data-nj="${esc(p.id)}" aria-label="${esc(practiceTitle(p))}${co?", "+esc(co):""}"><span class="njAv"><img src="${esc(p.photo)}" alt="" loading="lazy"><i>${esc(fn)}</i></span><small>${flagOf(co)} ${esc(co)}</small></button>`}).join("")}</div>`}
+function openNJ(id){const p=all().find(x=>x.id===id);if(!p)return;try{window.FA_ev&&FA_ev("pract_view",{pid:p.id,source:"newly_joined",props:{from:"newly_joined"}})}catch(e){}
+ let s=$("#njSheet");if(!s){s=document.createElement("div");s.id="njSheet";s.className="njSheet";document.body.appendChild(s);s.addEventListener("click",e=>{if(e.target===s||e.target.closest(".njX"))s.hidden=true})}
+ s.innerHTML=`<div class="njCard card"><button type="button" class="njX ghost sm" aria-label="Close">✕</button>${card(p)}</div>`;s.hidden=false}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-nj]");if(b)openNJ(b.dataset.nj)});
+function renderList(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));const adm=!here&&isAdmin();if(here)ps.sort((a,b)=>a.d-b.d);else if(adm)ps.sort((a,b)=>String(b.p.created_at||"").localeCompare(String(a.p.created_at||"")));
  const _pe=$("#qPlace"),n=ps.length,q=(_pe&&_pe.value&&_pe.selectedOptions[0]?_pe.selectedOptions[0].textContent.replace(/\s*\(\d+\)$/,""):""),mod=($("#listFilter")&&$("#listFilter").value)||"";
  const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:"")+(adm?" · Newest first (admin)":"");
  const clr=$("#listClear");if(clr){clr.hidden=!(nearScope||q||mod||(($("#qName")||{}).value||"").trim());clr.textContent=nearScope?"Show all":"Clear"}
@@ -497,7 +507,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.61";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.62";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
