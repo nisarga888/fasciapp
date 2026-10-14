@@ -517,7 +517,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.69";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.70";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -619,3 +619,19 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  const pf=$("#profForm");if(pf)pf.addEventListener("submit",()=>ev("join",{props:{step:"profile_saved"}}),true);
  if(/[?&]join=1/.test(location.search))ev("join",{props:{step:"started"},source:"link"});
 })();
+
+// Messenger UX (v0.23.70): full-height sheet that follows the visual viewport (keyboard), auto-scroll, auto-grow, Enter sends on desktop
+(function(){const chat=document.getElementById("chat");if(!chat)return;const log=document.getElementById("chatLog"),ta=document.getElementById("chatTxt"),form=document.getElementById("chatForm");
+ const vv=window.visualViewport,root=document.documentElement;
+ function fit(){if(vv){root.style.setProperty("--chat-h",vv.height+"px");root.style.setProperty("--chat-top",vv.offsetTop+"px")}if(stick)toEnd()}
+ let stick=true;const toEnd=()=>{log.scrollTop=log.scrollHeight};
+ log.addEventListener("scroll",()=>{stick=log.scrollHeight-log.scrollTop-log.clientHeight<40},{passive:true});
+ if(vv){vv.addEventListener("resize",fit);vv.addEventListener("scroll",fit)}window.addEventListener("resize",fit);
+ new MutationObserver(()=>{if(stick)toEnd()}).observe(log,{childList:true,subtree:true});
+ new MutationObserver(()=>{const open=!chat.hidden;document.body.classList.toggle("chatOpen",open);if(open){stick=true;fit();requestAnimationFrame(toEnd);setTimeout(toEnd,120)}}).observe(chat,{attributes:true,attributeFilter:["hidden"]});
+ const grow=()=>{ta.style.height="auto";ta.style.height=Math.min(ta.scrollHeight+2,120)+"px"};
+ ta.addEventListener("input",grow);ta.addEventListener("focus",()=>setTimeout(()=>{fit();toEnd()},250));
+ const desk=matchMedia("(hover:hover) and (pointer:fine)").matches;
+ ta.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing&&desk){e.preventDefault();form.requestSubmit?form.requestSubmit():form.dispatchEvent(new Event("submit",{cancelable:true}))}});
+ form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
+ fit()})();

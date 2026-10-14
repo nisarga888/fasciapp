@@ -427,3 +427,19 @@ body.kbd .newJ{display:none}
 .njCard{position:relative;width:100%;max-width:460px;max-height:75vh;overflow:auto;margin:0}.njX{position:absolute;top:8px;right:8px}
 .locs{display:inline-block;line-height:1.35}
 .loc1{white-space:nowrap}
+
+/* v0.23.70 messenger */
+.chat{position:fixed;left:0;right:0;top:var(--chat-top,0);bottom:auto;height:var(--chat-h,100dvh);max-height:none;max-width:560px;margin:0 auto;border-radius:0;background:#02191E;color:#eef5f4;z-index:2300;padding:0;box-shadow:none}
+.chatH{padding:calc(8px + env(safe-area-inset-top)) 12px 8px;border-bottom:1px solid #12404a;gap:8px}
+.chatH #chatName{font-size:17px}
+.chatLog{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px 10px;gap:4px}
+.bub{max-width:78%;padding:8px 12px 6px;border-radius:18px;line-height:1.35;font-size:15px}
+.bub small{text-align:right;margin-top:2px;font-size:10.5px}
+.bub.me{background:#C99E67;color:#02191E;border-bottom-right-radius:5px}
+.bub.them{background:#0f3a40;color:#eef5f4;border-bottom-left-radius:5px}
+.bub.me+.bub.them,.bub.them+.bub.me{margin-top:8px}
+.chatF{align-items:flex-end;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));border-top:1px solid #12404a;background:#02191E}
+.chatF textarea{min-height:42px;max-height:120px;resize:none;border-radius:21px;padding:10px 14px;font-size:16px;line-height:1.3;background:#0b2d33;color:#eef5f4;border:1px solid #1d5560;overflow-y:auto}
+.chatSend{flex:none;width:44px;height:44px;border-radius:50%;padding:0;display:grid;place-items:center}
+#chatErr:empty{display:none}#chatErr{padding:0 12px 6px;margin:0}
+body.chatOpen nav#tabs{visibility:hidden}
