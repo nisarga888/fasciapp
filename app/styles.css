@@ -409,3 +409,4 @@ nav#tabs .ndot{position:absolute;top:calc(50% - 22px);right:calc(50% - 19px);wid
 .breathFor{font-weight:500;font-size:.8em;color:#5FC9C3;white-space:nowrap}
 #list h2.listH{margin:4px 0 0}.listSearch{padding:6px 16px 8px;margin-bottom:6px}.listSearch #qName,.listSearch #qPlace,.listSearch #listFilter,.listSearch .combo{width:100%;margin:0 0 6px;box-sizing:border-box}#list #from{margin:2px 0 8px}
 body.kbd nav#tabs{display:none!important}body.kbd .listSearch{position:static;background:none;backdrop-filter:none;-webkit-backdrop-filter:none}body.kbd #list #from{display:none}
+body.in.kbd{padding-bottom:0;height:var(--kbd-h,100dvh);max-height:var(--kbd-h,100dvh)}

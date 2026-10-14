@@ -260,9 +260,9 @@ $("#listFilter")&&($("#listFilter").onchange=()=>syncModFilter("listFilter"));
 $("#qPlace")&&($("#qPlace").onchange=()=>{renderList();renderMarkers()});$("#qName")&&(()=>{const n=$("#qName"),B=document.body,vv=window.visualViewport;let t;
  const top=s=>{try{const h=document.querySelector("#list h2");(h||n).scrollIntoView({block:"start",behavior:s?"smooth":"auto"})}catch(e){}};
  n.oninput=()=>{renderList();renderMarkers();if(B.classList.contains("kbd"))requestAnimationFrame(()=>top(0))};
- n.addEventListener("focus",()=>{clearTimeout(t);B.classList.add("kbd");setTimeout(()=>top(1),250)});
+ n.addEventListener("focus",()=>{clearTimeout(t);fit();B.classList.add("kbd");setTimeout(()=>top(1),250)});
  n.addEventListener("blur",()=>{t=setTimeout(()=>B.classList.remove("kbd"),120)});
- if(vv)vv.addEventListener("resize",()=>{if(document.activeElement===n)B.classList.add("kbd");else if(vv.height>innerHeight*.9)B.classList.remove("kbd")})})();
+ const fit=()=>{if(vv)B.style.setProperty("--kbd-h",Math.round(vv.height)+"px")};if(vv)vv.addEventListener("resize",()=>{if(document.activeElement===n){B.classList.add("kbd");fit()}else if(vv.height>innerHeight*.9)B.classList.remove("kbd")})})();
 document.addEventListener("click",e=>{const c=$("#placeCombo");if(c&&!c.contains(e.target))closePlaceMenu()});
 $("#listClear")&&($("#listClear").onclick=()=>{const q=$("#qPlace");if(q)q.value="";{const nm=$("#qName");if(nm)nm.value=""};{const el=$("#listFilter");if(el)el.value=""};closePlaceMenu();renderMarkers();renderList()});
 $("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show("map");didFit=false;setTimeout(()=>{fitPins(true);map&&map.invalidateSize()},100)});
@@ -486,7 +486,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.50";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.51";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
