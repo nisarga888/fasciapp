@@ -416,12 +416,3 @@ body.in.kbd{padding-bottom:0;height:var(--kbd-h,100dvh);max-height:var(--kbd-h,1
 body.kbd .igChip{display:none}
 .igChip .igF{margin-left:4px;padding:2px 9px;border-radius:999px;background:#C99E67;color:#02191E;font-weight:700;font-size:11px}
 .socRow{display:inline-flex;align-items:center;gap:6px}.fbChip{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:1px solid #c99e6766;background:#0a2a30;color:#C99E67!important}body.kbd .socRow{display:none}
-.newJ{margin:2px 0 6px;padding-bottom:8px;border-bottom:1px solid #c99e6722}.njH{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 6px}.njH b{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#C99E67}.njH small{font-size:11px;color:var(--mut)}
-.njRow{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:8px 2px 2px;margin:0 -16px 0 0}.njRow::-webkit-scrollbar{display:none}
-.nj{flex:none;width:76px;display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;color:var(--tx);font:inherit;cursor:pointer;scroll-snap-align:start}
-.njAv{position:relative;width:60px;height:60px}.njAv img{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid #C99E67;box-shadow:0 0 0 3px #02191E,0 0 10px #C99E6744;display:block}
-.njAv i{position:absolute;top:-8px;right:-14px;max-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-style:normal;font-size:10px;font-weight:700;padding:1px 7px;border-radius:999px;background:#C99E67;color:#02191E;box-shadow:0 1px 4px #0008}
-.nj small{font-size:10.5px;color:#9fb3b5;white-space:nowrap;max-width:76px;overflow:hidden;text-overflow:ellipsis}
-body.kbd .newJ{display:none}
-.njSheet{position:fixed;inset:0;z-index:2000;background:#000a;display:flex;align-items:flex-end;justify-content:center;padding:12px 12px calc(12px + var(--nav-h,0px))}.njSheet[hidden]{display:none}
-.njCard{position:relative;width:100%;max-width:460px;max-height:75vh;overflow:auto;margin:0}.njX{position:absolute;top:8px;right:8px}
