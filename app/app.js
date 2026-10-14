@@ -145,7 +145,7 @@ function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</
  const phone=p.phone?`<br><a class="tel" href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`:"";
  const cbs=(msgBtn||wa||mail)?`<div class="cbs cbsRow">${msgBtn}${wa}${mail}</div>`:"";
  const c=p.consent?phone+(p.website?`<br>🌐 ${link(p.website)}`:"")+(p.website2?`<br>🌐 ${link(p.website2)}`:"")+(igHandle(p.instagram)?`<br><a class="igl" href="https://instagram.com/${esc(igHandle(p.instagram))}" target="_blank" rel="noopener" aria-label="Instagram @${esc(igHandle(p.instagram))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @${esc(igHandle(p.instagram))}</a>`:"")+cbs:"<br><i>Not public yet</i>";
-  return `<div class="row">${av(p)}<div>${cardHead(p)}<br>${pills}<br>${(p.locations&&p.locations.length?p.locations:[p]).map(l=>"📍 "+locTxt(l)).join("<br>")}${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
+  return `<div class="row"${p.id?` data-pid="${esc(p.id)}"`:""}>${av(p)}<div>${cardHead(p)}<br>${pills}<br>${(p.locations&&p.locations.length?p.locations:[p]).map(l=>"📍 "+locTxt(l)).join("<br>")}${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
 function pinModsHtml(p){const mods=(p.mods||[]).map(m=>String(m||"").trim()).filter(Boolean);if(!mods.length)return"";
  const show=mods.slice(0,2),extra=mods.length-2;
  const chips=show.map(m=>`<i>${esc(m)}</i>`).join('<span class="dot">·</span>');
@@ -497,7 +497,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.55";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.56";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -568,3 +568,18 @@ document.addEventListener("click",e=>{const n=window.FASCIAPP_NEWS;if(!n)return;
 renderNews();
 
 $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()};
+
+// ===== Anonymous engagement stats (no user id, no IP, no device data). Fire-and-forget. =====
+(function(){const U=CFG.SUPABASE_URL,K=CFG.SUPABASE_ANON_KEY;if(!U||!K||!(CFG.FEATURES&&CFG.FEATURES.tracking||localStorage.getItem("fa_track_test")))return;const seen=new Set();
+ const src=el=>el&&el.closest(".leaflet-popup")?(nearScope?"near-me":"map"):(nearScope?"near-me":((($("#qName")||{}).value||"").trim()||(($("#qPlace")||{}).value||"")?"search":"list"));
+ const send=(pid,event,source)=>{if(!/^[0-9a-f-]{36}$/i.test(pid||""))return;try{fetch(U+"/rest/v1/engagement_events",{method:"POST",keepalive:true,headers:{apikey:K,Authorization:"Bearer "+K,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify({practitioner_id:pid,event,source})}).catch(()=>{})}catch(e){}};
+ const view=(el,source)=>{const pid=el&&el.dataset.pid,k=pid+"|"+source;if(!pid||seen.has(k))return;seen.add(k);send(pid,"view",source)};
+ window.FA_track=send;
+ document.addEventListener("click",e=>{const t=e.target.closest("a,button.cb");if(!t)return;const row=t.closest("[data-pid]");if(!row)return;
+  const ev=t.classList.contains("msg")?"message":t.classList.contains("wa")?"whatsapp":t.classList.contains("mail")?"email":t.classList.contains("tel")?"phone":t.classList.contains("igl")?"instagram":t.tagName==="A"?(/facebook|tiktok|linkedin|youtube|x\.com|twitter/i.test(t.href)?"social":"website"):"";
+  if(ev)send(row.dataset.pid,ev,src(t))},true);
+ const io="IntersectionObserver" in window?new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting&&x.intersectionRatio>=.6){io.unobserve(x.target);view(x.target,src(x.target))}}),{threshold:.6}):null;
+ const watch=()=>{if(!io)return;$$("#items [data-pid]").forEach(el=>io.observe(el))};
+ const box=$("#items");if(box&&window.MutationObserver)new MutationObserver(()=>window.requestIdleCallback?requestIdleCallback(watch):setTimeout(watch,50)).observe(box,{childList:true});watch();
+ let hi=0;const hook=()=>{if(map&&map.on&&!map._faT){map._faT=1;clearInterval(hi);map.on("popupopen",ev=>{setTimeout(()=>{const el=ev.popup.getElement&&ev.popup.getElement();const r=el&&el.querySelector("[data-pid]");if(r)view(r,src(el))},0)})}};
+ hi=setInterval(hook,3000);hook();})();
