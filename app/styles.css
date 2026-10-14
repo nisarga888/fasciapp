@@ -443,3 +443,5 @@ body.kbd .newJ{display:none}
 .chatSend{flex:none;width:44px;height:44px;border-radius:50%;padding:0;display:grid;place-items:center}
 #chatErr:empty{display:none}#chatErr{padding:0 12px 6px;margin:0}
 body.chatOpen nav#tabs{visibility:hidden}
+.chat{inset:0 0 var(--chat-kb,0) 0;top:0;bottom:var(--chat-kb,0);height:auto;max-height:none;z-index:2147483000;transform:none}
+body.chatOpen{overflow:hidden}

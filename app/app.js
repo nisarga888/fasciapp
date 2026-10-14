@@ -517,7 +517,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.71";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.72";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -623,7 +623,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
 // Messenger UX (v0.23.70): full-height sheet that follows the visual viewport (keyboard), auto-scroll, auto-grow, Enter sends on desktop
 (function(){const chat=document.getElementById("chat");if(!chat)return;const log=document.getElementById("chatLog"),ta=document.getElementById("chatTxt"),form=document.getElementById("chatForm");
  const vv=window.visualViewport,root=document.documentElement;
- function fit(){if(vv){root.style.setProperty("--chat-h",vv.height+"px");root.style.setProperty("--chat-top",vv.offsetTop+"px")}if(stick)toEnd()}
+ function fit(){if(chat.parentNode!==document.body)document.body.appendChild(chat);const kb=vv?Math.max(0,Math.round(window.innerHeight-vv.height-vv.offsetTop)):0;root.style.setProperty("--chat-kb",kb+"px");if(stick)toEnd()}
  let stick=true;const toEnd=()=>{log.scrollTop=log.scrollHeight};
  log.addEventListener("scroll",()=>{stick=log.scrollHeight-log.scrollTop-log.clientHeight<40},{passive:true});
  if(vv){vv.addEventListener("resize",fit);vv.addEventListener("scroll",fit)}window.addEventListener("resize",fit);
