@@ -33,7 +33,7 @@ window.FASCIAPP_SOCIAL = { igHandle: "fasciapp.app", igUrl: "https://www.instagr
       '<b>@' + s.igHandle + "</b>" + c + '<span class="igF">Follow</span></a>' + '<a class="fbChip" href="https://www.facebook.com/share/1EuP1W8X2Q/" target="_blank" rel="noopener" aria-label="Follow FasciApp on Facebook"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.6-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4V10.5H8v3h2.5V21z"/></svg></a>';
   }
   function mount() {
-    ["#list h2.listH", "#learnH"].forEach(function (sel) {
+    ["#learnH"].forEach(function (sel) {
       var h = document.querySelector(sel); if (!h || h.parentNode.classList.contains("hRow")) return;
       var w = document.createElement("div"); w.className = "hRow"; h.parentNode.insertBefore(w, h); w.appendChild(h); w.insertAdjacentHTML("beforeend", '<span class="socRow">' + chip() + "</span>");
     });
