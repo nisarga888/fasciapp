@@ -115,7 +115,14 @@ $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.
 function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(p.lng-from[1]);const a=Math.sin(dl/2)**2+Math.cos(r(from[0]))*Math.cos(r(p.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
 function dist(p,from=here){if(!from)return null;const ds=pins(p).map(l=>dist1(l,from));return ds.length?Math.min(...ds):null}
 const pins=p=>(p.locations&&p.locations.length?p.locations:[p]).filter(l=>l.lat!=null);
-const locTxt=l=>{const c=(typeof countryOfLoc==="function"?countryOfLoc(l):l.country)||l.country||"";return[l.city&&fold(l.city)!==fold(c)?l.city:"",c].filter(Boolean).join(", ")};
+const RG_KEY="fa_rgeo1";let rgCache={};try{rgCache=JSON.parse(localStorage.getItem(RG_KEY)||"{}")}catch(e){}const rgBusy=new Set();
+function revPlace(l){const k=(+l.lat).toFixed(3)+","+(+l.lng).toFixed(3);if(rgCache[k]!=null)return rgCache[k];if(rgBusy.has(k)||rgBusy.size>4)return"";rgBusy.add(k);
+ fetch(`https://nominatim.openstreetmap.org/reverse?format=json&zoom=14&accept-language=en&email=hello%40fasciapp.app&lat=${l.lat}&lon=${l.lng}`).then(r=>r.json()).then(j=>{const ad=(j&&j.address)||{};rgCache[k]=ad.village||ad.town||ad.city||ad.municipality||ad.suburb||ad.county||"";try{localStorage.setItem(RG_KEY,JSON.stringify(rgCache))}catch(e){};rgBusy.delete(k);if(rgCache[k])try{renderList()}catch(e){}}).catch(()=>rgBusy.delete(k));return""}
+const isOnline=l=>/\bonline\b/i.test([l.city,l.address,l.label].join(" "));
+const locTxt=l=>{if(isOnline(l))return"🌐 Online";const c=(typeof countryOfLoc==="function"?countryOfLoc(l):l.country)||"";const co=c==="Other"?"":c;
+ let place=String(l.city||"").trim()||String(l.address||"").trim();if(!place&&l.lat!=null&&l.lng!=null)place=revPlace(l);
+ const out=[],seen=new Set();[l.label,...String(place).split(",").map(s=>s.trim()),co].forEach(s=>{s=String(s||"").trim();const f=fold(s);if(s&&!seen.has(f)){seen.add(f);out.push(s)}});return"📍 "+out.join(", ")};
+const locLine=p=>{const ls=(p.locations&&p.locations.length?p.locations:[p]).map(locTxt).filter(t=>t!=="📍 ");const u=[...new Set(ls)];return u.map(esc).join(" · ")};
 function fold(s){try{return String(s||"").normalize("NFD").replace(/\p{M}/gu,"").toLowerCase()}catch(e){return String(s||"").toLowerCase()}}
 function placeHit(p,q){if(!q)return true;{const cq=fold(window.canonCountry?canonCountry(q):q);if(cq!==q&&cq)q=cq}const locs=(p.locations&&p.locations.length)?p.locations:[p];
  const {cities,countries}=placeOptions();
@@ -145,7 +152,7 @@ function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</
  const phone=p.phone?`<br><a class="tel" href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`:"";
  const cbs=(msgBtn||wa||mail)?`<div class="cbs cbsRow">${msgBtn}${wa}${mail}</div>`:"";
  const c=p.consent?phone+(p.website?`<br>🌐 ${link(p.website)}`:"")+(p.website2?`<br>🌐 ${link(p.website2)}`:"")+(igHandle(p.instagram)?`<br><a class="igl" href="https://instagram.com/${esc(igHandle(p.instagram))}" target="_blank" rel="noopener" aria-label="Instagram @${esc(igHandle(p.instagram))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @${esc(igHandle(p.instagram))}</a>`:"")+cbs:"<br><i>Not public yet</i>";
-  return `<div class="row"${p.id?` data-pid="${esc(p.id)}"`:""}>${av(p)}<div>${cardHead(p)}<br>${pills}<br>${(p.locations&&p.locations.length?p.locations:[p]).map(l=>"📍 "+locTxt(l)).join("<br>")}${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
+  return `<div class="row"${p.id?` data-pid="${esc(p.id)}"`:""}>${av(p)}<div>${cardHead(p)}<br>${pills}<br><span class="locs">${locLine(p)}</span>${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
 function pinModsHtml(p){const mods=(p.mods||[]).map(m=>String(m||"").trim()).filter(Boolean);if(!mods.length)return"";
  const show=mods.slice(0,2),extra=mods.length-2;
  const chips=show.map(m=>`<i>${esc(m)}</i>`).join('<span class="dot">·</span>');
@@ -509,7 +516,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.65";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.66";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}

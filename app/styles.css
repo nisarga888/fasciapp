@@ -425,3 +425,4 @@ body.kbd .igChip{display:none}
 body.kbd .newJ{display:none}
 .njSheet{position:fixed;inset:0;z-index:2000;background:#000a;display:flex;align-items:flex-end;justify-content:center;padding:12px 12px calc(12px + var(--nav-h,0px))}.njSheet[hidden]{display:none}
 .njCard{position:relative;width:100%;max-width:460px;max-height:75vh;overflow:auto;margin:0}.njX{position:absolute;top:8px;right:8px}
+.locs{display:inline-block;line-height:1.35}
