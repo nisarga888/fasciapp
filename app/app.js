@@ -122,7 +122,7 @@ const isOnline=l=>/\bonline\b/i.test([l.city,l.address,l.label].join(" "));
 const locTxt=l=>{if(isOnline(l))return"🌐 Online";const c=(typeof countryOfLoc==="function"?countryOfLoc(l):l.country)||"";const co=c==="Other"?"":c;
  let place=String(l.city||"").trim()||String(l.address||"").trim();if(!place&&l.lat!=null&&l.lng!=null)place=revPlace(l);
  const out=[],seen=new Set();[l.label,...String(place).split(",").map(s=>s.trim()),co].forEach(s=>{s=String(s||"").trim();const f=fold(s);if(s&&!seen.has(f)){seen.add(f);out.push(s)}});return"📍 "+out.join(", ")};
-const locLine=p=>{const ls=(p.locations&&p.locations.length?p.locations:[p]).map(locTxt).filter(t=>t!=="📍 ");const u=[...new Set(ls)];return u.map(esc).join(" · ")};
+const locLine=p=>{const ls=(p.locations&&p.locations.length?p.locations:[p]).map(locTxt).filter(t=>t!=="📍 ");const u=[...new Set(ls)];return u.map(t=>`<span class="loc1">${esc(t)}</span>`).join(" · ")};
 function fold(s){try{return String(s||"").normalize("NFD").replace(/\p{M}/gu,"").toLowerCase()}catch(e){return String(s||"").toLowerCase()}}
 function placeHit(p,q){if(!q)return true;{const cq=fold(window.canonCountry?canonCountry(q):q);if(cq!==q&&cq)q=cq}const locs=(p.locations&&p.locations.length)?p.locations:[p];
  const {cities,countries}=placeOptions();
@@ -516,7 +516,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.66";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.67";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
