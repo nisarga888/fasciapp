@@ -410,3 +410,8 @@ nav#tabs .ndot{position:absolute;top:calc(50% - 22px);right:calc(50% - 19px);wid
 #list h2.listH{margin:4px 0 0}.listSearch{padding:6px 16px 8px;margin-bottom:6px}.listSearch #qName,.listSearch #qPlace,.listSearch #listFilter,.listSearch .combo{width:100%;margin:0 0 6px;box-sizing:border-box}#list #from{margin:2px 0 8px}
 body.kbd nav#tabs{display:none!important}body.kbd .listSearch{position:static;background:none;backdrop-filter:none;-webkit-backdrop-filter:none}body.kbd #list #from{display:none}
 body.in.kbd{padding-bottom:0;height:var(--kbd-h,100dvh);max-height:var(--kbd-h,100dvh)}
+.hRow{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.hRow h2{margin-top:4px;margin-bottom:4px}
+.igChip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;border:1px solid #c99e6766;background:#0a2a30;color:#C99E67!important;font-size:12px;text-decoration:none!important;white-space:nowrap;line-height:1.2}
+.igChip b{font-weight:600}.igChip .igN{color:#5FC9C3;font-size:11px}.igChip .igN::before{content:"·";margin-right:5px;color:#c99e6788}
+body.kbd .igChip{display:none}
+.igChip .igF{margin-left:4px;padding:2px 9px;border-radius:999px;background:#C99E67;color:#02191E;font-weight:700;font-size:11px}
