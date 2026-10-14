@@ -30,12 +30,12 @@ window.FASCIAPP_SOCIAL = { igHandle: "fasciapp.app", igUrl: "https://www.instagr
     var n = s.igFollowers, c = typeof n === "number" ? '<span class="igN">' + n + (n === 1 ? " follower" : " followers") + "</span>" : "";
     return '<a class="igChip" href="' + s.igUrl + '" target="_blank" rel="noopener" aria-label="Follow @' + s.igHandle + ' on Instagram">' +
       '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>' +
-      '<b>@' + s.igHandle + "</b>" + c + '<span class="igF">Follow</span></a>';
+      '<b>@' + s.igHandle + "</b>" + c + '<span class="igF">Follow</span></a>' + '<a class="fbChip" href="https://www.facebook.com/share/1EuP1W8X2Q/" target="_blank" rel="noopener" aria-label="Follow FasciApp on Facebook"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.6-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4V10.5H8v3h2.5V21z"/></svg></a>';
   }
   function mount() {
     ["#list h2.listH", "#learnH"].forEach(function (sel) {
       var h = document.querySelector(sel); if (!h || h.parentNode.classList.contains("hRow")) return;
-      var w = document.createElement("div"); w.className = "hRow"; h.parentNode.insertBefore(w, h); w.appendChild(h); w.insertAdjacentHTML("beforeend", chip());
+      var w = document.createElement("div"); w.className = "hRow"; h.parentNode.insertBefore(w, h); w.appendChild(h); w.insertAdjacentHTML("beforeend", '<span class="socRow">' + chip() + "</span>");
     });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount); else mount();
