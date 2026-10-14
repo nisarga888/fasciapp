@@ -452,3 +452,4 @@ body.chatOpen{overflow:hidden}
 .socMini a{width:34px;height:34px;padding:0!important;gap:0!important;border-radius:50%;display:inline-grid!important;place-items:center;font-size:0!important}
 .socMini a b,.socMini a .igF,.socMini a .igN,.socMini a span{display:none!important}
 .socMini a svg{width:17px;height:17px}
+.labH{flex-wrap:nowrap;display:flex;align-items:center;justify-content:space-between;gap:8px}.labH h2{margin-right:auto}
