@@ -33,7 +33,7 @@ const CANON=(()=>{const g={Austria:"at|österreich|osterreich",Belgium:"be|belgi
  const m={};for(const[k,v]of Object.entries(g)){m[k.toLowerCase()]=k;v.split("|").forEach(a=>m[a]=k)}return m})();
 function canonCountry(c){const s=String(c||"").trim();if(!s)return"";return CANON[s.toLowerCase()]||s}
 function canonP(p){if(!p)return p;const o={...p};if(o.country!=null)o.country=canonCountry(o.country);if(Array.isArray(o.locations))o.locations=o.locations.map(l=>l&&l.country!=null?{...l,country:canonCountry(l.country)}:l);return o}
-window.canonCountry=canonCountry;
+window.canonCountry=canonCountry;window.FA_CANON=CANON;
 function norm(p){if(!p)return p;p=canonP(p);let L=Array.isArray(p.locations)?p.locations:null,addr=p.address;
  if(!L&&typeof addr==="string"&&addr.startsWith("[{")){try{L=JSON.parse(addr)}catch(e){}}
  if(L&&L.length){addr=L[0].address||""}else L=(p.city||p.lat!=null)?[{label:"",address:addr||"",city:p.city||"",country:p.country||"",lat:p.lat,lng:p.lng}]:[];

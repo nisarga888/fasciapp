@@ -304,7 +304,7 @@ $("#nearCity")&&($("#nearCity").onsubmit=async e=>{e.preventDefault();const f=e.
  applyNear(g[0],g[1])});
 const isAdmin=()=>!!(me&&String(me.email||"").toLowerCase()==="nisarga8@gmail.com");
 // ===== Newly joined strip (List): latest published practitioners with a photo =====
-let njKey="";const flagOf=c=>{try{const k=Object.keys(CANON).find(x=>x.length===2&&CANON[x]===c);return k?String.fromCodePoint(...[...k.toUpperCase()].map(ch=>127397+ch.charCodeAt(0))):""}catch(e){return""}};
+let njKey="";const flagOf=c=>{try{const M=window.FA_CANON||{},k=Object.keys(M).find(x=>x.length===2&&M[x]===c);return k?String.fromCodePoint(...[...k.toUpperCase()].map(ch=>127397+ch.charCodeAt(0))):""}catch(e){return""}};
 function renderNewJ(){const box=$("#newJ");if(!box)return;const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,8);
  const key=ps.map(p=>p.id).join();if(key===njKey)return;njKey=key;box.hidden=ps.length<3;if(box.hidden)return;
  box.innerHTML=`<div class="njH"><b>Newly joined</b><small>Swipe →</small></div><div class="njRow">${ps.map(p=>{const locs=(p.locations&&p.locations.length?p.locations:[p]);const co=(locs.find(l=>l.country&&l.country!=="Other")||{}).country||"";const fn=String(p.name||"").trim().split(/\s+/)[0]||"";
