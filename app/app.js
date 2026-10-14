@@ -115,7 +115,7 @@ $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.
 function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(p.lng-from[1]);const a=Math.sin(dl/2)**2+Math.cos(r(from[0]))*Math.cos(r(p.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
 function dist(p,from=here){if(!from)return null;const ds=pins(p).map(l=>dist1(l,from));return ds.length?Math.min(...ds):null}
 const pins=p=>(p.locations&&p.locations.length?p.locations:[p]).filter(l=>l.lat!=null);
-const locTxt=l=>[l.city,l.country].filter(Boolean).join(", ");
+const locTxt=l=>{const c=(typeof countryOfLoc==="function"?countryOfLoc(l):l.country)||l.country||"";return[l.city&&fold(l.city)!==fold(c)?l.city:"",c].filter(Boolean).join(", ")};
 function fold(s){try{return String(s||"").normalize("NFD").replace(/\p{M}/gu,"").toLowerCase()}catch(e){return String(s||"").toLowerCase()}}
 function placeHit(p,q){if(!q)return true;{const cq=fold(window.canonCountry?canonCountry(q):q);if(cq!==q&&cq)q=cq}const locs=(p.locations&&p.locations.length)?p.locations:[p];
  const {cities,countries}=placeOptions();
@@ -304,10 +304,12 @@ $("#nearCity")&&($("#nearCity").onsubmit=async e=>{e.preventDefault();const f=e.
  applyNear(g[0],g[1])});
 const isAdmin=()=>!!(me&&String(me.email||"").toLowerCase()==="nisarga8@gmail.com");
 // ===== Newly joined strip (List): latest published practitioners with a photo =====
-let njKey="";const flagOf=c=>{try{const M=window.FA_CANON||{},k=Object.keys(M).find(x=>x.length===2&&M[x]===c);return k?String.fromCodePoint(...[...k.toUpperCase()].map(ch=>127397+ch.charCodeAt(0))):""}catch(e){return""}};
+let njKey="";const flagOf=c=>{try{const M=window.FA_CC||{},k=Object.keys(M).find(x=>M[x]===c);return k?String.fromCodePoint(...[...k].map(ch=>127397+ch.charCodeAt(0))):""}catch(e){return""}};
+// If country is "Other"/empty, find a real country name inside the location text (city/address/label).
+const countryOfLoc=l=>{const c=String(l&&l.country||"").trim();if(c&&c!=="Other")return c;const t=" "+fold([l&&l.city,l&&l.address,l&&l.label].filter(Boolean).join(" "))+" ";if(!t.trim())return"";let best="";for(const n of Object.values(window.FA_CC||{})){const f=fold(n);if(f.length>3&&t.includes(" "+f)&&f.length>best.length)best=n}return best};
 function renderNewJ(){const box=$("#newJ");if(!box)return;const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,21);
  const key=ps.map(p=>p.id).join();if(key===njKey)return;njKey=key;box.hidden=ps.length<3;if(box.hidden)return;
- box.innerHTML=`<div class="njH"><b>Newly joined</b><small>Swipe →</small></div><div class="njRow">${ps.map(p=>{const locs=(p.locations&&p.locations.length?p.locations:[p]);const co=(locs.find(l=>l.country&&l.country!=="Other")||{}).country||"";const fn=String(p.name||"").trim().split(/\s+/)[0]||"";
+ box.innerHTML=`<div class="njH"><b>Newly joined</b><small>Swipe →</small></div><div class="njRow">${ps.map(p=>{const locs=(p.locations&&p.locations.length?p.locations:[p]);const co=locs.map(countryOfLoc).find(Boolean)||"";const fn=String(p.name||"").trim().split(/\s+/)[0]||"";
   return `<button type="button" class="nj" data-nj="${esc(p.id)}" aria-label="${esc(practiceTitle(p))}${co?", "+esc(co):""}"><span class="njAv"><img src="${esc(p.photo)}" alt="" loading="lazy"><i>${esc(fn)}</i></span><small>${flagOf(co)} ${esc(co)}</small></button>`}).join("")}</div>`}
 function openNJ(id){const p=all().find(x=>x.id===id);if(!p)return;try{window.FA_ev&&FA_ev("pract_view",{pid:p.id,source:"newly_joined",props:{from:"newly_joined"}})}catch(e){}
  let s=$("#njSheet");if(!s){s=document.createElement("div");s.id="njSheet";s.className="njSheet";document.body.appendChild(s);s.addEventListener("click",e=>{if(e.target===s||e.target.closest(".njX"))s.hidden=true})}
@@ -507,7 +509,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.64";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.65";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
