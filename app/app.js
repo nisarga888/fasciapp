@@ -305,7 +305,7 @@ $("#nearCity")&&($("#nearCity").onsubmit=async e=>{e.preventDefault();const f=e.
 const isAdmin=()=>!!(me&&String(me.email||"").toLowerCase()==="nisarga8@gmail.com");
 // ===== Newly joined strip (List): latest published practitioners with a photo =====
 let njKey="";const flagOf=c=>{try{const M=window.FA_CANON||{},k=Object.keys(M).find(x=>x.length===2&&M[x]===c);return k?String.fromCodePoint(...[...k.toUpperCase()].map(ch=>127397+ch.charCodeAt(0))):""}catch(e){return""}};
-function renderNewJ(){const box=$("#newJ");if(!box)return;const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,8);
+function renderNewJ(){const box=$("#newJ");if(!box)return;const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,21);
  const key=ps.map(p=>p.id).join();if(key===njKey)return;njKey=key;box.hidden=ps.length<3;if(box.hidden)return;
  box.innerHTML=`<div class="njH"><b>Newly joined</b><small>Swipe →</small></div><div class="njRow">${ps.map(p=>{const locs=(p.locations&&p.locations.length?p.locations:[p]);const co=(locs.find(l=>l.country&&l.country!=="Other")||{}).country||"";const fn=String(p.name||"").trim().split(/\s+/)[0]||"";
   return `<button type="button" class="nj" data-nj="${esc(p.id)}" aria-label="${esc(practiceTitle(p))}${co?", "+esc(co):""}"><span class="njAv"><img src="${esc(p.photo)}" alt="" loading="lazy"><i>${esc(fn)}</i></span><small>${flagOf(co)} ${esc(co)}</small></button>`}).join("")}</div>`}
@@ -507,7 +507,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.63";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.64";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
