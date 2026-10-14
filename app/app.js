@@ -497,7 +497,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.56";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.57";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -569,17 +569,33 @@ renderNews();
 
 $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()};
 
-// ===== Anonymous engagement stats (no user id, no IP, no device data). Fire-and-forget. =====
-(function(){const U=CFG.SUPABASE_URL,K=CFG.SUPABASE_ANON_KEY;if(!U||!K||!(CFG.FEATURES&&CFG.FEATURES.tracking||localStorage.getItem("fa_track_test")))return;const seen=new Set();
- const src=el=>el&&el.closest(".leaflet-popup")?(nearScope?"near-me":"map"):(nearScope?"near-me":((($("#qName")||{}).value||"").trim()||(($("#qPlace")||{}).value||"")?"search":"list"));
- const send=(pid,event,source)=>{if(!/^[0-9a-f-]{36}$/i.test(pid||""))return;try{fetch(U+"/rest/v1/engagement_events",{method:"POST",keepalive:true,headers:{apikey:K,Authorization:"Bearer "+K,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify({practitioner_id:pid,event,source})}).catch(()=>{})}catch(e){}};
- const view=(el,source)=>{const pid=el&&el.dataset.pid,k=pid+"|"+source;if(!pid||seen.has(k))return;seen.add(k);send(pid,"view",source)};
- window.FA_track=send;
- document.addEventListener("click",e=>{const t=e.target.closest("a,button.cb");if(!t)return;const row=t.closest("[data-pid]");if(!row)return;
-  const ev=t.classList.contains("msg")?"message":t.classList.contains("wa")?"whatsapp":t.classList.contains("mail")?"email":t.classList.contains("tel")?"phone":t.classList.contains("igl")?"instagram":t.tagName==="A"?(/facebook|tiktok|linkedin|youtube|x\.com|twitter/i.test(t.href)?"social":"website"):"";
-  if(ev)send(row.dataset.pid,ev,src(t))},true);
- const io="IntersectionObserver" in window?new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting&&x.intersectionRatio>=.6){io.unobserve(x.target);view(x.target,src(x.target))}}),{threshold:.6}):null;
- const watch=()=>{if(!io)return;$$("#items [data-pid]").forEach(el=>io.observe(el))};
- const box=$("#items");if(box&&window.MutationObserver)new MutationObserver(()=>window.requestIdleCallback?requestIdleCallback(watch):setTimeout(watch,50)).observe(box,{childList:true});watch();
- let hi=0;const hook=()=>{if(map&&map.on&&!map._faT){map._faT=1;clearInterval(hi);map.on("popupopen",ev=>{setTimeout(()=>{const el=ev.popup.getElement&&ev.popup.getElement();const r=el&&el.querySelector("[data-pid]");if(r)view(r,src(el))},0)})}};
- hi=setInterval(hook,3000);hook();})();
+// ===== Anonymous analytics hooks (track.js) =====
+(function(){const ev=(e,o)=>{try{window.FA_ev&&FA_ev(e,o)}catch(x){}};
+ const src=el=>el&&el.closest&&el.closest(".leaflet-popup")?(nearScope?"near-me":"map"):(nearScope?"near-me":((($("#qName")||{}).value||"").trim()||(($("#qPlace")||{}).value||"")?"search":"list"));
+ // screens / tabs
+ const _show=show;window.__faShow=1;show=function(t){_show.apply(this,arguments);ev("screen",{props:{tab:String(t||"")}})};
+ // contact taps per practitioner + follow chips + lab items
+ document.addEventListener("click",e=>{const t=e.target.closest("a,button");if(!t)return;
+  if(t.matches(".igChip,.fbChip")){ev("follow_tap",{props:{item:t.matches(".igChip")?"instagram":"facebook"},source:"app"});return}
+  const row=t.closest("[data-pid]");
+  if(row){const h=t.getAttribute("href")||"";const ty=t.classList.contains("msg")?"message":t.classList.contains("wa")?"whatsapp":t.classList.contains("mail")?"email":t.classList.contains("tel")?"phone":t.classList.contains("igl")?"instagram":/facebook\.com|fb\.com/i.test(h)?"facebook":/tiktok|linkedin|youtube|x\.com|twitter|threads/i.test(h)?"social":t.tagName==="A"?"website":"";
+   if(ty)ev("contact",{pid:row.dataset.pid,source:src(t),props:{type:ty}});return}
+  const lc=t.closest(".lcard");if(lc&&!lc.disabled){const ti=(lc.querySelector(".lbody b")||{}).textContent||"";const sec=(lc.closest(".labCarousel,.lgrid")||{}).previousElementSibling;
+   ev("lab_open",{props:{item:ti.slice(0,60),kind:lc.dataset.yt?"video":lc.dataset.pdf?"link":lc.dataset.unlock?"locked":lc.dataset.breath?"breath":"other",section:sec?(sec.dataset.sec||sec.textContent||"").slice(0,30):""}})}
+ },true);
+ // practitioner views: list cards seen, map popups
+ const io="IntersectionObserver" in window?new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){io.unobserve(x.target);const s=src(x.target);ev("pract_view",{pid:x.target.dataset.pid,source:s,once:"v"+x.target.dataset.pid+s})}}),{threshold:.6}):null;
+ const watch=()=>{if(io)$$("#items [data-pid]").forEach(el=>io.observe(el))};const box=$("#items");if(box&&window.MutationObserver)new MutationObserver(()=>setTimeout(watch,60)).observe(box,{childList:true});
+ let hi=0;const hook=()=>{if(map&&map.on&&!map._faT){map._faT=1;clearInterval(hi);
+  map.on("popupopen",p=>setTimeout(()=>{const el=p.popup.getElement&&p.popup.getElement();const r=el&&el.querySelector("[data-pid]");if(r)ev("pract_view",{pid:r.dataset.pid,source:src(el),once:"v"+r.dataset.pid+src(el)})},0));
+  map.on("dragstart zoomstart",()=>ev("map_use",{once:"mapuse"}))}};hi=setInterval(hook,3000);
+ // near me, place filter, name search
+ const _an=applyNear;applyNear=async function(){const r=await _an.apply(this,arguments);ev("near_me",{props:{scope:nearScope?nearScope.label.split(" ")[0]:"none"}});return r};
+ const qp=$("#qPlace");if(qp)qp.addEventListener("change",()=>{const v=qp.value||"";ev("place_filter",{props:{country:v.startsWith("co:")?v.slice(3):v.startsWith("ci:")?(v.split("|")[1]||""):"",level:v.startsWith("ci:")?"city":v.startsWith("co:")?"country":v?"other":"all"}})});
+ const qn=$("#qName");let st=0;if(qn)qn.addEventListener("input",()=>{clearTimeout(st);st=setTimeout(()=>{const n=(qn.value||"").trim().length;if(!n)return;const c=$$("#items [data-pid]").length;ev("name_search",{props:{len:n,hit:c>0?"yes":"no"}})},1200)});
+ // join funnel
+ $$('[data-go="auth"],#goPract,a[href*="join=1"]').forEach(b=>b.addEventListener("click",()=>ev("join",{props:{step:"started"}})));
+ const af=$("#authForm");if(af)af.addEventListener("submit",()=>{if(signUpMode)ev("join",{props:{step:"submitted"}})},true);
+ const pf=$("#profForm");if(pf)pf.addEventListener("submit",()=>ev("join",{props:{step:"profile_saved"}}),true);
+ if(/[?&]join=1/.test(location.search))ev("join",{props:{step:"started"},source:"link"});
+})();

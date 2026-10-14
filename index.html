@@ -323,4 +323,5 @@ if(matchMedia("(display-mode: standalone)").matches)location.replace("app/");
 })();
 </script>
 
+<script src="app/track.js?v=0.23.57"></script><script>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a||!window.FA_ev)return;var h=a.getAttribute("href")||"",it=/join=1/.test(h)?"join":/^app\/?$/.test(h)?"open_app":/instagram\.com/.test(h)?"instagram":/facebook\.com/.test(h)?"facebook":/terms|privacy/.test(h)?"legal":"";if(!it)return;FA_ev(it==="instagram"||it==="facebook"?"follow_tap":"landing_cta",{source:"landing",props:{item:it,where:a.closest("footer")?"footer":a.closest(".hero")?"hero":"page"}});if(it==="join")FA_ev("join",{source:"landing",props:{step:"started"}})},true);FA_ev&&FA_ev("screen",{source:"landing",props:{tab:"landing"}});</script>
 </body></html>

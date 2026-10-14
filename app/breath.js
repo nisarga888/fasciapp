@@ -452,6 +452,7 @@
     await resumeAudio();
     setSoundUI();
     running = true;
+    if (!elapsedBefore) try { window.FA_ev && FA_ev("breath_start", { props: { item: currentId } }); } catch (e) {}
     startedAt = performance.now();
     const go = document.getElementById("breathGo");
     if (go) go.textContent = "Pause";
@@ -485,6 +486,7 @@
     raf = 0;
   }
   function finish() {
+    try { window.FA_ev && FA_ev("breath_complete", { props: { item: currentId } }); } catch (e) {}
     stop();
     const go = document.getElementById("breathGo");
     if (go) go.textContent = "Start";
