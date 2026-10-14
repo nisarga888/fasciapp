@@ -1,7 +1,7 @@
 // FasciApp anonymous analytics. No user id, email, IP or fingerprint. sid = random per-device id (localStorage), never linked to an account.
 // Fire-and-forget into Supabase table app_events (insert-only).
 // MAIN SWITCH for app + landing: set ON = true after running fasciapp-tracking.sql.
-var FA_TRACK_DEFAULT = false;
+var FA_TRACK_DEFAULT = true;
 (function(){
   var C=window.FASCIAPP_CONFIG||{},U=C.SUPABASE_URL||"https://smgccthvratixddwfhmu.supabase.co",K=C.SUPABASE_ANON_KEY||"sb_publishable_CEZeH1MF1tHwQynmF-jOUA_ta6i-OR8";
   var on=FA_TRACK_DEFAULT;
