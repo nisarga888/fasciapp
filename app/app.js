@@ -302,9 +302,9 @@ async function nearMe(){const btn=$("#near");if(btn)btn.disabled=true;try{
   showToast("Finding your location…");
   // Device GPS only. Never guess from IP (IP location can be hundreds of km off, e.g. a mobile network exit in another country).
   const pos=await geoOnce();
-  if(pos){const acc=+pos[2]||0;await applyNear(pos[0],pos[1]);if(acc>5000)setTimeout(()=>showToast(`Approximate location (±${Math.round(acc/1000)} km). Type your city for better results.`),1800);return}
-  showNearCity(geoErr===1?"Location permission is off for this site. Allow it in your browser settings, or type your city:":"Couldn’t get your device location. Type your city instead:");showToast("Type your city below")}
- catch(e){showNearCity("Type your city to find practitioners nearby.");showToast("Type your city below")}
+  if(pos){const acc=+pos[2]||0;await applyNear(pos[0],pos[1]);if(acc>5000)setTimeout(()=>showToast(`Approximate location (±${Math.round(acc/1000)} km)`),1800);return}
+  showToast(geoErr===1?"Location is off for this site. Allow it in browser settings to use Near me.":"Couldn’t get your device location. Try again outdoors or with Wi‑Fi on.")}
+ catch(e){showToast("Couldn’t get your device location.")}
  finally{if(btn)btn.disabled=false}}
 $("#near").onclick=()=>nearMe();$("#nearAll")&&($("#nearAll").onclick=()=>clearNear());
 $("#nearCity")&&($("#nearCity").onsubmit=async e=>{e.preventDefault();const f=e.target,m=$("#nearCityMsg"),city=(f.city.value||"").trim();if(!city){m.textContent="Please enter a city.";return}
@@ -323,11 +323,11 @@ function openNJ(id){const p=all().find(x=>x.id===id);if(!p)return;try{window.FA_
  let s=$("#njSheet");if(!s){s=document.createElement("div");s.id="njSheet";s.className="njSheet";document.body.appendChild(s);s.addEventListener("click",e=>{if(e.target===s||e.target.closest(".njX"))s.hidden=true})}
  s.innerHTML=`<div class="njCard card"><button type="button" class="njX ghost sm" aria-label="Close">✕</button>${card(p)}</div>`;s.hidden=false}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-nj]");if(b)openNJ(b.dataset.nj)});
-function renderList(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));const adm=!here&&isAdmin();if(here)ps.sort((a,b)=>a.d-b.d);else if(adm)ps.sort((a,b)=>String(b.p.created_at||"").localeCompare(String(a.p.created_at||"")));
+function renderList(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));const adm=false;ps.sort((a,b)=>practiceTitle(a.p).localeCompare(practiceTitle(b.p),undefined,{sensitivity:"base"}));
  const _pe=$("#qPlace"),n=ps.length,q=(_pe&&_pe.value&&_pe.selectedOptions[0]?_pe.selectedOptions[0].textContent.replace(/\s*\(\d+\)$/,""):""),mod=($("#listFilter")&&$("#listFilter").value)||"";
- const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:"")+(adm?" · Newest first (admin)":"");
+ const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:"");
  const clr=$("#listClear");if(clr){clr.hidden=!(nearScope||q||mod||(($("#qName")||{}).value||"").trim());clr.textContent=nearScope?"Show all":"Clear"}
- $("#from").textContent=here?"Sorted by distance from you":"Tap 📍 Near me on the map to sort by distance";
+ $("#from").textContent=nearScope?"A–Z · "+nearScope.label:"A–Z · Tap 📍 Near me on the map to see who is nearby";
  $("#items").innerHTML=ps.map(({p,d})=>`<div class="item">${d!=null?`<span class="d">${Math.round(d)} km</span>`:""}${card(p)}</div>`).join("")||"<p class=muted>No practitioners match your search.</p>"}
 
 // profile
@@ -517,7 +517,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.68";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.69";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
