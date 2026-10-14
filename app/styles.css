@@ -445,3 +445,10 @@ body.kbd .newJ{display:none}
 body.chatOpen nav#tabs{visibility:hidden}
 .chat{inset:0 0 var(--chat-kb,0) 0;top:0;bottom:var(--chat-kb,0);height:auto;max-height:none;z-index:2147483000;transform:none}
 body.chatOpen{overflow:hidden}
+
+/* v0.23.74 Lab social icons on top line */
+.labTop{display:flex;align-items:center;justify-content:space-between;gap:8px}.labTop .mapBack{margin-bottom:0}
+.socMini{display:flex;gap:8px;margin-left:auto}
+.socMini a{width:34px;height:34px;padding:0!important;gap:0!important;border-radius:50%;display:inline-grid!important;place-items:center;font-size:0!important}
+.socMini a b,.socMini a .igF,.socMini a .igN,.socMini a span{display:none!important}
+.socMini a svg{width:17px;height:17px}
