@@ -264,7 +264,7 @@ $("#qPlace")&&($("#qPlace").onchange=()=>{renderList();renderMarkers()});$("#qNa
  n.addEventListener("blur",()=>{t=setTimeout(()=>B.classList.remove("kbd"),120)});
  const fit=()=>{if(vv)B.style.setProperty("--kbd-h",Math.round(vv.height)+"px")};if(vv)vv.addEventListener("resize",()=>{if(document.activeElement===n){B.classList.add("kbd");fit()}else if(vv.height>innerHeight*.9)B.classList.remove("kbd")})})();
 document.addEventListener("click",e=>{const c=$("#placeCombo");if(c&&!c.contains(e.target))closePlaceMenu()});
-$("#listClear")&&($("#listClear").onclick=()=>{const q=$("#qPlace");if(q)q.value="";{const nm=$("#qName");if(nm)nm.value=""};{const el=$("#listFilter");if(el)el.value=""};closePlaceMenu();renderMarkers();renderList()});
+$("#listClear")&&($("#listClear").onclick=()=>{if(nearScope){nearScope=null;const nb=$("#nearAll");if(nb)nb.hidden=true}const q=$("#qPlace");if(q)q.value="";{const nm=$("#qName");if(nm)nm.value=""};{const el=$("#listFilter");if(el)el.value=""};closePlaceMenu();renderMarkers();renderList()});
 $("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show("map");didFit=false;setTimeout(()=>{fitPins(true);map&&map.invalidateSize()},100)});
 function geoOnce(){return new Promise(resolve=>{if(!navigator.geolocation||!window.isSecureContext)return resolve(null);
   navigator.geolocation.getCurrentPosition(pos=>resolve([pos.coords.latitude,pos.coords.longitude]),()=>resolve(null),{enableHighAccuracy:false,timeout:8000,maximumAge:3e5})})}
@@ -272,14 +272,25 @@ async function ipLoc(){for(const url of["https://ipapi.co/json/","https://get.ge
 function showNearCity(msg){const box=$("#nearCity");if(!box)return;box.hidden=false;const m=$("#nearCityMsg");if(m)m.textContent=msg||"Location needs a hint — type your city."}
 function hideNearCity(){const box=$("#nearCity");if(box)box.hidden=true;const m=$("#nearCityMsg");if(m)m.textContent=""}
 function openNearestCard(p,loc){if(!map||!p||!loc)return;try{L.popup({maxWidth:320,className:"faPop"}).setLatLng([+loc.lat,+loc.lng]).setContent(card(p)).openOn(map)}catch(e){console.warn(e)}}
-function applyNear(lat,lng){here=[+lat,+lng];didFit=true;hideNearCity();if(!map)initMap();show("map");renderMarkers();renderList();
- const ranked=filtered().map(p=>({p,d:dist(p)})).filter(x=>x.d!=null).sort((a,b)=>a.d-b.d);const best=ranked[0];
- if(!best){map.setView(here,7,{animate:false});showToast("Location set");return}
- const loc=pins(best.p)[0]||best.p;const km=Math.round(best.d);const name=practiceTitle(best.p);
- const open=()=>openNearestCard(best.p,loc);
- map.once("moveend",()=>setTimeout(open,80));
- try{map.fitBounds(L.latLngBounds([here,[+loc.lat,+loc.lng]]).pad(.45),{animate:false,maxZoom:11})}catch(e){map.setView([+loc.lat,+loc.lng],10,{animate:false})}
- setTimeout(open,500);showToast(`Closest: ${name}, ${km} km`)}
+let nearScope=null;
+async function revCountry(lat,lng){try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&zoom=3&accept-language=en&lat=${lat}&lon=${lng}`);const j=await r.json();const c=j&&j.address&&j.address.country;return c?(window.canonCountry?canonCountry(c):c):""}catch(e){return ""}}
+// Rough continent boxes (lat/lng), enough for a fallback scope
+function region(la,ln){la=+la;ln=+ln;if(la>=34&&la<=72&&ln>=-25&&ln<=45)return"Europe";if(la>=5&&la<=84&&ln>=-170&&ln<=-50)return"North America";if(la<5&&la>=-57&&ln>=-92&&ln<=-30)return"South America";if(la>=-36&&la<34&&ln>=-20&&ln<=52)return"Africa";if(la<0&&la>=-50&&ln>=110&&ln<=180)return"Oceania";if(la>=-11&&la<=82&&ln>25&&ln<=180)return"Asia";return""}
+async function applyNear(lat,lng){here=[+lat,+lng];didFit=true;hideNearCity();if(!map)initMap();show("map");
+ const ps=filtered().map(p=>({p,d:dist(p)})).filter(x=>x.d!=null).sort((a,b)=>a.d-b.d);
+ const locs=[];ps.forEach(({p})=>pins(p).forEach(l=>locs.push({p,l,d:dist1(l,here)})));locs.sort((a,b)=>a.d-b.d);
+ const near=locs[0];let sc=null;
+ if(near&&near.d<=30&&near.l.city){const ci=fold(near.l.city),co=fold(near.l.country||"");sc={label:`near ${near.l.city}`,t:l=>fold(l.city||"")===ci&&fold(l.country||"")===co}}
+ if(!sc){const c=await revCountry(lat,lng);const fc=fold(c);if(fc&&locs.some(x=>fold(x.l.country||"")===fc))sc={label:`in ${c}`,t:l=>fold(l.country||"")===fc}}
+ if(!sc){const rg=region(lat,lng);if(rg&&locs.some(x=>region(x.l.lat,x.l.lng)===rg))sc={label:`in ${rg}`,t:l=>region(l.lat,l.lng)===rg}}
+ if(!sc&&locs.length){const ids=new Set(ps.slice(0,8).map(x=>x.p));sc={label:"nearest to you",t:null,ids}}
+ nearScope=sc?{label:sc.label,ok:p=>sc.t?pins(p).some(sc.t):sc.ids.has(p)}:null;
+ renderMarkers();renderList();const nb=$("#nearAll");if(nb)nb.hidden=!nearScope;
+ if(!nearScope){map.setView(here,7,{animate:false});showToast("Location set");return}
+ const pts=[];ps.filter(x=>nearScope.ok(x.p)).forEach(({p})=>pins(p).forEach(l=>{if(!sc.t||sc.t(l))pts.push([+l.lat,+l.lng])}));if(!sc.t)pts.push(here);
+ try{pts.length===1?map.setView(pts[0],12,{animate:false}):map.fitBounds(L.latLngBounds(pts),{padding:[56,56],maxZoom:13,animate:false})}catch(e){map.setView(here,9,{animate:false})}
+ const n=ps.filter(x=>nearScope.ok(x.p)).length;showToast(`${n} practitioner${n===1?"":"s"} ${nearScope.label}`)}
+function clearNear(){nearScope=null;const nb=$("#nearAll");if(nb)nb.hidden=true;renderMarkers();renderList();fitPins(true)}
 async function nearMe(){const btn=$("#near");if(btn)btn.disabled=true;try{
   showToast("Finding your location…");
   let pos=await geoOnce();if(!pos)pos=await ipLoc();
@@ -287,15 +298,15 @@ async function nearMe(){const btn=$("#near");if(btn)btn.disabled=true;try{
   showNearCity("Couldn’t detect your location. Type your city instead.");showToast("Type your city below")}
  catch(e){showNearCity("Type your city to find practitioners nearby.");showToast("Type your city below")}
  finally{if(btn)btn.disabled=false}}
-$("#near").onclick=()=>nearMe();
+$("#near").onclick=()=>nearMe();$("#nearAll")&&($("#nearAll").onclick=()=>clearNear());
 $("#nearCity")&&($("#nearCity").onsubmit=async e=>{e.preventDefault();const f=e.target,m=$("#nearCityMsg"),city=(f.city.value||"").trim();if(!city){m.textContent="Please enter a city.";return}
  m.textContent="Looking up "+city+"…";const g=await geocode("",city,"");if(!g){m.textContent="Could not find that city. Try another spelling.";showToast("City not found");return}
  applyNear(g[0],g[1])});
 const isAdmin=()=>!!(me&&String(me.email||"").toLowerCase()==="nisarga8@gmail.com");
-function renderList(){const ps=filtered().map(p=>({p,d:dist(p)}));const adm=!here&&isAdmin();if(here)ps.sort((a,b)=>a.d-b.d);else if(adm)ps.sort((a,b)=>String(b.p.created_at||"").localeCompare(String(a.p.created_at||"")));
+function renderList(){const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));const adm=!here&&isAdmin();if(here)ps.sort((a,b)=>a.d-b.d);else if(adm)ps.sort((a,b)=>String(b.p.created_at||"").localeCompare(String(a.p.created_at||"")));
  const _pe=$("#qPlace"),n=ps.length,q=(_pe&&_pe.value&&_pe.selectedOptions[0]?_pe.selectedOptions[0].textContent.replace(/\s*\(\d+\)$/,""):""),mod=($("#listFilter")&&$("#listFilter").value)||"";
- const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(adm?" · Newest first (admin)":"");
- const clr=$("#listClear");if(clr)clr.hidden=!(q||mod||(($("#qName")||{}).value||"").trim());
+ const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:"")+(adm?" · Newest first (admin)":"");
+ const clr=$("#listClear");if(clr){clr.hidden=!(nearScope||q||mod||(($("#qName")||{}).value||"").trim());clr.textContent=nearScope?"Show all":"Clear"}
  $("#from").textContent=here?"Sorted by distance from you":"Tap 📍 Near me on the map to sort by distance";
  $("#items").innerHTML=ps.map(({p,d})=>`<div class="item">${d!=null?`<span class="d">${Math.round(d)} km</span>`:""}${card(p)}</div>`).join("")||"<p class=muted>No practitioners match your search.</p>"}
 
@@ -486,7 +497,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.52";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.53";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
