@@ -136,6 +136,7 @@ function filtered(){const f=($("#listFilter")&&$("#listFilter").value)||"";const
  const nf=s=>fold(s).replace(/ł/g,"l").replace(/ø/g,"o").replace(/ß/g,"ss").replace(/đ/g,"d"),nq=nf((($("#qName")||{}).value||"").trim());return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f))&&placeOk(p)&&(!nq||nf((p.name||"")+" "+(p.practice_name||"")).includes(nq)))}
 function initials(n){return String(n||"?").split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase()}
 function av(p,cls=""){return p.photo?`<img class="av ${cls}" src="${esc(p.photo)}" alt="">`:`<span class="av ${cls}">${esc(initials(p.name))}</span>`}
+function azKey(p){const c=x=>String(x||"").replace(/^[^\p{L}]+/u,"").trim();return c(p.name)||c(p.practice_name)||"\uFFFF"}
 function practiceTitle(p){return String(p.practice_name||"").trim()||String(p.name||"").trim()||"Practitioner"}
 function cardHead(p){const pn=String(p.practice_name||"").trim();return pn?`<b>${esc(pn)}</b><br><span class="who">${esc(p.name||"")}</span>`:`<b>${esc(p.name||"")}</b>`}
 // Instagram: accept @handle, handle or URL -> handle / https://instagram.com/<handle>
@@ -323,7 +324,7 @@ function openNJ(id){const p=all().find(x=>x.id===id);if(!p)return;try{window.FA_
  let s=$("#njSheet");if(!s){s=document.createElement("div");s.id="njSheet";s.className="njSheet";document.body.appendChild(s);s.addEventListener("click",e=>{if(e.target===s||e.target.closest(".njX"))s.hidden=true})}
  s.innerHTML=`<div class="njCard card"><button type="button" class="njX ghost sm" aria-label="Close">✕</button>${card(p)}</div>`;s.hidden=false}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-nj]");if(b)openNJ(b.dataset.nj)});
-function renderList(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));const adm=false;if(here)ps.sort((a,b)=>a.d-b.d);else ps.sort((a,b)=>practiceTitle(a.p).localeCompare(practiceTitle(b.p),undefined,{sensitivity:"base"}));
+function renderList(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));const adm=false;if(here)ps.sort((a,b)=>a.d-b.d);else ps.sort((a,b)=>azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
  const _pe=$("#qPlace"),n=ps.length,q=(_pe&&_pe.value&&_pe.selectedOptions[0]?_pe.selectedOptions[0].textContent.replace(/\s*\(\d+\)$/,""):""),mod=($("#listFilter")&&$("#listFilter").value)||"";
  const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:"");
  const clr=$("#listClear");if(clr){clr.hidden=!(nearScope||q||mod||(($("#qName")||{}).value||"").trim());clr.textContent=nearScope?"Show all":"Clear"}
@@ -517,7 +518,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.72";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.73";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
