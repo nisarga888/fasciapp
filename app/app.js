@@ -150,7 +150,7 @@ function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</
  const msgBtn=canMsg?`<button type="button" class="cb msg" data-msg="${esc(p.user_id)}" title="Send a message in FasciApp" aria-label="Send a message in FasciApp">${msgIc} App message</button>`:"";
  // Logged-out visitors: WhatsApp is a login prompt; no number in the DOM
  const wa=!me?(p.whatsapp?`<button type="button" class="cb wa" data-gate="wa">${WA} WhatsApp</button>`:""):p.phone&&p.whatsapp&&dg?`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`:"";
- const mail=p.email?`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`:"";
+ const mail=!me?(p.has_email||p.email?`<button type="button" class="cb mail" data-gate="mail">✉️ Email</button>`:""):p.email?`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`:"";
  const phone=me&&p.phone?`<br><a class="tel" href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`:"";
  const cbs=(msgBtn||wa||mail)?`<div class="cbs cbsRow">${msgBtn}${wa}${mail}</div>`:"";
  const c=p.consent?phone+(p.website?`<br>🌐 ${link(p.website)}`:"")+(p.website2?`<br>🌐 ${link(p.website2)}`:"")+(igHandle(p.instagram)?`<br><a class="igl" href="https://instagram.com/${esc(igHandle(p.instagram))}" target="_blank" rel="noopener" aria-label="Instagram @${esc(igHandle(p.instagram))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @${esc(igHandle(p.instagram))}</a>`:"")+cbs:"<br><i>Not public yet</i>";
@@ -523,7 +523,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.76";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.77";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -642,7 +642,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.76: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.77: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
@@ -650,14 +650,14 @@ function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
  else{pendingWa=id;pendingChat=null;const p=people.find(x=>String(x.id)===String(id));nm=p?(p.name||practiceTitle(p)):""}
  pendingBreath=null;const first=String(nm).trim().split(/\s+/)[0]||"";
  $("#gateH").textContent=first?`Log in to contact ${first}`:"Log in to contact";
- $("#gateP").textContent=(kind==="wa"?"WhatsApp contact is":"Messages are")+" for FasciApp members. Create a free account or log in, and we’ll bring you right back"+(first?` to ${first}.`:".");
- g.hidden=false;try{ev("contact_gate",{props:{item:kind==="wa"?"whatsapp":"message"},source:"app"})}catch(e){}}
+ $("#gateP").textContent=(kind==="wa"?"WhatsApp contact is":kind==="mail"?"Email contact is":"Messages are")+" for FasciApp members. Create a free account or log in, and we’ll bring you right back"+(first?` to ${first}.`:".");
+ g.hidden=false;try{ev("contact_gate",{props:{item:kind==="wa"?"whatsapp":kind==="mail"?"email":"message"},source:"app"})}catch(e){}}
 function hideGate(clear){$("#gate").hidden=true;if(clear){pendingChat=null;pendingWa=null}}
 $("#gateUp").onclick=()=>{hideGate();setMode(true);show("auth")};
 $("#gateIn").onclick=()=>{hideGate();fillLastEmail();setMode(false);show("auth")};
 $("#gateX").onclick=()=>hideGate(true);$("#gate").addEventListener("click",e=>{if(e.target.id==="gate")hideGate(true)});
 document.addEventListener("click",e=>{const t=e.target.closest("[data-gate]");if(!t)return;e.preventDefault();const r=t.closest("[data-pid]");showGate(t.dataset.gate,r&&r.dataset.pid)},true);
-function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.querySelector(`#items [data-pid="${CSS.escape(String(pid))}"]`);if(el&&el.querySelector("a.cb.wa")){el.scrollIntoView({block:"center"});el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2200);return}if(++n<30)setTimeout(go,200);else if(el)el.scrollIntoView({block:"center"})};setTimeout(go,150)}
+function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.querySelector(`#items [data-pid="${CSS.escape(String(pid))}"]`);if(el&&el.querySelector("a.cb.wa,a.cb.mail")){el.scrollIntoView({block:"center"});el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2200);return}if(++n<30)setTimeout(go,200);else if(el)el.scrollIntoView({block:"center"})};setTimeout(go,150)}
 (function(){const btn=$("#labBtn"),sh=$("#labSheet"),dim=$("#labDim");if(!btn||!sh)return;
  const leaf=$("#leaf");const mount=()=>{if(leaf&&btn.parentNode!==leaf){leaf.appendChild(btn);if(window.L&&L.DomEvent){L.DomEvent.disableClickPropagation(btn);L.DomEvent.disableScrollPropagation(btn)}}};mount();
  const n=window.FASCIAPP_NEWS;if(n&&n.text){let t=String(n.text).replace(/^\s*new in the lab\s*[:·-]\s*/i,"");const i=t.indexOf(". ");if(i>0&&i<40)t=t.slice(0,i)+":"+t.slice(i+1);$("#labNewTxt").textContent=t}else{const nw=$("#labNew");if(nw)nw.hidden=true}

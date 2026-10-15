@@ -92,7 +92,12 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   async updatePassword(password){chk(await sb.auth.updateUser({password}));return sess()},
   onAuth(cb){try{const {data:{subscription}}=sb.auth.onAuthStateChange((event,session)=>cb(event,session));return ()=>subscription.unsubscribe()}catch(e){return ()=>{}}},
   async list(){const s=await sess().catch(()=>null);// logged-out visitors never receive phone numbers (pair with column grant in fasciapp-v76-contact.sql)
-   const cols=s?"*":"id,user_id,name,mods,address,city,country,lat,lng,email,website,bio,photo,consent,whatsapp,created_at,locations,practice_name";return chk(await sb.from("practitioners").select(cols).order("created_at")).map(norm)},
+   if(s)return chk(await sb.from("practitioners").select("*").order("created_at")).map(norm);
+   // logged out: no phone, no email (has_email flag from fasciapp-v76-contact.sql). Before that SQL runs, email is stripped right away.
+   const base="id,user_id,name,mods,address,city,country,lat,lng,website,bio,photo,consent,whatsapp,created_at,locations,practice_name";
+   let r=await sb.from("practitioners").select(base+",has_email").order("created_at");
+   if(r.error){r=await sb.from("practitioners").select(base+",email").order("created_at");(r.data||[]).forEach(p=>{p.has_email=!!(p.email&&String(p.email).trim());delete p.email})}
+   return chk(r).map(norm)},
   async mine(){const s=await sess();if(!s)return null;return norm(chk(await sb.from("practitioners").select("*").eq("user_id",s.user_id).maybeSingle()))},
   async save(p){p=canonP(p);const s=await sess();const pn=(p.practice_name||"").trim()||null;let L=stripLocMeta(p.locations||[]);
    const base0=pick(p);base0.practice_name=pn;
