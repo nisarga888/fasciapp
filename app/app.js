@@ -278,14 +278,12 @@ $("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show(
 let geoErr=0;function geoOnce(){return new Promise(resolve=>{geoErr=0;if(!navigator.geolocation||!window.isSecureContext)return resolve(null);
   navigator.geolocation.getCurrentPosition(pos=>resolve([pos.coords.latitude,pos.coords.longitude,pos.coords.accuracy]),e=>{geoErr=(e&&e.code)||2;resolve(null)},{enableHighAccuracy:true,timeout:15000,maximumAge:60000})})}
 async function ipLoc(){for(const url of["https://ipapi.co/json/","https://get.geojs.io/v1/ip/geo.json"]){try{const ctrl=typeof AbortController!=="undefined"?new AbortController():null;const t=ctrl?setTimeout(()=>ctrl.abort(),4500):null;const r=await fetch(url,ctrl?{signal:ctrl.signal}:{});if(t)clearTimeout(t);if(!r.ok)continue;const j=await r.json();const lat=+(j.latitude??j.lat),lng=+(j.longitude??j.lng??j.lon);if(Number.isFinite(lat)&&Number.isFinite(lng))return[lat,lng]}catch(e){}}return null}
-function showNearCity(msg){const box=$("#nearCity");if(!box)return;box.hidden=false;const m=$("#nearCityMsg");if(m)m.textContent=msg||"Location needs a hint — type your city."}
-function hideNearCity(){const box=$("#nearCity");if(box)box.hidden=true;const m=$("#nearCityMsg");if(m)m.textContent=""}
 function openNearestCard(p,loc){if(!map||!p||!loc)return;try{L.popup({maxWidth:320,className:"faPop"}).setLatLng([+loc.lat,+loc.lng]).setContent(card(p)).openOn(map)}catch(e){console.warn(e)}}
 let nearScope=null;
 async function revCountry(lat,lng){try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&zoom=3&accept-language=en&lat=${lat}&lon=${lng}`);const j=await r.json();const c=j&&j.address&&j.address.country;return c?(window.canonCountry?canonCountry(c):c):""}catch(e){return ""}}
 // Rough continent boxes (lat/lng), enough for a fallback scope
 function region(la,ln){la=+la;ln=+ln;if(la>=34&&la<=72&&ln>=-25&&ln<=45)return"Europe";if(la>=5&&la<=84&&ln>=-170&&ln<=-50)return"North America";if(la<5&&la>=-57&&ln>=-92&&ln<=-30)return"South America";if(la>=-36&&la<34&&ln>=-20&&ln<=52)return"Africa";if(la<0&&la>=-50&&ln>=110&&ln<=180)return"Oceania";if(la>=-11&&la<=82&&ln>25&&ln<=180)return"Asia";return""}
-async function applyNear(lat,lng){here=[+lat,+lng];didFit=true;hideNearCity();if(!map)initMap();show("map");
+async function applyNear(lat,lng){here=[+lat,+lng];didFit=true;if(!map)initMap();show("map");
  const ps=filtered().map(p=>({p,d:dist(p)})).filter(x=>x.d!=null).sort((a,b)=>a.d-b.d);
  const locs=[];ps.forEach(({p})=>pins(p).forEach(l=>locs.push({p,l,d:dist1(l,here)})));locs.sort((a,b)=>a.d-b.d);
  const near=locs[0];let sc=null;
@@ -304,14 +302,12 @@ async function nearMe(){const btn=$("#near");if(btn)btn.disabled=true;try{
   showToast("Finding your location…");
   // Device GPS only. Never guess from IP (IP location can be hundreds of km off, e.g. a mobile network exit in another country).
   const pos=await geoOnce();
-  if(pos){const acc=+pos[2]||0;await applyNear(pos[0],pos[1]);if(acc>5000)setTimeout(()=>showToast(`Approximate location (±${Math.round(acc/1000)} km). Type your city for better results.`),1800);return}
-  showNearCity(geoErr===1?"Location permission is off for this site. Allow it in your browser settings, or type your city:":"Couldn’t get your device location. Type your city instead:");showToast("Type your city below")}
- catch(e){showNearCity("Type your city to find practitioners nearby.");showToast("Type your city below")}
+  if(pos){const acc=+pos[2]||0;await applyNear(pos[0],pos[1]);if(acc>5000)setTimeout(()=>showToast(`Approximate location (±${Math.round(acc/1000)} km).`),1800);return}
+  // No typing, ever: one short toast, map stays as it was
+  showToast(geoErr===1?"Turn on location for this site to use Near me":"Couldn’t get your location. Try again in a moment",3000)}
+ catch(e){showToast("Turn on location for this site to use Near me",3000)}
  finally{if(btn)btn.disabled=false}}
 $("#near").onclick=()=>nearMe();$("#nearAll")&&($("#nearAll").onclick=()=>clearNear());
-$("#nearCity")&&($("#nearCity").onsubmit=async e=>{e.preventDefault();const f=e.target,m=$("#nearCityMsg"),city=(f.city.value||"").trim();if(!city){m.textContent="Please enter a city.";return}
- m.textContent="Looking up "+city+"…";const g=await geocode("",city,"");if(!g){m.textContent="Could not find that city. Try another spelling.";showToast("City not found");return}
- applyNear(g[0],g[1])});
 const isAdmin=()=>!!(me&&String(me.email||"").toLowerCase()==="nisarga8@gmail.com");
 // ===== Newly joined strip (List): latest published practitioners with a photo =====
 let njKey="";const flagOf=c=>{try{const M=window.FA_CC||{},k=Object.keys(M).find(x=>M[x]===c);return k?String.fromCodePoint(...[...k].map(ch=>127397+ch.charCodeAt(0))):""}catch(e){return""}};
@@ -381,8 +377,8 @@ $("#photo").onchange=e=>{const file=e.target.files[0];if(!file)return;const r=ne
 
 // start
 
-function showToast(msg){const t=$("#toast");if(!t)return;t.textContent=msg||"Saved ✓";t.hidden=false;requestAnimationFrame(()=>t.classList.add("show"));
- clearTimeout(showToast._t);showToast._t=setTimeout(()=>{t.classList.remove("show");setTimeout(()=>{t.hidden=true},220)},2200)}
+function showToast(msg,ms){const t=$("#toast");if(!t)return;t.textContent=msg||"Saved ✓";t.hidden=false;requestAnimationFrame(()=>t.classList.add("show"));
+ clearTimeout(showToast._t);showToast._t=setTimeout(()=>{t.classList.remove("show");setTimeout(()=>{t.hidden=true},220)},ms||2200)}
 function setupSafariChrome(){const ua=navigator.userAgent||"";
  const safari=/Safari/i.test(ua)&&!/Chrome|CriOS|Chromium|FxiOS|EdgiOS|OPR|Android/i.test(ua);
  const standalone=!!(navigator.standalone||window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches);
@@ -523,7 +519,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.77";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.78";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -642,7 +638,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.77: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.78: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
