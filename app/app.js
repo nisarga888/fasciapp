@@ -66,7 +66,7 @@ window.show=show;function show(t){$$(".screen").forEach(s=>s.classList.toggle("a
 let showT=null;function afterShow(t){try{if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
-function hdr(){$("#tabInbox").hidden=!MSG_ON;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
+function hdr(){document.body.classList.toggle("authed",!!me);{const lb=$("#labBtn");if(lb)lb.hidden=!!me}$("#tabInbox").hidden=!MSG_ON;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 const PKEY="fa_people_v1";function cachedPeople(){try{const j=JSON.parse(localStorage.getItem(PKEY)||"null");return Array.isArray(j)?j:null}catch(e){return null}}
 const byName=l=>(l||[]).slice().sort((a,b)=>practiceTitle(a).localeCompare(practiceTitle(b),undefined,{sensitivity:"base"}));
 function paintFromCache(){const c=cachedPeople();if(!c||people.length)return false;people=byName(c);fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true);return true}
@@ -109,7 +109,7 @@ $("#resetForm").onsubmit=async e=>{e.preventDefault();const a=$("#newPw").value,
   try{const u=new URL(location.href);u.searchParams.delete("reset");history.replaceState({},"",u.pathname+u.search+u.hash.replace(/access_token=[^&]+/g,""))}catch(e){}
   hdr();await refresh();msgInit();setTimeout(()=>show("profile"),600)}catch(err){m.textContent=err.message||"Could not update password."}};
 $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please confirm you are 18+ and accept the Terms and Privacy Policy.";return}m.textContent="…";
- try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath;pendingChat=null;pendingBreath=null;if(nb){show("learn");if(nb!=="lab")setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
+ try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath,nw=pendingWa;pendingChat=null;pendingBreath=null;pendingWa=null;if(nw){backToPract(nw)}else if(nb){show("learn");if(nb!=="lab")setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
 
 // helpers
 function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(p.lng-from[1]);const a=Math.sin(dl/2)**2+Math.cos(r(from[0]))*Math.cos(r(p.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
@@ -146,11 +146,12 @@ function link(u){if(!u)return"";const h=/^https?:\/\//.test(u)?u:"https://"+u;re
 function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</span>`).join("");
  const dg=String(p.phone||"").replace(/\D/g,"");
  const msgIc=`<span class="msgIc" aria-hidden="true"><svg class="msgRing" viewBox="0 0 24 24" width="16" height="16"><circle cx="20" cy="12" r="1.1" fill="currentColor"/><circle cx="17.7" cy="17.7" r="1.1" fill="currentColor"/><circle cx="12" cy="20" r="1.1" fill="currentColor"/><circle cx="6.3" cy="17.7" r="1.1" fill="currentColor"/><circle cx="4" cy="12" r="1.1" fill="currentColor"/><circle cx="6.3" cy="6.3" r="1.1" fill="currentColor"/><circle cx="12" cy="4" r="1.1" fill="currentColor"/><circle cx="17.7" cy="6.3" r="1.1" fill="currentColor"/></svg><svg class="msgBub" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h11a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3H12l-3.2 2.8V17H4.5a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3z"/></svg></span>`;
- const canMsg=MSG_ON&&MSG_OK&&!!(p.user_id&&(!me||p.user_id!==me.user_id));
+ const canMsg=me?MSG_ON&&MSG_OK&&!!(p.user_id&&p.user_id!==me.user_id):MSG_ON&&!!p.user_id;
  const msgBtn=canMsg?`<button type="button" class="cb msg" data-msg="${esc(p.user_id)}" title="Send a message in FasciApp" aria-label="Send a message in FasciApp">${msgIc} App message</button>`:"";
- const wa=p.phone&&p.whatsapp&&dg?`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`:"";
+ // Logged-out visitors: WhatsApp is a login prompt; no number in the DOM
+ const wa=!me?(p.whatsapp?`<button type="button" class="cb wa" data-gate="wa">${WA} WhatsApp</button>`:""):p.phone&&p.whatsapp&&dg?`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`:"";
  const mail=p.email?`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`:"";
- const phone=p.phone?`<br><a class="tel" href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`:"";
+ const phone=me&&p.phone?`<br><a class="tel" href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`:"";
  const cbs=(msgBtn||wa||mail)?`<div class="cbs cbsRow">${msgBtn}${wa}${mail}</div>`:"";
  const c=p.consent?phone+(p.website?`<br>🌐 ${link(p.website)}`:"")+(p.website2?`<br>🌐 ${link(p.website2)}`:"")+(igHandle(p.instagram)?`<br><a class="igl" href="https://instagram.com/${esc(igHandle(p.instagram))}" target="_blank" rel="noopener" aria-label="Instagram @${esc(igHandle(p.instagram))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @${esc(igHandle(p.instagram))}</a>`:"")+cbs:"<br><i>Not public yet</i>";
   return `<div class="row"${p.id?` data-pid="${esc(p.id)}"`:""}>${av(p)}<div>${cardHead(p)}<br>${pills}<br><span class="locs">${locLine(p)}</span>${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
@@ -356,7 +357,11 @@ async function geocode(addr,city,country){addr=(addr||"").trim();city=(city||"")
  if(ct&&CCEN[ct])return[CCEN[ct][0],CCEN[ct][1],"country",null];
  if(ct){const g=await geoTry(ct);if(g)return[g[0],g[1],"country",null]}
  return null}
-$("#profForm").onsubmit=async e=>{e.preventDefault();const f=e.target,st=$("#status");st.textContent="Locating your address…";
+$("#profForm").onsubmit=async e=>{e.preventDefault();const f=e.target,st=$("#status");
+ {// Country: pick from the list only (an extra Online location may leave it empty)
+  const ok=v=>!!v&&FA_COUNTRY_SET.has(v);if(!ok(f.country.value)){st.textContent="Please pick your country from the list.";f.country.focus();return}
+  for(const b of $$("#extraLocs .xloc")){const v=b.querySelector("[data-k=country]").value,txt=[b.querySelector("[data-k=address]").value,b.querySelector("[data-k=city]").value].join(" ");if(!(ok(v)||(!v&&/\bonline\b/i.test(txt))||(!v&&!txt.trim()))){st.textContent="Please pick a country from the list for each location.";b.querySelector("[data-k=country]").focus();return}}}
+st.textContent="Locating your address…";
  const old=await DB.mine().catch(()=>null)||{};
  const p={name:f.name.value.trim(),practice_name:(f.practice_name&&f.practice_name.value||"").trim(),address:f.address.value.trim(),city:f.city.value.trim(),phone:e164(f.prefix.value,f.phone.value),whatsapp:f.whatsapp.checked,email:f.email.value.trim(),website:f.website.value.trim(),website2:(f.website2&&f.website2.value||"").trim(),instagram:igUrl(f.instagram&&f.instagram.value),news_optin:!!(f.news_optin&&f.news_optin.checked),bio:f.bio.value.trim(),consent:f.consent.checked,country:f.country.value,mods:myMods.slice(),photo:photoData||old.photo||null};
  p.news_optin_at=p.news_optin?(old.news_optin&&old.news_optin_at?old.news_optin_at:new Date().toISOString()):null;p.news_optout_at=!p.news_optin&&old.news_optin?new Date().toISOString():(!p.news_optin?old.news_optout_at||null:null);
@@ -507,7 +512,7 @@ function tag(){const f=$("#profForm");$("#ccTag").textContent=ISO[f.country.valu
 
 // ===== extra locations (max 3 total) =====
 function xlocHtml(l={}){const opts=$("#profForm").country.innerHTML;return `<div class="xloc"><div class="xh"><b>Another location</b><button type="button" class="ghost sm xdel" aria-label="Remove">✕</button></div>
- <input data-k="label" hidden tabindex="-1" aria-hidden="true" maxlength="40"><input data-k="address" placeholder="Street address (optional)"><input data-k="city" placeholder="City (optional)"><select data-k="country" required>${opts}</select></div>`}
+ <input data-k="label" hidden tabindex="-1" aria-hidden="true" maxlength="40"><input data-k="address" placeholder="Street address (optional)"><input data-k="city" placeholder="City (optional)"><select data-k="country">${opts}</select></div>`}
 function addXloc(l={}){const box=$("#extraLocs");if(box.children.length>=2)return;box.insertAdjacentHTML("beforeend",xlocHtml());const b=box.lastElementChild;
  ["label","address","city","country"].forEach(k=>b.querySelector(`[data-k=${k}]`).value=l[k]||"");b.querySelector(".xdel").onclick=()=>{b.remove();xbtn()};xbtn()}
 function xbtn(){$("#addLoc").hidden=$("#extraLocs").children.length>=2}
@@ -518,8 +523,8 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.75";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
-function openChat(id){if(!me){pendingChat=id;fillLastEmail();setMode(false);show("auth");return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.76";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
  loadInbox().then(I=>I.renderInbox()).catch(()=>{$("#convs").innerHTML="<p class=muted>Messaging is not available right now. Try again later.</p>"})}
@@ -636,3 +641,28 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  ta.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing&&desk){e.preventDefault();form.requestSubmit?form.requestSubmit():form.dispatchEvent(new Event("submit",{cancelable:true}))}});
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
+
+// ===== v0.23.76: country list set, login-to-contact gate, News in the Lab pill =====
+var pendingWa=null;
+const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
+function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
+ if(kind==="msg"){pendingChat=id;pendingWa=null;const p=people.find(x=>x.user_id===id);nm=p?(p.name||practiceTitle(p)):""}
+ else{pendingWa=id;pendingChat=null;const p=people.find(x=>String(x.id)===String(id));nm=p?(p.name||practiceTitle(p)):""}
+ pendingBreath=null;const first=String(nm).trim().split(/\s+/)[0]||"";
+ $("#gateH").textContent=first?`Log in to contact ${first}`:"Log in to contact";
+ $("#gateP").textContent=(kind==="wa"?"WhatsApp contact is":"Messages are")+" for FasciApp members. Create a free account or log in, and we’ll bring you right back"+(first?` to ${first}.`:".");
+ g.hidden=false;try{ev("contact_gate",{props:{item:kind==="wa"?"whatsapp":"message"},source:"app"})}catch(e){}}
+function hideGate(clear){$("#gate").hidden=true;if(clear){pendingChat=null;pendingWa=null}}
+$("#gateUp").onclick=()=>{hideGate();setMode(true);show("auth")};
+$("#gateIn").onclick=()=>{hideGate();fillLastEmail();setMode(false);show("auth")};
+$("#gateX").onclick=()=>hideGate(true);$("#gate").addEventListener("click",e=>{if(e.target.id==="gate")hideGate(true)});
+document.addEventListener("click",e=>{const t=e.target.closest("[data-gate]");if(!t)return;e.preventDefault();const r=t.closest("[data-pid]");showGate(t.dataset.gate,r&&r.dataset.pid)},true);
+function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.querySelector(`#items [data-pid="${CSS.escape(String(pid))}"]`);if(el&&el.querySelector("a.cb.wa")){el.scrollIntoView({block:"center"});el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2200);return}if(++n<30)setTimeout(go,200);else if(el)el.scrollIntoView({block:"center"})};setTimeout(go,150)}
+(function(){const btn=$("#labBtn"),sh=$("#labSheet"),dim=$("#labDim");if(!btn||!sh)return;
+ const leaf=$("#leaf");const mount=()=>{if(leaf&&btn.parentNode!==leaf){leaf.appendChild(btn);if(window.L&&L.DomEvent){L.DomEvent.disableClickPropagation(btn);L.DomEvent.disableScrollPropagation(btn)}}};mount();
+ const n=window.FASCIAPP_NEWS;if(n&&n.text){let t=String(n.text).replace(/^\s*new in the lab\s*[:·-]\s*/i,"");const i=t.indexOf(". ");if(i>0&&i<40)t=t.slice(0,i)+":"+t.slice(i+1);$("#labNewTxt").textContent=t}else{const nw=$("#labNew");if(nw)nw.hidden=true}
+ const open=()=>{document.body.classList.add("labOpen");sh.setAttribute("aria-hidden","false");try{ev("lab_pill",{props:{step:"open"},source:"app"})}catch(e){}};
+ const close=()=>{document.body.classList.remove("labOpen");sh.setAttribute("aria-hidden","true")};
+ btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
+ $("#labJoin").onclick=()=>{close();if(window.faAuthFor)faAuthFor(true,"lab");else{setMode(true);show("auth")}};
+ btn.hidden=!!me})();

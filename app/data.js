@@ -91,7 +91,8 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   async setNews(on){chk(await sb.auth.updateUser({data:{news_optin:!!on,news_optin_at:on?new Date().toISOString():null,news_optout_at:on?null:new Date().toISOString()}}));try{const s=await sess();if(s){const r=await sb.from("practitioners").select("user_id").eq("user_id",s.user_id).maybeSingle();if(r.data)await sb.from("practitioners").update({news_optin:!!on,news_optin_at:on?new Date().toISOString():null}).eq("user_id",s.user_id)}}catch(e){}},
   async updatePassword(password){chk(await sb.auth.updateUser({password}));return sess()},
   onAuth(cb){try{const {data:{subscription}}=sb.auth.onAuthStateChange((event,session)=>cb(event,session));return ()=>subscription.unsubscribe()}catch(e){return ()=>{}}},
-  async list(){return chk(await sb.from("practitioners").select("*").order("created_at")).map(norm)},
+  async list(){const s=await sess().catch(()=>null);// logged-out visitors never receive phone numbers (pair with column grant in fasciapp-v76-contact.sql)
+   const cols=s?"*":"id,user_id,name,mods,address,city,country,lat,lng,email,website,bio,photo,consent,whatsapp,created_at,locations,practice_name";return chk(await sb.from("practitioners").select(cols).order("created_at")).map(norm)},
   async mine(){const s=await sess();if(!s)return null;return norm(chk(await sb.from("practitioners").select("*").eq("user_id",s.user_id).maybeSingle()))},
   async save(p){p=canonP(p);const s=await sess();const pn=(p.practice_name||"").trim()||null;let L=stripLocMeta(p.locations||[]);
    const base0=pick(p);base0.practice_name=pn;
