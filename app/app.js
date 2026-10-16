@@ -522,7 +522,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.91";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.92";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -641,7 +641,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.91: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.92: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
@@ -665,7 +665,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
  btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
  $("#labJoin").onclick=()=>{close();if(window.faAuthFor)faAuthFor(true,"lab");else{setMode(true);show("auth")}};
  btn.hidden=!!me})();
-// ===== v0.23.91: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
+// ===== v0.23.92: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
 (function(){const PLUS='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
  const mk=(id,cls)=>{const b=document.createElement("button");b.type="button";b.id=id;b.className="joinBtn "+cls;b.innerHTML=PLUS+"<span>Join as a practitioner</span>";b.hidden=true;b.onclick=go;return b};
  const fab=mk("joinFab","joinFab"),lst=mk("joinList","joinList");
@@ -678,7 +678,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
   if(id===uid&&has){paint();return}uid=id;const n=++seq;paint();
   const p=await DB.mine().catch(()=>null);if(n!==seq)return;has=!!(p&&(p.name||p.address||p.city));paint()};
  faJoinUpd()})();
-// ===== v0.23.91: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
+// ===== v0.23.92: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
 // Display-only city names: merge local spellings, drop district/postcode/state suffixes, fix ALL CAPS (database values are untouched)
 // Instagram is members-only: a website field that points to Instagram counts as Instagram
 function faWebOk(u){return !/(^|\/\/|\.)(instagram\.com|instagr\.am)(\/|$)/i.test(String(u||"").trim().replace(/^https?:\/\//i,"//"))}
@@ -722,7 +722,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   box.innerHTML=`<button type="button" class="ptBack" data-nav="back"><b>‹</b> All countries</button><span class="ptCrumb">${pp.ci?`<button type="button" data-nav="co">${flagOf(pp.co)} ${esc(pp.co)}</button><em>›</em><b>${esc(pp.ci)}</b>`:`<b>${flagOf(pp.co)} ${esc(pp.co)}</b>`}</span>`}
  function setPlaceV(v){const el=qp();if(!el)return;fillPlaces();if(v&&![...el.options].some(o=>o.value===v))return;el.value=v;el.dispatchEvent(new Event("change"))}
  function leaveSeeAll(){const top=savedTop,was=seeAll;seeAll=false;const el=qp();if(el&&el.value){el.value="";el.dispatchEvent(new Event("change"))}else renderList();if(was)requestAnimationFrame(()=>{const m=document.querySelector("main");if(m)m.scrollTop=top})}
- renderList=function(){renderNewJ();faHLPaint();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).filter(p=>!faHLOnly||faIsHL(p)).map(p=>({p,d:dist(p)}));
+ renderList=function(){renderNewJ();faHLPaint();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));
   const _pe=qp(),n=ps.length,q=placeV(),mod=($("#listFilter")&&$("#listFilter").value)||"",nameQ=(($("#qName")||{}).value||"").trim();
   const active=!!(nearScope||q||mod||nameQ);
   // MER & BBTRS always first, then the usual order
@@ -746,7 +746,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   if(!n){model={groups:[],grid:[],gridLabel:""};box.innerHTML=top+"<p class=muted>No practitioners match your search.</p>";return}
   if(active){model={groups:[],grid:ps.map(x=>x.p),gridLabel:pp?(pp.ci||pp.co):nearScope?"Near me":"Results"};
    const T=({p,d},i)=>tile(p,placeLoc(p)||L0(p)[0],-1,i,2,here?d:null);const k=ps.filter(x=>faIsHL(x.p)).length;
-   if(pp&&pp.ci&&!faHLOnly&&k&&k<n){box.innerHTML=top+`<div class="hlFeat"><div class="hlSecH feat">${faSeal(22)} MER &amp; BBTRS in ${esc(pp.ci)} <small>· ${k}</small></div><div class="ptRow featRow">${ps.slice(0,k).map(T).join("")}</div></div><div class="hlSecH hlOther">Other practitioners <small>· ${n-k}</small></div><div class="ptGrid">${ps.slice(k).map((x,j)=>T(x,j+k)).join("")}</div>`;return}
+   if(pp&&pp.ci&&k&&k<n){box.innerHTML=top+`<div class="hlFeat"><div class="hlSecH feat">${faSeal(22)} MER &amp; BBTRS in ${esc(pp.ci)} <small>· ${k}</small></div><div class="ptRow featRow">${ps.slice(0,k).map(T).join("")}</div></div><div class="hlSecH hlOther">Other practitioners <small>· ${n-k}</small></div><div class="ptGrid">${ps.slice(k).map((x,j)=>T(x,j+k)).join("")}</div>`;return}
    box.innerHTML=top+`<div class="ptGrid">${ps.map(T).join("")}</div>`;return}
   const by=new Map();ps.forEach(({p})=>{const seen=new Set();L0(p).forEach(l=>{const c=coOf(l)||OTHER;if(seen.has(c))return;seen.add(c);if(!by.has(c))by.set(c,[]);by.get(c).push({p,l})})});
   const groups=[...by.entries()].map(([c,list])=>({c,list,cities:cityList(c,list)})).sort((a,b)=>(a.c===OTHER)-(b.c===OTHER)||a.c.localeCompare(b.c,"en",{sensitivity:"base"}));
@@ -754,7 +754,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   model={groups,grid:[],gridLabel:""};
   box.innerHTML=groups.map((g,gi)=>`<section class="ptSec" data-gi="${gi}"><div class="ptH"><b>${flagC(g.c)} ${esc(g.c)} <span>· ${g.list.length}</span>${(n=>n?`<i class="hlN" title="MER &amp; BBTRS practitioners">★ ${n}</i>`:"")(g.list.filter(x=>faIsHL(x.p)).length)}</b>${g.cities.length>1?`<button type="button" class="cPick${sel[g.c]?" on":""}" data-pick="${gi}">${esc(chipLabel(g))} ▾</button>`:""}${g.c===OTHER?"":`<button type="button" class="ptAll" data-all="${gi}">See all ›</button>`}</div><div class="ptRow" data-c="${esc(g.c)}">${rowHtml(gi)}</div></section>`).join("");
   box.querySelectorAll(".ptRow[data-c]").forEach(r=>{if(keep[r.dataset.c])r.scrollLeft=keep[r.dataset.c]})};
- function filteredNoPlace(){const el=qp();const hf=p=>!faHLOnly||faIsHL(p);if(!el)return filtered().filter(hf);const v=el.value;el.value="";const r=filtered().filter(p=>!nearScope||nearScope.ok(p)).filter(hf);el.value=v;return r}
+ function filteredNoPlace(){const el=qp();const hf=()=>true;if(!el)return filtered().filter(hf);const v=el.value;el.value="";const r=filtered().filter(p=>!nearScope||nearScope.ok(p)).filter(hf);el.value=v;return r}
  // ---- city picker (bottom list)
  const cp=document.createElement("div");cp.id="ptCity";cp.className="ptCity";cp.hidden=true;cp.innerHTML=`<div class="ptDim"></div><div class="ptCityBox" role="dialog" aria-modal="true" aria-label="Choose a city"><div class="ptCityH"><b></b><button type="button" class="ptX" aria-label="Close">✕</button></div><div class="ptCityL"></div></div>`;document.body.appendChild(cp);
  let cpG=-1;
@@ -792,7 +792,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const step=k=>{if(cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
  window.faSheetClose=()=>{close();if(!cp.hidden){hideCity();hpop("city")}};
  openNJ=function(id){const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,21);let i=ps.findIndex(p=>p.id===id);if(i<0){const p=all().find(x=>x.id===id);if(!p)return;open([p],0,"Newly joined","newly_joined");return}open(ps,i,"Newly joined","newly_joined")};
- // v0.23.91: my own listing exactly as a logged-out visitor sees it (no view stat)
+ // v0.23.92: my own listing exactly as a logged-out visitor sees it (no view stat)
  window.faPreviewMe=p=>{const sv=me;me=null;try{sh.classList.add("selfPrev");open([p],0,"My profile","self_preview")}finally{me=sv}};
  window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
  sh.addEventListener("click",e=>{const t=e.target;
@@ -825,7 +825,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  try{fillPlaces();renderList()}catch(e){}
 })();
 
-// ===== v0.23.91: social-style My profile: header card + focused edit sheets =====
+// ===== v0.23.92: social-style My profile: header card + focused edit sheets =====
 // The existing #profForm stays the single source of fields + save logic; each sheet shows one section of it.
 const PE_SECS={photo:["📷","Photo & name"],mods:["🌿","Practices"],locs:["📍","Locations"],about:["✍️","About you"],contacts:["💬","Contacts & links"]};
 let peSec="",peSnap="",peBusy=false;
@@ -910,7 +910,7 @@ bSet.addEventListener("change",async e=>{const c=e.target.closest("[data-tgl]");
  else{fm[k].checked=!on;c.checked=!on;bm.textContent=$("#status").textContent||"Could not save."}
  bSet.querySelectorAll("[data-tgl]").forEach(x=>x.disabled=false)});
 
-// ===== v0.23.91: MER & BBTRS highlight: gold seal, always sorted first, featured city row, filter =====
+// ===== v0.23.92: MER & BBTRS highlight: gold seal, always sorted first, featured city row, filter =====
 // Detection: an exact "MER" or "BBTRS" entry in the practices list (mods); "MER Coaching" etc. do not count.
 var faHLOnly=false;
 function faHL(p){const m=((p&&p.mods)||[]).map(x=>String(x||"").trim().toUpperCase());return{mer:m.includes("MER"),bb:m.includes("BBTRS")}}
@@ -931,3 +931,4 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
  faHLPaint();syncModFilter()});
 
 document.querySelectorAll('.hlChip[data-hl="only"]').forEach(b=>{b.innerHTML=faSeal(16)+" MER &amp; BBTRS only"});
+document.querySelectorAll('#hlChips .hlChip[data-hl]').forEach(b=>{b.innerHTML=faSeal(16)+" "+b.dataset.hl});
