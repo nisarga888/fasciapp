@@ -1,7 +1,7 @@
 {
  "name": "FasciApp",
  "short_name": "FasciApp",
- "description": "Find your practitioner. Fascia connects us all.",
+ "description": "Find your practitioner. Fascia & breath connect us all.",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
