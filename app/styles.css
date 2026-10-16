@@ -645,3 +645,14 @@ body.peOpen{overflow:hidden}
 .ptSheet.selfPrev .ptBody::before{content:"👁 Preview: this is how logged-out visitors see you";display:block;font-size:12px;font-weight:600;color:#02191E;background:#5FC9C3;border-radius:10px;padding:6px 10px;margin:0 0 10px}
 /* v0.23.87: Home slogan, same eyebrow + serif italic as the list page */
 .homeSlogan{display:flex;flex-direction:column;align-items:center;gap:3px;margin:14px 0 2px;font-style:normal;line-height:1.15}.homeSlogan span{font-size:22px}
+/* v0.23.90: session log bar under the meter; privacy & newsletter sheet */
+.bLog{display:flex;align-items:center;gap:11px;width:100%;text-align:left;margin:8px 0 0;background:linear-gradient(135deg,#0E4A50,#0a2a30);border:1px solid #C99E6788;border-radius:16px;padding:12px;color:inherit;font:inherit;box-sizing:border-box}
+.bLog .ic{flex:none;width:36px;height:36px;border-radius:12px;background:#02191E;border:1px solid #c99e6744;display:flex;align-items:center;justify-content:center;font-size:18px}
+.bLog .sb{flex:1;min-width:0;display:block}.bLog .mt{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.bLog b{font-size:15px;color:#F3EDE4}.bLog small{font-size:12.5px;color:#C99E67;font-weight:700}
+.bLog .bar{display:block;height:8px;border-radius:5px;background:#02191E;margin-top:7px;overflow:hidden;border:1px solid #c99e6733}.bLog .bar i{display:block;height:100%;background:linear-gradient(90deg,#5FC9C3,#C99E67);border-radius:5px;min-width:2px}
+.bLog .ed{flex:none;font-size:12.5px;font-weight:700;color:#02191E;background:#C99E67;border-radius:12px;padding:6px 10px}
+.bSet{display:block;margin:18px auto 0;background:none;border:0;color:#9fb3b5;font-size:13.5px;text-decoration:underline;text-underline-offset:3px;padding:8px 12px}
+.bPub[data-bact]{cursor:pointer}
+.bSetBox{padding:8px 16px calc(18px + env(safe-area-inset-bottom,0px))}.bSetBox::before{content:"";display:block;width:42px;height:5px;border-radius:3px;background:#3b5559;margin:0 auto 8px}
+.bSetBox .peTop{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.bSetBox .bSetMsg:empty{display:none}.bSetBox .bSetDone{width:100%;margin-top:14px;border-radius:14px;padding:12px;font-weight:700}

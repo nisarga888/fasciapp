@@ -418,7 +418,7 @@ function setupSafariChrome(){const ua=navigator.userAgent||"";
 
 // ===== Session log =====
 const GOAL=70;let sess=[],editId=null,sessLoaded=false;
-function paintLogCard(){const n=sess.length;$("#lcNum").textContent=`${n} / ${GOAL}`;$("#lcFill").style.width=Math.min(100,n/GOAL*100)+"%";$("#lcSub").textContent=n>=GOAL?"✓ complete":`${GOAL-n} sessions to go`;const bl=$("#bLogN");if(bl)bl.textContent=`${n} / ${GOAL}`}
+function paintLogCard(){const n=sess.length;$("#lcNum").textContent=`${n} / ${GOAL}`;$("#lcFill").style.width=Math.min(100,n/GOAL*100)+"%";$("#lcSub").textContent=n>=GOAL?"✓ complete":`${GOAL-n} sessions to go`;const bl=$("#bLogN");if(bl)bl.textContent=`${n} / ${GOAL} sessions`;const bf=$("#bLogFill");if(bf)bf.style.width=Math.min(100,n/GOAL*100)+"%"}
 async function logCard(){$("#logCard").hidden=false;if(!sessLoaded){try{sess=await DB.sessions();sessLoaded=true}catch(e){}}paintLogCard()}
 function fmtD(d){if(!d)return"";const [y,m,dd]=d.split("-");return `${dd}.${m}.${y}`}
 function resetSF(){const f=$("#sessForm");f.reset();{const n=new Date();f.date.value=new Date(n-n.getTimezoneOffset()*6e4).toISOString().slice(0,10)}editId=null;$("#sfTitle").textContent="Add session";$("#sfBtn").textContent="Add session";$("#sfCancel").hidden=true}
@@ -520,7 +520,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.89";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.90";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -639,7 +639,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.89: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.90: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
@@ -663,7 +663,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
  btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
  $("#labJoin").onclick=()=>{close();if(window.faAuthFor)faAuthFor(true,"lab");else{setMode(true);show("auth")}};
  btn.hidden=!!me})();
-// ===== v0.23.89: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
+// ===== v0.23.90: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
 (function(){const PLUS='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
  const mk=(id,cls)=>{const b=document.createElement("button");b.type="button";b.id=id;b.className="joinBtn "+cls;b.innerHTML=PLUS+"<span>Join as a practitioner</span>";b.hidden=true;b.onclick=go;return b};
  const fab=mk("joinFab","joinFab"),lst=mk("joinList","joinList");
@@ -676,7 +676,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
   if(id===uid&&has){paint();return}uid=id;const n=++seq;paint();
   const p=await DB.mine().catch(()=>null);if(n!==seq)return;has=!!(p&&(p.name||p.address||p.city));paint()};
  faJoinUpd()})();
-// ===== v0.23.89: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
+// ===== v0.23.90: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
 // Display-only city names: merge local spellings, drop district/postcode/state suffixes, fix ALL CAPS (database values are untouched)
 // Instagram is members-only: a website field that points to Instagram counts as Instagram
 function faWebOk(u){return !/(^|\/\/|\.)(instagram\.com|instagr\.am)(\/|$)/i.test(String(u||"").trim().replace(/^https?:\/\//i,"//"))}
@@ -785,7 +785,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const step=k=>{if(cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
  window.faSheetClose=()=>{close();if(!cp.hidden){hideCity();hpop("city")}};
  openNJ=function(id){const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,21);let i=ps.findIndex(p=>p.id===id);if(i<0){const p=all().find(x=>x.id===id);if(!p)return;open([p],0,"Newly joined","newly_joined");return}open(ps,i,"Newly joined","newly_joined")};
- // v0.23.89: my own listing exactly as a logged-out visitor sees it (no view stat)
+ // v0.23.90: my own listing exactly as a logged-out visitor sees it (no view stat)
  window.faPreviewMe=p=>{const sv=me;me=null;try{sh.classList.add("selfPrev");open([p],0,"My profile","self_preview")}finally{me=sv}};
  window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
  sh.addEventListener("click",e=>{const t=e.target;
@@ -818,7 +818,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  try{fillPlaces();renderList()}catch(e){}
 })();
 
-// ===== v0.23.89: social-style My profile: header card + focused edit sheets =====
+// ===== v0.23.90: social-style My profile: header card + focused edit sheets =====
 // The existing #profForm stays the single source of fields + save logic; each sheet shows one section of it.
 const PE_SECS={photo:["📷","Photo & name"],mods:["🌿","Practices"],locs:["📍","Locations"],about:["✍️","About you"],contacts:["💬","Contacts & links"]};
 let peSec="",peSnap="",peBusy=false;
@@ -837,7 +837,7 @@ const peDirty=()=>!!peSec&&peSnapNow()!==peSnap;
 function peCancel(fromBack){if(!peSec)return;
  if(peBusy||(peDirty()&&!confirm("Discard your changes?"))){if(fromBack&&window.faH)faH.push("pe");return}
  if(!fromBack&&window.faH)faH.pop("pe");peHide();photoData=null;loadProf()}// reload the saved values into the form
-window.faPeBack=()=>peCancel(true);
+window.faPeBack=()=>{if(typeof bSet!=="undefined"&&!bSet.hidden){bSetHide();return}peCancel(true)};
 window.faPeDone=()=>{if(!peSec)return;peHide();if(window.faH)faH.pop("pe")};
 // run the existing save handler (validation, geocoding, country rules, phone prefix, places, consent, news)
 async function peRun(){const f=$("#profForm"),st=$("#status");if(peBusy)return false;
@@ -865,29 +865,41 @@ function profViewB(p,v,f){const h2=document.querySelector("#profile h2");if(h2)h
  const chip=(on,t)=>`<span class="${on?"":"miss"}">${t}</span>`;
  const card=(sec,ic,t,body,miss)=>`<button type="button" class="bCard" data-pe="${sec}"><span class="ic">${ic}</span><span class="sb"><b>${t}</b>${body}</span><span class="ed${miss?" add":""}">${miss?"+ Add":"Edit"}</span></button>`;
  const sw=(k,on)=>`<label class="bSw"><input type="checkbox" data-tgl="${k}"${on?" checked":""}><i></i></label>`;
- v.innerHTML=`<div class="bHead"><div class="bCover"></div><span class="bPub${p.consent?"":" off"}"><i></i>${p.consent?"Public":"Hidden"}</span>
+ v.innerHTML=`<div class="bHead"><div class="bCover"></div><span class="bPub${p.consent?"":" off"}" data-bact="settings" role="button" tabindex="0" aria-label="Privacy settings"><i></i>${p.consent?"Public":"Hidden"}</span>
  <button type="button" class="bAv" data-pe="photo" data-pick="1" aria-label="Change photo">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="bFb">${esc(initials(nm))}</span>`}<span class="bCam">📷</span></button>
  <h3>${esc(nm)}</h3>${pn?`<div class="bPn">${esc(pn)}</div>`:""}${where?`<div class="bWhere">📍 ${isOnline(l0)?"🌐 ":co0?flagOf(co0)+" ":""}${esc(where)}</div>`:""}
  ${mods.length?`<div class="bChs">${mods.map(m=>`<span>${esc(m)}</span>`).join("")}</div>`:""}
  <div class="bBtns"><button type="button" class="ghost" data-bact="preview">👁 Preview</button><button type="button" class="gold" data-pe="photo">✏️ Photo & name</button></div></div>
  <p id="bMsg" class="msg"></p>
  <button type="button" class="bMeter"${nx?` data-pe="${nx[3]}"`:""}><span class="mt"><b>Profile ${pct}% complete</b>${nx?`<em>${nx[2]} ›</em>`:`<em class="ok">✓ All set</em>`}</span><span class="bar"><i style="width:${pct}%"></i></span></button>
- <div class="bTgl"><span class="ic">👁</span><span class="sb"><b>Show me publicly</b><small>${p.consent?"Visitors can find you on the map and in the list.":"You are hidden. Turn on to appear on the map and in the list."}</small></span>${sw("consent",!!p.consent)}</div>
+ <button type="button" class="bLog" data-bact="log"><span class="ic">📒</span><span class="sb"><span class="mt"><b>Session log</b><small id="bLogN">${sess.length} / ${GOAL} sessions</small></span><span class="bar"><i id="bLogFill" style="width:${Math.min(100,sess.length/GOAL*100)}%"></i></span></span><span class="ed">Open ›</span></button>
  ${card("about","✍️","About you",S(p.bio)?`<p>${esc(p.bio)}</p>`:`<p>Tell visitors how you work.</p>`,!S(p.bio))}
  ${card("contacts","💬","Contacts & links",`<span class="cRow">${chip(!!ph,"📞 Phone")}${chip(!!(ph&&p.whatsapp),"💬 WhatsApp")}${chip(!!em,"✉️ Email")}${chip(web,"🌐 Website")}${chip(ig,"📸 Instagram")}</span>`,!(ph||em))}
  ${card("mods","🌿","Practices",mods.length?`<span class="cRow">${mods.map(m=>`<span>${esc(m)}</span>`).join("")}</span>`:`<p>Pick what you practise.</p>`,!mods.length)}
  ${card("locs","📍","Locations",`<p>${L.slice(0,3).map(lt).join("<br>")}</p><small>${L.length} of 3 places</small>`,!co0)}
- <div class="bGrid"><div class="bTile"><span class="top"><span class="ic">📰</span>${sw("news_optin",!!p.news_optin)}</span><b>Newsletter</b><small>New videos, free sessions, practitioners near you</small></div>
- <button type="button" class="bTile" data-bact="log"><span class="top"><span class="ic">📒</span><span class="ed">Open</span></span><b>Session log</b><small id="bLogN">${sess.length} / ${GOAL}</small></button></div>
+ <button type="button" class="bSet" data-bact="settings">⚙ Privacy &amp; newsletter</button>
  <div class="bOut"><button type="button" class="ghost" id="pOut2">Log out</button></div>`;
  v.hidden=false;f.hidden=true;
- v.onclick=e=>{const t=e.target;if(t.closest(".bSw"))return;
-  const a=t.closest("[data-bact]");if(a){if(a.dataset.bact==="preview"){if(window.faPreviewMe)faPreviewMe(p)}else show("log");return}
+ v.onclick=e=>{const t=e.target;
+  const a=t.closest("[data-bact]");if(a){const k=a.dataset.bact;if(k==="preview"){if(window.faPreviewMe)faPreviewMe(p)}else if(k==="settings")bSetOpen(p);else show("log");return}
   if(t.closest("#pOut2")){logout();return}
   const s=t.closest("[data-pe]");if(s)peOpen(s.dataset.pe,!!s.dataset.pick)};
- v.onchange=async e=>{const c=e.target.closest("[data-tgl]");if(!c||peBusy)return;const k=c.dataset.tgl,on=c.checked,fm=$("#profForm"),bm=$("#bMsg");
-  if(!fm[k])return;fm[k].checked=on;c.disabled=true;if(bm)bm.textContent="Saving…";
-  const ok=await peRun();
-  if(ok){if(k==="news_optin"&&me)me.news_optin=on;showToast(k==="consent"?(on?"You are public ✓":"Hidden from the map ✓"):(on?"Subscribed ✓":"Unsubscribed ✓"))}
-  else{fm[k].checked=!on;c.checked=!on;c.disabled=false;if(bm)bm.textContent=$("#status").textContent||"Could not save."}}}
+ if(!bSet.hidden)bSetPaint(p)}
+// ---- Privacy & newsletter sheet (show publicly + newsletter switches; GDPR: hide listing / withdraw consent any time)
+const bSet=document.createElement("div");bSet.id="bSetSheet";bSet.className="peSheet";bSet.hidden=true;
+bSet.innerHTML=`<div class="peDim"></div><div class="peBox bSetBox" role="dialog" aria-modal="true" aria-label="Privacy and newsletter"><div class="peTop"><span class="peIc">⚙</span><b class="peT">Privacy &amp; newsletter</b><button type="button" class="peX" aria-label="Close">✕</button></div><div class="bSetL"></div><p class="bSetMsg msg"></p><button type="button" class="ghost bSetDone">Done</button></div>`;document.body.appendChild(bSet);
+function bSetPaint(p){const sw=(k,on)=>`<label class="bSw"><input type="checkbox" data-tgl="${k}"${on?" checked":""}><i></i></label>`;
+ bSet.querySelector(".bSetL").innerHTML=`<div class="bTgl"><span class="ic">👁</span><span class="sb"><b>Show me publicly</b><small>${p.consent?"Visitors can find you on the map and in the list.":"You are hidden. Turn on to appear on the map and in the list."}</small></span>${sw("consent",!!p.consent)}</div>
+ <div class="bTgl"><span class="ic">📰</span><span class="sb"><b>FasciApp newsletter</b><small>New videos, free sessions, practitioners near you. Unsubscribe any time.</small></span>${sw("news_optin",!!p.news_optin)}</div>`}
+function bSetOpen(p){bSetPaint(p);bSet.querySelector(".bSetMsg").textContent="";bSet.hidden=false;document.body.classList.add("peOpen");if(window.faH)faH.push("pe")}
+function bSetHide(){bSet.hidden=true;if(!peSec)document.body.classList.remove("peOpen")}
+function bSetClose(){if(bSet.hidden)return;bSetHide();if(window.faH)faH.pop("pe")}
+bSet.addEventListener("click",e=>{if(e.target.closest(".peX")||e.target.closest(".bSetDone")||e.target.classList.contains("peDim"))bSetClose()});
+document.addEventListener("keydown",e=>{if(!bSet.hidden&&e.key==="Escape")bSetClose()});
+bSet.addEventListener("change",async e=>{const c=e.target.closest("[data-tgl]");if(!c||peBusy)return;const k=c.dataset.tgl,on=c.checked,fm=$("#profForm"),bm=bSet.querySelector(".bSetMsg");
+ if(!fm[k])return;fm[k].checked=on;bSet.querySelectorAll("[data-tgl]").forEach(x=>x.disabled=true);bm.textContent="Saving…";
+ const ok=await peRun();
+ if(ok){if(k==="news_optin"&&me)me.news_optin=on;bm.textContent="";showToast(k==="consent"?(on?"You are public ✓":"Hidden from the map ✓"):(on?"Subscribed ✓":"Unsubscribed ✓"))}
+ else{fm[k].checked=!on;c.checked=!on;bm.textContent=$("#status").textContent||"Could not save."}
+ bSet.querySelectorAll("[data-tgl]").forEach(x=>x.disabled=false)});
 
