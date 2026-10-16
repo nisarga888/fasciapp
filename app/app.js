@@ -61,7 +61,7 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(practice){const want=fold(practice);["listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;const opt=[...el.options].find(o=>o.value&&(fold(o.value)===want||fold(o.value).includes(want)||want.includes(fold(o.value))));if(opt){el.value=opt.value;hit=true}})}
  if(place){setPlace(place);hit=true}
  if(hit){renderMarkers();renderList();show("list");return true}return false}catch(e){return false}}
-window.show=show;function show(t){if((t==="map"||t==="list")&&window.faJoinUpd)faJoinUpd();$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
+window.show=show;function show(t){if(window.faSheetClose)faSheetClose();if((t==="map"||t==="list")&&window.faJoinUpd)faJoinUpd();$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||(t==="log"&&b.dataset.t==="profile")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
 let showT=null;function afterShow(t){try{if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
@@ -519,7 +519,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.81";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.82";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -614,7 +614,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  // near me, place filter, name search
  const _an=applyNear;applyNear=async function(){const r=await _an.apply(this,arguments);ev("near_me",{props:{scope:nearScope?nearScope.label.split(" ")[0]:"none"}});return r};
  const qp=$("#qPlace");if(qp)qp.addEventListener("change",()=>{const v=qp.value||"";ev("place_filter",{props:{country:v.startsWith("co:")?v.slice(3):v.startsWith("ci:")?(v.split("|")[1]||""):"",level:v.startsWith("ci:")?"city":v.startsWith("co:")?"country":v?"other":"all"}})});
- const qn=$("#qName");let st=0;if(qn)qn.addEventListener("input",()=>{clearTimeout(st);st=setTimeout(()=>{const n=(qn.value||"").trim().length;if(!n)return;const c=$$("#items [data-pid]").length;ev("name_search",{props:{len:n,hit:c>0?"yes":"no"}})},1200)});
+ const qn=$("#qName");let st=0;if(qn)qn.addEventListener("input",()=>{clearTimeout(st);st=setTimeout(()=>{const n=(qn.value||"").trim().length;if(!n)return;const c=$$("#items [data-pid],#items [data-tid]").length;ev("name_search",{props:{len:n,hit:c>0?"yes":"no"}})},1200)});
  // join funnel
  $$('[data-go="auth"],#goPract,a[href*="join=1"]').forEach(b=>b.addEventListener("click",()=>ev("join",{props:{step:"started"}})));
  const af=$("#authForm");if(af)af.addEventListener("submit",()=>{if(signUpMode)ev("join",{props:{step:"submitted"}})},true);
@@ -638,7 +638,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.81: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.82: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
@@ -662,7 +662,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
  btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
  $("#labJoin").onclick=()=>{close();if(window.faAuthFor)faAuthFor(true,"lab");else{setMode(true);show("auth")}};
  btn.hidden=!!me})();
-// ===== v0.23.81: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
+// ===== v0.23.82: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
 (function(){const PLUS='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
  const mk=(id,cls)=>{const b=document.createElement("button");b.type="button";b.id=id;b.className="joinBtn "+cls;b.innerHTML=PLUS+"<span>Join as a practitioner</span>";b.hidden=true;b.onclick=go;return b};
  const fab=mk("joinFab","joinFab"),lst=mk("joinList","joinList");
@@ -675,3 +675,74 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
   if(id===uid&&has){paint();return}uid=id;const n=++seq;paint();
   const p=await DB.mine().catch(()=>null);if(n!==seq)return;has=!!(p&&(p.name||p.address||p.city));paint()};
  faJoinUpd()})();
+// ===== v0.23.82: List as country rows (default) / photo grid (filter, search or Near me) + practitioner sheet =====
+(function(){
+ const L0=p=>(p.locations&&p.locations.length?p.locations:[p]);
+ const OTHER="Online & other";
+ const coOf=l=>{const c=countryOfLoc(l)||"";return c==="Other"?"":c};
+ const placeV=()=>(($("#qPlace")||{}).value||"");
+ const placeLoc=p=>{const v=placeV(),ls=L0(p);if(v.startsWith("co:")){const c=fold(v.slice(3));return ls.find(l=>fold(l.country||"")===c)}
+  if(v.startsWith("ci:")){const [ci,co]=v.slice(3).split("|").map(fold);return ls.find(l=>fold(l.city||"")===ci&&fold(l.country||"")===co)}return null};
+ const cityOf=l=>l?(isOnline(l)?"Online":String(l.city||"").trim()):"";
+ const src=()=>nearScope?"near-me":(((($("#qName")||{}).value||"").trim()||placeV())?"search":"list");
+ const view=p=>{try{const s=src();window.FA_ev&&FA_ev("pract_view",{pid:p.id,source:s,once:"v"+p.id+s})}catch(e){}};
+ const PLUS=n=>n>0?`<span class="ch more">+${n}</span>`:"";
+ const chips=(p,n)=>{const m=(p.mods||[]).filter(Boolean);return m.slice(0,n).map(x=>`<span class="ch">${esc(x)}</span>`).join("")+PLUS(m.length-n)};
+ const pic=p=>p.photo?`<img src="${esc(p.photo)}" alt="" loading="lazy" decoding="async">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`;
+ const nm=p=>String(p.name||"").trim()||practiceTitle(p);
+ let model={groups:[],grid:[]};
+ function tile(p,loc,g,i,nCh,d){const co=loc?coOf(loc):"";const fl=co?flagOf(co):"";const city=cityOf(loc)||co;
+  return `<button type="button" class="ptT" data-tid="${esc(p.id||"")}" data-g="${g}" data-i="${i}" aria-label="${esc(practiceTitle(p))}${city?", "+esc(city):""}">${pic(p)}${d!=null?`<span class="ptKm">${Math.round(d)} km</span>`:""}<span class="ptOv"><b>${esc(nm(p))}</b><small>${fl?fl+" ":""}${esc(city)}</small><span class="chs">${chips(p,nCh)}</span></span></button>`}
+ renderList=function(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));if(here)ps.sort((a,b)=>a.d-b.d);else ps.sort((a,b)=>azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
+  const _pe=$("#qPlace"),n=ps.length,q=(_pe&&_pe.value&&_pe.selectedOptions[0]?_pe.selectedOptions[0].textContent.replace(/\s*\(\d+\)$/,""):""),mod=($("#listFilter")&&$("#listFilter").value)||"",nameQ=(($("#qName")||{}).value||"").trim();
+  const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:"");
+  const clr=$("#listClear");if(clr){clr.hidden=!(nearScope||q||mod||nameQ);clr.textContent=nearScope?"Show all":"Clear"}
+  $("#from").textContent=here?"Sorted by distance from you":"";
+  const box=$("#items");if(!box)return;const keep={};box.querySelectorAll(".ptRow[data-c]").forEach(r=>{if(r.scrollLeft)keep[r.dataset.c]=r.scrollLeft});
+  if(!n){model={groups:[],grid:[]};box.innerHTML="<p class=muted>No practitioners match your search.</p>";return}
+  const active=!!(nearScope||here||q||mod||nameQ);
+  if(active){model={groups:[],grid:ps.map(x=>x.p)};
+   box.innerHTML=`<div class="ptGrid">${ps.map(({p,d},i)=>tile(p,placeLoc(p)||L0(p)[0],-1,i,2,d)).join("")}</div>`;return}
+  const by=new Map();ps.forEach(({p})=>{const seen=new Set();L0(p).forEach(l=>{const c=coOf(l)||OTHER;if(seen.has(c))return;seen.add(c);if(!by.has(c))by.set(c,[]);by.get(c).push({p,l})})});
+  const groups=[...by.entries()].map(([c,list])=>({c,list})).sort((a,b)=>(a.c===OTHER)-(b.c===OTHER)||b.list.length-a.list.length||a.c.localeCompare(b.c,"en",{sensitivity:"base"}));
+  model={groups,grid:[]};
+  box.innerHTML=groups.map((g,gi)=>`<section class="ptSec"><div class="ptH"><b>${g.c===OTHER?"🌐":flagOf(g.c)} ${esc(g.c)} <span>· ${g.list.length}</span></b>${g.c===OTHER?"":`<button type="button" class="ptAll" data-all="${esc(g.c)}">See all ›</button>`}</div><div class="ptRow" data-c="${esc(g.c)}">${g.list.map(({p,l},i)=>tile(p,l,gi,i,1,null)).join("")}</div></section>`).join("");
+  box.querySelectorAll(".ptRow[data-c]").forEach(r=>{if(keep[r.dataset.c])r.scrollLeft=keep[r.dataset.c]})};
+ const sh=document.createElement("div");sh.id="ptSheet";sh.className="ptSheet";sh.hidden=true;
+ sh.innerHTML=`<div class="ptDim"></div><div class="ptBox" role="dialog" aria-modal="true" aria-label="Practitioner"><span class="ptGrab"></span><button type="button" class="ptX" aria-label="Close">✕</button><div class="ptScroll"></div></div>`;
+ document.body.appendChild(sh);
+ const scr=sh.querySelector(".ptScroll");let cur={list:[],i:0,c:""};
+ function contacts(p){if(!p.consent)return `<p class="muted"><i>Not public yet</i></p>`;
+  const t=document.createElement("div");t.innerHTML=card(p);const cbs=t.querySelector(".cbs"),tel=t.querySelector("a.tel");
+  const links=(p.website?`<div class="ptWeb">🌐 ${link(p.website)}</div>`:"")+(p.website2?`<div class="ptWeb">🌐 ${link(p.website2)}</div>`:"")+(igHandle(p.instagram)?`<div class="ptWeb"><a class="igl" href="https://instagram.com/${esc(igHandle(p.instagram))}" target="_blank" rel="noopener">@${esc(igHandle(p.instagram))}</a> <small class="muted">Instagram</small></div>`:"");
+  if(me)return links+(tel?`<div class="ptWeb">📞 ${tel.outerHTML}</div>`:"")+(cbs?cbs.outerHTML:"");
+  return links+`<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to message, WhatsApp or email.</p>${cbs?cbs.outerHTML:""}<button type="button" class="gold ptLogin">Log in to contact</button></div>`}
+ function paint(){const p=cur.list[cur.i];if(!p)return;const many=cur.c&&cur.list.length>1;
+  scr.innerHTML=`<div class="ptHero">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`}${many?`<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i+1} of ${cur.list.length} · ${esc(cur.c)}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>`:""}</div>
+  <div class="ptBody" data-pid="${esc(p.id||"")}"><h3>${esc(practiceTitle(p))}</h3>${String(p.practice_name||"").trim()&&p.name?`<div class="ptWho">${esc(p.name)}</div>`:""}
+  <div class="ptLocs">${locLine(p)}</div><div class="chs ptMods">${(p.mods||[]).filter(Boolean).map(x=>`<span class="ch">${esc(x)}</span>`).join("")}</div>
+  ${p.bio?`<div class="ptBio">${esc(p.bio)}</div><button type="button" class="ptMore">Read more</button>`:""}
+  ${contacts(p)}<button type="button" class="ptMap">📍 Show on map</button></div>`;
+  scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});view(p)}
+ function open(list,i,c){cur={list,i,c:c||""};sh.hidden=false;document.body.classList.add("ptOpen");paint()}
+ function close(){if(sh.hidden)return;sh.hidden=true;document.body.classList.remove("ptOpen")}
+ const step=k=>{if(!cur.c||cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
+ window.faSheetClose=close;window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
+ sh.addEventListener("click",e=>{const t=e.target;
+  if(t.closest(".ptX")||t.classList.contains("ptDim")){close();return}
+  if(t.closest(".ptPrev")){step(-1);return}if(t.closest(".ptNext")){step(1);return}
+  if(t.closest(".ptMore")){const b=scr.querySelector(".ptBio");if(b)b.classList.add("open");t.closest(".ptMore").hidden=true;return}
+  if(t.closest(".ptLogin")){const p=cur.list[cur.i];close();pendingWa=p&&p.id||null;fillLastEmail();setMode(false);show("auth");return}
+  if(t.closest(".ptMap")){const p=cur.list[cur.i],want=cur.c&&fold(cur.c);close();show("map");setTimeout(()=>{if(!map||!p)return;map.invalidateSize();const ls=pins(p);const loc=(want&&ls.find(l=>fold(coOf(l))===want))||ls[0];if(loc)map.setView([loc.lat,loc.lng],14)},120);return}
+  if(t.closest("[data-msg]"))setTimeout(close,0)});
+ let tx=0,ty=0;const bx=sh.querySelector(".ptBox");
+ bx.addEventListener("touchstart",e=>{const t=e.touches[0];tx=t.clientX;ty=t.clientY},{passive:true});
+ bx.addEventListener("touchend",e=>{const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)step(dx<0?1:-1)},{passive:true});
+ document.addEventListener("keydown",e=>{if(sh.hidden)return;if(e.key==="Escape")close();else if(e.key==="ArrowRight")step(1);else if(e.key==="ArrowLeft")step(-1)});
+ const items=$("#items");if(items)items.addEventListener("click",e=>{const a=e.target.closest(".ptAll");
+  if(a){const el=$("#qPlace");if(el){fillPlaces();const o=[...el.options].find(o=>o.value==="co:"+a.dataset.all);if(o){el.value=o.value;el.dispatchEvent(new Event("change"));const ls=$("#listSearch");if(ls)ls.scrollIntoView({block:"start"})}}return}
+  const t=e.target.closest(".ptT");if(!t)return;const g=+t.dataset.g,i=+t.dataset.i;
+  if(g<0)open(model.grid,i,"");else{const G=model.groups[g];if(G)open(G.list.map(x=>x.p),i,G.c===OTHER?"":G.c)}});
+ backToPract=function(pid){show("list");let n=0;const go=()=>{const p=all().find(x=>x.id===pid);n++;if(p&&(p.email||p.phone||!(p.has_email||p.whatsapp)||n>=30)){window.faOpenPract(pid);return}if(n>=30)return;setTimeout(go,200)};setTimeout(go,300)};
+ try{renderList()}catch(e){}
+})();
