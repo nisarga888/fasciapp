@@ -643,3 +643,5 @@ body.peOpen{overflow:hidden}
 .bOut{display:flex;justify-content:center;margin:16px 0 8px}.bOut button{padding:9px 28px}
 .ptSheet.selfPrev .ptLock{pointer-events:none}
 .ptSheet.selfPrev .ptBody::before{content:"👁 Preview: this is how logged-out visitors see you";display:block;font-size:12px;font-weight:600;color:#02191E;background:#5FC9C3;border-radius:10px;padding:6px 10px;margin:0 0 10px}
+/* v0.23.87: Home slogan, same eyebrow + serif italic as the list page */
+.homeSlogan{display:flex;flex-direction:column;align-items:center;gap:3px;margin:14px 0 2px;font-style:normal;line-height:1.15}.homeSlogan span{font-size:22px}
