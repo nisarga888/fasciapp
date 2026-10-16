@@ -54,7 +54,7 @@ h2{font-weight:400;color:var(--gold);text-align:center;font-size:28px;margin:54p
 .f{background:var(--card);border:1px solid #C99E6733;border-radius:18px;padding:20px}.f b{display:block;margin:6px 0 4px;font-size:17px}.f p{margin:0;color:var(--mut);font-size:14px}
 .f.soon{border-style:dashed}.badge{display:inline-block;font-size:10px;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--teal);color:var(--teal);border-radius:10px;padding:1px 8px;margin-left:6px;vertical-align:middle}
 .shots{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 4px 18px;justify-content:center}
-.shots figure{margin:0;flex:0 0 220px;scroll-snap-align:center;text-align:center}.shots img{width:220px;border-radius:28px;border:6px solid #11343a;box-shadow:0 18px 40px #0008}
+.shots figure{margin:0;flex:0 0 220px;scroll-snap-align:center;text-align:center}.shots img{width:220px;height:auto;display:block;border-radius:28px;border:6px solid #11343a;box-shadow:0 18px 40px #0008}
 .shots figcaption{color:var(--mut);font-size:13px;margin-top:8px}
 .install{background:var(--card);border:1px solid #C99E6744;border-radius:22px;padding:24px;max-width:620px;margin:auto;text-align:center}
 .steps{list-style:none;padding:0;margin:16px 0 0;text-align:left;display:grid;gap:12px}.steps li{display:flex;gap:14px;align-items:center;background:#02191E;border-radius:14px;padding:12px 14px}
@@ -243,11 +243,10 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:50px 0 34px}foo
 
 <h2>A look at the app</h2>
 <div class="shots">
- <figure><img src="assets/v14_map.png" alt="Practitioner map across Europe with clusters" loading="lazy"><figcaption>The network map</figcaption></figure>
- <figure><img src="assets/v14_map_labels.png" alt="Map zoomed in with practice labels" loading="lazy"><figcaption>Pins, clusters &amp; labels</figcaption></figure>
- <figure><img src="assets/v14_list.png" alt="Practitioner list with Message, Call, WhatsApp and Email" loading="lazy"><figcaption>Message, Call, WhatsApp</figcaption></figure>
- <figure><img src="assets/v14_session_log.png" alt="Session log with client initials" loading="lazy"><figcaption>Session log · 70 sessions</figcaption></figure>
- <figure><img src="assets/v14_messages.png" alt="Client booking chat in inbox" loading="lazy"><figcaption>Book via messages</figcaption></figure>
+ <figure><img src="assets/v88_list.webp" width="600" height="1298" alt="Practitioner list with the Worldwide community slogan and country rows of photo tiles" loading="lazy" decoding="async"><figcaption>Browse by country and city</figcaption></figure>
+ <figure><img src="assets/v88_sheet.webp" width="600" height="1298" alt="Practitioner detail sheet with photo, practices, bio and members-only contacts" loading="lazy" decoding="async"><figcaption>Every practitioner, one tap away</figcaption></figure>
+ <figure><img src="assets/v88_map.webp" width="600" height="1298" alt="Network map with practitioner clusters and the Join as a practitioner button" loading="lazy" decoding="async"><figcaption>The network map</figcaption></figure>
+ <figure><img src="assets/v88_profile.webp" width="600" height="1298" alt="My profile with photo header, practices, completeness meter and public switch" loading="lazy" decoding="async"><figcaption>Your profile, your way</figcaption></figure>
 </div>
 
 <h2 id="install">Install on your phone</h2>
@@ -323,5 +322,5 @@ if(matchMedia("(display-mode: standalone)").matches)location.replace("app/");
 })();
 </script>
 
-<script src="app/track.js?v=0.23.87"></script><script>(function(){var q=new URLSearchParams(location.search),u=new URLSearchParams();["utm_source","utm_medium","utm_campaign"].forEach(function(k){if(q.get(k))u.set(k,q.get(k))});var s=u.toString();if(!s)return;document.querySelectorAll('a[href^="app/"],a[href="app"]').forEach(function(a){var h=a.getAttribute("href");a.setAttribute("href",h+(h.indexOf("?")>-1?"&":"?")+s)})})();</script><script>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a||!window.FA_ev)return;var h=a.getAttribute("href")||"",it=/join=1/.test(h)?"join":/^app\/?$/.test(h)?"open_app":/instagram\.com/.test(h)?"instagram":/facebook\.com/.test(h)?"facebook":/terms|privacy/.test(h)?"legal":"";if(!it)return;FA_ev(it==="instagram"||it==="facebook"?"follow_tap":"landing_cta",{source:"landing",props:{item:it,where:a.closest("footer")?"footer":a.closest(".hero")?"hero":"page"}})},true);FA_ev&&FA_ev("screen",{source:"landing",props:{tab:"landing"}});</script>
+<script src="app/track.js?v=0.23.88"></script><script>(function(){var q=new URLSearchParams(location.search),u=new URLSearchParams();["utm_source","utm_medium","utm_campaign"].forEach(function(k){if(q.get(k))u.set(k,q.get(k))});var s=u.toString();if(!s)return;document.querySelectorAll('a[href^="app/"],a[href="app"]').forEach(function(a){var h=a.getAttribute("href");a.setAttribute("href",h+(h.indexOf("?")>-1?"&":"?")+s)})})();</script><script>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a||!window.FA_ev)return;var h=a.getAttribute("href")||"",it=/join=1/.test(h)?"join":/^app\/?$/.test(h)?"open_app":/instagram\.com/.test(h)?"instagram":/facebook\.com/.test(h)?"facebook":/terms|privacy/.test(h)?"legal":"";if(!it)return;FA_ev(it==="instagram"||it==="facebook"?"follow_tap":"landing_cta",{source:"landing",props:{item:it,where:a.closest("footer")?"footer":a.closest(".hero")?"hero":"page"}})},true);FA_ev&&FA_ev("screen",{source:"landing",props:{tab:"landing"}});</script>
 </body></html>
