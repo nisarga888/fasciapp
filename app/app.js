@@ -877,7 +877,7 @@ function profViewB(p,v,f){const h2=document.querySelector("#profile h2");if(h2)h
  ${card("contacts","💬","Contacts & links",`<span class="cRow">${chip(!!ph,"📞 Phone")}${chip(!!(ph&&p.whatsapp),"💬 WhatsApp")}${chip(!!em,"✉️ Email")}${chip(web,"🌐 Website")}${chip(ig,"📸 Instagram")}</span>`,!(ph||em))}
  ${card("mods","🌿","Practices",mods.length?`<span class="cRow">${mods.map(m=>`<span>${esc(m)}</span>`).join("")}</span>`:`<p>Pick what you practise.</p>`,!mods.length)}
  ${card("locs","📍","Locations",`<p>${L.slice(0,3).map(lt).join("<br>")}</p><small>${L.length} of 3 places</small>`,!co0)}
- <button type="button" class="bSet" data-bact="settings">⚙ Privacy &amp; newsletter</button>
+ <button type="button" class="bSet" data-bact="settings">⚙ Settings</button>
  <div class="bOut"><button type="button" class="ghost" id="pOut2">Log out</button></div>`;
  v.hidden=false;f.hidden=true;
  v.onclick=e=>{const t=e.target;
@@ -887,7 +887,7 @@ function profViewB(p,v,f){const h2=document.querySelector("#profile h2");if(h2)h
  if(!bSet.hidden)bSetPaint(p)}
 // ---- Privacy & newsletter sheet (show publicly + newsletter switches; GDPR: hide listing / withdraw consent any time)
 const bSet=document.createElement("div");bSet.id="bSetSheet";bSet.className="peSheet";bSet.hidden=true;
-bSet.innerHTML=`<div class="peDim"></div><div class="peBox bSetBox" role="dialog" aria-modal="true" aria-label="Privacy and newsletter"><div class="peTop"><span class="peIc">⚙</span><b class="peT">Privacy &amp; newsletter</b><button type="button" class="peX" aria-label="Close">✕</button></div><div class="bSetL"></div><p class="bSetMsg msg"></p><button type="button" class="ghost bSetDone">Done</button></div>`;document.body.appendChild(bSet);
+bSet.innerHTML=`<div class="peDim"></div><div class="peBox bSetBox" role="dialog" aria-modal="true" aria-label="Privacy and newsletter"><div class="peTop"><span class="peIc">⚙</span><b class="peT">Settings</b><button type="button" class="peX" aria-label="Close">✕</button></div><div class="bSetL"></div><p class="bSetMsg msg"></p><button type="button" class="ghost bSetDone">Done</button></div>`;document.body.appendChild(bSet);
 function bSetPaint(p){const sw=(k,on)=>`<label class="bSw"><input type="checkbox" data-tgl="${k}"${on?" checked":""}><i></i></label>`;
  bSet.querySelector(".bSetL").innerHTML=`<div class="bTgl"><span class="ic">👁</span><span class="sb"><b>Show me publicly</b><small>${p.consent?"Visitors can find you on the map and in the list.":"You are hidden. Turn on to appear on the map and in the list."}</small></span>${sw("consent",!!p.consent)}</div>
  <div class="bTgl"><span class="ic">📰</span><span class="sb"><b>FasciApp newsletter</b><small>New videos, free sessions, practitioners near you. Unsubscribe any time.</small></span>${sw("news_optin",!!p.news_optin)}</div>`}
