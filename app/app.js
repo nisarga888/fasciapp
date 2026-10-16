@@ -23,7 +23,7 @@ function modCounts(){const m=new Map();mappedPeople().forEach(p=>{[...new Set(p.
  return[...m.entries()].sort((a,b)=>{const ra=modPinRank(a[0]),rb=modPinRank(b[0]);return ra!==rb?ra-rb:a[0].localeCompare(b[0],"en",{sensitivity:"base"})})}
 function placeOptions(){const cityMap=new Map(),countryMap=new Map();
  mappedPeople().forEach(p=>{const locs=(p.locations&&p.locations.length)?p.locations:[p];const seenC=new Set(),seenCo=new Set();
-  locs.forEach(l=>{const city=String(l.city||"").trim(),country=String(l.country||"").trim();
+  locs.forEach(l=>{const city=isOnline(l)?"":faCity(l.city),country=String(l.country||"").trim();
    if(city&&country){const k=fold(city)+"|"+fold(country);if(!seenC.has(k)){seenC.add(k);const o=cityMap.get(k)||{city,country,n:0};o.n++;cityMap.set(k,o)}}
    if(country){const k=fold(country);if(!seenCo.has(k)){seenCo.add(k);const o=countryMap.get(k)||{country,n:0};o.n++;countryMap.set(k,o)}}})});
  return{cities:[...cityMap.values()].sort((a,b)=>{const c=a.city.localeCompare(b.city,"en",{sensitivity:"base"});return c||a.country.localeCompare(b.country,"en",{sensitivity:"base"})}),
@@ -50,7 +50,7 @@ function setPlace(text){const el=$("#qPlace");if(!el)return;fillPlaces();const t
  if(o){el.value=o.value;return}const opt=document.createElement("option");opt.value="free:"+text;opt.textContent=text;el.appendChild(opt);el.value=opt.value}
 function placeOk(p){const v=($("#qPlace")&&$("#qPlace").value)||"";if(!v)return true;const locs=(p.locations&&p.locations.length)?p.locations:[p];
  if(v.startsWith("co:")){const c=fold(v.slice(3));return locs.some(l=>fold(l.country||"")===c)}
- if(v.startsWith("ci:")){const [ci,co]=v.slice(3).split("|").map(fold);return locs.some(l=>fold(l.city||"")===ci&&fold(l.country||"")===co)}
+ if(v.startsWith("ci:")){const [ci,co]=v.slice(3).split("|").map(fold);return locs.some(l=>fold(faCity(l.city))===ci&&fold(l.country||"")===co)}
  return placeHit(p,fold(v.replace(/^free:/,"")))}
 function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  const tab=(sp.get("tab")||"").toLowerCase();if(tab==="learn"||tab==="lab"){show("learn");return true}
@@ -127,7 +127,7 @@ function fold(s){try{return String(s||"").normalize("NFD").replace(/\p{M}/gu,"")
 function placeHit(p,q){if(!q)return true;{const cq=fold(window.canonCountry?canonCountry(q):q);if(cq!==q&&cq)q=cq}const locs=(p.locations&&p.locations.length)?p.locations:[p];
  const {cities,countries}=placeOptions();
  const exactCity=cities.find(c=>fold(`${c.city}, ${c.country}`)===q);
- if(exactCity)return locs.some(l=>fold(l.city)===fold(exactCity.city)&&fold(l.country)===fold(exactCity.country));
+ if(exactCity)return locs.some(l=>fold(faCity(l.city))===fold(exactCity.city)&&fold(l.country)===fold(exactCity.country));
  const exactCo=countries.find(c=>fold(c.country)===q);
  if(exactCo)return locs.some(l=>fold(l.country)===fold(exactCo.country));
  return locs.some(l=>fold([l.city,l.country,l.address].filter(Boolean).join(" ")).includes(q))}
@@ -519,7 +519,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.82";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.83";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -638,7 +638,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.82: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.83: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
@@ -646,8 +646,8 @@ function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
  else{pendingWa=id;pendingChat=null;const p=people.find(x=>String(x.id)===String(id));nm=p?(p.name||practiceTitle(p)):""}
  pendingBreath=null;const first=String(nm).trim().split(/\s+/)[0]||"";
  $("#gateH").textContent=first?`Log in to contact ${first}`:"Log in to contact";
- $("#gateP").textContent=(kind==="wa"?"WhatsApp contact is":kind==="mail"?"Email contact is":"Messages are")+" for FasciApp members. Create a free account or log in, and we’ll bring you right back"+(first?` to ${first}.`:".");
- g.hidden=false;try{ev("contact_gate",{props:{item:kind==="wa"?"whatsapp":kind==="mail"?"email":"message"},source:"app"})}catch(e){}}
+ $("#gateP").textContent=(kind==="wa"?"WhatsApp contact is":kind==="mail"?"Email contact is":kind==="ig"?"Instagram is":"Messages are")+" for FasciApp members. Create a free account or log in, and we’ll bring you right back"+(first?` to ${first}.`:".");
+ g.hidden=false;try{ev("contact_gate",{props:{item:kind==="wa"?"whatsapp":kind==="mail"?"email":kind==="ig"?"instagram":"message"},source:"app"})}catch(e){}}
 function hideGate(clear){$("#gate").hidden=true;if(clear){pendingChat=null;pendingWa=null}}
 $("#gateUp").onclick=()=>{hideGate();setMode(true);show("auth")};
 $("#gateIn").onclick=()=>{hideGate();fillLastEmail();setMode(false);show("auth")};
@@ -662,7 +662,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
  btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
  $("#labJoin").onclick=()=>{close();if(window.faAuthFor)faAuthFor(true,"lab");else{setMode(true);show("auth")}};
  btn.hidden=!!me})();
-// ===== v0.23.82: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
+// ===== v0.23.83: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
 (function(){const PLUS='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
  const mk=(id,cls)=>{const b=document.createElement("button");b.type="button";b.id=id;b.className="joinBtn "+cls;b.innerHTML=PLUS+"<span>Join as a practitioner</span>";b.hidden=true;b.onclick=go;return b};
  const fab=mk("joinFab","joinFab"),lst=mk("joinList","joinList");
@@ -675,74 +675,137 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
   if(id===uid&&has){paint();return}uid=id;const n=++seq;paint();
   const p=await DB.mine().catch(()=>null);if(n!==seq)return;has=!!(p&&(p.name||p.address||p.city));paint()};
  faJoinUpd()})();
-// ===== v0.23.82: List as country rows (default) / photo grid (filter, search or Near me) + practitioner sheet =====
+// ===== v0.23.83: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
+// Display-only city names: merge local spellings, drop district/postcode/state suffixes, fix ALL CAPS (database values are untouched)
+function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
+ c=c.replace(/\s+[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/,"").replace(/\s+[A-Z]{2,3}$/,"").trim();
+ const A={warszawa:"Warsaw",munchen:"Munich",koln:"Cologne",wien:"Vienna",praha:"Prague",lisboa:"Lisbon",roma:"Rome",milano:"Milan",firenze:"Florence",venezia:"Venice",napoli:"Naples",krakow:"Kraków",bruxelles:"Brussels",brussel:"Brussels",kobenhavn:"Copenhagen",athina:"Athens",nurnberg:"Nuremberg"};
+ const a=A[fold(c)];if(a)return a;if(c.length>3&&c===c.toUpperCase()&&/\p{Lu}/u.test(c))c=c.toLowerCase().replace(/(^|[\s-])\p{L}/gu,m=>m.toUpperCase());
+ return c.charAt(0).toUpperCase()+c.slice(1)}
 (function(){
  const L0=p=>(p.locations&&p.locations.length?p.locations:[p]);
  const OTHER="Online & other";
  const coOf=l=>{const c=countryOfLoc(l)||"";return c==="Other"?"":c};
- const placeV=()=>(($("#qPlace")||{}).value||"");
- const placeLoc=p=>{const v=placeV(),ls=L0(p);if(v.startsWith("co:")){const c=fold(v.slice(3));return ls.find(l=>fold(l.country||"")===c)}
-  if(v.startsWith("ci:")){const [ci,co]=v.slice(3).split("|").map(fold);return ls.find(l=>fold(l.city||"")===ci&&fold(l.country||"")===co)}return null};
- const cityOf=l=>l?(isOnline(l)?"Online":String(l.city||"").trim()):"";
+ const cityOf=l=>l?(isOnline(l)?"Online":faCity(l.city)):"";
+ const qp=()=>$("#qPlace");const placeV=()=>((qp()||{}).value||"");
+ const placeParts=()=>{const v=placeV();if(v.startsWith("co:"))return{co:v.slice(3),ci:""};if(v.startsWith("ci:")){const [ci,co]=v.slice(3).split("|");return{co,ci}}return null};
+ const placeLoc=p=>{const pp=placeParts();if(!pp)return null;const c=fold(pp.co),ci=fold(pp.ci);return L0(p).find(l=>fold(l.country||"")===c&&(!ci||fold(faCity(l.city))===ci))};
  const src=()=>nearScope?"near-me":(((($("#qName")||{}).value||"").trim()||placeV())?"search":"list");
  const view=p=>{try{const s=src();window.FA_ev&&FA_ev("pract_view",{pid:p.id,source:s,once:"v"+p.id+s})}catch(e){}};
- const PLUS=n=>n>0?`<span class="ch more">+${n}</span>`:"";
- const chips=(p,n)=>{const m=(p.mods||[]).filter(Boolean);return m.slice(0,n).map(x=>`<span class="ch">${esc(x)}</span>`).join("")+PLUS(m.length-n)};
+ const chips=(p,n)=>{const m=(p.mods||[]).filter(Boolean);return m.slice(0,n).map(x=>`<span class="ch">${esc(x)}</span>`).join("")+(m.length>n?`<span class="ch more">+${m.length-n}</span>`:"")};
  const pic=p=>p.photo?`<img src="${esc(p.photo)}" alt="" loading="lazy" decoding="async">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`;
  const nm=p=>String(p.name||"").trim()||practiceTitle(p);
- let model={groups:[],grid:[]};
+ const flagC=c=>c===OTHER?"🌐":flagOf(c);
+ const IG='<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>';
+ // ---- history: back closes the city list / sheet, then leaves See all, then default
+ const HS=[];let skip=0;
+ const hpush=k=>{try{history.pushState({fa:k},"")}catch(e){}HS.push(k)};
+ const hpop=k=>{if(HS.length&&HS[HS.length-1]===k){HS.pop();skip++;try{history.back()}catch(e){skip--}}};
+ window.addEventListener("popstate",()=>{if(skip){skip--;return}const k=HS.pop();if(k==="sheet")hideSheet();else if(k==="city")hideCity();else if(k==="seeall")leaveSeeAll()});
+ // ---- model
+ let model={groups:[],grid:[],gridLabel:""};const sel={};let seeAll=false,savedTop=0;
+ const cityList=(c,list)=>{const m=new Map();list.forEach(({p})=>{const seen=new Set();L0(p).filter(l=>(coOf(l)||OTHER)===c).forEach(l=>{const n=cityOf(l);if(!n)return;const k=fold(n);if(seen.has(k))return;seen.add(k);const o=m.get(k)||{k,n,c:0};o.c++;m.set(k,o)})});return[...m.values()].sort((a,b)=>b.c-a.c||a.n.localeCompare(b.n,"en",{sensitivity:"base"}))};
+ const inCity=(g,k)=>!k?g.list:g.list.map(({p})=>{const l=L0(p).find(l=>(coOf(l)||OTHER)===g.c&&fold(cityOf(l))===k);return l?{p,l}:null}).filter(Boolean);
  function tile(p,loc,g,i,nCh,d){const co=loc?coOf(loc):"";const fl=co?flagOf(co):"";const city=cityOf(loc)||co;
   return `<button type="button" class="ptT" data-tid="${esc(p.id||"")}" data-g="${g}" data-i="${i}" aria-label="${esc(practiceTitle(p))}${city?", "+esc(city):""}">${pic(p)}${d!=null?`<span class="ptKm">${Math.round(d)} km</span>`:""}<span class="ptOv"><b>${esc(nm(p))}</b><small>${fl?fl+" ":""}${esc(city)}</small><span class="chs">${chips(p,nCh)}</span></span></button>`}
- renderList=function(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));if(here)ps.sort((a,b)=>a.d-b.d);else ps.sort((a,b)=>azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
-  const _pe=$("#qPlace"),n=ps.length,q=(_pe&&_pe.value&&_pe.selectedOptions[0]?_pe.selectedOptions[0].textContent.replace(/\s*\(\d+\)$/,""):""),mod=($("#listFilter")&&$("#listFilter").value)||"",nameQ=(($("#qName")||{}).value||"").trim();
-  const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:"");
-  const clr=$("#listClear");if(clr){clr.hidden=!(nearScope||q||mod||nameQ);clr.textContent=nearScope?"Show all":"Clear"}
-  $("#from").textContent=here?"Sorted by distance from you":"";
+ function rowHtml(gi){const g=model.groups[gi];const list=inCity(g,sel[g.c]);return list.map(({p,l},i)=>tile(p,l,gi,i,1,null)).join("")}
+ function chipLabel(g){const k=sel[g.c];if(!k)return"All cities";const o=g.cities.find(x=>x.k===k);return o?o.n:"All cities"}
+ function nav(){const box=$("#listNav"),pp=placeParts(),lst=$("#list");const on=!!pp;if(lst)lst.classList.toggle("ptPlace",on);if(!box)return;box.hidden=!on;if(!on){box.innerHTML="";return}
+  box.innerHTML=`<button type="button" class="ptBack" data-nav="back"><b>‹</b> All countries</button><span class="ptCrumb">${pp.ci?`<button type="button" data-nav="co">${flagOf(pp.co)} ${esc(pp.co)}</button><em>›</em><b>${esc(pp.ci)}</b>`:`<b>${flagOf(pp.co)} ${esc(pp.co)}</b>`}</span>`}
+ function setPlaceV(v){const el=qp();if(!el)return;fillPlaces();if(v&&![...el.options].some(o=>o.value===v))return;el.value=v;el.dispatchEvent(new Event("change"))}
+ function leaveSeeAll(){const top=savedTop,was=seeAll;seeAll=false;const el=qp();if(el&&el.value){el.value="";el.dispatchEvent(new Event("change"))}else renderList();if(was)requestAnimationFrame(()=>{const m=document.querySelector("main");if(m)m.scrollTop=top})}
+ renderList=function(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));
+  const _pe=qp(),n=ps.length,q=placeV(),mod=($("#listFilter")&&$("#listFilter").value)||"",nameQ=(($("#qName")||{}).value||"").trim();
+  const active=!!(nearScope||q||mod||nameQ);
+  if(here&&active)ps.sort((a,b)=>a.d-b.d);else ps.sort((a,b)=>azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
+  const pp=placeParts();
+  const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:pp?` in ${pp.ci||pp.co}`:"");
+  const clr=$("#listClear");if(clr){clr.hidden=!active;clr.textContent=nearScope?"Show all":"Clear"}
+  $("#from").textContent=here&&active?"Sorted by distance from you":"";
+  if(seeAll&&!pp){seeAll=false;hpop("seeall")}
+  nav();
   const box=$("#items");if(!box)return;const keep={};box.querySelectorAll(".ptRow[data-c]").forEach(r=>{if(r.scrollLeft)keep[r.dataset.c]=r.scrollLeft});
-  if(!n){model={groups:[],grid:[]};box.innerHTML="<p class=muted>No practitioners match your search.</p>";return}
-  const active=!!(nearScope||here||q||mod||nameQ);
-  if(active){model={groups:[],grid:ps.map(x=>x.p)};
-   box.innerHTML=`<div class="ptGrid">${ps.map(({p,d},i)=>tile(p,placeLoc(p)||L0(p)[0],-1,i,2,d)).join("")}</div>`;return}
+  let top="";
+  if(active){const fc=[];
+   if(pp)fc.push(`<button type="button" class="fChip" data-clr="place">📍 ${esc(pp.ci?pp.ci+", "+pp.co:pp.co)} <i>✕</i></button>`);
+   if(mod)fc.push(`<button type="button" class="fChip" data-clr="mod">${esc(mod)} <i>✕</i></button>`);
+   if(nameQ)fc.push(`<button type="button" class="fChip" data-clr="name">“${esc(nameQ)}” <i>✕</i></button>`);
+   if(nearScope)fc.push(`<button type="button" class="fChip" data-clr="near">📍 Near me <i>✕</i></button>`);
+   top=`<div class="fChips">${fc.join("")}</div>`;
+   if(pp){const allIn=filteredNoPlace().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co)));const cs=cityList(pp.co,allIn.map(p=>({p})));
+    if(cs.length>1)top+=`<div class="ptCities">${`<button type="button" class="cChip${pp.ci?"":" on"}" data-pl="co:${esc(pp.co)}">All ${esc(pp.co)} <i>${allIn.length}</i></button>`}${cs.map(c=>`<button type="button" class="cChip${pp.ci&&fold(pp.ci)===c.k?" on":""}" data-pl="ci:${esc(c.n)}|${esc(pp.co)}">${esc(c.n)} <i>${c.c}</i></button>`).join("")}</div>`}}
+  if(!n){model={groups:[],grid:[],gridLabel:""};box.innerHTML=top+"<p class=muted>No practitioners match your search.</p>";return}
+  if(active){model={groups:[],grid:ps.map(x=>x.p),gridLabel:pp?(pp.ci||pp.co):nearScope?"Near me":"Results"};
+   box.innerHTML=top+`<div class="ptGrid">${ps.map(({p,d},i)=>tile(p,placeLoc(p)||L0(p)[0],-1,i,2,here?d:null)).join("")}</div>`;return}
   const by=new Map();ps.forEach(({p})=>{const seen=new Set();L0(p).forEach(l=>{const c=coOf(l)||OTHER;if(seen.has(c))return;seen.add(c);if(!by.has(c))by.set(c,[]);by.get(c).push({p,l})})});
-  const groups=[...by.entries()].map(([c,list])=>({c,list})).sort((a,b)=>(a.c===OTHER)-(b.c===OTHER)||b.list.length-a.list.length||a.c.localeCompare(b.c,"en",{sensitivity:"base"}));
-  model={groups,grid:[]};
-  box.innerHTML=groups.map((g,gi)=>`<section class="ptSec"><div class="ptH"><b>${g.c===OTHER?"🌐":flagOf(g.c)} ${esc(g.c)} <span>· ${g.list.length}</span></b>${g.c===OTHER?"":`<button type="button" class="ptAll" data-all="${esc(g.c)}">See all ›</button>`}</div><div class="ptRow" data-c="${esc(g.c)}">${g.list.map(({p,l},i)=>tile(p,l,gi,i,1,null)).join("")}</div></section>`).join("");
+  const groups=[...by.entries()].map(([c,list])=>({c,list,cities:cityList(c,list)})).sort((a,b)=>(a.c===OTHER)-(b.c===OTHER)||a.c.localeCompare(b.c,"en",{sensitivity:"base"}));
+  groups.forEach(g=>{if(sel[g.c]&&!g.cities.some(x=>x.k===sel[g.c]))delete sel[g.c]});
+  model={groups,grid:[],gridLabel:""};
+  box.innerHTML=groups.map((g,gi)=>`<section class="ptSec" data-gi="${gi}"><div class="ptH"><b>${flagC(g.c)} ${esc(g.c)} <span>· ${g.list.length}</span></b>${g.cities.length>1?`<button type="button" class="cPick${sel[g.c]?" on":""}" data-pick="${gi}">${esc(chipLabel(g))} ▾</button>`:""}${g.c===OTHER?"":`<button type="button" class="ptAll" data-all="${gi}">See all ›</button>`}</div><div class="ptRow" data-c="${esc(g.c)}">${rowHtml(gi)}</div></section>`).join("");
   box.querySelectorAll(".ptRow[data-c]").forEach(r=>{if(keep[r.dataset.c])r.scrollLeft=keep[r.dataset.c]})};
+ function filteredNoPlace(){const el=qp();if(!el)return filtered();const v=el.value;el.value="";const r=filtered().filter(p=>!nearScope||nearScope.ok(p));el.value=v;return r}
+ // ---- city picker (bottom list)
+ const cp=document.createElement("div");cp.id="ptCity";cp.className="ptCity";cp.hidden=true;cp.innerHTML=`<div class="ptDim"></div><div class="ptCityBox" role="dialog" aria-modal="true" aria-label="Choose a city"><div class="ptCityH"><b></b><button type="button" class="ptX" aria-label="Close">✕</button></div><div class="ptCityL"></div></div>`;document.body.appendChild(cp);
+ let cpG=-1;
+ function showCity(gi){const g=model.groups[gi];if(!g)return;cpG=gi;cp.querySelector(".ptCityH b").textContent=`Cities in ${flagC(g.c)} ${g.c}`;
+  cp.querySelector(".ptCityL").innerHTML=[`<button type="button" data-k=""${!sel[g.c]?' class="on"':""}><span>All cities</span><i>${g.list.length}</i></button>`].concat(g.cities.map(c=>`<button type="button" data-k="${esc(c.k)}"${sel[g.c]===c.k?' class="on"':""}><span>${esc(c.n)}</span><i>${c.c}</i></button>`)).join("");
+  cp.hidden=false;hpush("city")}
+ function hideCity(){cp.hidden=true}
+ cp.addEventListener("click",e=>{const t=e.target;if(t.closest(".ptX")||t.classList.contains("ptDim")){hideCity();hpop("city");return}
+  const b=t.closest("[data-k]");if(!b)return;const g=model.groups[cpG];hideCity();hpop("city");if(!g)return;
+  if(b.dataset.k)sel[g.c]=b.dataset.k;else delete sel[g.c];
+  const sec=document.querySelector(`#items .ptSec[data-gi="${cpG}"]`);if(!sec)return;const row=sec.querySelector(".ptRow");row.innerHTML=rowHtml(cpG);row.scrollLeft=0;
+  const pk=sec.querySelector(".cPick");if(pk){pk.textContent=chipLabel(g)+" ▾";pk.classList.toggle("on",!!sel[g.c])}});
+ // ---- practitioner sheet
  const sh=document.createElement("div");sh.id="ptSheet";sh.className="ptSheet";sh.hidden=true;
- sh.innerHTML=`<div class="ptDim"></div><div class="ptBox" role="dialog" aria-modal="true" aria-label="Practitioner"><span class="ptGrab"></span><button type="button" class="ptX" aria-label="Close">✕</button><div class="ptScroll"></div></div>`;
+ sh.innerHTML=`<div class="ptDim"></div><div class="ptBox" role="dialog" aria-modal="true" aria-label="Practitioner"><div class="ptTop"><button type="button" class="ptBk"><b>‹</b> <span></span></button><button type="button" class="ptX" aria-label="Close">✕</button></div><div class="ptScroll"></div></div>`;
  document.body.appendChild(sh);
- const scr=sh.querySelector(".ptScroll");let cur={list:[],i:0,c:""};
+ const scr=sh.querySelector(".ptScroll");let cur={list:[],i:0,label:""};
  function contacts(p){if(!p.consent)return `<p class="muted"><i>Not public yet</i></p>`;
-  const t=document.createElement("div");t.innerHTML=card(p);const cbs=t.querySelector(".cbs"),tel=t.querySelector("a.tel");
-  const links=(p.website?`<div class="ptWeb">🌐 ${link(p.website)}</div>`:"")+(p.website2?`<div class="ptWeb">🌐 ${link(p.website2)}</div>`:"")+(igHandle(p.instagram)?`<div class="ptWeb"><a class="igl" href="https://instagram.com/${esc(igHandle(p.instagram))}" target="_blank" rel="noopener">@${esc(igHandle(p.instagram))}</a> <small class="muted">Instagram</small></div>`:"");
-  if(me)return links+(tel?`<div class="ptWeb">📞 ${tel.outerHTML}</div>`:"")+(cbs?cbs.outerHTML:"");
-  return links+`<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to message, WhatsApp or email.</p>${cbs?cbs.outerHTML:""}<button type="button" class="gold ptLogin">Log in to contact</button></div>`}
- function paint(){const p=cur.list[cur.i];if(!p)return;const many=cur.c&&cur.list.length>1;
-  scr.innerHTML=`<div class="ptHero">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`}${many?`<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i+1} of ${cur.list.length} · ${esc(cur.c)}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>`:""}</div>
+  const t=document.createElement("div");t.innerHTML=card(p);const cbs=t.querySelector(".cbs"),tel=t.querySelector("a.tel");const ig=igHandle(p.instagram);
+  const web=(p.website?`<div class="ptWeb">🌐 ${link(p.website)}</div>`:"")+(p.website2?`<div class="ptWeb">🌐 ${link(p.website2)}</div>`:"");
+  if(me)return web+(tel?`<div class="ptWeb">📞 ${tel.outerHTML}</div>`:"")+(ig?`<div class="ptWeb"><a class="igl" href="https://instagram.com/${esc(ig)}" target="_blank" rel="noopener">${IG} @${esc(ig)}</a></div>`:"")+(cbs?cbs.outerHTML:"");
+  return web+`<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to message, WhatsApp, email${ig?" or see Instagram":""}.</p>${cbs?cbs.outerHTML:""}${ig?`<div class="cbs cbsRow"><button type="button" class="cb ig" data-gate="ig">${IG} Instagram</button></div>`:""}<button type="button" class="gold ptLogin">Log in to contact</button></div>`}
+ function paint(){const p=cur.list[cur.i];if(!p)return;const many=cur.list.length>1;
+  sh.querySelector(".ptBk span").textContent=cur.label||"Back";
+  scr.innerHTML=`<div class="ptHero">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`}${many?`<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i+1} of ${cur.list.length}${cur.label?" · "+esc(cur.label):""}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>`:""}</div>
   <div class="ptBody" data-pid="${esc(p.id||"")}"><h3>${esc(practiceTitle(p))}</h3>${String(p.practice_name||"").trim()&&p.name?`<div class="ptWho">${esc(p.name)}</div>`:""}
   <div class="ptLocs">${locLine(p)}</div><div class="chs ptMods">${(p.mods||[]).filter(Boolean).map(x=>`<span class="ch">${esc(x)}</span>`).join("")}</div>
   ${p.bio?`<div class="ptBio">${esc(p.bio)}</div><button type="button" class="ptMore">Read more</button>`:""}
   ${contacts(p)}<button type="button" class="ptMap">📍 Show on map</button></div>`;
   scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});view(p)}
- function open(list,i,c){cur={list,i,c:c||""};sh.hidden=false;document.body.classList.add("ptOpen");paint()}
- function close(){if(sh.hidden)return;sh.hidden=true;document.body.classList.remove("ptOpen")}
- const step=k=>{if(!cur.c||cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
- window.faSheetClose=close;window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
+ function open(list,i,label){cur={list,i,label:label||""};const was=!sh.hidden;sh.hidden=false;document.body.classList.add("ptOpen");paint();if(!was)hpush("sheet")}
+ function hideSheet(){sh.hidden=true;document.body.classList.remove("ptOpen")}
+ function close(){if(sh.hidden)return;hideSheet();hpop("sheet")}
+ const step=k=>{if(cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
+ window.faSheetClose=()=>{close();if(!cp.hidden){hideCity();hpop("city")}};
+ window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
  sh.addEventListener("click",e=>{const t=e.target;
-  if(t.closest(".ptX")||t.classList.contains("ptDim")){close();return}
+  if(t.closest(".ptX")||t.closest(".ptBk")||t.classList.contains("ptDim")){close();return}
   if(t.closest(".ptPrev")){step(-1);return}if(t.closest(".ptNext")){step(1);return}
   if(t.closest(".ptMore")){const b=scr.querySelector(".ptBio");if(b)b.classList.add("open");t.closest(".ptMore").hidden=true;return}
   if(t.closest(".ptLogin")){const p=cur.list[cur.i];close();pendingWa=p&&p.id||null;fillLastEmail();setMode(false);show("auth");return}
-  if(t.closest(".ptMap")){const p=cur.list[cur.i],want=cur.c&&fold(cur.c);close();show("map");setTimeout(()=>{if(!map||!p)return;map.invalidateSize();const ls=pins(p);const loc=(want&&ls.find(l=>fold(coOf(l))===want))||ls[0];if(loc)map.setView([loc.lat,loc.lng],14)},120);return}
+  if(t.closest(".ptMap")){const p=cur.list[cur.i];close();show("map");setTimeout(()=>{if(!map||!p)return;map.invalidateSize();const loc=placeLoc(p)||pins(p)[0];if(loc&&loc.lat!=null)map.setView([loc.lat,loc.lng],14)},120);return}
   if(t.closest("[data-msg]"))setTimeout(close,0)});
  let tx=0,ty=0;const bx=sh.querySelector(".ptBox");
  bx.addEventListener("touchstart",e=>{const t=e.touches[0];tx=t.clientX;ty=t.clientY},{passive:true});
  bx.addEventListener("touchend",e=>{const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)step(dx<0?1:-1)},{passive:true});
- document.addEventListener("keydown",e=>{if(sh.hidden)return;if(e.key==="Escape")close();else if(e.key==="ArrowRight")step(1);else if(e.key==="ArrowLeft")step(-1)});
- const items=$("#items");if(items)items.addEventListener("click",e=>{const a=e.target.closest(".ptAll");
-  if(a){const el=$("#qPlace");if(el){fillPlaces();const o=[...el.options].find(o=>o.value==="co:"+a.dataset.all);if(o){el.value=o.value;el.dispatchEvent(new Event("change"));const ls=$("#listSearch");if(ls)ls.scrollIntoView({block:"start"})}}return}
-  const t=e.target.closest(".ptT");if(!t)return;const g=+t.dataset.g,i=+t.dataset.i;
-  if(g<0)open(model.grid,i,"");else{const G=model.groups[g];if(G)open(G.list.map(x=>x.p),i,G.c===OTHER?"":G.c)}});
+ document.addEventListener("keydown",e=>{if(!cp.hidden&&e.key==="Escape"){hideCity();hpop("city");return}if(sh.hidden)return;if(e.key==="Escape")close();else if(e.key==="ArrowRight")step(1);else if(e.key==="ArrowLeft")step(-1)});
+ // ---- list clicks
+ const lst=$("#list");if(lst)lst.addEventListener("click",e=>{const t=e.target;
+  const nb=t.closest("[data-nav]");if(nb){if(nb.dataset.nav==="back"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}else{const pp=placeParts();if(pp)setPlaceV("co:"+pp.co)}return}
+  const fc=t.closest("[data-clr]");if(fc){const k=fc.dataset.clr;
+   if(k==="place"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}
+   else if(k==="mod"){const el=$("#listFilter");if(el){el.value="";syncModFilter("listFilter")}}
+   else if(k==="name"){const el=$("#qName");if(el){el.value="";renderList();renderMarkers()}}
+   else if(k==="near")clearNear();return}
+  const pl=t.closest("[data-pl]");if(pl){setPlaceV(pl.dataset.pl);return}
+  const pk=t.closest("[data-pick]");if(pk){showCity(+pk.dataset.pick);return}
+  const a=t.closest("[data-all]");if(a){const g=model.groups[+a.dataset.all];if(!g)return;const k=sel[g.c];const o=k&&g.cities.find(x=>x.k===k);
+   const m=document.querySelector("main");const top0=m?m.scrollTop:0;const v=o?`ci:${o.n}|${g.c}`:`co:${g.c}`;fillPlaces();
+   if(![...qp().options].some(x=>x.value===v))return;savedTop=top0;seeAll=true;hpush("seeall");setPlaceV(v);if(m)m.scrollTop=0;return}
+  const tt=t.closest(".ptT");if(!tt)return;const g=+tt.dataset.g,i=+tt.dataset.i;
+  if(g<0)open(model.grid,i,model.gridLabel);else{const G=model.groups[g];if(!G)return;const k=sel[G.c];open(inCity(G,k).map(x=>x.p),i,k?chipLabel(G):(G.c===OTHER?"Online & other":G.c))}});
  backToPract=function(pid){show("list");let n=0;const go=()=>{const p=all().find(x=>x.id===pid);n++;if(p&&(p.email||p.phone||!(p.has_email||p.whatsapp)||n>=30)){window.faOpenPract(pid);return}if(n>=30)return;setTimeout(go,200)};setTimeout(go,300)};
- try{renderList()}catch(e){}
+ try{fillPlaces();renderList()}catch(e){}
 })();
