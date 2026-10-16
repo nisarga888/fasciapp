@@ -143,7 +143,7 @@ function cardHead(p){const pn=String(p.practice_name||"").trim();return pn?`<b>$
 function igHandle(v){v=String(v||"").trim();if(!v)return"";v=v.replace(/^https?:\/\//i,"").replace(/^(www\.)?(instagram\.com|instagr\.am)\//i,"").replace(/^@/,"");v=v.split(/[/?#\s]/)[0];return /^[A-Za-z0-9._]{1,30}$/.test(v)?v:""}
 function igUrl(v){const h=igHandle(v);return h?"https://instagram.com/"+h:""}
 function link(u){if(!u)return"";const h=/^https?:\/\//.test(u)?u:"https://"+u;return `<a href="${esc(h)}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\//,""))}</a>`}
-function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill${faHLChip(m)?" hlCh":""}">${esc(m)}</span>`).join("");
+function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</span>`).join("");
  const dg=String(p.phone||"").replace(/\D/g,"");
  const msgIc=`<span class="msgIc" aria-hidden="true"><svg class="msgRing" viewBox="0 0 24 24" width="16" height="16"><circle cx="20" cy="12" r="1.1" fill="currentColor"/><circle cx="17.7" cy="17.7" r="1.1" fill="currentColor"/><circle cx="12" cy="20" r="1.1" fill="currentColor"/><circle cx="6.3" cy="17.7" r="1.1" fill="currentColor"/><circle cx="4" cy="12" r="1.1" fill="currentColor"/><circle cx="6.3" cy="6.3" r="1.1" fill="currentColor"/><circle cx="12" cy="4" r="1.1" fill="currentColor"/><circle cx="17.7" cy="6.3" r="1.1" fill="currentColor"/></svg><svg class="msgBub" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h11a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3H12l-3.2 2.8V17H4.5a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3z"/></svg></span>`;
  const canMsg=me?MSG_ON&&MSG_OK&&!!(p.user_id&&p.user_id!==me.user_id):MSG_ON&&!!p.user_id;
@@ -155,7 +155,7 @@ function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill${faHLChip(m)
  const igH=faIg(p),igB=!me&&igH?`<button type="button" class="cb ig" data-gate="ig"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Instagram</button>`:"";
  const cbs=(msgBtn||wa||mail||igB)?`<div class="cbs cbsRow">${msgBtn}${wa}${mail}${igB}</div>`:"";
  const c=p.consent?phone+(p.website&&faWebOk(p.website)?`<br>🌐 ${link(p.website)}`:"")+(p.website2&&faWebOk(p.website2)?`<br>🌐 ${link(p.website2)}`:"")+(me&&faIg(p)?`<br><a class="igl" href="https://instagram.com/${esc(faIg(p))}" target="_blank" rel="noopener" aria-label="Instagram @${esc(faIg(p))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @${esc(faIg(p))}</a>`:"")+cbs:"<br><i>Not public yet</i>";
-  return `<div class="row"${p.id?` data-pid="${esc(p.id)}"`:""}>${av(p)}<div>${faIsHL(p)?`<div class="popHl">${faSeal(20)} ${faHLLine(p)}</div>`:""}${cardHead(p)}<br>${pills}<br><span class="locs">${locLine(p)}</span>${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
+  return `<div class="row"${p.id?` data-pid="${esc(p.id)}"`:""}>${av(p)}<div>${cardHead(p)}<br>${pills}<br><span class="locs">${locLine(p)}</span>${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
 function pinModsHtml(p){const mods=(p.mods||[]).map(m=>String(m||"").trim()).filter(Boolean);if(!mods.length)return"";
  const show=mods.slice(0,2),extra=mods.length-2;
  const chips=show.map(m=>`<i>${esc(m)}</i>`).join('<span class="dot">·</span>');
@@ -176,10 +176,9 @@ function spiderfy(entries){const TH=0.0009,used=new Set(),placed=entries.map(e=>
  return placed}
 function labelsOn(){return!!map&&map.getZoom()>=labelZoom}
 function pinIcon(p,side,loc,withLabel){if(withLabel==null)withLabel=labelsOn();
- const hc=faIsHL(p)?" hlA":faHLOnly?" pinDim":"",hs=faIsHL(p)?`<span class="pSeal">${faSeal(18)}</span>`:"";
- if(!withLabel){return L.divIcon({className:"avm",html:`<div class="pin bare${hc}">${av(p)}${hs}</div>`,iconSize:[44,44],iconAnchor:[22,22]})}
+  if(!withLabel){return L.divIcon({className:"avm",html:`<div class="pin bare">${av(p)}</div>`,iconSize:[44,44],iconAnchor:[22,22]})}
  const title=practiceTitle(p),mods=pinModsHtml(p);
- const html=`<div class="pin ${side==="left"?"left":""}${hc}">${av(p)}${hs}<span class="pinlab"><span class="pintitle">${esc(title)}</span>${mods}</span></div>`;
+ const html=`<div class="pin ${side==="left"?"left":""}">${av(p)}<span class="pinlab"><span class="pintitle">${esc(title)}</span>${mods}</span></div>`;
  return L.divIcon({className:"avm",html,iconSize:[188,78],iconAnchor:side==="left"?[166,39]:[22,39]})}
 
 // map
@@ -199,8 +198,7 @@ const LiteCluster=L.LayerGroup.extend({initialize(o){L.LayerGroup.prototype.init
    if(g){g.k.push(x);g.x=(g.x*(g.k.length-1)+pt.x)/g.k.length;g.y=(g.y*(g.k.length-1)+pt.y)/g.k.length}else groups.push({x:pt.x,y:pt.y,k:[x]})});
   groups.forEach(g=>{if(g.k.length===1){this.shown.addLayer(g.k[0]);return}
    const n=g.k.length,size=n<8?40:n<20?48:56,ll=m.unproject(L.point(g.x,g.y),z);
-   const hu=new Set();g.k.forEach(x=>{const d=x.options.fa;if(d&&d.p&&faIsHL(d.p))hu.add(d.p.id||d.p.user_id||d.p.name)});const hn=hu.size;
-   const c=L.marker(ll,{icon:L.divIcon({html:`<div class="clbub${hn?" clGold":""}" style="--s:${size}px"><b>${n}</b></div>${hn?`<span class="clHl">${faSeal(13)} ${hn}</span>`:""}`,className:"clicon"+(faHLOnly&&!hn?" clDim":""),iconSize:[size,size],iconAnchor:[size/2,size/2]}),zIndexOffset:1000});
+   const c=L.marker(ll,{icon:L.divIcon({html:`<div class="clbub" style="--s:${size}px"><b>${n}</b></div>`,className:"clicon",iconSize:[size,size],iconAnchor:[size/2,size/2]}),zIndexOffset:1000});
    c.on("click",()=>{const b=L.latLngBounds(g.k.map(x=>x.getLatLng()));let need;try{need=m.getBoundsZoom(b,false,L.point(48,48))}catch(e){need=z}
     if(need<=z+0.01||b.getNorthEast().equals(b.getSouthWest())){const u=new Map();g.k.forEach(x=>{const d=x.options.fa;if(d&&d.p)u.set(d.p.id||d.p.user_id||d.p.name,d.p)});if(u.size)openClusterSheet([...u.values()])}
     else m.fitBounds(b,{padding:[48,48],maxZoom:Math.min(16,need)})});
@@ -522,7 +520,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.92";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.93";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -641,7 +639,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.92: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.93: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
@@ -665,7 +663,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
  btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
  $("#labJoin").onclick=()=>{close();if(window.faAuthFor)faAuthFor(true,"lab");else{setMode(true);show("auth")}};
  btn.hidden=!!me})();
-// ===== v0.23.92: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
+// ===== v0.23.93: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
 (function(){const PLUS='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
  const mk=(id,cls)=>{const b=document.createElement("button");b.type="button";b.id=id;b.className="joinBtn "+cls;b.innerHTML=PLUS+"<span>Join as a practitioner</span>";b.hidden=true;b.onclick=go;return b};
  const fab=mk("joinFab","joinFab"),lst=mk("joinList","joinList");
@@ -678,7 +676,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
   if(id===uid&&has){paint();return}uid=id;const n=++seq;paint();
   const p=await DB.mine().catch(()=>null);if(n!==seq)return;has=!!(p&&(p.name||p.address||p.city));paint()};
  faJoinUpd()})();
-// ===== v0.23.92: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
+// ===== v0.23.93: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
 // Display-only city names: merge local spellings, drop district/postcode/state suffixes, fix ALL CAPS (database values are untouched)
 // Instagram is members-only: a website field that points to Instagram counts as Instagram
 function faWebOk(u){return !/(^|\/\/|\.)(instagram\.com|instagr\.am)(\/|$)/i.test(String(u||"").trim().replace(/^https?:\/\//i,"//"))}
@@ -792,7 +790,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const step=k=>{if(cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
  window.faSheetClose=()=>{close();if(!cp.hidden){hideCity();hpop("city")}};
  openNJ=function(id){const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,21);let i=ps.findIndex(p=>p.id===id);if(i<0){const p=all().find(x=>x.id===id);if(!p)return;open([p],0,"Newly joined","newly_joined");return}open(ps,i,"Newly joined","newly_joined")};
- // v0.23.92: my own listing exactly as a logged-out visitor sees it (no view stat)
+ // v0.23.93: my own listing exactly as a logged-out visitor sees it (no view stat)
  window.faPreviewMe=p=>{const sv=me;me=null;try{sh.classList.add("selfPrev");open([p],0,"My profile","self_preview")}finally{me=sv}};
  window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
  sh.addEventListener("click",e=>{const t=e.target;
@@ -825,7 +823,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  try{fillPlaces();renderList()}catch(e){}
 })();
 
-// ===== v0.23.92: social-style My profile: header card + focused edit sheets =====
+// ===== v0.23.93: social-style My profile: header card + focused edit sheets =====
 // The existing #profForm stays the single source of fields + save logic; each sheet shows one section of it.
 const PE_SECS={photo:["📷","Photo & name"],mods:["🌿","Practices"],locs:["📍","Locations"],about:["✍️","About you"],contacts:["💬","Contacts & links"]};
 let peSec="",peSnap="",peBusy=false;
@@ -910,7 +908,7 @@ bSet.addEventListener("change",async e=>{const c=e.target.closest("[data-tgl]");
  else{fm[k].checked=!on;c.checked=!on;bm.textContent=$("#status").textContent||"Could not save."}
  bSet.querySelectorAll("[data-tgl]").forEach(x=>x.disabled=false)});
 
-// ===== v0.23.92: MER & BBTRS highlight: gold seal, always sorted first, featured city row, filter =====
+// ===== v0.23.93: MER & BBTRS highlight: gold seal, always sorted first, featured city row, filter =====
 // Detection: an exact "MER" or "BBTRS" entry in the practices list (mods); "MER Coaching" etc. do not count.
 var faHLOnly=false;
 function faHL(p){const m=((p&&p.mods)||[]).map(x=>String(x||"").trim().toUpperCase());return{mer:m.includes("MER"),bb:m.includes("BBTRS")}}
@@ -930,5 +928,4 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
  if(k==="only")faHLOnly=!faHLOnly;else{const lf=$("#listFilter");if(!lf)return;lf.value=lf.value===k?"":([...lf.options].some(o=>o.value===k)?k:"")}
  faHLPaint();syncModFilter()});
 
-document.querySelectorAll('.hlChip[data-hl="only"]').forEach(b=>{b.innerHTML=faSeal(16)+" MER &amp; BBTRS only"});
 document.querySelectorAll('#hlChips .hlChip[data-hl]').forEach(b=>{b.innerHTML=faSeal(16)+" "+b.dataset.hl});
