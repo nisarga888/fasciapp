@@ -152,8 +152,9 @@ function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</
  const wa=!me?(p.whatsapp?`<button type="button" class="cb wa" data-gate="wa">${WA} WhatsApp</button>`:""):p.phone&&p.whatsapp&&dg?`<a class="cb wa" href="https://wa.me/${dg}" target="_blank" rel="noopener">${WA} WhatsApp</a>`:"";
  const mail=!me?(p.has_email||p.email?`<button type="button" class="cb mail" data-gate="mail">✉️ Email</button>`:""):p.email?`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`:"";
  const phone=me&&p.phone?`<br><a class="tel" href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`:"";
- const cbs=(msgBtn||wa||mail)?`<div class="cbs cbsRow">${msgBtn}${wa}${mail}</div>`:"";
- const c=p.consent?phone+(p.website?`<br>🌐 ${link(p.website)}`:"")+(p.website2?`<br>🌐 ${link(p.website2)}`:"")+(igHandle(p.instagram)?`<br><a class="igl" href="https://instagram.com/${esc(igHandle(p.instagram))}" target="_blank" rel="noopener" aria-label="Instagram @${esc(igHandle(p.instagram))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @${esc(igHandle(p.instagram))}</a>`:"")+cbs:"<br><i>Not public yet</i>";
+ const igH=faIg(p),igB=!me&&igH?`<button type="button" class="cb ig" data-gate="ig"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Instagram</button>`:"";
+ const cbs=(msgBtn||wa||mail||igB)?`<div class="cbs cbsRow">${msgBtn}${wa}${mail}${igB}</div>`:"";
+ const c=p.consent?phone+(p.website&&faWebOk(p.website)?`<br>🌐 ${link(p.website)}`:"")+(p.website2&&faWebOk(p.website2)?`<br>🌐 ${link(p.website2)}`:"")+(me&&faIg(p)?`<br><a class="igl" href="https://instagram.com/${esc(faIg(p))}" target="_blank" rel="noopener" aria-label="Instagram @${esc(faIg(p))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @${esc(faIg(p))}</a>`:"")+cbs:"<br><i>Not public yet</i>";
   return `<div class="row"${p.id?` data-pid="${esc(p.id)}"`:""}>${av(p)}<div>${cardHead(p)}<br>${pills}<br><span class="locs">${locLine(p)}</span>${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
 function pinModsHtml(p){const mods=(p.mods||[]).map(m=>String(m||"").trim()).filter(Boolean);if(!mods.length)return"";
  const show=mods.slice(0,2),extra=mods.length-2;
@@ -519,7 +520,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.83";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.84";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -638,7 +639,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.83: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.84: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
@@ -662,7 +663,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
  btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
  $("#labJoin").onclick=()=>{close();if(window.faAuthFor)faAuthFor(true,"lab");else{setMode(true);show("auth")}};
  btn.hidden=!!me})();
-// ===== v0.23.83: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
+// ===== v0.23.84: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
 (function(){const PLUS='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
  const mk=(id,cls)=>{const b=document.createElement("button");b.type="button";b.id=id;b.className="joinBtn "+cls;b.innerHTML=PLUS+"<span>Join as a practitioner</span>";b.hidden=true;b.onclick=go;return b};
  const fab=mk("joinFab","joinFab"),lst=mk("joinList","joinList");
@@ -675,8 +676,11 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
   if(id===uid&&has){paint();return}uid=id;const n=++seq;paint();
   const p=await DB.mine().catch(()=>null);if(n!==seq)return;has=!!(p&&(p.name||p.address||p.city));paint()};
  faJoinUpd()})();
-// ===== v0.23.83: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
+// ===== v0.23.84: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
 // Display-only city names: merge local spellings, drop district/postcode/state suffixes, fix ALL CAPS (database values are untouched)
+// Instagram is members-only: a website field that points to Instagram counts as Instagram
+function faWebOk(u){return !/(^|\/\/|\.)(instagram\.com|instagr\.am)(\/|$)/i.test(String(u||"").trim().replace(/^https?:\/\//i,"//"))}
+function faIg(p){return igHandle(p.instagram)||[p.website,p.website2].map(u=>!faWebOk(u)?igHandle(u):"").find(Boolean)||""}
 function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  c=c.replace(/\s+[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/,"").replace(/\s+[A-Z]{2,3}$/,"").trim();
  const A={warszawa:"Warsaw",munchen:"Munich",koln:"Cologne",wien:"Vienna",praha:"Prague",lisboa:"Lisbon",roma:"Rome",milano:"Milan",firenze:"Florence",venezia:"Venice",napoli:"Naples",krakow:"Kraków",bruxelles:"Brussels",brussel:"Brussels",kobenhavn:"Copenhagen",athina:"Athens",nurnberg:"Nuremberg"};
@@ -691,7 +695,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const placeParts=()=>{const v=placeV();if(v.startsWith("co:"))return{co:v.slice(3),ci:""};if(v.startsWith("ci:")){const [ci,co]=v.slice(3).split("|");return{co,ci}}return null};
  const placeLoc=p=>{const pp=placeParts();if(!pp)return null;const c=fold(pp.co),ci=fold(pp.ci);return L0(p).find(l=>fold(l.country||"")===c&&(!ci||fold(faCity(l.city))===ci))};
  const src=()=>nearScope?"near-me":(((($("#qName")||{}).value||"").trim()||placeV())?"search":"list");
- const view=p=>{try{const s=src();window.FA_ev&&FA_ev("pract_view",{pid:p.id,source:s,once:"v"+p.id+s})}catch(e){}};
+ let srcOv="";const view=p=>{try{const s=srcOv||src();window.FA_ev&&FA_ev("pract_view",{pid:p.id,source:s,once:"v"+p.id+s})}catch(e){}};
  const chips=(p,n)=>{const m=(p.mods||[]).filter(Boolean);return m.slice(0,n).map(x=>`<span class="ch">${esc(x)}</span>`).join("")+(m.length>n?`<span class="ch more">+${m.length-n}</span>`:"")};
  const pic=p=>p.photo?`<img src="${esc(p.photo)}" alt="" loading="lazy" decoding="async">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`;
  const nm=p=>String(p.name||"").trim()||practiceTitle(p);
@@ -762,10 +766,10 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  document.body.appendChild(sh);
  const scr=sh.querySelector(".ptScroll");let cur={list:[],i:0,label:""};
  function contacts(p){if(!p.consent)return `<p class="muted"><i>Not public yet</i></p>`;
-  const t=document.createElement("div");t.innerHTML=card(p);const cbs=t.querySelector(".cbs"),tel=t.querySelector("a.tel");const ig=igHandle(p.instagram);
-  const web=(p.website?`<div class="ptWeb">🌐 ${link(p.website)}</div>`:"")+(p.website2?`<div class="ptWeb">🌐 ${link(p.website2)}</div>`:"");
+  const t=document.createElement("div");t.innerHTML=card(p);const cbs=t.querySelector(".cbs"),tel=t.querySelector("a.tel");const ig=faIg(p);
+  const web=(p.website&&faWebOk(p.website)?`<div class="ptWeb">🌐 ${link(p.website)}</div>`:"")+(p.website2&&faWebOk(p.website2)?`<div class="ptWeb">🌐 ${link(p.website2)}</div>`:"");
   if(me)return web+(tel?`<div class="ptWeb">📞 ${tel.outerHTML}</div>`:"")+(ig?`<div class="ptWeb"><a class="igl" href="https://instagram.com/${esc(ig)}" target="_blank" rel="noopener">${IG} @${esc(ig)}</a></div>`:"")+(cbs?cbs.outerHTML:"");
-  return web+`<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to message, WhatsApp, email${ig?" or see Instagram":""}.</p>${cbs?cbs.outerHTML:""}${ig?`<div class="cbs cbsRow"><button type="button" class="cb ig" data-gate="ig">${IG} Instagram</button></div>`:""}<button type="button" class="gold ptLogin">Log in to contact</button></div>`}
+  return web+`<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to message, WhatsApp, email${ig?" or see Instagram":""}.</p>${cbs?cbs.outerHTML:""}<button type="button" class="gold ptLogin">Log in to contact</button></div>`}
  function paint(){const p=cur.list[cur.i];if(!p)return;const many=cur.list.length>1;
   sh.querySelector(".ptBk span").textContent=cur.label||"Back";
   scr.innerHTML=`<div class="ptHero">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`}${many?`<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i+1} of ${cur.list.length}${cur.label?" · "+esc(cur.label):""}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>`:""}</div>
@@ -774,11 +778,12 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   ${p.bio?`<div class="ptBio">${esc(p.bio)}</div><button type="button" class="ptMore">Read more</button>`:""}
   ${contacts(p)}<button type="button" class="ptMap">📍 Show on map</button></div>`;
   scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});view(p)}
- function open(list,i,label){cur={list,i,label:label||""};const was=!sh.hidden;sh.hidden=false;document.body.classList.add("ptOpen");paint();if(!was)hpush("sheet")}
+ function open(list,i,label,so){srcOv=so||"";cur={list,i,label:label||""};const was=!sh.hidden;sh.hidden=false;document.body.classList.add("ptOpen");paint();if(!was)hpush("sheet")}
  function hideSheet(){sh.hidden=true;document.body.classList.remove("ptOpen")}
  function close(){if(sh.hidden)return;hideSheet();hpop("sheet")}
  const step=k=>{if(cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
  window.faSheetClose=()=>{close();if(!cp.hidden){hideCity();hpop("city")}};
+ openNJ=function(id){const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,21);let i=ps.findIndex(p=>p.id===id);if(i<0){const p=all().find(x=>x.id===id);if(!p)return;open([p],0,"Newly joined","newly_joined");return}open(ps,i,"Newly joined","newly_joined")};
  window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
  sh.addEventListener("click",e=>{const t=e.target;
   if(t.closest(".ptX")||t.closest(".ptBk")||t.classList.contains("ptDim")){close();return}

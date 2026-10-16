@@ -578,3 +578,6 @@ body.ptOpen{overflow:hidden}
 .ptCityL button i{font-style:normal;color:#9fb3b5;font-size:13px}
 .ptCityL button.on{color:#C99E67;font-weight:700}.ptCityL button.on span:after{content:" ✓"}
 .ptBody .cb.ig{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#0a2a30;color:#C99E67;border:1px solid #C99E6788}
+/* v0.23.84: Instagram members-only in cards */
+.cb.ig{display:inline-flex;align-items:center;justify-content:center;gap:6px}.cbsRow .cb.ig{grid-column:1/-1}
+.ptT .ptOv small{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25;word-break:break-word}
