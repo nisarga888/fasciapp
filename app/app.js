@@ -519,7 +519,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.79";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.80";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -638,7 +638,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.79: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.80: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";

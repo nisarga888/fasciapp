@@ -1,0 +1,9 @@
+# Not part of the served site (kept locally only)
+node_modules/
+package.json
+package-lock.json
+*.mjs
+*.sql
+*.pre-*.html
+*.csv
+.env*
