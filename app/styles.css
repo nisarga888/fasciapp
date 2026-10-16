@@ -581,3 +581,10 @@ body.ptOpen{overflow:hidden}
 /* v0.23.84: Instagram members-only in cards */
 .cb.ig{display:inline-flex;align-items:center;justify-content:center;gap:6px}.cbsRow .cb.ig{grid-column:1/-1}
 .ptT .ptOv small{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25;word-break:break-word}
+/* v0.23.85: contact buttons as a wrapping flex row (fixes iOS Safari grid collapse) */
+.cbsRow{display:flex!important;flex-wrap:wrap;gap:6px;width:100%;grid-template-columns:none}
+.cbsRow .cb,.cbsRow .cb.msg{flex:1 1 auto;width:auto;min-width:max-content;max-width:100%;box-sizing:border-box;justify-content:center;white-space:nowrap;position:static;margin:0}
+.cbsRow .cb.ig,.ptBody .cbsRow .cb.ig{flex:1 1 100%;min-width:0}
+/* v0.23.85: tile city more visible */
+.ptT .ptOv small{color:#e8f0f0;font-size:12.5px;font-weight:600;margin-top:2px;text-shadow:0 1px 2px #000a}
+.ptGrid .ptT .ptOv small{font-size:13.5px}
