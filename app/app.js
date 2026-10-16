@@ -143,7 +143,7 @@ function cardHead(p){const pn=String(p.practice_name||"").trim();return pn?`<b>$
 function igHandle(v){v=String(v||"").trim();if(!v)return"";v=v.replace(/^https?:\/\//i,"").replace(/^(www\.)?(instagram\.com|instagr\.am)\//i,"").replace(/^@/,"");v=v.split(/[/?#\s]/)[0];return /^[A-Za-z0-9._]{1,30}$/.test(v)?v:""}
 function igUrl(v){const h=igHandle(v);return h?"https://instagram.com/"+h:""}
 function link(u){if(!u)return"";const h=/^https?:\/\//.test(u)?u:"https://"+u;return `<a href="${esc(h)}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\//,""))}</a>`}
-function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</span>`).join("");
+function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill${faHLChip(m)?" hlCh":""}">${esc(m)}</span>`).join("");
  const dg=String(p.phone||"").replace(/\D/g,"");
  const msgIc=`<span class="msgIc" aria-hidden="true"><svg class="msgRing" viewBox="0 0 24 24" width="16" height="16"><circle cx="20" cy="12" r="1.1" fill="currentColor"/><circle cx="17.7" cy="17.7" r="1.1" fill="currentColor"/><circle cx="12" cy="20" r="1.1" fill="currentColor"/><circle cx="6.3" cy="17.7" r="1.1" fill="currentColor"/><circle cx="4" cy="12" r="1.1" fill="currentColor"/><circle cx="6.3" cy="6.3" r="1.1" fill="currentColor"/><circle cx="12" cy="4" r="1.1" fill="currentColor"/><circle cx="17.7" cy="6.3" r="1.1" fill="currentColor"/></svg><svg class="msgBub" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h11a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3H12l-3.2 2.8V17H4.5a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3z"/></svg></span>`;
  const canMsg=me?MSG_ON&&MSG_OK&&!!(p.user_id&&p.user_id!==me.user_id):MSG_ON&&!!p.user_id;
@@ -155,7 +155,7 @@ function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</
  const igH=faIg(p),igB=!me&&igH?`<button type="button" class="cb ig" data-gate="ig"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Instagram</button>`:"";
  const cbs=(msgBtn||wa||mail||igB)?`<div class="cbs cbsRow">${msgBtn}${wa}${mail}${igB}</div>`:"";
  const c=p.consent?phone+(p.website&&faWebOk(p.website)?`<br>🌐 ${link(p.website)}`:"")+(p.website2&&faWebOk(p.website2)?`<br>🌐 ${link(p.website2)}`:"")+(me&&faIg(p)?`<br><a class="igl" href="https://instagram.com/${esc(faIg(p))}" target="_blank" rel="noopener" aria-label="Instagram @${esc(faIg(p))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @${esc(faIg(p))}</a>`:"")+cbs:"<br><i>Not public yet</i>";
-  return `<div class="row"${p.id?` data-pid="${esc(p.id)}"`:""}>${av(p)}<div>${cardHead(p)}<br>${pills}<br><span class="locs">${locLine(p)}</span>${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
+  return `<div class="row"${p.id?` data-pid="${esc(p.id)}"`:""}>${av(p)}<div>${faIsHL(p)?`<div class="popHl">${faSeal(20)} ${faHLLine(p)}</div>`:""}${cardHead(p)}<br>${pills}<br><span class="locs">${locLine(p)}</span>${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
 function pinModsHtml(p){const mods=(p.mods||[]).map(m=>String(m||"").trim()).filter(Boolean);if(!mods.length)return"";
  const show=mods.slice(0,2),extra=mods.length-2;
  const chips=show.map(m=>`<i>${esc(m)}</i>`).join('<span class="dot">·</span>');
@@ -176,9 +176,10 @@ function spiderfy(entries){const TH=0.0009,used=new Set(),placed=entries.map(e=>
  return placed}
 function labelsOn(){return!!map&&map.getZoom()>=labelZoom}
 function pinIcon(p,side,loc,withLabel){if(withLabel==null)withLabel=labelsOn();
- if(!withLabel){return L.divIcon({className:"avm",html:`<div class="pin bare">${av(p)}</div>`,iconSize:[44,44],iconAnchor:[22,22]})}
+ const hc=faIsHL(p)?" hlA":faHLOnly?" pinDim":"",hs=faIsHL(p)?`<span class="pSeal">${faSeal(18)}</span>`:"";
+ if(!withLabel){return L.divIcon({className:"avm",html:`<div class="pin bare${hc}">${av(p)}${hs}</div>`,iconSize:[44,44],iconAnchor:[22,22]})}
  const title=practiceTitle(p),mods=pinModsHtml(p);
- const html=`<div class="pin ${side==="left"?"left":""}">${av(p)}<span class="pinlab"><span class="pintitle">${esc(title)}</span>${mods}</span></div>`;
+ const html=`<div class="pin ${side==="left"?"left":""}${hc}">${av(p)}${hs}<span class="pinlab"><span class="pintitle">${esc(title)}</span>${mods}</span></div>`;
  return L.divIcon({className:"avm",html,iconSize:[188,78],iconAnchor:side==="left"?[166,39]:[22,39]})}
 
 // map
@@ -198,7 +199,8 @@ const LiteCluster=L.LayerGroup.extend({initialize(o){L.LayerGroup.prototype.init
    if(g){g.k.push(x);g.x=(g.x*(g.k.length-1)+pt.x)/g.k.length;g.y=(g.y*(g.k.length-1)+pt.y)/g.k.length}else groups.push({x:pt.x,y:pt.y,k:[x]})});
   groups.forEach(g=>{if(g.k.length===1){this.shown.addLayer(g.k[0]);return}
    const n=g.k.length,size=n<8?40:n<20?48:56,ll=m.unproject(L.point(g.x,g.y),z);
-   const c=L.marker(ll,{icon:L.divIcon({html:`<div class="clbub" style="--s:${size}px"><b>${n}</b></div>`,className:"clicon",iconSize:[size,size],iconAnchor:[size/2,size/2]}),zIndexOffset:1000});
+   const hu=new Set();g.k.forEach(x=>{const d=x.options.fa;if(d&&d.p&&faIsHL(d.p))hu.add(d.p.id||d.p.user_id||d.p.name)});const hn=hu.size;
+   const c=L.marker(ll,{icon:L.divIcon({html:`<div class="clbub${hn?" clGold":""}" style="--s:${size}px"><b>${n}</b></div>${hn?`<span class="clHl">${faSeal(13)} ${hn}</span>`:""}`,className:"clicon"+(faHLOnly&&!hn?" clDim":""),iconSize:[size,size],iconAnchor:[size/2,size/2]}),zIndexOffset:1000});
    c.on("click",()=>{const b=L.latLngBounds(g.k.map(x=>x.getLatLng()));let need;try{need=m.getBoundsZoom(b,false,L.point(48,48))}catch(e){need=z}
     if(need<=z+0.01||b.getNorthEast().equals(b.getSouthWest())){const u=new Map();g.k.forEach(x=>{const d=x.options.fa;if(d&&d.p)u.set(d.p.id||d.p.user_id||d.p.name,d.p)});if(u.size)openClusterSheet([...u.values()])}
     else m.fitBounds(b,{padding:[48,48],maxZoom:Math.min(16,need)})});
@@ -221,7 +223,7 @@ function onClusterClick(e){if(!map||!e.layer)return;const cluster=e.layer,bounds
   kids.forEach(m=>{const d=m.options&&m.options.fa;if(d&&d.p)uniq.set(d.p.id||d.p.user_id||d.p.name,d.p)});
   if(uniq.size){openClusterSheet([...uniq.values()]);}}}
 function openClusterSheet(list){const sheet=$("#areaSheet"),back=$("#sheetBackdrop"),box=$("#sheetList");
- if(!sheet)return;$("#sheetSub").textContent=list.length+" practitioner"+(list.length>1?"s":"");
+ if(!sheet)return;list=list.slice().sort(faHLCmp);$("#sheetSub").textContent=list.length+" practitioner"+(list.length>1?"s":"");
  box.innerHTML=list.map(p=>`<div class="item sheetItem" data-id="${esc(p.id||p.user_id||"")}">${card(p)}</div>`).join("");
  sheet.hidden=false;back.hidden=false;
  $$("#sheetList .sheetItem").forEach(el=>el.onclick=()=>{const id=el.dataset.id;const p=list.find(x=>(x.id||x.user_id)===id)||list[0];closeClusterSheet();if(p&&map){const loc=pins(p)[0];if(loc)map.setView([loc.lat,loc.lng],14);}})}
@@ -520,7 +522,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.90";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.91";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -639,7 +641,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.90: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.91: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
@@ -663,7 +665,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
  btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
  $("#labJoin").onclick=()=>{close();if(window.faAuthFor)faAuthFor(true,"lab");else{setMode(true);show("auth")}};
  btn.hidden=!!me})();
-// ===== v0.23.90: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
+// ===== v0.23.91: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
 (function(){const PLUS='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
  const mk=(id,cls)=>{const b=document.createElement("button");b.type="button";b.id=id;b.className="joinBtn "+cls;b.innerHTML=PLUS+"<span>Join as a practitioner</span>";b.hidden=true;b.onclick=go;return b};
  const fab=mk("joinFab","joinFab"),lst=mk("joinList","joinList");
@@ -676,7 +678,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
   if(id===uid&&has){paint();return}uid=id;const n=++seq;paint();
   const p=await DB.mine().catch(()=>null);if(n!==seq)return;has=!!(p&&(p.name||p.address||p.city));paint()};
  faJoinUpd()})();
-// ===== v0.23.90: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
+// ===== v0.23.91: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
 // Display-only city names: merge local spellings, drop district/postcode/state suffixes, fix ALL CAPS (database values are untouched)
 // Instagram is members-only: a website field that points to Instagram counts as Instagram
 function faWebOk(u){return !/(^|\/\/|\.)(instagram\.com|instagr\.am)(\/|$)/i.test(String(u||"").trim().replace(/^https?:\/\//i,"//"))}
@@ -696,7 +698,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const placeLoc=p=>{const pp=placeParts();if(!pp)return null;const c=fold(pp.co),ci=fold(pp.ci);return L0(p).find(l=>fold(l.country||"")===c&&(!ci||fold(faCity(l.city))===ci))};
  const src=()=>nearScope?"near-me":(((($("#qName")||{}).value||"").trim()||placeV())?"search":"list");
  let srcOv="";const view=p=>{try{const s=srcOv||src();window.FA_ev&&FA_ev("pract_view",{pid:p.id,source:s,once:"v"+p.id+s})}catch(e){}};
- const chips=(p,n)=>{const m=(p.mods||[]).filter(Boolean);return m.slice(0,n).map(x=>`<span class="ch">${esc(x)}</span>`).join("")+(m.length>n?`<span class="ch more">+${m.length-n}</span>`:"")};
+ const chips=(p,n)=>{const m=(p.mods||[]).filter(Boolean);return m.slice(0,n).map(x=>`<span class="ch${faHLChip(x)?" hlCh":""}">${esc(x)}</span>`).join("")+(m.length>n?`<span class="ch more">+${m.length-n}</span>`:"")};
  const pic=p=>p.photo?`<img src="${esc(p.photo)}" alt="" loading="lazy" decoding="async">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`;
  const nm=p=>String(p.name||"").trim()||practiceTitle(p);
  const flagC=c=>c===OTHER?"🌐":flagOf(c);
@@ -712,17 +714,19 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const cityList=(c,list)=>{const m=new Map();list.forEach(({p})=>{const seen=new Set();L0(p).filter(l=>(coOf(l)||OTHER)===c).forEach(l=>{const n=cityOf(l);if(!n)return;const k=fold(n);if(seen.has(k))return;seen.add(k);const o=m.get(k)||{k,n,c:0};o.c++;m.set(k,o)})});return[...m.values()].sort((a,b)=>b.c-a.c||a.n.localeCompare(b.n,"en",{sensitivity:"base"}))};
  const inCity=(g,k)=>!k?g.list:g.list.map(({p})=>{const l=L0(p).find(l=>(coOf(l)||OTHER)===g.c&&fold(cityOf(l))===k);return l?{p,l}:null}).filter(Boolean);
  function tile(p,loc,g,i,nCh,d){const co=loc?coOf(loc):"";const fl=co?flagOf(co):"";const city=cityOf(loc)||co;
-  return `<button type="button" class="ptT" data-tid="${esc(p.id||"")}" data-g="${g}" data-i="${i}" aria-label="${esc(practiceTitle(p))}${city?", "+esc(city):""}">${pic(p)}${d!=null?`<span class="ptKm">${Math.round(d)} km</span>`:""}<span class="ptOv"><b>${esc(nm(p))}</b><small>📍 ${fl?fl+" ":""}${esc(city)}</small><span class="chs">${chips(p,nCh)}</span></span></button>`}
+  const hl=faIsHL(p);
+  return `<button type="button" class="ptT${hl?" hlA":""}" data-tid="${esc(p.id||"")}" data-g="${g}" data-i="${i}" aria-label="${esc(practiceTitle(p))}${city?", "+esc(city):""}">${pic(p)}${d!=null?`<span class="ptKm">${Math.round(d)} km</span>`:""}<span class="ptOv"><b>${esc(nm(p))}</b><small>📍 ${fl?fl+" ":""}${esc(city)}</small><span class="chs">${chips(p,nCh)}</span></span>${hl?`<span class="aSeal">${faSeal(32)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}</button>`}
  function rowHtml(gi){const g=model.groups[gi];const list=inCity(g,sel[g.c]);return list.map(({p,l},i)=>tile(p,l,gi,i,1,null)).join("")}
  function chipLabel(g){const k=sel[g.c];if(!k)return"All cities";const o=g.cities.find(x=>x.k===k);return o?o.n:"All cities"}
  function nav(){const box=$("#listNav"),pp=placeParts(),lst=$("#list");const on=!!pp;if(lst)lst.classList.toggle("ptPlace",on);if(!box)return;box.hidden=!on;if(!on){box.innerHTML="";return}
   box.innerHTML=`<button type="button" class="ptBack" data-nav="back"><b>‹</b> All countries</button><span class="ptCrumb">${pp.ci?`<button type="button" data-nav="co">${flagOf(pp.co)} ${esc(pp.co)}</button><em>›</em><b>${esc(pp.ci)}</b>`:`<b>${flagOf(pp.co)} ${esc(pp.co)}</b>`}</span>`}
  function setPlaceV(v){const el=qp();if(!el)return;fillPlaces();if(v&&![...el.options].some(o=>o.value===v))return;el.value=v;el.dispatchEvent(new Event("change"))}
  function leaveSeeAll(){const top=savedTop,was=seeAll;seeAll=false;const el=qp();if(el&&el.value){el.value="";el.dispatchEvent(new Event("change"))}else renderList();if(was)requestAnimationFrame(()=>{const m=document.querySelector("main");if(m)m.scrollTop=top})}
- renderList=function(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));
+ renderList=function(){renderNewJ();faHLPaint();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).filter(p=>!faHLOnly||faIsHL(p)).map(p=>({p,d:dist(p)}));
   const _pe=qp(),n=ps.length,q=placeV(),mod=($("#listFilter")&&$("#listFilter").value)||"",nameQ=(($("#qName")||{}).value||"").trim();
   const active=!!(nearScope||q||mod||nameQ);
-  if(here&&active)ps.sort((a,b)=>a.d-b.d);else ps.sort((a,b)=>azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
+  // MER & BBTRS always first, then the usual order
+  if(here&&active)ps.sort((a,b)=>faHLCmp(a.p,b.p)||a.d-b.d);else ps.sort((a,b)=>faHLCmp(a.p,b.p)||azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
   const pp=placeParts();
   const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:pp?` in ${pp.ci||pp.co}`:"");
   const clr=$("#listClear");if(clr){clr.hidden=!active;clr.textContent=nearScope?"Show all":"Clear"}
@@ -741,14 +745,16 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
     if(cs.length>1)top+=`<div class="ptCities">${`<button type="button" class="cChip${pp.ci?"":" on"}" data-pl="co:${esc(pp.co)}">All ${esc(pp.co)} <i>${allIn.length}</i></button>`}${cs.map(c=>`<button type="button" class="cChip${pp.ci&&fold(pp.ci)===c.k?" on":""}" data-pl="ci:${esc(c.n)}|${esc(pp.co)}">${esc(c.n)} <i>${c.c}</i></button>`).join("")}</div>`}}
   if(!n){model={groups:[],grid:[],gridLabel:""};box.innerHTML=top+"<p class=muted>No practitioners match your search.</p>";return}
   if(active){model={groups:[],grid:ps.map(x=>x.p),gridLabel:pp?(pp.ci||pp.co):nearScope?"Near me":"Results"};
-   box.innerHTML=top+`<div class="ptGrid">${ps.map(({p,d},i)=>tile(p,placeLoc(p)||L0(p)[0],-1,i,2,here?d:null)).join("")}</div>`;return}
+   const T=({p,d},i)=>tile(p,placeLoc(p)||L0(p)[0],-1,i,2,here?d:null);const k=ps.filter(x=>faIsHL(x.p)).length;
+   if(pp&&pp.ci&&!faHLOnly&&k&&k<n){box.innerHTML=top+`<div class="hlFeat"><div class="hlSecH feat">${faSeal(22)} MER &amp; BBTRS in ${esc(pp.ci)} <small>· ${k}</small></div><div class="ptRow featRow">${ps.slice(0,k).map(T).join("")}</div></div><div class="hlSecH hlOther">Other practitioners <small>· ${n-k}</small></div><div class="ptGrid">${ps.slice(k).map((x,j)=>T(x,j+k)).join("")}</div>`;return}
+   box.innerHTML=top+`<div class="ptGrid">${ps.map(T).join("")}</div>`;return}
   const by=new Map();ps.forEach(({p})=>{const seen=new Set();L0(p).forEach(l=>{const c=coOf(l)||OTHER;if(seen.has(c))return;seen.add(c);if(!by.has(c))by.set(c,[]);by.get(c).push({p,l})})});
   const groups=[...by.entries()].map(([c,list])=>({c,list,cities:cityList(c,list)})).sort((a,b)=>(a.c===OTHER)-(b.c===OTHER)||a.c.localeCompare(b.c,"en",{sensitivity:"base"}));
   groups.forEach(g=>{if(sel[g.c]&&!g.cities.some(x=>x.k===sel[g.c]))delete sel[g.c]});
   model={groups,grid:[],gridLabel:""};
-  box.innerHTML=groups.map((g,gi)=>`<section class="ptSec" data-gi="${gi}"><div class="ptH"><b>${flagC(g.c)} ${esc(g.c)} <span>· ${g.list.length}</span></b>${g.cities.length>1?`<button type="button" class="cPick${sel[g.c]?" on":""}" data-pick="${gi}">${esc(chipLabel(g))} ▾</button>`:""}${g.c===OTHER?"":`<button type="button" class="ptAll" data-all="${gi}">See all ›</button>`}</div><div class="ptRow" data-c="${esc(g.c)}">${rowHtml(gi)}</div></section>`).join("");
+  box.innerHTML=groups.map((g,gi)=>`<section class="ptSec" data-gi="${gi}"><div class="ptH"><b>${flagC(g.c)} ${esc(g.c)} <span>· ${g.list.length}</span>${(n=>n?`<i class="hlN" title="MER &amp; BBTRS practitioners">★ ${n}</i>`:"")(g.list.filter(x=>faIsHL(x.p)).length)}</b>${g.cities.length>1?`<button type="button" class="cPick${sel[g.c]?" on":""}" data-pick="${gi}">${esc(chipLabel(g))} ▾</button>`:""}${g.c===OTHER?"":`<button type="button" class="ptAll" data-all="${gi}">See all ›</button>`}</div><div class="ptRow" data-c="${esc(g.c)}">${rowHtml(gi)}</div></section>`).join("");
   box.querySelectorAll(".ptRow[data-c]").forEach(r=>{if(keep[r.dataset.c])r.scrollLeft=keep[r.dataset.c]})};
- function filteredNoPlace(){const el=qp();if(!el)return filtered();const v=el.value;el.value="";const r=filtered().filter(p=>!nearScope||nearScope.ok(p));el.value=v;return r}
+ function filteredNoPlace(){const el=qp();const hf=p=>!faHLOnly||faIsHL(p);if(!el)return filtered().filter(hf);const v=el.value;el.value="";const r=filtered().filter(p=>!nearScope||nearScope.ok(p)).filter(hf);el.value=v;return r}
  // ---- city picker (bottom list)
  const cp=document.createElement("div");cp.id="ptCity";cp.className="ptCity";cp.hidden=true;cp.innerHTML=`<div class="ptDim"></div><div class="ptCityBox" role="dialog" aria-modal="true" aria-label="Choose a city"><div class="ptCityH"><b></b><button type="button" class="ptX" aria-label="Close">✕</button></div><div class="ptCityL"></div></div>`;document.body.appendChild(cp);
  let cpG=-1;
@@ -773,9 +779,10 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   return web+`<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to message, WhatsApp, email${ig?" or see Instagram":""}.</p>${cbs?cbs.outerHTML:""}<button type="button" class="gold ptLogin">Log in to contact</button></div>`}
  function paint(){const p=cur.list[cur.i];if(!p)return;const many=cur.list.length>1;
   sh.querySelector(".ptBk span").textContent=cur.label||"Back";
-  scr.innerHTML=`<div class="ptHero">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`}${many?`<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i+1} of ${cur.list.length}${cur.label?" · "+esc(cur.label):""}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>`:""}</div>
-  <div class="ptBody" data-pid="${esc(p.id||"")}"><h3>${esc(practiceTitle(p))}</h3>${String(p.practice_name||"").trim()&&p.name?`<div class="ptWho">${esc(p.name)}</div>`:""}
-  <div class="ptLocs">${locLine(p)}</div><div class="chs ptMods">${(p.mods||[]).filter(Boolean).map(x=>`<span class="ch">${esc(x)}</span>`).join("")}</div>
+  const hl=faIsHL(p);
+  scr.innerHTML=`<div class="ptHero">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`}${hl?`<span class="shSeal">${faSeal(60)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}${many?`<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i+1} of ${cur.list.length}${cur.label?" · "+esc(cur.label):""}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>`:""}</div>
+  <div class="ptBody" data-pid="${esc(p.id||"")}"><h3>${esc(practiceTitle(p))}</h3>${hl?`<div class="shHl">${faLaurel(24)} ${faHLLine(p)}</div>`:""}${String(p.practice_name||"").trim()&&p.name?`<div class="ptWho">${esc(p.name)}</div>`:""}
+  <div class="ptLocs">${locLine(p)}</div><div class="chs ptMods">${(p.mods||[]).filter(Boolean).map(x=>`<span class="ch${faHLChip(x)?" hlCh":""}">${esc(x)}</span>`).join("")}</div>
   ${p.bio?`<div class="ptBio">${esc(p.bio)}</div><button type="button" class="ptMore">Read more</button>`:""}
   ${contacts(p)}<button type="button" class="ptMap">📍 Show on map</button></div>`;
   scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});if(srcOv!=="self_preview")view(p)}
@@ -785,7 +792,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const step=k=>{if(cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
  window.faSheetClose=()=>{close();if(!cp.hidden){hideCity();hpop("city")}};
  openNJ=function(id){const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,21);let i=ps.findIndex(p=>p.id===id);if(i<0){const p=all().find(x=>x.id===id);if(!p)return;open([p],0,"Newly joined","newly_joined");return}open(ps,i,"Newly joined","newly_joined")};
- // v0.23.90: my own listing exactly as a logged-out visitor sees it (no view stat)
+ // v0.23.91: my own listing exactly as a logged-out visitor sees it (no view stat)
  window.faPreviewMe=p=>{const sv=me;me=null;try{sh.classList.add("selfPrev");open([p],0,"My profile","self_preview")}finally{me=sv}};
  window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
  sh.addEventListener("click",e=>{const t=e.target;
@@ -818,7 +825,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  try{fillPlaces();renderList()}catch(e){}
 })();
 
-// ===== v0.23.90: social-style My profile: header card + focused edit sheets =====
+// ===== v0.23.91: social-style My profile: header card + focused edit sheets =====
 // The existing #profForm stays the single source of fields + save logic; each sheet shows one section of it.
 const PE_SECS={photo:["📷","Photo & name"],mods:["🌿","Practices"],locs:["📍","Locations"],about:["✍️","About you"],contacts:["💬","Contacts & links"]};
 let peSec="",peSnap="",peBusy=false;
@@ -903,3 +910,24 @@ bSet.addEventListener("change",async e=>{const c=e.target.closest("[data-tgl]");
  else{fm[k].checked=!on;c.checked=!on;bm.textContent=$("#status").textContent||"Could not save."}
  bSet.querySelectorAll("[data-tgl]").forEach(x=>x.disabled=false)});
 
+// ===== v0.23.91: MER & BBTRS highlight: gold seal, always sorted first, featured city row, filter =====
+// Detection: an exact "MER" or "BBTRS" entry in the practices list (mods); "MER Coaching" etc. do not count.
+var faHLOnly=false;
+function faHL(p){const m=((p&&p.mods)||[]).map(x=>String(x||"").trim().toUpperCase());return{mer:m.includes("MER"),bb:m.includes("BBTRS")}}
+function faIsHL(p){const h=faHL(p);return h.mer||h.bb}
+function faHLCmp(a,b){return faIsHL(b)-faIsHL(a)}
+function faHLChip(m){return /^(MER|BBTRS)$/i.test(String(m||"").trim())}
+function faHLTag(p){const h=faHL(p);return h.mer&&h.bb?"MER · BBTRS":h.mer?"MER":h.bb?"BBTRS":""}
+function faHLLine(p){const h=faHL(p);return h.mer&&h.bb?"MER &amp; BBTRS practitioner":h.mer?"MER practitioner":"BBTRS practitioner"}
+function faPoly(cx,cy,R,r,n){let d="";for(let i=0;i<n*2;i++){const a=-Math.PI/2+i*Math.PI/n,q=i%2?r:R;d+=(i?"L":"M")+(cx+q*Math.cos(a)).toFixed(2)+" "+(cy+q*Math.sin(a)).toFixed(2)}return d+"Z"}
+function faSeal(s){return `<svg class="bSeal" width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true"><path d="${faPoly(24,24,23,20.5,16)}" fill="url(#faG)"/><circle cx="24" cy="24" r="16.2" fill="url(#faC)" stroke="#FBE7B5" stroke-width=".9"/><circle cx="24" cy="24" r="13.6" fill="none" stroke="#C99E67" stroke-width=".6" stroke-dasharray="1.2 1.6"/><path d="${faPoly(24,24.6,10,4.3,5)}" fill="url(#faG)"/></svg>`}
+function faLaurel(s){let L="";const lf=(x,y,a)=>`<ellipse cx="${x}" cy="${y}" rx="4.2" ry="1.9" transform="rotate(${a} ${x} ${y})" fill="url(#faG2)"/>`;
+ for(let i=0;i<7;i++){const deg=105+i*(140/6),t=deg*Math.PI/180,x=24+18*Math.cos(t),y=24+18*Math.sin(t),rot=deg+115;L+=lf(x.toFixed(1),y.toFixed(1),rot.toFixed(0))+lf((48-x).toFixed(1),y.toFixed(1),(180-rot).toFixed(0))}
+ return `<svg class="bLaurel" width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true">${L}<path d="M20 43 Q24 40 28 43" stroke="url(#faG2)" stroke-width="1.6" fill="none"/><path d="${faPoly(24,24,11,4.7,5)}" fill="url(#faG)" stroke="#FBE7B5" stroke-width=".5"/></svg>`}
+// filter chips: "MER & BBTRS only" (list hides others, map dims them) + MER / BBTRS shortcuts for the practice filter
+function faHLPaint(){const lf=$("#listFilter");document.querySelectorAll("[data-hl]").forEach(b=>{const k=b.dataset.hl,on=k==="only"?faHLOnly:!!(lf&&lf.value===k);b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false")})}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-hl]");if(!b)return;const k=b.dataset.hl;
+ if(k==="only")faHLOnly=!faHLOnly;else{const lf=$("#listFilter");if(!lf)return;lf.value=lf.value===k?"":([...lf.options].some(o=>o.value===k)?k:"")}
+ faHLPaint();syncModFilter()});
+
+document.querySelectorAll('.hlChip[data-hl="only"]').forEach(b=>{b.innerHTML=faSeal(16)+" MER &amp; BBTRS only"});
