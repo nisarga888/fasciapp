@@ -335,7 +335,7 @@ async function loadProf(){await fillProf();if(!me)return;const p=await DB.mine()
  if(!has&&!profEdit){v.innerHTML=`<div class="card acct"><b>My account</b><p class="muted">Signed in as ${esc(me.email||"")}</p><label class="consent"><input type="checkbox" id="acctNews"${me.news_optin?" checked":""}> Send me occasional FasciApp news: new breathing practices, free live sessions and videos. Unsubscribe anytime.</label><p id="acctMsg" class="msg"></p></div><button type="button" class="gold big1" id="pListMe">List me as a practitioner</button><button type="button" class="ghost" id="pOut3">Log out</button>`;v.hidden=false;f.hidden=true;
   $("#acctNews").onchange=async e=>{const on=e.target.checked,m=$("#acctMsg");m.textContent="Saving…";try{await DB.setNews(on);me.news_optin=on;m.textContent=on?"Subscribed ✓":"Unsubscribed ✓"}catch(err){e.target.checked=!on;m.textContent="Could not save: "+err.message}};
   $("#pListMe").onclick=()=>{profEdit=true;v.hidden=true;f.hidden=false;document.querySelector("#profile h2").textContent="My practitioner profile";window.scrollTo(0,0)};$("#pOut3").onclick=()=>logout();return}
- if(has&&!profEdit){v.innerHTML=`<div class="item myCard">${card(p)}</div><p class="muted myCardNote">${p.consent?"This is how your card appears on the map and list.":"Your card is not public yet. Tick “Show me publicly” in Edit profile to appear on the map."}</p><div class="grid2"><button type="button" class="gold" id="pEditBtn">Edit profile</button><button type="button" class="ghost" id="pOut2">Log out</button></div>`;v.hidden=false;f.hidden=true;$("#pEditBtn").onclick=()=>{profEdit=true;v.hidden=true;f.hidden=false;window.scrollTo(0,0)};$("#pOut2").onclick=()=>logout()}
+ if(has&&!profEdit){profViewB(p,v,f);return}
  else{v.hidden=true;f.hidden=false}}
 async function fillProf(){waTouched=false;$("#needLogin").hidden=!!me;$("#profForm").hidden=!me;if(!me)return;myMods=[];renderTags();setExtra([]);$("#who").textContent="Signed in as "+me.email;
  const p=await DB.mine().catch(()=>null);const f=$("#profForm");if(!p){if(f.news_optin)f.news_optin.checked=!!me.news_optin;return}["name","practice_name","address","city","country","email","website","website2","bio"].forEach(k=>{if(f[k])f[k].value=p[k]||""});if(f.instagram)f.instagram.value=igHandle(p.instagram)?"@"+igHandle(p.instagram):"";splitPhone(p.phone,p.country);f.whatsapp.checked=!!p.whatsapp;waTouched=true;
@@ -371,7 +371,7 @@ st.textContent="Locating your address…";
   st.textContent=`Saved ✓${soft}${tip}`;
   showToast("Saved ✓");
   didFit=true;
-  profEdit=false;await loadProf();try{$("#profile").scrollIntoView({block:"start"})}catch(x){}
+  profEdit=false;if(window.faPeDone)faPeDone();await loadProf();try{$("#profile").scrollIntoView({block:"start"})}catch(x){}
  }catch(err){st.textContent="Could not save: "+err.message}};
 $("#photo").onchange=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas"),s=256,m=Math.min(im.width,im.height);c.width=c.height=s;
  c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,s,s);photoData=c.toDataURL("image/jpeg",.85);$("#phPrev").src=photoData;$("#phPrev").hidden=false};im.src=r.result};r.readAsDataURL(file)};
@@ -418,7 +418,7 @@ function setupSafariChrome(){const ua=navigator.userAgent||"";
 
 // ===== Session log =====
 const GOAL=70;let sess=[],editId=null,sessLoaded=false;
-function paintLogCard(){const n=sess.length;$("#lcNum").textContent=`${n} / ${GOAL}`;$("#lcFill").style.width=Math.min(100,n/GOAL*100)+"%";$("#lcSub").textContent=n>=GOAL?"✓ complete":`${GOAL-n} sessions to go`}
+function paintLogCard(){const n=sess.length;$("#lcNum").textContent=`${n} / ${GOAL}`;$("#lcFill").style.width=Math.min(100,n/GOAL*100)+"%";$("#lcSub").textContent=n>=GOAL?"✓ complete":`${GOAL-n} sessions to go`;const bl=$("#bLogN");if(bl)bl.textContent=`${n} / ${GOAL}`}
 async function logCard(){$("#logCard").hidden=false;if(!sessLoaded){try{sess=await DB.sessions();sessLoaded=true}catch(e){}}paintLogCard()}
 function fmtD(d){if(!d)return"";const [y,m,dd]=d.split("-");return `${dd}.${m}.${y}`}
 function resetSF(){const f=$("#sessForm");f.reset();{const n=new Date();f.date.value=new Date(n-n.getTimezoneOffset()*6e4).toISOString().slice(0,10)}editId=null;$("#sfTitle").textContent="Add session";$("#sfBtn").textContent="Add session";$("#sfCancel").hidden=true}
@@ -520,7 +520,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.85";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.86";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -639,7 +639,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.85: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.86: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
@@ -663,7 +663,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
  btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
  $("#labJoin").onclick=()=>{close();if(window.faAuthFor)faAuthFor(true,"lab");else{setMode(true);show("auth")}};
  btn.hidden=!!me})();
-// ===== v0.23.85: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
+// ===== v0.23.86: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
 (function(){const PLUS='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
  const mk=(id,cls)=>{const b=document.createElement("button");b.type="button";b.id=id;b.className="joinBtn "+cls;b.innerHTML=PLUS+"<span>Join as a practitioner</span>";b.hidden=true;b.onclick=go;return b};
  const fab=mk("joinFab","joinFab"),lst=mk("joinList","joinList");
@@ -676,7 +676,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
   if(id===uid&&has){paint();return}uid=id;const n=++seq;paint();
   const p=await DB.mine().catch(()=>null);if(n!==seq)return;has=!!(p&&(p.name||p.address||p.city));paint()};
  faJoinUpd()})();
-// ===== v0.23.85: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
+// ===== v0.23.86: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
 // Display-only city names: merge local spellings, drop district/postcode/state suffixes, fix ALL CAPS (database values are untouched)
 // Instagram is members-only: a website field that points to Instagram counts as Instagram
 function faWebOk(u){return !/(^|\/\/|\.)(instagram\.com|instagr\.am)(\/|$)/i.test(String(u||"").trim().replace(/^https?:\/\//i,"//"))}
@@ -705,7 +705,8 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const HS=[];let skip=0;
  const hpush=k=>{try{history.pushState({fa:k},"")}catch(e){}HS.push(k)};
  const hpop=k=>{if(HS.length&&HS[HS.length-1]===k){HS.pop();skip++;try{history.back()}catch(e){skip--}}};
- window.addEventListener("popstate",()=>{if(skip){skip--;return}const k=HS.pop();if(k==="sheet")hideSheet();else if(k==="city")hideCity();else if(k==="seeall")leaveSeeAll()});
+ window.addEventListener("popstate",()=>{if(skip){skip--;return}const k=HS.pop();if(k==="sheet")hideSheet();else if(k==="city")hideCity();else if(k==="seeall")leaveSeeAll();else if(k==="pe"&&window.faPeBack)faPeBack()});
+ window.faH={push:hpush,pop:hpop};
  // ---- model
  let model={groups:[],grid:[],gridLabel:""};const sel={};let seeAll=false,savedTop=0;
  const cityList=(c,list)=>{const m=new Map();list.forEach(({p})=>{const seen=new Set();L0(p).filter(l=>(coOf(l)||OTHER)===c).forEach(l=>{const n=cityOf(l);if(!n)return;const k=fold(n);if(seen.has(k))return;seen.add(k);const o=m.get(k)||{k,n,c:0};o.c++;m.set(k,o)})});return[...m.values()].sort((a,b)=>b.c-a.c||a.n.localeCompare(b.n,"en",{sensitivity:"base"}))};
@@ -777,13 +778,15 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   <div class="ptLocs">${locLine(p)}</div><div class="chs ptMods">${(p.mods||[]).filter(Boolean).map(x=>`<span class="ch">${esc(x)}</span>`).join("")}</div>
   ${p.bio?`<div class="ptBio">${esc(p.bio)}</div><button type="button" class="ptMore">Read more</button>`:""}
   ${contacts(p)}<button type="button" class="ptMap">📍 Show on map</button></div>`;
-  scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});view(p)}
+  scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});if(srcOv!=="self_preview")view(p)}
  function open(list,i,label,so){srcOv=so||"";cur={list,i,label:label||""};const was=!sh.hidden;sh.hidden=false;document.body.classList.add("ptOpen");paint();if(!was)hpush("sheet")}
- function hideSheet(){sh.hidden=true;document.body.classList.remove("ptOpen")}
+ function hideSheet(){sh.hidden=true;sh.classList.remove("selfPrev");document.body.classList.remove("ptOpen")}
  function close(){if(sh.hidden)return;hideSheet();hpop("sheet")}
  const step=k=>{if(cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
  window.faSheetClose=()=>{close();if(!cp.hidden){hideCity();hpop("city")}};
  openNJ=function(id){const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,21);let i=ps.findIndex(p=>p.id===id);if(i<0){const p=all().find(x=>x.id===id);if(!p)return;open([p],0,"Newly joined","newly_joined");return}open(ps,i,"Newly joined","newly_joined")};
+ // v0.23.86: my own listing exactly as a logged-out visitor sees it (no view stat)
+ window.faPreviewMe=p=>{const sv=me;me=null;try{sh.classList.add("selfPrev");open([p],0,"My profile","self_preview")}finally{me=sv}};
  window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
  sh.addEventListener("click",e=>{const t=e.target;
   if(t.closest(".ptX")||t.closest(".ptBk")||t.classList.contains("ptDim")){close();return}
@@ -814,3 +817,77 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  backToPract=function(pid){show("list");let n=0;const go=()=>{const p=all().find(x=>x.id===pid);n++;if(p&&(p.email||p.phone||!(p.has_email||p.whatsapp)||n>=30)){window.faOpenPract(pid);return}if(n>=30)return;setTimeout(go,200)};setTimeout(go,300)};
  try{fillPlaces();renderList()}catch(e){}
 })();
+
+// ===== v0.23.86: social-style My profile: header card + focused edit sheets =====
+// The existing #profForm stays the single source of fields + save logic; each sheet shows one section of it.
+const PE_SECS={photo:["📷","Photo & name"],mods:["🌿","Practices"],locs:["📍","Locations"],about:["✍️","About you"],contacts:["💬","Contacts & links"]};
+let peSec="",peSnap="",peBusy=false;
+const peWrap=document.createElement("div");peWrap.id="peSheet";peWrap.className="peSheet";peWrap.hidden=true;
+peWrap.innerHTML=`<div class="peDim"></div><div class="peBox" role="dialog" aria-modal="true"></div>`;document.body.appendChild(peWrap);
+function peHome(){const f=$("#profForm"),v=$("#profView");if(f&&v&&f.previousElementSibling!==v)v.after(f)}
+function peSnapNow(){const f=$("#profForm");return JSON.stringify([...f.elements].map(e=>e.type==="checkbox"?e.checked:e.type==="file"?"":e.value))+"|"+JSON.stringify(myMods)+"|"+(photoData||"")}
+function peGo(sec){peSec=sec;const f=$("#profForm");f.dataset.sec=sec;f.querySelectorAll(".fsec").forEach(x=>x.classList.toggle("on",x.dataset.sec===sec));
+ const [ic,t]=PE_SECS[sec]||["",""];f.querySelector(".peIc").textContent=ic;f.querySelector(".peT").textContent=t;peWrap.querySelector(".peBox").setAttribute("aria-label",t)}
+function peOpen(sec,pick){const f=$("#profForm");if(!f||peSec)return;$("#status").textContent="";peWrap.querySelector(".peBox").appendChild(f);f.classList.add("asSheet");f.hidden=false;peGo(sec);
+ {const lb=f.querySelector(".phbtn"),pv=$("#phPrev");if(lb&&lb.firstChild&&lb.firstChild.nodeType===3)lb.firstChild.textContent=pv&&!pv.hidden?"📷 Change photo":"📷 Add profile photo"}
+ peWrap.hidden=false;document.body.classList.add("peOpen");peSnap=peSnapNow();const sb=f.querySelector(".peSave");sb.disabled=false;sb.textContent="Save";f.scrollTop=0;
+ if(window.faH)faH.push("pe");if(pick)$("#photo").click()}
+function peHide(){const f=$("#profForm");peWrap.hidden=true;document.body.classList.remove("peOpen");f.classList.remove("asSheet");f.querySelectorAll(".fsec").forEach(x=>x.classList.remove("on"));delete f.dataset.sec;f.hidden=true;peHome();peSec=""}
+const peDirty=()=>!!peSec&&peSnapNow()!==peSnap;
+function peCancel(fromBack){if(!peSec)return;
+ if(peBusy||(peDirty()&&!confirm("Discard your changes?"))){if(fromBack&&window.faH)faH.push("pe");return}
+ if(!fromBack&&window.faH)faH.pop("pe");peHide();photoData=null;loadProf()}// reload the saved values into the form
+window.faPeBack=()=>peCancel(true);
+window.faPeDone=()=>{if(!peSec)return;peHide();if(window.faH)faH.pop("pe")};
+// run the existing save handler (validation, geocoding, country rules, phone prefix, places, consent, news)
+async function peRun(){const f=$("#profForm"),st=$("#status");if(peBusy)return false;
+ if(!f.name.value.trim()){st.textContent="Please add your full name.";if(peSec)peGo("photo");return false}
+ peBusy=true;try{await f.onsubmit({preventDefault(){},target:f})}catch(e){st.textContent="Could not save: "+e.message}finally{peBusy=false}
+ const msg=st.textContent,ok=/^Saved/.test(msg);
+ if(!ok&&peSec&&/country/i.test(msg))peGo("locs");
+ if(ok){const bm=$("#bMsg"),soft=msg.replace(/^Saved ✓\s*/,"").replace(/\s*Tip:.*$/,"");if(bm)bm.textContent=soft}
+ return ok}
+(function(){const f=$("#profForm");if(!f)return;
+ f.querySelector(".peSave").onclick=async e=>{const b=e.currentTarget;b.disabled=true;b.textContent="Saving…";await peRun();if(peSec){b.disabled=false;b.textContent="Save"}};
+ f.querySelector(".peCancel").onclick=()=>peCancel(false);f.querySelector(".peX").onclick=()=>peCancel(false);
+ peWrap.querySelector(".peDim").onclick=()=>peCancel(false);
+ f.addEventListener("keydown",e=>{if(peSec&&e.key==="Enter"&&e.target.tagName!=="TEXTAREA"){e.preventDefault();if(e.target.id==="modNew")$("#modAdd").click()}});
+ document.addEventListener("keydown",e=>{if(peSec&&e.key==="Escape")peCancel(false)})})();
+function profViewB(p,v,f){const h2=document.querySelector("#profile h2");if(h2)h2.textContent="My profile";$("#logCard").hidden=true;$("#pCancel").hidden=true;
+ const S=x=>String(x||"").trim();
+ const L=(p.locations&&p.locations.length)?p.locations:[{city:p.city,country:p.country,address:p.address}];
+ const lt=l=>{if(isOnline(l))return"🌐 Online";const co=S(l.country);return `${co?flagOf(co)+" ":""}${esc([faCity(l.city||""),co].filter(Boolean).join(", "))}`};
+ const l0=L[0]||{},co0=S(l0.country||p.country),where=isOnline(l0)?"Online":[faCity(l0.city||""),co0].filter(Boolean).join(", ");
+ const nm=S(p.name)||S(p.practice_name)||"Your name",pn=S(p.practice_name)&&S(p.name)?S(p.practice_name):"";
+ const web=[p.website,p.website2].some(u=>S(u)&&faWebOk(u)),ig=!!faIg(p),ph=S(p.phone),em=S(p.email),mods=(p.mods||[]).filter(Boolean);
+ const items=[[!!p.photo,20,"Add a photo","photo"],[!!S(p.name),10,"Add your name","photo"],[mods.length>0,15,"Pick your practices","mods"],[!!co0,15,"Add where you work","locs"],[!!S(p.bio),15,"Add a short bio","about"],[!!(ph||em),15,"Add a phone or email","contacts"],[web||ig,10,"Add a website or Instagram","contacts"]];
+ const pct=items.reduce((t,x)=>t+(x[0]?x[1]:0),0),nx=items.find(x=>!x[0]);
+ const chip=(on,t)=>`<span class="${on?"":"miss"}">${t}</span>`;
+ const card=(sec,ic,t,body,miss)=>`<button type="button" class="bCard" data-pe="${sec}"><span class="ic">${ic}</span><span class="sb"><b>${t}</b>${body}</span><span class="ed${miss?" add":""}">${miss?"+ Add":"Edit"}</span></button>`;
+ const sw=(k,on)=>`<label class="bSw"><input type="checkbox" data-tgl="${k}"${on?" checked":""}><i></i></label>`;
+ v.innerHTML=`<div class="bHead"><div class="bCover"></div><span class="bPub${p.consent?"":" off"}"><i></i>${p.consent?"Public":"Hidden"}</span>
+ <button type="button" class="bAv" data-pe="photo" data-pick="1" aria-label="Change photo">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="bFb">${esc(initials(nm))}</span>`}<span class="bCam">📷</span></button>
+ <h3>${esc(nm)}</h3>${pn?`<div class="bPn">${esc(pn)}</div>`:""}${where?`<div class="bWhere">📍 ${isOnline(l0)?"🌐 ":co0?flagOf(co0)+" ":""}${esc(where)}</div>`:""}
+ ${mods.length?`<div class="bChs">${mods.map(m=>`<span>${esc(m)}</span>`).join("")}</div>`:""}
+ <div class="bBtns"><button type="button" class="ghost" data-bact="preview">👁 Preview</button><button type="button" class="gold" data-pe="photo">✏️ Photo & name</button></div></div>
+ <p id="bMsg" class="msg"></p>
+ <button type="button" class="bMeter"${nx?` data-pe="${nx[3]}"`:""}><span class="mt"><b>Profile ${pct}% complete</b>${nx?`<em>${nx[2]} ›</em>`:`<em class="ok">✓ All set</em>`}</span><span class="bar"><i style="width:${pct}%"></i></span></button>
+ <div class="bTgl"><span class="ic">👁</span><span class="sb"><b>Show me publicly</b><small>${p.consent?"Visitors can find you on the map and in the list.":"You are hidden. Turn on to appear on the map and in the list."}</small></span>${sw("consent",!!p.consent)}</div>
+ ${card("about","✍️","About you",S(p.bio)?`<p>${esc(p.bio)}</p>`:`<p>Tell visitors how you work.</p>`,!S(p.bio))}
+ ${card("contacts","💬","Contacts & links",`<span class="cRow">${chip(!!ph,"📞 Phone")}${chip(!!(ph&&p.whatsapp),"💬 WhatsApp")}${chip(!!em,"✉️ Email")}${chip(web,"🌐 Website")}${chip(ig,"📸 Instagram")}</span>`,!(ph||em))}
+ ${card("mods","🌿","Practices",mods.length?`<span class="cRow">${mods.map(m=>`<span>${esc(m)}</span>`).join("")}</span>`:`<p>Pick what you practise.</p>`,!mods.length)}
+ ${card("locs","📍","Locations",`<p>${L.slice(0,3).map(lt).join("<br>")}</p><small>${L.length} of 3 places</small>`,!co0)}
+ <div class="bGrid"><div class="bTile"><span class="top"><span class="ic">📰</span>${sw("news_optin",!!p.news_optin)}</span><b>Newsletter</b><small>New videos, free sessions, practitioners near you</small></div>
+ <button type="button" class="bTile" data-bact="log"><span class="top"><span class="ic">📒</span><span class="ed">Open</span></span><b>Session log</b><small id="bLogN">${sess.length} / ${GOAL}</small></button></div>
+ <div class="bOut"><button type="button" class="ghost" id="pOut2">Log out</button></div>`;
+ v.hidden=false;f.hidden=true;
+ v.onclick=e=>{const t=e.target;if(t.closest(".bSw"))return;
+  const a=t.closest("[data-bact]");if(a){if(a.dataset.bact==="preview"){if(window.faPreviewMe)faPreviewMe(p)}else show("log");return}
+  if(t.closest("#pOut2")){logout();return}
+  const s=t.closest("[data-pe]");if(s)peOpen(s.dataset.pe,!!s.dataset.pick)};
+ v.onchange=async e=>{const c=e.target.closest("[data-tgl]");if(!c||peBusy)return;const k=c.dataset.tgl,on=c.checked,fm=$("#profForm"),bm=$("#bMsg");
+  if(!fm[k])return;fm[k].checked=on;c.disabled=true;if(bm)bm.textContent="Saving…";
+  const ok=await peRun();
+  if(ok){if(k==="news_optin"&&me)me.news_optin=on;showToast(k==="consent"?(on?"You are public ✓":"Hidden from the map ✓"):(on?"Subscribed ✓":"Unsubscribed ✓"))}
+  else{fm[k].checked=!on;c.checked=!on;c.disabled=false;if(bm)bm.textContent=$("#status").textContent||"Could not save."}}}
+
