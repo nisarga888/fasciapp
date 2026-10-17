@@ -67,7 +67,7 @@ let showT=null;function afterShow(t){try{if(t==="map"){initMap();setTimeout(()=>
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
 function hdr(){document.body.classList.toggle("authed",!!me);if(window.faJoinUpd)faJoinUpd();{const lb=$("#labBtn");if(lb)lb.hidden=!!me}$("#tabInbox").hidden=!MSG_ON;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
-// v0.23.99: the people cache lives in IndexedDB. The old localStorage snapshot (fa_people_v1) outgrew Safari's ~5 MB quota
+// v0.23.100: the people cache lives in IndexedDB. The old localStorage snapshot (fa_people_v1) outgrew Safari's ~5 MB quota
 // (photos are data URLs), so its updates failed silently and an old list (e.g. 82 people) was painted on every start.
 var faFresh=false,pCache=null;try{localStorage.removeItem("fa_people_v1")}catch(e){}
 const PIDB={db:null,open(){return this.db||(this.db=new Promise((ok,no)=>{const r=indexedDB.open("fasciapp",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}))},
@@ -527,7 +527,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.99";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.100";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -646,7 +646,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.99: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.100: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
@@ -670,7 +670,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
  btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
  $("#labJoin").onclick=()=>{close();if(window.faAuthFor)faAuthFor(true,"lab");else{setMode(true);show("auth")}};
  btn.hidden=!!me})();
-// ===== v0.23.99: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
+// ===== v0.23.100: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
 (function(){const PLUS='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
  const mk=(id,cls)=>{const b=document.createElement("button");b.type="button";b.id=id;b.className="joinBtn "+cls;b.innerHTML=PLUS+"<span>Join as a practitioner</span>";b.hidden=true;b.onclick=go;return b};
  const fab=mk("joinFab","joinFab"),lst=mk("joinList","joinList");
@@ -683,7 +683,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
   if(id===uid&&has){paint();return}uid=id;const n=++seq;paint();
   const p=await DB.mine().catch(()=>null);if(n!==seq)return;has=!!(p&&(p.name||p.address||p.city));paint()};
  faJoinUpd()})();
-// ===== v0.23.99: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
+// ===== v0.23.100: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
 // Display-only city names: merge local spellings, drop district/postcode/state suffixes, fix ALL CAPS (database values are untouched)
 // Instagram is members-only: a website field that points to Instagram counts as Instagram
 function faWebOk(u){return !/(^|\/\/|\.)(instagram\.com|instagr\.am)(\/|$)/i.test(String(u||"").trim().replace(/^https?:\/\//i,"//"))}
@@ -797,7 +797,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const step=k=>{if(cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
  window.faSheetClose=()=>{close();if(!cp.hidden){hideCity();hpop("city")}};
  openNJ=function(id){const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,21);let i=ps.findIndex(p=>p.id===id);if(i<0){const p=all().find(x=>x.id===id);if(!p)return;open([p],0,"Newly joined","newly_joined");return}open(ps,i,"Newly joined","newly_joined")};
- // v0.23.99: my own listing exactly as a logged-out visitor sees it (no view stat)
+ // v0.23.100: my own listing exactly as a logged-out visitor sees it (no view stat)
  window.faPreviewMe=p=>{const sv=me;me=null;try{sh.classList.add("selfPrev");open([p],0,"My profile","self_preview")}finally{me=sv}};
  window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
  sh.addEventListener("click",e=>{const t=e.target;
@@ -830,7 +830,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  try{fillPlaces();renderList()}catch(e){}
 })();
 
-// ===== v0.23.99: social-style My profile: header card + focused edit sheets =====
+// ===== v0.23.100: social-style My profile: header card + focused edit sheets =====
 // The existing #profForm stays the single source of fields + save logic; each sheet shows one section of it.
 const PE_SECS={photo:["📷","Photo & name"],mods:["🌿","Practices"],locs:["📍","Locations"],about:["✍️","About you"],contacts:["💬","Contacts & links"]};
 let peSec="",peSnap="",peBusy=false;
@@ -915,7 +915,7 @@ bSet.addEventListener("change",async e=>{const c=e.target.closest("[data-tgl]");
  else{fm[k].checked=!on;c.checked=!on;bm.textContent=$("#status").textContent||"Could not save."}
  bSet.querySelectorAll("[data-tgl]").forEach(x=>x.disabled=false)});
 
-// ===== v0.23.99: MER & BBTRS highlight: gold seal, always sorted first, featured city row, filter =====
+// ===== v0.23.100: MER & BBTRS highlight: gold seal, always sorted first, featured city row, filter =====
 // Detection: an exact "MER" or "BBTRS" entry in the practices list (mods); "MER Coaching" etc. do not count.
 var faHLOnly=false;
 function faHL(p){const m=((p&&p.mods)||[]).map(x=>String(x||"").trim().toUpperCase());return{mer:m.includes("MER"),bb:m.includes("BBTRS")}}
@@ -936,17 +936,17 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
  faHLPaint();syncModFilter()});
 
 document.querySelectorAll('#hlChips .hlChip[data-hl]').forEach(b=>{b.innerHTML=faSeal(16)+" "+b.dataset.hl});
-// v0.23.99: live network count on the welcome screen + list header (same source as the map count); hidden until data is loaded
+// v0.23.100: live network count on the welcome screen + list header (same source as the map count); hidden until data is loaded
 function faLiveCount(){const a=all().filter(p=>pins(p).length),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
  document.querySelectorAll(".liveCount").forEach(el=>{if(!a.length||!faFresh){el.hidden=true;return}el.innerHTML=`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"}`;el.hidden=false})}
-// ===== v0.23.99: "Your training journey" card (Session log) in My profile, under the completeness meter =====
+// ===== v0.23.100: "Your training journey" card (Session log) in My profile, under the completeness meter =====
 const JR_SEEN="fa_journey_seen";
 function faRelDay(d){if(!d)return"";const [y,m,dd]=String(d).slice(0,10).split("-").map(Number);if(!y)return"";const t=new Date();t.setHours(0,0,0,0);const x=new Date(y,m-1,dd);const n=Math.round((t-x)/864e5);
  if(n<=0)return"today";if(n===1)return"yesterday";if(n<7)return n+" days ago";if(n<30){const w=Math.floor(n/7);return w===1?"1 week ago":w+" weeks ago"}if(n<365){const mo=Math.floor(n/30);return mo===1?"1 month ago":mo+" months ago"}return"over a year ago"}
 function faJourneyHTML(){const n=sess.length,G=GOAL,step=G/7,ms=[...Array(8)].map((_,i)=>Math.round(i*step)),pct=Math.min(100,n/G*100),mk=Math.max(5,Math.min(95,pct));
  const nxt=ms.find(v=>v>n),last=sess.reduce((m,s)=>s.date&&(!m||s.date>m)?s.date:m,"");const seen=(()=>{try{return !!localStorage.getItem(JR_SEEN)}catch(e){return true}})();
  const line=n===0?`🌱 <b>Start your journey:</b> log your first session`:n>=G?`🎉 <b>Goal reached!</b> ${n} sessions logged`:`🎯 <b>${nxt-n} more</b> to reach ${nxt} sessions`;
- return `<div class="jrHd" data-jr="open" role="button" tabindex="0"><span class="ic">📒</span><span><b>Your training journey</b><small>Session log · ${n} of ${G} sessions</small></span>${seen?"":`<span class="jrNew">NEW</span>`}</div>
+ return `<div class="jrHd" data-jr="open" role="button" tabindex="0"><span class="ic">📒</span><span><b>Session log</b> <em class="jrAka">(your training journey)</em><small>${n} of ${G} sessions</small></span>${seen?"":`<span class="jrNew">NEW</span>`}</div>
  <div class="jrTrk" aria-label="${n} of ${G} sessions"><span class="f" style="width:${pct}%"></span>${ms.map(v=>`<span class="dot${v<=n?" on":""}" style="left:${v/G*100}%">${v<=n&&v?"✓":""}</span>`).join("")}<span class="me" style="left:${mk}%">You · ${n}</span></div>
  <div class="jrLb">${ms.map(v=>`<span>${v}</span>`).join("")}</div>
  <div class="jrNx">${line}</div>
