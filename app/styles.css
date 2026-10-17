@@ -695,3 +695,14 @@ body.peOpen{overflow:hidden}
 .bAv .bHlSeal .hlTag{margin-top:-7px;font-size:9px;line-height:1.35;padding:1px 6px;position:relative;z-index:1}
 .bChs span.hlCh{background:linear-gradient(135deg,#FBE7B5,#C99E67);color:#02191E;border-color:#C99E67;font-weight:700}
 .liveCount[hidden]{display:none}.splashCount{margin:-14px 0 18px}.listCountTop{margin:2px 0 10px}
+/* v0.23.99: Your training journey (Session log card) */
+.jrCard{position:relative;margin:12px 0;padding:16px;border-radius:22px;color:#F3EDE4;border:2px solid transparent;background-image:linear-gradient(#0a2a30,#0a2a30),linear-gradient(135deg,#FBE7B5,#C99E67,#5FC9C3);background-origin:border-box;background-clip:padding-box,border-box;box-shadow:0 0 24px #C99E6744;text-align:left}
+.jrHd{display:flex;align-items:center;gap:10px;cursor:pointer}.jrHd .ic{font-size:26px}.jrHd b{font-size:18px;color:#F3EDE4}.jrHd small{display:block;font-size:12.5px;color:#b9c9ca}
+.jrNew{margin-left:auto;font-size:11px;font-weight:800;color:#02191E;background:#5FC9C3;border-radius:10px;padding:3px 8px;box-shadow:0 0 0 4px #5FC9C333}
+.jrTrk{position:relative;margin:40px 10px 8px;height:6px;border-radius:4px;background:#ffffff1a}.jrTrk .f{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:linear-gradient(90deg,#5FC9C3,#C99E67)}
+.jrTrk .dot{position:absolute;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:#0a2a30;border:2px solid #ffffff33;display:flex;align-items:center;justify-content:center;font-size:10px;box-sizing:border-box}.jrTrk .dot.on{background:linear-gradient(135deg,#FBE7B5,#C99E67);border-color:#FBE7B5;color:#02191E;font-weight:800}
+.jrTrk .me{position:absolute;top:-30px;transform:translateX(-50%);font-size:11.5px;font-weight:800;color:#02191E;background:#FBE7B5;border-radius:8px;padding:2px 6px;white-space:nowrap}
+.jrLb{display:flex;justify-content:space-between;margin:0 -2px;font-size:11px;color:#8fa6a8}
+.jrNx{margin:12px 0;font-size:14px;color:#E7C78F}.jrNx b{color:#FBE7B5}
+.jrCta{display:block;width:100%;text-align:center;padding:13px;border:0;border-radius:14px;font:inherit;font-weight:800;font-size:15.5px;background:linear-gradient(135deg,#FBE7B5,#C99E67);color:#02191E;box-shadow:0 8px 22px #C99E6766;cursor:pointer}
+.jrSub{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12.5px;color:#9fb3b5;min-height:20px}.jrOpen{border:0;background:none;padding:4px 0;font:inherit;color:#5FC9C3;font-weight:700;font-size:12.5px;cursor:pointer}
