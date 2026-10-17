@@ -72,6 +72,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:50px 0 34px}foo
 @media(prefers-reduced-motion:reduce){.f .i{animation:none}.f .i .d{stroke-dashoffset:0!important;transition:none!important}}
 
 .seoFind{max-width:760px;margin:0 auto 10px;background:var(--card);border:1px solid #C99E6733;border-radius:22px;padding:26px 22px 24px;text-align:center}
+.heroCount{width:100%;margin:0 0 4px;font-size:13px;color:var(--mut);text-align:center}.heroCount b{color:var(--gold);font-weight:700}.heroCount[hidden]{display:none}
 .liveCount{margin:0 0 10px;font-size:15px;font-weight:600;color:var(--teal);letter-spacing:.2px}
 .seoLead{color:#d7e2e1;font-size:14px;margin:0 0 20px;line-height:1.5}
 .seoBlock{margin-top:18px;text-align:left}
@@ -124,6 +125,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;padding:50px 0 34px}foo
  <p class="slogan">Find the practitioner your body has been looking for.</p>
  <p class="lead">Find bodywork and breathwork practitioners near you: Myofascial Energetic Release (MER), Biodynamic Breathwork and Trauma Release (BBTRS), craniosacral therapy, somatic therapy, massage and trauma-informed care. Open to every school. Add yourself for free, message clients and log your training sessions.</p>
  <div class="heroBtns">
+  <p class="heroCount" id="heroCount" hidden></p>
   <a class="btn gold" href="app/">Open FasciApp →</a>
   <a class="btn line" href="app/?join=1">Welcome to Fascia-Nation 🌍</a>
   <p class="foundLine">Found by those who need you.</p>
@@ -313,6 +315,9 @@ if(matchMedia("(display-mode: standalone)").matches)location.replace("app/");
         });
       });
       var n=countries.size, pcount=rows.length;
+      // hero line: same rule as the app's map count (public listings with a map pin, countries of their locations)
+      var mapped=0,mc=new Set();rows.forEach(function(p){var L=Array.isArray(p.locations)&&p.locations.length?p.locations:[{country:p.country,city:p.city,lat:p.lat,lng:p.lng}];if(!L.some(function(l){return l&&l.lat!=null}))return;mapped++;L.forEach(function(l){var c=String(l&&l.country||'').trim().toLowerCase();if(c)mc.add(c)})});
+      var hc=document.getElementById('heroCount');if(hc&&mapped){hc.innerHTML='<b>'+mapped+'</b> practitioner'+(mapped===1?'':'s')+' in <b>'+mc.size+'</b> countr'+(mc.size===1?'y':'ies');hc.hidden=false}
       if(n>0) el.textContent='Practitioners in '+n+' countr'+(n===1?'y':'ies')+' and growing';
       else if(pcount>0) el.textContent=pcount+' practitioner'+(pcount===1?'':'s')+' and growing';
       else el.textContent='Practitioners worldwide and growing';
@@ -322,5 +327,5 @@ if(matchMedia("(display-mode: standalone)").matches)location.replace("app/");
 })();
 </script>
 
-<script src="app/track.js?v=0.23.97"></script><script>(function(){var q=new URLSearchParams(location.search),u=new URLSearchParams();["utm_source","utm_medium","utm_campaign"].forEach(function(k){if(q.get(k))u.set(k,q.get(k))});var s=u.toString();if(!s)return;document.querySelectorAll('a[href^="app/"],a[href="app"]').forEach(function(a){var h=a.getAttribute("href");a.setAttribute("href",h+(h.indexOf("?")>-1?"&":"?")+s)})})();</script><script>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a||!window.FA_ev)return;var h=a.getAttribute("href")||"",it=/join=1/.test(h)?"join":/^app\/?$/.test(h)?"open_app":/instagram\.com/.test(h)?"instagram":/facebook\.com/.test(h)?"facebook":/terms|privacy/.test(h)?"legal":"";if(!it)return;FA_ev(it==="instagram"||it==="facebook"?"follow_tap":"landing_cta",{source:"landing",props:{item:it,where:a.closest("footer")?"footer":a.closest(".hero")?"hero":"page"}})},true);FA_ev&&FA_ev("screen",{source:"landing",props:{tab:"landing"}});</script>
+<script src="app/track.js?v=0.23.98"></script><script>(function(){var q=new URLSearchParams(location.search),u=new URLSearchParams();["utm_source","utm_medium","utm_campaign"].forEach(function(k){if(q.get(k))u.set(k,q.get(k))});var s=u.toString();if(!s)return;document.querySelectorAll('a[href^="app/"],a[href="app"]').forEach(function(a){var h=a.getAttribute("href");a.setAttribute("href",h+(h.indexOf("?")>-1?"&":"?")+s)})})();</script><script>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a||!window.FA_ev)return;var h=a.getAttribute("href")||"",it=/join=1/.test(h)?"join":/^app\/?$/.test(h)?"open_app":/instagram\.com/.test(h)?"instagram":/facebook\.com/.test(h)?"facebook":/terms|privacy/.test(h)?"legal":"";if(!it)return;FA_ev(it==="instagram"||it==="facebook"?"follow_tap":"landing_cta",{source:"landing",props:{item:it,where:a.closest("footer")?"footer":a.closest(".hero")?"hero":"page"}})},true);FA_ev&&FA_ev("screen",{source:"landing",props:{tab:"landing"}});</script>
 </body></html>

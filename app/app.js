@@ -67,10 +67,17 @@ let showT=null;function afterShow(t){try{if(t==="map"){initMap();setTimeout(()=>
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
 function hdr(){document.body.classList.toggle("authed",!!me);if(window.faJoinUpd)faJoinUpd();{const lb=$("#labBtn");if(lb)lb.hidden=!!me}$("#tabInbox").hidden=!MSG_ON;$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
-const PKEY="fa_people_v1";function cachedPeople(){try{const j=JSON.parse(localStorage.getItem(PKEY)||"null");return Array.isArray(j)?j:null}catch(e){return null}}
+// v0.23.98: the people cache lives in IndexedDB. The old localStorage snapshot (fa_people_v1) outgrew Safari's ~5 MB quota
+// (photos are data URLs), so its updates failed silently and an old list (e.g. 82 people) was painted on every start.
+var faFresh=false,pCache=null;try{localStorage.removeItem("fa_people_v1")}catch(e){}
+const PIDB={db:null,open(){return this.db||(this.db=new Promise((ok,no)=>{const r=indexedDB.open("fasciapp",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}))},
+ async get(k){const d=await this.open();return new Promise((ok,no)=>{const q=d.transaction("kv").objectStore("kv").get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})},
+ async set(k,v){const d=await this.open();return new Promise((ok,no)=>{const t=d.transaction("kv","readwrite");t.objectStore("kv").put(v,k);t.oncomplete=()=>ok();t.onerror=()=>no(t.error)})}};
+async function loadPCache(){try{const j=await Promise.race([PIDB.get("people"),new Promise(r=>setTimeout(()=>r(null),1200))]);pCache=Array.isArray(j)?j:null}catch(e){pCache=null}return pCache}
+function cachedPeople(){return pCache}
 const byName=l=>(l||[]).slice().sort((a,b)=>practiceTitle(a).localeCompare(practiceTitle(b),undefined,{sensitivity:"base"}));
-function paintFromCache(){const c=cachedPeople();if(!c||people.length)return false;people=byName(c);fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true);return true}
-async function refresh(){try{people=byName(await DB.list());try{localStorage.setItem(PKEY,JSON.stringify(people))}catch(e){}}catch(e){console.warn(e);if(!people.length)people=cachedPeople()||[]}fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true)}
+async function paintFromCache(){await loadPCache();const c=cachedPeople();if(!c||people.length)return false;people=byName(c);fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true);return true}
+async function refresh(){try{people=byName(await DB.list());faFresh=true;PIDB.set("people",people).catch(()=>{})}catch(e){console.warn(e);if(!people.length)people=cachedPeople()||[];faFresh=true}fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true)}
 
 // navigation
 $("#goLook").onclick=()=>show("map");$("#authLook").onclick=e=>{e.preventDefault();show("map")};
@@ -240,7 +247,7 @@ function guessCountry(lat,lng){if(lat==null||lng==null)return"";
 function countriesOf(p){const set=new Set();const locs=(p.locations&&p.locations.length)?p.locations:[{country:p.country,city:p.city,lat:p.lat,lng:p.lng}];
  locs.forEach(l=>{let c=normCountry(l.country);if(!c)c=normCountry(CITY_CC[(l.city||"").trim().toLowerCase()]);
   if(!c)c=guessCountry(l.lat!=null?+l.lat:null,l.lng!=null?+l.lng:null);if(c)set.add(c)});return set}
-function count(){faLiveCount();const mc=mapCountry();if(mc){const n=mapPeople().length;$("#count").innerHTML=`<b>${n}</b> practitioner${n===1?"":"s"} in <b>${esc(mc)}</b>`;return}const a=all().filter(p=>pins(p).length),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
+function count(){faLiveCount();if(!faFresh){$("#count").innerHTML="&nbsp;";return}const mc=mapCountry();if(mc){const n=mapPeople().length;$("#count").innerHTML=`<b>${n}</b> practitioner${n===1?"":"s"} in <b>${esc(mc)}</b>`;return}const a=all().filter(p=>pins(p).length),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
  $("#count").innerHTML=a.length?`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"} joined the network`:"Be the first practitioner on the map ✨"}
 // Europe-wide default on first open / All locations (no densest-cluster zoom, no geolocation).
 const EUROPE=[[35,-11],[62,32]];
@@ -395,7 +402,7 @@ function setupSafariChrome(){const ua=navigator.userAgent||"";
  setupSafariChrome();
  $("#demoBanner").hidden=DB.mode!=="local";
  fillLastEmail();
- try{paintFromCache()}catch(e){}
+ try{await paintFromCache()}catch(e){}
  me=await DB.session().catch(()=>null);hdr();
  await refresh();
  applyDeepLink();
@@ -520,7 +527,7 @@ window.faSignedIn=()=>!!me;
 window.faAuthFor=(up,id)=>{pendingBreath=id||"lab";pendingChat=null;setMode(!!up);show("auth")};
 // ===== Inbox (lazy): inbox.js loads only when Inbox or a Message button is opened =====
 let msgUid=null,lastPull=0,inboxP=null,lastBadge=0;
-function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.97";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
+function loadInbox(){if(!inboxP)inboxP=new Promise((res,rej)=>{const s=document.createElement("script");s.src="inbox.js?v=0.23.98";s.onload=()=>res(window.FA_INBOX);s.onerror=e=>{inboxP=null;rej(e)};document.head.appendChild(s)});return inboxP}
 function openChat(id){if(!me){showGate("msg",id);return}pendingChat=null;loadInbox().then(I=>I.openChat(id)).catch(()=>showToast("Could not open messages"))}
 function closeChat(){if(window.FA_INBOX)FA_INBOX.closeChat()}
 function renderInbox(){if(!me){const box=$("#convs");box.innerHTML=`<div class="card center"><p>Sign in to see messages and chat with practitioners.</p><button type="button" class="gold big1">Sign in</button></div>`;box.querySelector("button").onclick=()=>show("auth");return}
@@ -639,7 +646,7 @@ $("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()
  form.addEventListener("submit",()=>{stick=true;setTimeout(()=>{grow();toEnd();if(!desk)ta.focus()},0)});
  fit()})();
 
-// ===== v0.23.97: country list set, login-to-contact gate, News in the Lab pill =====
+// ===== v0.23.98: country list set, login-to-contact gate, News in the Lab pill =====
 var pendingWa=null;
 const FA_COUNTRY_SET=new Set([...document.querySelectorAll('#profForm select[name=country] option')].map(o=>o.value).filter(Boolean));
 function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
@@ -663,7 +670,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
  btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
  $("#labJoin").onclick=()=>{close();if(window.faAuthFor)faAuthFor(true,"lab");else{setMode(true);show("auth")}};
  btn.hidden=!!me})();
-// ===== v0.23.97: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
+// ===== v0.23.98: "Join as a practitioner" buttons (map pill + list button); hidden once the user has a listing =====
 (function(){const PLUS='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
  const mk=(id,cls)=>{const b=document.createElement("button");b.type="button";b.id=id;b.className="joinBtn "+cls;b.innerHTML=PLUS+"<span>Join as a practitioner</span>";b.hidden=true;b.onclick=go;return b};
  const fab=mk("joinFab","joinFab"),lst=mk("joinList","joinList");
@@ -676,7 +683,7 @@ function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.q
   if(id===uid&&has){paint();return}uid=id;const n=++seq;paint();
   const p=await DB.mine().catch(()=>null);if(n!==seq)return;has=!!(p&&(p.name||p.address||p.city));paint()};
  faJoinUpd()})();
-// ===== v0.23.97: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
+// ===== v0.23.98: List v2: countries A–Z with per-country city picker, See all grid with breadcrumb, sheet with back/prev/next, history-aware back =====
 // Display-only city names: merge local spellings, drop district/postcode/state suffixes, fix ALL CAPS (database values are untouched)
 // Instagram is members-only: a website field that points to Instagram counts as Instagram
 function faWebOk(u){return !/(^|\/\/|\.)(instagram\.com|instagr\.am)(\/|$)/i.test(String(u||"").trim().replace(/^https?:\/\//i,"//"))}
@@ -726,7 +733,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   // MER & BBTRS always first, then the usual order
   if(here&&active)ps.sort((a,b)=>faHLCmp(a.p,b.p)||a.d-b.d);else ps.sort((a,b)=>faHLCmp(a.p,b.p)||azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
   const pp=placeParts();
-  const lc=$("#listCount");if(lc)lc.textContent=(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:pp?` in ${pp.ci||pp.co}`:"");
+  const lc=$("#listCount");if(lc)lc.textContent=!faFresh?"":(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:pp?` in ${pp.ci||pp.co}`:"");
   const clr=$("#listClear");if(clr){clr.hidden=!active;clr.textContent=nearScope?"Show all":"Clear"}
   $("#from").textContent=here&&active?"Sorted by distance from you":"";
   if(seeAll&&!pp){seeAll=false;hpop("seeall")}
@@ -790,7 +797,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const step=k=>{if(cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
  window.faSheetClose=()=>{close();if(!cp.hidden){hideCity();hpop("city")}};
  openNJ=function(id){const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,21);let i=ps.findIndex(p=>p.id===id);if(i<0){const p=all().find(x=>x.id===id);if(!p)return;open([p],0,"Newly joined","newly_joined");return}open(ps,i,"Newly joined","newly_joined")};
- // v0.23.97: my own listing exactly as a logged-out visitor sees it (no view stat)
+ // v0.23.98: my own listing exactly as a logged-out visitor sees it (no view stat)
  window.faPreviewMe=p=>{const sv=me;me=null;try{sh.classList.add("selfPrev");open([p],0,"My profile","self_preview")}finally{me=sv}};
  window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
  sh.addEventListener("click",e=>{const t=e.target;
@@ -823,7 +830,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  try{fillPlaces();renderList()}catch(e){}
 })();
 
-// ===== v0.23.97: social-style My profile: header card + focused edit sheets =====
+// ===== v0.23.98: social-style My profile: header card + focused edit sheets =====
 // The existing #profForm stays the single source of fields + save logic; each sheet shows one section of it.
 const PE_SECS={photo:["📷","Photo & name"],mods:["🌿","Practices"],locs:["📍","Locations"],about:["✍️","About you"],contacts:["💬","Contacts & links"]};
 let peSec="",peSnap="",peBusy=false;
@@ -908,7 +915,7 @@ bSet.addEventListener("change",async e=>{const c=e.target.closest("[data-tgl]");
  else{fm[k].checked=!on;c.checked=!on;bm.textContent=$("#status").textContent||"Could not save."}
  bSet.querySelectorAll("[data-tgl]").forEach(x=>x.disabled=false)});
 
-// ===== v0.23.97: MER & BBTRS highlight: gold seal, always sorted first, featured city row, filter =====
+// ===== v0.23.98: MER & BBTRS highlight: gold seal, always sorted first, featured city row, filter =====
 // Detection: an exact "MER" or "BBTRS" entry in the practices list (mods); "MER Coaching" etc. do not count.
 var faHLOnly=false;
 function faHL(p){const m=((p&&p.mods)||[]).map(x=>String(x||"").trim().toUpperCase());return{mer:m.includes("MER"),bb:m.includes("BBTRS")}}
@@ -929,6 +936,6 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
  faHLPaint();syncModFilter()});
 
 document.querySelectorAll('#hlChips .hlChip[data-hl]').forEach(b=>{b.innerHTML=faSeal(16)+" "+b.dataset.hl});
-// v0.23.97: live network count on the welcome screen + list header (same source as the map count); hidden until data is loaded
+// v0.23.98: live network count on the welcome screen + list header (same source as the map count); hidden until data is loaded
 function faLiveCount(){const a=all().filter(p=>pins(p).length),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
- document.querySelectorAll(".liveCount").forEach(el=>{if(!a.length){el.hidden=true;return}el.innerHTML=`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"}`;el.hidden=false})}
+ document.querySelectorAll(".liveCount").forEach(el=>{if(!a.length||!faFresh){el.hidden=true;return}el.innerHTML=`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"}`;el.hidden=false})}
