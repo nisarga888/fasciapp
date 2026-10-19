@@ -590,10 +590,14 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeVideo()});
 const NEWS_DIS="fa_news_dismissed",LAB_SEEN="fa_lab_seen";
 function newsList(k){try{return JSON.parse(localStorage.getItem(k)||"[]")}catch(e){return[]}}
 function renderNews(){const n=window.FASCIAPP_NEWS;const dis=n&&newsList(NEWS_DIS).includes(n.id);
- $$(".newsSlot").forEach(s=>{s.innerHTML=n&&!dis?`<div class="newsCard" role="status"><small>What’s new</small><p>${esc(n.text)}</p>${n.button&&(n.tab||"learn")!==(s.closest(".screen")||{}).id?`<button type="button" class="newsGo" data-tab="${esc(n.tab||"learn")}">${esc(n.button)} →</button>`:""}<button type="button" class="newsX" aria-label="Dismiss">✕</button></div>`:""});
+ const safeU=u=>/^(https:\/\/|[a-z0-9_\/.-]+$)/i.test(String(u||""))?String(u):"";
+ const rich=n&&(n.image||n.title||n.url);
+ $$(".newsSlot").forEach(s=>{if(n&&!dis&&rich){const img=safeU(n.image),url=safeU(n.url);s.innerHTML=`<div class="newsCard nb" role="status">${img?`<div class="nbIm${n.play?" play":""}"><img src="${esc(img)}" alt="" loading="lazy">${n.play?"<i></i>":""}</div>`:(n.tile?`<div class="nbTile" aria-hidden="true">${esc(String(n.tile).slice(0,3))}</div>`:"")}<div class="nbTx"><small>${esc(n.label||"What’s new")}</small>${n.title?`<b>${esc(n.title)}</b>`:""}${n.text?`<p>${esc(n.text)}</p>`:""}${n.button?(url?`<a class="newsGo newsLink" href="${esc(url)}" target="_blank" rel="noopener">${esc(n.button)} →</a>`:((n.tab||"learn")!==(s.closest(".screen")||{}).id?`<button type="button" class="newsGo" data-tab="${esc(n.tab||"learn")}">${esc(n.button)} →</button>`:"")):""}</div><button type="button" class="newsX" aria-label="Dismiss">✕</button></div>`;return}
+  s.innerHTML=n&&!dis?`<div class="newsCard" role="status"><small>What’s new</small><p>${esc(n.text)}</p>${n.button&&(n.tab||"learn")!==(s.closest(".screen")||{}).id?`<button type="button" class="newsGo" data-tab="${esc(n.tab||"learn")}">${esc(n.button)} →</button>`:""}<button type="button" class="newsX" aria-label="Dismiss">✕</button></div>`:""});
  const dot=$("#labDot");if(dot)dot.hidden=!(n&&localStorage.getItem(LAB_SEEN)!==n.id)}
 document.addEventListener("click",e=>{const n=window.FASCIAPP_NEWS;if(!n)return;
  if(e.target.closest(".newsX")){const d=newsList(NEWS_DIS);if(!d.includes(n.id)){d.push(n.id);localStorage.setItem(NEWS_DIS,JSON.stringify(d.slice(-20)))}renderNews();return}
+ if(e.target.closest(".newsLink")){try{window.FA_ev&&FA_ev("news_tap",{source:"banner",props:{item:String(n.id).slice(0,60)}})}catch(x){}return}
  const g=e.target.closest(".newsGo");if(g){show(g.dataset.tab);try{const m=document.querySelector("main");if(m)m.scrollTop=0}catch(x){}if(n.breath&&g.dataset.tab==="learn")setTimeout(()=>{try{window.FasciBreath&&FasciBreath.openIntro(n.breath)}catch(x){}},150)}});
 renderNews();
 
@@ -664,7 +668,7 @@ document.addEventListener("click",e=>{const t=e.target.closest("[data-gate]");if
 function backToPract(pid){show("list");let n=0;const go=()=>{const el=document.querySelector(`#items [data-pid="${CSS.escape(String(pid))}"]`);if(el&&el.querySelector("a.cb.wa,a.cb.mail")){el.scrollIntoView({block:"center"});el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2200);return}if(++n<30)setTimeout(go,200);else if(el)el.scrollIntoView({block:"center"})};setTimeout(go,150)}
 (function(){const btn=$("#labBtn"),sh=$("#labSheet"),dim=$("#labDim");if(!btn||!sh)return;
  const leaf=$("#leaf");const mount=()=>{if(leaf&&btn.parentNode!==leaf){leaf.appendChild(btn);if(window.L&&L.DomEvent){L.DomEvent.disableClickPropagation(btn);L.DomEvent.disableScrollPropagation(btn)}}};mount();
- const n=window.FASCIAPP_NEWS;if(n&&n.text){let t=String(n.text).replace(/^\s*new in the lab\s*[:·-]\s*/i,"");const i=t.indexOf(". ");if(i>0&&i<40)t=t.slice(0,i)+":"+t.slice(i+1);$("#labNewTxt").textContent=t}else{const nw=$("#labNew");if(nw)nw.hidden=true}
+ const n=window.FASCIAPP_NEWS;if(n&&n.title&&n.url){$("#labNewTxt").textContent=n.title+" "+(n.text||"")}else if(n&&n.text){let t=String(n.text).replace(/^\s*new in the lab\s*[:·-]\s*/i,"");const i=t.indexOf(". ");if(i>0&&i<40)t=t.slice(0,i)+":"+t.slice(i+1);$("#labNewTxt").textContent=t}else{const nw=$("#labNew");if(nw)nw.hidden=true}
  const open=()=>{document.body.classList.add("labOpen");sh.setAttribute("aria-hidden","false");try{ev("lab_pill",{props:{step:"open"},source:"app"})}catch(e){}};
  const close=()=>{document.body.classList.remove("labOpen");sh.setAttribute("aria-hidden","true")};
  btn.onclick=e=>{e.stopPropagation();open()};dim.onclick=close;$("#labLater").onclick=close;
