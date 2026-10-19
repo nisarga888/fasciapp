@@ -722,3 +722,4 @@ body.peOpen{overflow:hidden}
 .newsCard.nb .newsGo{display:inline-flex;align-items:center;background:#C99E67;color:#02191E;border:0;border-radius:20px;padding:6px 13px;font-weight:700;font-size:12px;text-decoration:none}
 .newsCard.nb .newsX{z-index:2}
 .nbTile{flex:none;width:58px;height:58px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#FBE7B5,#C99E67 55%,#8A6537);box-shadow:0 4px 12px #00000059;font-family:Georgia,"Times New Roman",serif;font-size:30px;color:#02191E;position:relative;z-index:1}
+.newsCard.nb:not(:has(.nbIm,.nbTile)){padding-left:16px}
