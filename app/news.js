@@ -8,7 +8,8 @@
 //   v0.23.101 rich card (optional): label (small gold line), title (big line), image (path or URL),
 //   play: true (play icon on the image), tile: short text in a gold tile instead of an image (e.g. "7"), url (button opens this link in a new tab instead of a tab).
 // Set window.FASCIAPP_NEWS = null; to show no card.
-window.FASCIAPP_NEWS = { id: "first-7-days-2026-10-19", label: "First 7 days", title: "FasciApp is 7 days old 🎉", text: "125+ practitioners joined in our first 7 days. Thank you!", button: "See our first week", url: "https://www.instagram.com/reel/DerToiwxIVX/" };
+window.FASCIAPP_NEWS = { id: "reel-first-7-days-2026-10-20", label: "New reel", title: "Our first 7 days 🎉", text: "See what this community built in one week.", button: "Watch on Instagram", url: "https://www.instagram.com/reel/DerToiwxIVX/", image: "news/reel-first-7-days.jpg", play: true };
+// previous: { id: "first-7-days-2026-10-19", label: "First 7 days", title: "FasciApp is 7 days old 🎉", text: "125+ practitioners joined in our first 7 days. Thank you!", button: "See our first week", url: "https://www.instagram.com/reel/DerToiwxIVX/" }
 // previous: { id: "coherent-breath-2026-10-13b", text: "New in the Lab: Coherent breath. 6 in, 6 out through the nose, 5 minutes with music.", button: "Try it", tab: "learn" }
 
 // "NEW" gold badges on Lab items. Keys: "breath:<id>" (coherent/longer/box) or a Lab item title.
