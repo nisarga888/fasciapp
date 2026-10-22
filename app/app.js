@@ -98,7 +98,7 @@ function showForgot(){$("#authForm").hidden=true;$("#forgotForm").hidden=false;$
  $("#forgotMsg").textContent="";$("#forgotEmail").value=$("#email").value||"";$("#forgotEmail").focus()}
 function showResetForm(){show("auth");$("#authForm").hidden=true;$("#forgotForm").hidden=true;$("#resetForm").hidden=false;
  $("#authTitle").textContent="Set new password";$$(".seg").forEach(s=>s.hidden=true);
- $("#authLook").parentElement.hidden=true;$("#resetMsg").textContent="";$("#newPw").value="";$("#newPw2").value=""}
+ $("#authLook").parentElement.hidden=true;$("#resetMsg").textContent="";$("#newPw").value="";$("#newPw2").value="";DB.session().then(s=>{if(s&&s.email)$("#resetUser").value=s.email}).catch(()=>{})}
 function setMode(up){signUpMode=up;showAuthMain();fillLastEmail();$$(".seg").forEach(s=>s.hidden=false);
  $("#tabUp").classList.toggle("on",up);$("#tabIn").classList.toggle("on",!up);
  $("#authTitle").textContent=up?"Create your free account":"Welcome back";$("#authBtn").textContent=up?"Create account":"Sign in";$("#authMsg").textContent="";
@@ -108,15 +108,21 @@ $("#forgotLink").onclick=e=>{e.preventDefault();showForgot()};
 $("#forgotBack").onclick=()=>{setMode(false)};
 $("#forgotForm").onsubmit=async e=>{e.preventDefault();const em=$("#forgotEmail").value.trim().toLowerCase(),m=$("#forgotMsg");
  if(!em){m.textContent="Please enter your email.";return}m.textContent="Sending…";
- try{await DB.resetPassword(em);m.textContent="Check your email — we sent a link to set a new password. It may take a minute to arrive."}catch(err){m.textContent=err.message||"Could not send the reset link."}};
+ $("#forgotSent").hidden=true;
+ try{await DB.resetPassword(em);m.textContent="✓ Sent. If "+em+" has a FasciApp account, a link to set a new password is on its way. It can take a few minutes.";$("#forgotSent").hidden=false;faResendCooldown(60)}catch(err){m.textContent=err.message||"Could not send the reset link."}};
+function faResendCooldown(s){const b=$("#forgotResend");if(!b)return;clearInterval(b._t);b.disabled=true;const tick=()=>{if(s<=0){clearInterval(b._t);b.disabled=false;b.textContent="Resend the link";return}b.textContent="Resend in "+s+" s";s--};tick();b._t=setInterval(tick,1000)}
+$("#forgotResend").onclick=()=>{try{$("#forgotForm").requestSubmit()}catch(e){$("#forgotForm").dispatchEvent(new Event("submit",{cancelable:true}))}};
+function faAuthLinkError(){try{const h=new URLSearchParams((location.hash||"").replace(/^#/,"")),q=new URLSearchParams(location.search);const code=h.get("error_code")||q.get("error_code"),d=h.get("error_description")||q.get("error_description");if(!code&&!d)return false;
+ show("auth");showForgot();$("#forgotMsg").textContent=/expired|invalid/i.test((code||"")+" "+(d||""))?"That reset link has expired or was already used. Enter your email to get a new one.":"That link didn't work ("+(d||code)+"). Enter your email to get a new one.";
+ history.replaceState({},"",location.pathname);return true}catch(e){return false}}
 $("#resetForm").onsubmit=async e=>{e.preventDefault();const a=$("#newPw").value,b=$("#newPw2").value,m=$("#resetMsg");
  if(a.length<6){m.textContent="Use at least 6 characters.";return}if(a!==b){m.textContent="The two passwords do not match.";return}
  m.textContent="Saving…";
- try{me=await DB.updatePassword(a);m.textContent="Password updated ✓ You are signed in.";
+ try{me=await DB.updatePassword(a);m.textContent="Password updated ✓ You are signed in.";try{if(me&&me.email&&window.PasswordCredential&&navigator.credentials)navigator.credentials.store(new PasswordCredential({id:me.email,password:a,name:me.email})).catch(()=>{})}catch(x){}
   try{const u=new URL(location.href);u.searchParams.delete("reset");history.replaceState({},"",u.pathname+u.search+u.hash.replace(/access_token=[^&]+/g,""))}catch(e){}
   hdr();await refresh();msgInit();setTimeout(()=>show("profile"),600)}catch(err){m.textContent=err.message||"Could not update password."}};
 $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please confirm you are 18+ and accept the Terms and Privacy Policy.";return}m.textContent="…";
- try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath,nw=pendingWa;pendingChat=null;pendingBreath=null;pendingWa=null;if(nw){backToPract(nw)}else if(nb){show("learn");if(nb!=="lab")setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
+ try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);try{if(window.PasswordCredential&&navigator.credentials)navigator.credentials.store(new PasswordCredential({id:em,password:pw,name:em})).catch(()=>{})}catch(x){}m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath,nw=pendingWa;pendingChat=null;pendingBreath=null;pendingWa=null;if(nw){backToPract(nw)}else if(nb){show("learn");if(nb!=="lab")setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
 
 // helpers
 function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(p.lng-from[1]);const a=Math.sin(dl/2)**2+Math.cos(r(from[0]))*Math.cos(r(p.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
@@ -419,8 +425,9 @@ function setupSafariChrome(){const ua=navigator.userAgent||"";
    if(me&&me.email)rememberEmail(me.email)}
   if(event==="SIGNED_OUT"){me=null;hdr()}
  });
- if(wantReset){// give the client a moment to pick up hash tokens from the email link
-  setTimeout(async()=>{if(recovery)return;const s=await DB.session().catch(()=>null);if(s||wantReset)showResetForm()},400)}
+ if(faAuthLinkError()){}else if(wantReset){// give the client a moment to pick up hash tokens from the email link
+  setTimeout(async()=>{if(recovery)return;const s=await DB.session().catch(()=>null);if(s){showResetForm();return}
+   show("auth");showForgot();$("#forgotMsg").textContent="That reset link has expired or was already used. Enter your email to get a new one."},900)}
 })();
 
 // ===== Session log =====

@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><script>(function(){try{var h=location.hash||"",q=location.search||"";if(/access_token=|error_code=|type=recovery/.test(h)||/[?&](code|error_code)=/.test(q)){location.replace("/app/"+(/type=recovery|error_code=/.test(h+q)?"?reset=1":"")+(/[?&](code|error_code)=/.test(q)?(/type=recovery|error_code=/.test(h+q)?"&":"?")+q.replace(/^\?/,""):"")+h)}}catch(e){}})()</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>FasciApp – Find bodywork &amp; breathwork practitioners near you</title>
 <meta name="description" content="Find the practitioner your body has been looking for.">
 <meta name="keywords" content="bodywork, breathwork, myofascial release, MER, BBTRS, craniosacral, somatic therapy, massage, trauma-informed, practitioner near me, fascia">
@@ -285,7 +285,7 @@ if(matchMedia("(display-mode: standalone)").matches)location.replace("app/");
 </script><script>(function(){var c=document.querySelectorAll('.f');if(!('IntersectionObserver'in window)||matchMedia('(prefers-reduced-motion:reduce)').matches){c.forEach(function(e){e.classList.add('seen')});return}var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('seen');o.unobserve(e.target)}})},{threshold:.15});c.forEach(function(e){o.observe(e)})})();</script>
 
 <script src="app/config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app/vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
   document.querySelectorAll('.worldTab').forEach(function(btn){
@@ -327,5 +327,5 @@ if(matchMedia("(display-mode: standalone)").matches)location.replace("app/");
 })();
 </script>
 
-<script src="app/track.js?v=0.23.100"></script><script>(function(){var q=new URLSearchParams(location.search),u=new URLSearchParams();["utm_source","utm_medium","utm_campaign"].forEach(function(k){if(q.get(k))u.set(k,q.get(k))});var s=u.toString();if(!s)return;document.querySelectorAll('a[href^="app/"],a[href="app"]').forEach(function(a){var h=a.getAttribute("href");a.setAttribute("href",h+(h.indexOf("?")>-1?"&":"?")+s)})})();</script><script>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a||!window.FA_ev)return;var h=a.getAttribute("href")||"",it=/join=1/.test(h)?"join":/^app\/?$/.test(h)?"open_app":/instagram\.com/.test(h)?"instagram":/facebook\.com/.test(h)?"facebook":/terms|privacy/.test(h)?"legal":"";if(!it)return;FA_ev(it==="instagram"||it==="facebook"?"follow_tap":"landing_cta",{source:"landing",props:{item:it,where:a.closest("footer")?"footer":a.closest(".hero")?"hero":"page"}})},true);FA_ev&&FA_ev("screen",{source:"landing",props:{tab:"landing"}});</script>
+<script src="app/track.js?v=0.23.104"></script><script>(function(){var q=new URLSearchParams(location.search),u=new URLSearchParams();["utm_source","utm_medium","utm_campaign"].forEach(function(k){if(q.get(k))u.set(k,q.get(k))});var s=u.toString();if(!s)return;document.querySelectorAll('a[href^="app/"],a[href="app"]').forEach(function(a){var h=a.getAttribute("href");a.setAttribute("href",h+(h.indexOf("?")>-1?"&":"?")+s)})})();</script><script>document.addEventListener("click",function(e){var a=e.target.closest("a");if(!a||!window.FA_ev)return;var h=a.getAttribute("href")||"",it=/join=1/.test(h)?"join":/^app\/?$/.test(h)?"open_app":/instagram\.com/.test(h)?"instagram":/facebook\.com/.test(h)?"facebook":/terms|privacy/.test(h)?"legal":"";if(!it)return;FA_ev(it==="instagram"||it==="facebook"?"follow_tap":"landing_cta",{source:"landing",props:{item:it,where:a.closest("footer")?"footer":a.closest(".hero")?"hero":"page"}})},true);FA_ev&&FA_ev("screen",{source:"landing",props:{tab:"landing"}});</script>
 </body></html>

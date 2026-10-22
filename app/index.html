@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 
-<link rel="stylesheet" href="styles.css?v=0.23.102"></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="faG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE7B5"/><stop offset=".45" stop-color="#D9B06F"/><stop offset=".7" stop-color="#C99E67"/><stop offset="1" stop-color="#8A6537"/></linearGradient><linearGradient id="faG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9B7440"/><stop offset="1" stop-color="#F6DFA9"/></linearGradient><radialGradient id="faC" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#0E4A50"/><stop offset="1" stop-color="#02191E"/></radialGradient></defs></svg>
+<link rel="stylesheet" href="styles.css?v=0.23.104"></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="faG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE7B5"/><stop offset=".45" stop-color="#D9B06F"/><stop offset=".7" stop-color="#C99E67"/><stop offset="1" stop-color="#8A6537"/></linearGradient><linearGradient id="faG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9B7440"/><stop offset="1" stop-color="#F6DFA9"/></linearGradient><radialGradient id="faC" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#0E4A50"/><stop offset="1" stop-color="#02191E"/></radialGradient></defs></svg>
 <div id="demoBanner" class="banner" hidden>Demo mode: saved on this device</div>
 <section id="splash" class="screen active">
  <svg class="biglogo logoMark" width="150" height="150" aria-hidden="true" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -39,24 +39,26 @@
  <button class="back" data-go="splash">← Back</button>
  <h2 id="authTitle">Create your free account</h2>
  <div class="seg"><button id="tabUp" class="on" type="button">Create account</button><button id="tabIn" type="button">Sign in</button></div>
- <form id="authForm" class="card">
-  <label class="lbl">Email<input id="email" type="email" autocomplete="email" required></label>
-  <label class="lbl" id="pwL">Password<input id="pw" type="password" autocomplete="current-password" required minlength="6" placeholder="at least 6 characters"></label>
+ <form id="authForm" class="card" method="post" action="#" autocomplete="on">
+  <label class="lbl">Email<input id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false" required></label>
+  <label class="lbl" id="pwL">Password<input id="pw" name="password" type="password" autocomplete="current-password" required minlength="6" placeholder="at least 6 characters"></label>
   <p id="forgotWrap" class="muted forgot" hidden><a href="#" id="forgotLink">Forgot password?</a></p>
   <label class="consent" id="agreeL"><input type="checkbox" id="agree"> I'm 18+ and accept the <a href="../terms.html" target="_blank">Terms</a> and <a href="../privacy.html" target="_blank">Privacy Policy</a></label><label class="consent" id="newsL"><input type="checkbox" id="newsOpt"> Yes, send me occasional FasciApp news: new breathing practices, free live sessions and videos. Unsubscribe anytime.</label><button id="authBtn" class="gold big1">Create account</button>
   <p id="authMsg" class="msg"></p>
  </form>
  <form id="forgotForm" class="card" hidden>
   <p class="muted">Enter the email for your account. We'll send a link to choose a new password.</p>
-  <label class="lbl">Email<input id="forgotEmail" type="email" autocomplete="email" required></label>
+  <label class="lbl">Email<input id="forgotEmail" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false" required></label>
   <button class="gold big1">Send reset link</button>
-  <p id="forgotMsg" class="msg"></p>
+  <p id="forgotMsg" class="msg" role="status" aria-live="polite"></p>
+  <div id="forgotSent" class="forgotSent" hidden><p class="muted">Didn’t get it after a few minutes? Check your <b>spam / junk</b> and <b>Promotions</b> folders, and make sure the email above is the one you signed up with.</p><button type="button" id="forgotResend" class="ghost">Resend the link</button></div>
   <button type="button" id="forgotBack" class="ghost">← Back to sign in</button>
  </form>
- <form id="resetForm" class="card" hidden>
+ <form id="resetForm" class="card" hidden method="post" action="#">
+  <input id="resetUser" name="username" type="email" autocomplete="username" hidden aria-hidden="true" tabindex="-1">
   <p class="muted">Choose a new password for your account (at least 6 characters).</p>
-  <label class="lbl">New password<input id="newPw" type="password" autocomplete="new-password" required minlength="6" placeholder="at least 6 characters"></label>
-  <label class="lbl">Confirm password<input id="newPw2" type="password" autocomplete="new-password" required minlength="6"></label>
+  <label class="lbl">New password<input id="newPw" name="new-password" type="password" autocomplete="new-password" required minlength="6" placeholder="at least 6 characters"></label>
+  <label class="lbl">Confirm password<input id="newPw2" name="new-password-confirm" type="password" autocomplete="new-password" required minlength="6"></label>
   <button class="gold big1">Save new password</button>
   <p id="resetMsg" class="msg"></p>
  </form>
@@ -215,8 +217,8 @@
 
 
 <script src="config.js?v=0.23.100"></script><script src="track.js?v=0.23.71"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="learn.js?v=0.23.100"></script><script src="news.js?v=0.23.103"></script><script src="quotes.js?v=0.23.71"></script><script src="data.js?v=0.23.100"></script><script src="breath.js?v=0.23.71"></script><script src="app.js?v=0.23.101"></script>
+<script src="vendor/supabase-js-2.118.0.min.js"></script><script>window.supabase||document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"><\/script>')</script>
+<script src="learn.js?v=0.23.100"></script><script src="news.js?v=0.23.103"></script><script src="quotes.js?v=0.23.71"></script><script src="data.js?v=0.23.104"></script><script src="breath.js?v=0.23.71"></script><script src="app.js?v=0.23.104"></script>
 <script>
 if("serviceWorker" in navigator&&navigator.serviceWorker){
   // Never reload while the user is using the app: apply a new version only when the app is in the background or on next open.

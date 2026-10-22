@@ -84,10 +84,11 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
  return {mode:"supabase",
   session:sess,
   async signUp(email,pw,opt){const n=!!(opt&&opt.news_optin);const d=chk(await sb.auth.signUp({email,password:pw,options:{data:{news_optin:n,news_optin_at:n?new Date().toISOString():null,signup_source:"fasciapp"}}}));if(!d.session)throw new Error("Account created. Check your email to confirm it, then sign in.");return sess()},
-  async signIn(email,pw){chk(await sb.auth.signInWithPassword({email,password:pw}));return sess()},
+  async signIn(email,pw){chk(await sb.auth.signInWithPassword({email,password:pw}));try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}return sess()},
   async signOut(){await sb.auth.signOut()},
-  async resetPassword(email){const redirectTo=location.origin.replace(/\/$/,"")+"/app/?reset=1";
-   chk(await sb.auth.resetPasswordForEmail(email,{redirectTo}));return true},
+  async resetPassword(email){const redirectTo="https://fasciapp.app/app/?reset=1";
+   const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:/^https:\/\/(www\.)?fasciapp\.app$/.test(location.origin)?redirectTo:location.origin+"/app/?reset=1"});
+   if(error){const m=String(error.message||"");const e=new Error(/rate limit|too many|after \d+ seconds|security purposes/i.test(m)?"Too many reset emails were requested just now. Please wait a few minutes and try again.":/not authori[sz]ed/i.test(m)?"We couldn't send the email right now. Please contact hello@fasciapp.app and we'll help you reset it.":m||"Could not send the reset link.");e.code=error.status;throw e}return true},
   async setNews(on){chk(await sb.auth.updateUser({data:{news_optin:!!on,news_optin_at:on?new Date().toISOString():null,news_optout_at:on?null:new Date().toISOString()}}));try{const s=await sess();if(s){const r=await sb.from("practitioners").select("user_id").eq("user_id",s.user_id).maybeSingle();if(r.data)await sb.from("practitioners").update({news_optin:!!on,news_optin_at:on?new Date().toISOString():null}).eq("user_id",s.user_id)}}catch(e){}},
   async updatePassword(password){chk(await sb.auth.updateUser({password}));return sess()},
   onAuth(cb){try{const {data:{subscription}}=sb.auth.onAuthStateChange((event,session)=>cb(event,session));return ()=>subscription.unsubscribe()}catch(e){return ()=>{}}},
