@@ -254,7 +254,7 @@ function countriesOf(p){const set=new Set();const locs=(p.locations&&p.locations
  locs.forEach(l=>{let c=normCountry(l.country);if(!c)c=normCountry(CITY_CC[(l.city||"").trim().toLowerCase()]);
   if(!c)c=guessCountry(l.lat!=null?+l.lat:null,l.lng!=null?+l.lng:null);if(c)set.add(c)});return set}
 function count(){faLiveCount();if(!faFresh){$("#count").innerHTML="&nbsp;";return}const mc=mapCountry();if(mc){const n=mapPeople().length;$("#count").innerHTML=`<b>${n}</b> practitioner${n===1?"":"s"} in <b>${esc(mc)}</b>`;return}const a=all().filter(p=>pins(p).length),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
- $("#count").innerHTML=a.length?`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"} joined the network`:"Be the first practitioner on the map ✨"}
+ $("#count").innerHTML=a.length?`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"} joined the network`+(()=>{const k=a.reduce((t,p)=>t+pins(p).length,0);return k>a.length?`<br><small>${k} map pins · some practitioners work in several places</small>`:""})():"Be the first practitioner on the map ✨"}
 // Europe-wide default on first open / All locations (no densest-cluster zoom, no geolocation).
 const EUROPE=[[35,-11],[62,32]];
 function fitEurope(){if(!map)return;try{map.fitBounds(EUROPE,{padding:[28,28],animate:false,maxZoom:5})}catch(e){map.setView([50,10],4,{animate:false})}}
