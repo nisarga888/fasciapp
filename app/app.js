@@ -580,7 +580,7 @@ function renderLearn(){const box=$("#learnList");if(!box)return;const items=(win
    <div class="lbody"><div class="lbadges">${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`}).join("");if(window.FasciBreath&&FasciBreath.mountLab)try{FasciBreath.mountLab()}catch(e){}labTiles()}
 // ===== Lab home: square tiles (v0.23.106) =====
 const LAB_COURSES=[
- {k:"c1",t:"Breathe Online for Stress and Sleep",by:"Nisarga Eryk Dobosz",dur:"21 days · Day 1 free",price:"€24.90",bg:"#16695f",img:"lab/course-breathe21.jpg",url:"https://payhip.com/b/jCza7"},
+ {k:"c1",t:"Breathe Online for Stress and Sleep",by:"Nisarga Eryk Dobosz",dur:"21 days · Day 1 free",price:"€24.90",bg:"#16695f",img:"lab/course-breathe21.jpg",url:"https://breathe.bodyawareness.ee/?utm_source=fasciapp&utm_medium=app&utm_campaign=lab-course"},
  {k:"c2",t:"Self Bodywork",by:"Satyarthi Peloquin",dur:"8+ hours",price:"€175",bg:"#78503c",img:"lab/course-selfmassage.jpg",url:"https://www.myofascialtrainings.com/online-courses/self-massage-course"},
  {k:"c3",t:"Reichian Character Structure",by:"Jennifer McKeever",dur:"3.5 hours · 6 lessons",price:"€79",bg:"#4a3f5e",img:"lab/course-character-types.jpg",url:"https://online.myofascialtrainings.com/courses/mer-character-types-course-en-version"}];
 const LAB_TILES=[

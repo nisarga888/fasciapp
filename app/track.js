@@ -41,7 +41,7 @@ var FA_TRACK_DEFAULT = true;
   // PostHog-only click hooks: outbound course clicks, Lab tiles (Listen etc.)
   document.addEventListener("click",function(e){try{var t=e.target.closest&&e.target.closest("a,button");if(!t)return;
     var h=t.getAttribute("href")||"";
-    if(t.classList.contains("lcGo")||/payhip\.com|myofascialtrainings\.com/.test(h)){var m=t.closest(".lcourse"),nm=m&&m.querySelector(".lcHead b")?m.querySelector(".lcHead b").textContent:(t.textContent||"").trim();var hh="";try{hh=new URL(h,location.href).hostname}catch(x){}window.FA_ph("course_click",{course:String(nm).slice(0,80),destination:hh,url:h.slice(0,200)});return}
+    if(t.classList.contains("lcGo")||/payhip\.com|myofascialtrainings\.com|breathe\.bodyawareness\.ee/.test(h)){var m=t.closest(".lcourse"),nm=m&&m.querySelector(".lcHead b")?m.querySelector(".lcHead b").textContent:(t.textContent||"").trim();var hh="";try{hh=new URL(h,location.href).hostname}catch(x){}window.FA_ph("course_click",{course:String(nm).slice(0,80),destination:hh,url:h.slice(0,200)});return}
     if(t.dataset&&t.dataset.lt){window.FA_ph("lab_section_open",{section:t.dataset.lt});if(t.dataset.lt==="listen")window.FA_ph("listen_open",{item:"section"});if(t.dataset.lt==="courses")window.FA_ph("courses_section_open",{})}
   }catch(x){}},true);
   window.FA_ev=function(event,o){if(!on)return;o=o||{};try{
