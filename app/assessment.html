@@ -2,6 +2,7 @@
 <title>Body Assessment · FasciApp</title><meta name="robots" content="noindex"><meta name="theme-color" content="#02191E">
 <link rel="icon" href="favicon-32-v4.png">
 <style>
+@view-transition{navigation:auto}
 :root{--bg:#02191E;--gold:#C99E67;--tx:#F3EDE4;--mut:#9fb3b5;--card:#0a2a30;--ln:#c99e6733;--font:-apple-system,BlinkMacSystemFont,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
 body{margin:0;font-family:var(--font);color:var(--tx);background:radial-gradient(120% 60% at 50% -10%,#0f3a40 0%,var(--bg) 60%) fixed;min-height:100vh}
@@ -34,9 +35,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}textarea{min-he
 button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:15px;border-radius:28px;border:0;background:linear-gradient(90deg,#d8b07a,#C99E67);color:var(--bg);cursor:pointer;box-shadow:0 6px 20px #c99e6740}
 button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;color:var(--mut)}
 .consent{display:flex;gap:10px;font-size:13px;color:var(--mut);line-height:1.45;margin-top:16px}.consent input{width:auto;flex:none;margin-top:3px;accent-color:var(--gold)}
+#form,.bar{transition:opacity .45s ease,transform .45s ease}.leave #form,.leave .bar{opacity:0;transform:translateY(-14px)}
 .done{display:none;text-align:center;padding:60px 10px}.done h2{font-weight:300;color:var(--gold);font-size:26px}
 </style></head><body><div class="wrap" id="form">
-<div class="top"><a href="./">← FasciApp</a><span style="font-size:12px;color:var(--mut)">Private · only you see this</span></div>
+<div class="top"><a href="./">← FasciApp</a><a href="assessment-results.html">My assessments →</a></div>
 <div class="hero"><div class="k">Fascia Lab</div><h1>Body Assessment</h1><p>Three photos and a short intake. Together they help plan each session around the whole body.</p></div>
 <div class="who" id="who">Checking sign-in…</div>
 
@@ -99,7 +101,7 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 </div>
 <div class="done" id="done"><h2>Assessment saved ✓</h2><p style="color:var(--mut)">Stored privately in your account.</p><button onclick="location.reload()" style="max-width:280px;margin-top:20px">New assessment</button></div>
 <div class="bar" id="bar"><div><button id="go">Save assessment</button><div class="msg" id="msg"></div></div></div>
-<script src="config.js?v=0.23.125"></script><script src="track.js?v=0.23.125"></script>
+<script src="config.js?v=0.23.126"></script><script src="track.js?v=0.23.126"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
@@ -129,12 +131,12 @@ $("#go").onclick=async()=>{
  if(!user)return msg("Please sign in to FasciApp first.");
  if(!$("#consent").checked)return msg("Please tick the consent box at the end.");
  if(!files.front||!files.side||!files.back)return (msg("Please add all three photos."),$("#photos").scrollIntoView({block:"center"}));
- const b=$("#go");b.disabled=true;b.textContent="Saving…";
+ const b=$("#go");b.disabled=true;b.textContent="Saving privately…";
  try{const id=crypto.randomUUID(),d=collect(),row={id,owner_id:user.id,client_name:$("#client_name").value.trim()||null,data:d,red_flags:d.red_flags||[]};delete d.red_flags;
   for(const v of ["front","side","back"]){const p=user.id+"/"+id+"/"+v+".jpg";const {error}=await sb.storage.from("assessment-photos").upload(p,await shrink(files[v]),{contentType:"image/jpeg",upsert:true});if(error)throw error;row["photo_"+v]=p}
   const {error}=await sb.from("assessments").insert(row);if(error)throw error;
   window.FA_ph&&FA_ph("assessment_submitted",{});
-  $("#form").style.display="none";$("#bar").style.display="none";$("#done").style.display="block";scrollTo(0,0);
+  b.textContent="Saved ✓";document.body.classList.add("leave");setTimeout(()=>location.href="assessment-results.html?id="+id,480);
  }catch(e){msg("Could not save: "+(e.message||e));b.disabled=false;b.textContent="Save assessment"}};
 })();
 </script></body></html>
