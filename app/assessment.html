@@ -1,0 +1,132 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Body Assessment · FasciApp</title><meta name="robots" content="noindex"><meta name="theme-color" content="#02191E">
+<link rel="icon" href="favicon-32-v4.png">
+<style>
+:root{--bg:#02191E;--gold:#C99E67;--tx:#F3EDE4;--mut:#9fb3b5;--card:#0a2a30;--ln:#c99e6733;--font:-apple-system,BlinkMacSystemFont,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--tx);background:radial-gradient(120% 60% at 50% -10%,#0f3a40 0%,var(--bg) 60%) fixed;min-height:100vh}
+.wrap{max-width:560px;margin:auto;padding:18px 16px 120px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.top a{color:var(--gold);text-decoration:none;font-size:14px}
+.hero{text-align:center;padding:18px 6px 8px}.hero .k{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold)}
+.hero h1{font-weight:300;font-size:30px;margin:6px 0 6px;letter-spacing:.5px}.hero p{color:var(--mut);font-size:14px;line-height:1.5;margin:0}
+.who{margin:14px 0 4px;font-size:13px;color:var(--mut);text-align:center}.who b{color:var(--tx)}
+.sec{background:linear-gradient(180deg,#0c3036,#0a2a30);border:1px solid var(--ln);border-radius:20px;padding:18px 16px;margin-top:16px;box-shadow:0 8px 24px #0006}
+.sh{display:flex;gap:12px;align-items:center;margin-bottom:12px}.n{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-size:13px}
+.sh h2{font-size:17px;font-weight:500;margin:0}.sh small{display:block;color:var(--mut);font-size:12px;font-weight:400;margin-top:2px}
+label.f{display:block;font-size:13px;color:var(--mut);margin:12px 0 6px}
+input,select,textarea{width:100%;font:inherit;font-size:16px;padding:12px;border-radius:12px;border:1px solid #c99e6744;background:#02191Ecc;color:var(--tx);outline:none;transition:border .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}textarea{min-height:76px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chips input{display:none}
+.chips label{padding:8px 13px;border-radius:20px;border:1px solid #c99e6755;font-size:14px;cursor:pointer;user-select:none;transition:.15s}
+.chips input:checked+span{color:var(--bg)}.chips label:has(input:checked){background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ph{position:relative;aspect-ratio:3/4;border-radius:16px;border:1.5px dashed #c99e6788;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;overflow:hidden;background:#02191E88;color:var(--gold);font-size:13px;text-align:center}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.ph.ok{border-style:solid}.ph input{display:none}
+.ph svg{width:42px;height:60px;opacity:.8}.ph .t{position:absolute;bottom:0;left:0;right:0;padding:6px;background:#02191Ecc;color:var(--tx);font-size:12px;z-index:2}
+.tip{font-size:12px;color:var(--mut);margin-top:10px;line-height:1.5}
+.rng{display:flex;align-items:center;gap:12px}.rng input{padding:0;accent-color:var(--gold);border:0;background:none}.rng output{min-width:42px;text-align:center;font-size:20px;color:var(--gold)}
+.warn{display:none;margin-top:12px;padding:12px 14px;border-radius:12px;background:#5a2a1a66;border:1px solid #e0915a;color:#ffd9bf;font-size:14px;line-height:1.45}.warn.on{display:block}
+.opt{font-size:11px;color:var(--gold);border:1px solid var(--ln);border-radius:10px;padding:1px 7px;margin-left:6px}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(0deg,var(--bg) 70%,transparent)}
+.bar div{max-width:560px;margin:auto}
+button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:15px;border-radius:28px;border:0;background:linear-gradient(90deg,#d8b07a,#C99E67);color:var(--bg);cursor:pointer;box-shadow:0 6px 20px #c99e6740}
+button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;color:var(--mut)}
+.consent{display:flex;gap:10px;font-size:13px;color:var(--mut);line-height:1.45;margin-top:16px}.consent input{width:auto;flex:none;margin-top:3px;accent-color:var(--gold)}
+.done{display:none;text-align:center;padding:60px 10px}.done h2{font-weight:300;color:var(--gold);font-size:26px}
+</style></head><body><div class="wrap" id="form">
+<div class="top"><a href="./">← FasciApp</a><span style="font-size:12px;color:var(--mut)">Private · only you see this</span></div>
+<div class="hero"><div class="k">Fascia Lab</div><h1>Body Assessment</h1><p>Three photos and a short intake. Together they help plan each session around the whole body.</p></div>
+<div class="who" id="who">Checking sign-in…</div>
+
+<section class="sec"><div class="sh"><div class="n">◎</div><h2>Client<small>Who is this assessment for?</small></h2></div>
+<input id="client_name" placeholder="Client name or initials" autocomplete="off"></section>
+
+<section class="sec"><div class="sh"><div class="n">📷</div><h2>Posture photos<small>Front, side and back. Standing relaxed, feet hip-width.</small></h2></div>
+<div class="photos" id="photos"></div>
+<div class="tip">Tips: full body in frame, plain wall behind, fitted clothes, camera at hip height about 2–3 m away.</div></section>
+
+<section class="sec"><div class="sh"><div class="n">1</div><h2>Main complaint &amp; goal</h2></div>
+<label class="f">What brings you in?</label><textarea data-k="complaint" placeholder="e.g. lower back pain after sitting"></textarea>
+<label class="f">What would you like to be able to do again?</label><textarea data-k="goal" placeholder="e.g. play with my kids without pain"></textarea></section>
+
+<section class="sec"><div class="sh"><div class="n">2</div><h2>Pain map</h2></div>
+<label class="f">Where does it hurt?</label><div class="chips" data-k="pain_areas" data-o="Head,Jaw,Neck,Shoulders,Upper back,Chest,Arms,Elbows,Wrists / hands,Lower back,Abdomen,Pelvis,Hips,Glutes,Thighs,Knees,Calves,Ankles,Feet"></div>
+<label class="f">Intensity (0–10)</label><div class="rng"><input type="range" min="0" max="10" value="0" data-k="pain_intensity"><output>0</output></div>
+<label class="f">Type of pain</label><div class="chips" data-k="pain_type" data-o="Sharp,Dull,Burning,Radiating,Aching,Tingling"></div></section>
+
+<section class="sec"><div class="sh"><div class="n">3</div><h2>Tension &amp; stiffness</h2></div>
+<label class="f">Where do you feel tight or restricted?</label><div class="chips" data-k="tension_areas" data-o="Jaw,Neck,Shoulders,Upper back,Chest,Diaphragm,Lower back,Hips,Hamstrings,Calves,Feet"></div>
+<label class="f">When is it worse?</label><div class="chips" data-k="tension_when" data-o="Morning,Evening,After sitting,After standing,After exercise,Under stress,Cold weather"></div></section>
+
+<section class="sec"><div class="sh"><div class="n">4</div><h2>History &amp; timeline</h2></div>
+<div class="row"><div><label class="f">When did it start?</label><input data-k="started" placeholder="e.g. 2 years ago"></div>
+<div><label class="f">Onset</label><select data-k="onset"><option value="">Choose</option><option>Sudden</option><option>Gradual</option><option>Not sure</option></select></div></div>
+<label class="f">What makes it better?</label><input data-k="better" placeholder="e.g. walking, warmth">
+<label class="f">What makes it worse?</label><input data-k="worse" placeholder="e.g. long drives"></section>
+
+<section class="sec"><div class="sh"><div class="n">5</div><h2>Injuries, surgeries &amp; scars<small>Old ones count too. Scars often shape fascial patterns.</small></h2></div>
+<textarea data-k="injuries" placeholder="e.g. broken left ankle 2015, C-section 2019"></textarea></section>
+
+<section class="sec"><div class="sh"><div class="n">6</div><h2>Body basics</h2></div>
+<div class="row3"><div><label class="f">Age</label><input type="number" inputmode="numeric" data-k="age" min="0" max="120"></div>
+<div><label class="f">Height cm</label><input type="number" inputmode="numeric" data-k="height_cm"></div>
+<div><label class="f">Weight kg</label><input type="number" inputmode="decimal" data-k="weight_kg"></div></div>
+<label class="f">Dominant hand</label><div class="chips" data-k="dominant_hand" data-r="1" data-o="Right,Left,Both"></div>
+<label class="f">Known structural issues</label><div class="chips" data-k="structural" data-o="Scoliosis,Leg length difference,Flat feet,Hypermobility,None known"></div>
+<input data-k="structural_other" placeholder="Other" style="margin-top:10px"></section>
+
+<section class="sec"><div class="sh"><div class="n">7</div><h2>Daily posture &amp; activity</h2></div>
+<div class="chips" data-k="daily" data-o="Desk work,Standing work,Driving,Lots of phone use,Physical work,Caring for kids"></div>
+<label class="f">Sport &amp; exercise (what, how often)</label><input data-k="exercise" placeholder="e.g. yoga 2× week, running"></section>
+
+<section class="sec"><div class="sh"><div class="n">8</div><h2>Sleep, stress &amp; breath</h2></div>
+<label class="f">Sleep quality</label><div class="chips" data-k="sleep" data-r="1" data-o="Good,Okay,Poor,Very poor"></div>
+<label class="f">Stress level (0–10)</label><div class="rng"><input type="range" min="0" max="10" value="0" data-k="stress"><output>0</output></div>
+<label class="f">Breathing</label><div class="chips" data-k="breath" data-o="Shallow,Hold my breath,Chest breathing,Mouth breathing,Feels free"></div></section>
+
+<section class="sec"><div class="sh"><div class="n">9</div><h2>Health &amp; medication</h2></div>
+<label class="f">Health conditions and medication</label><textarea data-k="health" placeholder="e.g. hypothyroid, ibuprofen as needed"></textarea>
+<label class="f">Do any of these apply?</label><div class="chips" id="flags" data-k="red_flags" data-o="Pregnancy,Blood thinners,Recent trauma or accident,Unexplained weight loss,Numbness or loss of strength"></div>
+<div class="warn" id="warn">⚠️ <b>Please check with a doctor first.</b> One or more of these needs medical clearance before bodywork.</div></section>
+
+<section class="sec"><div class="sh"><div class="n">10</div><h2>Emotional background &amp; touch <span class="opt">optional</span></h2></div>
+<label class="f">Anything you'd like your practitioner to know?</label><textarea data-k="emotional" placeholder="Share only what feels right"></textarea>
+<label class="f">Touch &amp; boundaries</label><div class="chips" data-k="touch" data-o="Light pressure,Medium pressure,Deep pressure,Ask before each area,Avoid some areas"></div>
+<input data-k="touch_notes" placeholder="Areas to avoid or other wishes" style="margin-top:10px">
+<label class="consent"><input type="checkbox" id="consent"> I agree this information and photos are stored privately for planning my sessions. I can ask for deletion at any time.</label></section>
+</div>
+<div class="done" id="done"><h2>Assessment saved ✓</h2><p style="color:var(--mut)">Stored privately in your account.</p><button onclick="location.reload()" style="max-width:280px;margin-top:20px">New assessment</button></div>
+<div class="bar" id="bar"><div><button id="go">Save assessment</button><div class="msg" id="msg"></div></div></div>
+<script src="config.js?v=0.23.124"></script><script src="track.js?v=0.23.124"></script>
+<script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script>
+(function(){
+const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const sil=v=>'<svg viewBox="0 0 40 60" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="20" cy="7" r="5"/>'+(v=="side"?'<path d="M20 12v20M20 16l3 12M20 32l-2 14 3 12M20 32l2 14-2 12"/>':'<path d="M20 12v20M20 15l-10 14M20 15l10 14M20 32l-6 26M20 32l6 26"/>')+'</svg>';
+const files={};
+["front","side","back"].forEach(v=>{const l=document.createElement("label");l.className="ph";l.innerHTML=sil(v)+'<span>'+v[0].toUpperCase()+v.slice(1)+'</span><input type="file" accept="image/*" capture="environment">';
+ l.querySelector("input").onchange=e=>{const f=e.target.files[0];if(!f)return;files[v]=f;let i=l.querySelector("img");if(!i){i=document.createElement("img");l.append(i);const t=document.createElement("div");t.className="t";t.textContent=v+" ✓ tap to retake";l.append(t)}i.src=URL.createObjectURL(f);l.classList.add("ok")};
+ $("#photos").append(l)});
+$$(".chips").forEach(c=>{const r=c.dataset.r;c.innerHTML=c.dataset.o.split(",").map(o=>'<label><input type="'+(r?"radio":"checkbox")+'" name="'+c.dataset.k+'" value="'+o+'">'+o+'</label>').join("")});
+$$('input[type=range]').forEach(r=>r.oninput=()=>r.nextElementSibling.value=r.value);
+$("#flags").onchange=()=>$("#warn").classList.toggle("on",!!$("#flags input:checked"));
+let user=null;sb.auth.getSession().then(({data})=>{user=data.session&&data.session.user;$("#who").innerHTML=user?'Signed in as <b>'+user.email+'</b>':'Please <a style="color:var(--gold)" href="./">sign in to FasciApp</a> to save.'});
+// downscale photo to max 1600px JPEG before upload
+const shrink=f=>new Promise(res=>{const im=new Image();im.onload=()=>{const s=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);c.toBlob(b=>res(b||f),"image/jpeg",.85)};im.onerror=()=>res(f);im.src=URL.createObjectURL(f)});
+const collect=()=>{const d={};$$("[data-k]").forEach(el=>{const k=el.dataset.k;if(el.classList.contains("chips")){const v=[...el.querySelectorAll("input:checked")].map(i=>i.value);d[k]=el.dataset.r?(v[0]||null):v}else if(el.value!=="")d[k]=el.type=="number"||el.type=="range"?Number(el.value):el.value.trim()});return d};
+const msg=t=>$("#msg").textContent=t;
+$("#go").onclick=async()=>{
+ if(!user)return msg("Please sign in to FasciApp first.");
+ if(!$("#consent").checked)return msg("Please tick the consent box at the end.");
+ if(!files.front||!files.side||!files.back)return (msg("Please add all three photos."),$("#photos").scrollIntoView({block:"center"}));
+ const b=$("#go");b.disabled=true;b.textContent="Saving…";
+ try{const id=crypto.randomUUID(),d=collect(),row={id,owner_id:user.id,client_name:$("#client_name").value.trim()||null,data:d,red_flags:d.red_flags||[]};delete d.red_flags;
+  for(const v of ["front","side","back"]){const p=user.id+"/"+id+"/"+v+".jpg";const {error}=await sb.storage.from("assessment-photos").upload(p,await shrink(files[v]),{contentType:"image/jpeg",upsert:true});if(error)throw error;row["photo_"+v]=p}
+  const {error}=await sb.from("assessments").insert(row);if(error)throw error;
+  window.FA_ph&&FA_ph("assessment_submitted",{});
+  $("#form").style.display="none";$("#bar").style.display="none";$("#done").style.display="block";scrollTo(0,0);
+ }catch(e){msg("Could not save: "+(e.message||e));b.disabled=false;b.textContent="Save assessment"}};
+})();
+</script></body></html>
