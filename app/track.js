@@ -1,4 +1,4 @@
-// FasciApp anonymous analytics. No user id, email, IP or fingerprint. sid = random per-device id (localStorage), never linked to an account.
+// FasciApp anonymous analytics. No user id, email, IP or fingerprint. sid = random per-visit id held in memory only (not saved on the device), never linked to an account.
 // Fire-and-forget into Supabase table app_events (insert-only).
 // MAIN SWITCH for app + landing: set ON = true after running fasciapp-tracking.sql.
 var FA_TRACK_DEFAULT = true;
@@ -6,12 +6,13 @@ var FA_TRACK_DEFAULT = true;
   var C=window.FASCIAPP_CONFIG||{},U=C.SUPABASE_URL||"https://smgccthvratixddwfhmu.supabase.co",K=C.SUPABASE_ANON_KEY||"sb_publishable_CEZeH1MF1tHwQynmF-jOUA_ta6i-OR8";
   var on=FA_TRACK_DEFAULT;
   try{if(localStorage.getItem("fa_track_test"))on=true}catch(e){}
-  var sid="";try{sid=localStorage.getItem("fa_sid")||"";if(!/^[a-z0-9]{8,32}$/.test(sid)){sid=Math.random().toString(36).slice(2,12)+Date.now().toString(36);localStorage.setItem("fa_sid",sid)}}catch(e){}
+  // v0.23.116: memory-only visit id. Nothing is stored on the device; a new random id per page load / visit.
+  try{localStorage.removeItem("fa_sid");sessionStorage.removeItem("fa_src")}catch(e){}
+  var sid=Math.random().toString(36).slice(2,12)+Date.now().toString(36);
   var once={};
-  // Traffic source: first page load of the session (sessionStorage), utm_* + referrer domain only.
-  var src={};try{src=JSON.parse(sessionStorage.getItem("fa_src")||"null");if(!src){src={};var q=new URLSearchParams(location.search);["utm_source","utm_medium","utm_campaign"].forEach(function(k){var v=(q.get(k)||"").toLowerCase().replace(/[^a-z0-9_.-]/g,"").slice(0,40);if(v)src[k.slice(4)]=v});
-    var r="";try{r=document.referrer?new URL(document.referrer).hostname.replace(/^www\./,""):""}catch(e){}if(r&&!/(^|\.)fasciapp\.app$/.test(r))src.ref=r.slice(0,60);
-    sessionStorage.setItem("fa_src",JSON.stringify(src));src.__new=1}}catch(e){src={}}
+  // Traffic source: utm_* + external referrer domain of this page load, kept in memory only.
+  var src={};try{var q=new URLSearchParams(location.search);["utm_source","utm_medium","utm_campaign"].forEach(function(k){var v=(q.get(k)||"").toLowerCase().replace(/[^a-z0-9_.-]/g,"").slice(0,40);if(v)src[k.slice(4)]=v});
+    var r="";try{r=document.referrer?new URL(document.referrer).hostname.replace(/^www\./,""):""}catch(e){}if(r&&!/(^|\.)fasciapp\.app$/.test(r))src.ref=r.slice(0,60);src.__new=1}catch(e){src={__new:1}}
   var srcProps=function(){var o={};["source","medium","campaign","ref"].forEach(function(k){if(src[k])o["src_"+k]=src[k]});return o};
   window.FA_src=srcProps;
   window.FA_ev=function(event,o){if(!on)return;o=o||{};try{
