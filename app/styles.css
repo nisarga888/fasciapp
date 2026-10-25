@@ -738,3 +738,17 @@ body.peOpen{overflow:hidden}
 .lcHead{display:flex;gap:14px;align-items:center;margin:6px 0 10px}.lcHead img{width:76px;height:76px;border-radius:50%;object-fit:cover}.lcHead b{display:block;font-size:20px}.lcHead small{opacity:.85}
 .lcourse p{margin:0 0 16px;opacity:.92}.lcGo{display:block;text-align:center;text-decoration:none}
 #learnList:not(.lv-home) h3.lsec:not(#labSecTitle){display:none}#learnList:not(.lv-home) .lrowLbl{margin-top:14px}
+/* v0.23.108 Lab section views as 2-col boxes, big back bar */
+.labBackBar{position:sticky;top:0;z-index:20;background:linear-gradient(#02191E 80%,#02191E00);padding:8px 0 4px;margin-top:0}
+.ltBack{width:100%;padding:13px 16px;border-radius:999px;border:1.5px solid #C99E67;background:#C99E6722;color:#F3D9A8;font:inherit;font-size:16px;font-weight:700;text-align:left;cursor:pointer}
+.ltBack:active{background:#C99E6744}
+.labBackBar .lsec{margin:14px 0 2px;font-size:15px}
+#learnList:not(.lv-home) .labCarousel,#learnList:not(.lv-home) .breathCarousel{display:grid;grid-template-columns:1fr 1fr;gap:12px;overflow:visible;padding:0;margin:0}
+#learnList:not(.lv-home) .labCarousel .lcard,#learnList:not(.lv-home) .breathCarousel .breathCaroCard,#learnList:not(.lv-home) .lgrid .lcard{flex:none;width:auto;border-radius:18px;box-shadow:0 4px 14px #0004}
+.lcTile{aspect-ratio:auto;min-height:250px;padding-top:120px}
+.lcTile .ltImg{top:12px;left:12px;right:auto;width:96px}
+.lcTile .ltTx b{font-size:15px;line-height:1.25;margin:2px 0 4px}.lcTile .ltTx small{opacity:.9}
+.ltKind{text-transform:uppercase;letter-spacing:1px;font-size:10px!important;opacity:.75!important}
+.ltPrice{display:inline-block;margin-top:6px;padding:2px 10px;border-radius:999px;background:#ffffff26;font-weight:800;font-size:13px}
+#labCourses .ltile.soon{min-height:250px;aspect-ratio:auto}
+.lcTile{justify-content:flex-start}
