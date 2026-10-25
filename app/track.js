@@ -20,8 +20,11 @@ var FA_TRACK_DEFAULT = true;
   // PostHog forwarding: same events, plus clear aliases and visit-level traffic source on every event (memory only).
   var refHost="";try{refHost=document.referrer?new URL(document.referrer).hostname.replace(/^www\./,""):""}catch(e){}
   var chan=function(){var u=(src.source||"")+" "+(refHost||"");return /instagram|ig\b|^ig/.test(u)?"instagram":/facebook|fb\b|^fb|messenger/.test(u)?"facebook":/linktr\.?ee/.test(u)?"linktree":/google/.test(u)?"google":/whatsapp|wa\.me/.test(u)?"whatsapp":/brevo|flodesk|newsletter|email|mail/.test(u+" "+(src.medium||""))?"newsletter":/bodyawareness/.test(u)?"bai_website":/fasciapp\.app/.test(refHost)||(!src.source&&!refHost)?"direct":(src.source||refHost||"other")};
+  var ua=navigator.userAgent||"",dev={device_type:/iPad|Tablet|Android(?!.*Mobile)/i.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)?"tablet":/Mobi|iPhone|iPod|Android/i.test(ua)?"mobile":"desktop",
+    os:/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)?"iOS":/Android/.test(ua)?"Android":/Windows/.test(ua)?"Windows":/Mac OS X|Macintosh/.test(ua)?"macOS":/CrOS/.test(ua)?"ChromeOS":/Linux/.test(ua)?"Linux":"Other",
+    browser:/Instagram/.test(ua)?"Instagram in-app":/FBAN|FBAV/.test(ua)?"Facebook in-app":/Edg\//.test(ua)?"Edge":/OPR\//.test(ua)?"Opera":/SamsungBrowser/.test(ua)?"Samsung Internet":/Firefox|FxiOS/.test(ua)?"Firefox":/Chrome|CriOS/.test(ua)?"Chrome":/Safari/.test(ua)?"Safari":"Other"};
   var phFirst=1;
-  var phPost=function(name,pr,b){var pp={$process_person_profile:false,$ip:null,$lib:"fa-track",$current_url:location.origin+location.pathname,$pathname:location.pathname,$host:location.host,source:chan(),app_area:/\/app\//.test(location.pathname)?"app":"landing"};
+  var phPost=function(name,pr,b){var pp={$process_person_profile:false,$ip:null,$lib:"fa-track",$current_url:location.origin+location.pathname,$pathname:location.pathname,$host:location.host,source:chan(),device_type:dev.device_type,os:dev.os,browser:dev.browser,app_area:/\/app\//.test(location.pathname)?"app":"landing"};
     if(src.source)pp.utm_source=src.source;if(src.medium)pp.utm_medium=src.medium;if(src.campaign)pp.utm_campaign=src.campaign;if(src.content)pp.utm_content=src.content;
     if(refHost){pp.$referring_domain=refHost;pp.$referrer=document.referrer.split("?")[0].slice(0,200)}else pp.$referring_domain="$direct";
     if(phFirst){pp.first_event_of_visit=true;phFirst=0}
