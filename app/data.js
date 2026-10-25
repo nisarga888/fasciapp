@@ -83,8 +83,8 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   try{const r=await sb.from("sessions").select("session_type").limit(1);if(r.error&&/session_type/i.test(r.error.message||"")){noSessionTypeCol=true;console.warn("FasciApp: run `alter table public.sessions add column if not exists session_type text;` — packing session_type into comment for now")}}catch(e){}})();
  return {mode:"supabase",
   session:sess,
-  async signUp(email,pw,opt){const n=!!(opt&&opt.news_optin);const d=chk(await sb.auth.signUp({email,password:pw,options:{data:{news_optin:n,news_optin_at:n?new Date().toISOString():null,signup_source:"fasciapp"}}}));if(!d.session)throw new Error("Account created. Check your email to confirm it, then sign in.");return sess()},
-  async signIn(email,pw){chk(await sb.auth.signInWithPassword({email,password:pw}));try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}return sess()},
+  async signUp(email,pw,opt){const n=!!(opt&&opt.news_optin);const d=chk(await sb.auth.signUp({email,password:pw,options:{emailRedirectTo:location.origin+"/app/",data:{news_optin:n,news_optin_at:n?new Date().toISOString():null,signup_source:"fasciapp"}}}));if(!d.session)throw new Error("Almost done! We sent a confirmation link to "+email+". Open it to activate your account (check spam/promotions too), then sign in.");return sess()},
+  async signIn(email,pw){const r=await sb.auth.signInWithPassword({email,password:pw});if(r.error&&/not confirmed/i.test(r.error.message||""))throw new Error("Please confirm your email first: open the link we sent to "+email+" (check spam too).");chk(r);try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}return sess()},
   async signOut(){await sb.auth.signOut()},
   async resetPassword(email){const redirectTo="https://fasciapp.app/app/?reset=1";
    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:/^https:\/\/(www\.)?fasciapp\.app$/.test(location.origin)?redirectTo:location.origin+"/app/?reset=1"});
