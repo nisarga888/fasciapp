@@ -64,7 +64,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 <div id="vRes" class="view"></div>
 <div id="vPlan" class="view"></div>
 </div><div class="toast" id="toast"></div>
-<script src="config.js?v=0.23.127"></script><script src="track.js?v=0.23.127"></script>
+<script src="config.js?v=0.23.128"></script><script src="track.js?v=0.23.128"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
@@ -119,7 +119,7 @@ async function list(){const {data}=await sb.from("assessments").select("id,clien
   $("#recs").innerHTML=stag(f.length?f.map(a=>'<a class="card li" href="?id='+a.id+'"><div>'+E(a.client_name||"Unnamed client")+'<br><span>'+new Date(a.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})+'</span></div><span class="pill">'+(a.report_ready_at?"Ready":"Preparing")+'</span></a>').join(''):'<p style="text-align:center;color:var(--mut);margin-top:24px">'+(A.length?'No client matches.':'No records yet.')+'</p>')};
  $("#q").oninput=paint;paint();show($("#vList"))}
 sb.auth.getSession().then(({data})=>{if(!data.session){$("#vList").innerHTML='<div class="prep"><h2>Please sign in</h2><p><a style="color:var(--gold)" href="./?tab=lab">Sign in to FasciApp</a> to see your records.</p></div>';return show($("#vList"))}
- if(id){$("#back").href="assessment-results.html";$("#back").textContent="← Records";load()}else{$("#back").href="./?tab=lab";$("#back").textContent="← Lab";list()}});
+ if(id){$("#back").href="assessment-results.html";$("#back").textContent="← Records";load()}else{$("#back").href="./";$("#back").textContent="← FasciApp";list()}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&row&&!row.report){clearTimeout(timer);load()}});
 })();
 </script></body></html>
