@@ -581,7 +581,8 @@ function renderLearn(){const box=$("#learnList");if(!box)return;const items=(win
 // ===== Lab home: square tiles (v0.23.106) =====
 const LAB_COURSES=[
  {k:"c1",t:"Breathe Online for Stress and Sleep",by:"Nisarga Eryk Dobosz",dur:"21 days · Day 1 free",price:"€24.90",bg:"#16695f",img:"lab/course-breathe21.jpg",url:"https://payhip.com/b/jCza7"},
- {k:"c2",t:"Self Bodywork",by:"Satyarthi Peloquin",dur:"8+ hours",price:"€175 + VAT",bg:"#78503c",img:"lab/course-selfmassage.jpg",url:"https://www.myofascialtrainings.com/online-courses/self-massage-course"}];
+ {k:"c2",t:"Self Bodywork",by:"Satyarthi Peloquin",dur:"8+ hours",price:"€175 + VAT",bg:"#78503c",img:"lab/course-selfmassage.jpg",url:"https://www.myofascialtrainings.com/online-courses/self-massage-course"},
+ {k:"c3",t:"MER Character Types",by:"Jennifer McKeever",dur:"3.5 hours · 6 lessons",price:"€79",bg:"#4a3f5e",img:"lab/course-character-types.jpg",url:"https://online.myofascialtrainings.com/courses/mer-character-types-course-en-version"}];
 const LAB_TILES=[
  {k:"courses",ic:"✿",t:"Online courses",s:"Learn at your own pace",bg:"#16695f"},
  {k:"breathing",ic:"≋",t:"Breathing",s:"Guided practices",bg:"#96693a"},
