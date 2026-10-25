@@ -781,11 +781,22 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  function goPlace(v,co){const m=document.querySelector("main");fillPlaces();if(![...qp().options].some(x=>x.value===v))return false;BR=regionOf(co);savedTop=m?m.scrollTop:0;seeAll=true;hpush("seeall");setPlaceV(v);if(m)m.scrollTop=0;return true}
  window.faListHome=()=>{BR=null;seeAll=false;const nb=$("#qName");if(nb)nb.value="";const lf=$("#listFilter");if(lf)lf.value="";const el=qp();if(el)el.value="";const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}while(HS.length&&HS[HS.length-1]!=="sheet"&&HS[HS.length-1]!=="pe")HS.pop();try{fillPlaces()}catch(e){}renderMarkers();renderList();const m=document.querySelector("main");if(m)m.scrollTop=0};
  (function(){const w=$("#qWhere"),sg=$("#qSug");if(!w||!sg)return;let hits=[];
-  const build=q=>{q=fold(q.trim());const cs=new Map(),ci=new Map();filtered().length;all().filter(p=>p.consent!==false).forEach(p=>L0(p).forEach(l=>{const co=coOf(l);if(!co)return;const a=cs.get(co)||{t:"co",co,n:new Set()};a.n.add(p.id);cs.set(co,a);const c=isOnline(l)?"":faCity(l.city);if(!c)return;const k=fold(c)+"|"+co;const b=ci.get(k)||{t:"ci",c,co,n:new Set(),ps:[]};if(!b.n.has(p.id)){b.n.add(p.id);b.ps.push(p)}ci.set(k,b)}));
-   const sc=x=>{if(!q)return x.t==="ci"?0:9;const s=fold(x.t==="ci"?x.c:x.co);return s.startsWith(q)?0:s.split(/[\s-]+/).some(w=>w.startsWith(q))?1:s.includes(q)?2:9};
-   return[...ci.values(),...cs.values()].map(x=>({x,s:sc(x)})).filter(o=>o.s<9).sort((a,b)=>a.s-b.s||(q?b.x.n.size-a.x.n.size:0)||fold(a.x.c||a.x.co).localeCompare(fold(b.x.c||b.x.co))).slice(0,q?60:400).map(o=>o.x)};
-  const paint=()=>{hits=build(w.value);sg.hidden=false;
-   sg.innerHTML=(w.value.trim()?"":`<p class="sgHd">All cities A–Z · ${hits.length}</p>`)+(hits.length?hits.map((h,i)=>{const ps=h.t==="ci"?h.ps:all().filter(p=>h.n.has(p.id));const n=h.n.size;return `<button type="button" data-sg="${i}"><span class="sgI">${h.t==="ci"?"📍":flagOf(h.co)}</span><span class="sgT"><b>${esc(h.t==="ci"?h.c+", "+h.co:h.co)}</b><small>${h.t==="ci"?"City":"Country"} · ${n} practitioner${n===1?"":"s"}</small></span>${bub(ps,3,0)}</button>`}).join(""):`<p class="sgNo">No city or country found</p>`);sg.scrollTop=0};
+  const ctx=()=>{const v=((qp()||{}).value)||"";if(seeAll&&v){const co=v.startsWith("co:")?v.slice(3):v.startsWith("ci:")?(v.split("|")[1]||""):"";if(co)return{t:"co",co}}return BR?{t:"reg",r:BR}:{t:"top"}};
+  const inCtx=(x,c)=>c.t==="top"?true:c.t==="reg"?regionOf(x.co)===c.r:x.co===c.co;
+  const AZ=(a,b)=>fold(a.t==="ci"?a.c:a.co).localeCompare(fold(b.t==="ci"?b.c:b.co));
+  const build=q=>{q=fold(q.trim());const c=ctx();const cs=new Map(),ci=new Map();all().filter(p=>p.consent!==false).forEach(p=>L0(p).forEach(l=>{const co=coOf(l);if(!co)return;const a=cs.get(co)||{t:"co",co,n:new Set()};a.n.add(p.id);cs.set(co,a);const cc=isOnline(l)?"":faCity(l.city);if(!cc)return;const k=fold(cc)+"|"+co;const b=ci.get(k)||{t:"ci",c:cc,co,n:new Set(),ps:[]};if(!b.n.has(p.id)){b.n.add(p.id);b.ps.push(p)}ci.set(k,b)}));
+   if(!q){const pool=c.t==="co"?[...ci.values()].filter(x=>x.co===c.co):[...cs.values()].filter(x=>inCtx(x,c));
+    return{head:c.t==="co"?`Cities in ${c.co} · A–Z`:c.t==="reg"?`Countries in ${c.r} · A–Z`:"All countries · A–Z",main:pool.sort(AZ),other:[]}}
+   const sc=x=>{const s=fold(x.t==="ci"?x.c:x.co);return s.startsWith(q)?0:s.split(/[\s&,()/-]+/).some(w=>w.startsWith(q))?1:s.includes(q)?2:9};
+   const m=[...ci.values(),...cs.values()].map(x=>({x,s:sc(x)})).filter(o=>o.s<9).sort((a,b)=>a.s-b.s||b.x.n.size-a.x.n.size||AZ(a.x,b.x)).map(o=>o.x);
+   return{head:"",main:m.filter(x=>inCtx(x,c)).slice(0,80),other:c.t==="top"?[]:m.filter(x=>!inCtx(x,c)).slice(0,40)}};
+  const row=(h,i)=>{const ps=h.t==="ci"?h.ps:all().filter(p=>h.n.has(p.id));const n=h.n.size;return `<button type="button" data-sg="${i}"><span class="sgI">${h.t==="ci"?"📍":flagOf(h.co)}</span><span class="sgT"><b>${esc(h.t==="ci"?h.c+", "+h.co:h.co)}</b><small>${h.t==="ci"?"City":"Country"} · ${n} practitioner${n===1?"":"s"}</small></span>${bub(ps,3,0)}</button>`};
+  const fitH=()=>{const vv=window.visualViewport,vh=vv?vv.height+vv.offsetTop:innerHeight,top=sg.getBoundingClientRect().top;sg.style.maxHeight=Math.max(180,Math.min(vh*0.6,vh-top-12))+"px"};
+  const paint=()=>{const r=build(w.value);hits=[...r.main,...r.other];sg.hidden=false;
+   sg.innerHTML=(r.head?`<p class="sgHd">${esc(r.head)}</p>`:"")+(hits.length?r.main.map((h,i)=>row(h,i)).join("")+(r.other.length?`<p class="sgHd sgOther">Other places</p>`+r.other.map((h,i)=>row(h,r.main.length+i)).join(""):""):`<p class="sgNo">No city or country found</p>`);sg.scrollTop=0;requestAnimationFrame(fitH)};
+  if(window.visualViewport)visualViewport.addEventListener("resize",()=>{if(!sg.hidden)fitH()});
+  // touching the list closes the keyboard so the whole panel is visible and scrolls natively
+  sg.addEventListener("touchstart",()=>{if(document.activeElement===w)w.blur()},{passive:true});
   w.addEventListener("input",paint);w.addEventListener("focus",paint);
   w.addEventListener("keydown",e=>{if(e.key==="Enter"&&hits[0]){e.preventDefault();pick(0)}if(e.key==="Escape"){sg.hidden=true;w.blur()}});
   const pick=i=>{const h=hits[i];if(!h)return;sg.hidden=true;w.value="";w.blur();const v=h.t==="ci"?`ci:${h.c}|${h.co}`:`co:${h.co}`;if(!goPlace(v,h.co)&&h.t==="ci")goPlace(`co:${h.co}`,h.co)};
