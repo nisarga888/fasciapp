@@ -34,7 +34,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 @keyframes cue{0%,45%{opacity:1}50%,95%{opacity:.35}}
 .li{display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--tx)}.li span{color:var(--mut);font-size:13px}.pill{font-size:11px;padding:3px 9px;border-radius:10px;border:1px solid var(--gold);color:var(--gold)}
 .steps{display:flex;gap:6px;margin:10px 0 4px;padding:5px;border-radius:30px;background:#02191Ecc;border:1px solid var(--ln);position:sticky;top:8px;z-index:20;backdrop-filter:blur(8px)}
-.steps a{flex:1;text-align:center;padding:9px 4px;border-radius:24px;font-size:12.5px;color:var(--mut);text-decoration:none;transition:background .3s,color .3s;white-space:nowrap;cursor:pointer}.steps a b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid currentColor;font-size:10px;margin-right:5px}
+.steps[hidden]{display:none}.steps a{flex:1;text-align:center;padding:9px 4px;border-radius:24px;font-size:12.5px;color:var(--mut);text-decoration:none;transition:background .3s,color .3s;white-space:nowrap;cursor:pointer}.steps a b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid currentColor;font-size:10px;margin-right:5px}
 .steps a.on{background:var(--gold);color:var(--bg);font-weight:600}
 .tools{display:flex;justify-content:flex-end;margin-top:8px}.tools button{width:auto;padding:8px 14px;font-size:13px;font-weight:500;background:none;border:1px solid var(--ln);color:var(--gold);box-shadow:none}
 .editing [data-p]{outline:1px dashed #c99e6788;outline-offset:3px;border-radius:6px;background:#02191E66}.editing [data-p]:focus{outline-color:var(--gold)}
@@ -46,7 +46,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
  body{background:#fff!important;color:#1d2a2c}.wrap{max-width:none;padding:0}
  .top,.steps,.tools,.nav2,button,#vLoad,#vPrep,#vList,.toast{display:none!important}
  .view{display:block!important;animation:none!important;opacity:1!important}
- .card{opacity:1!important;animation:none!important;background:#fff!important;box-shadow:none!important;border:1px solid #d9c4a3!important;break-inside:avoid;page-break-inside:avoid}
+ .card{opacity:1!important;animation:none!important;background:#fff!important;box-shadow:none!important;border:1px solid #d9c4a3!important}.it,.ses,.tbl tr,.photos{break-inside:avoid;page-break-inside:avoid}
  .it p,.str li,.core,.tbl td,.row,.ses h2,.hero h1,.hero p{color:#1d2a2c!important}.it h3,.lbl,.hero .k,.dir,.tbl td:first-child{color:#8a6537!important}
  .core{background:#f7f1e8!important}.note{background:#f4f8f7!important;color:#1d2a2c!important;border-color:#9cc!important}.disc{color:#555!important}
  .ses .num{background:#C99E67!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -100,7 +100,7 @@ function renderRes(r){const R=r.report,ph=['front','side','back'].map(v=>'<img d
  $("#vRes").querySelectorAll("img[data-ph]").forEach(async im=>{const {data}=await sb.storage.from("assessment-photos").createSignedUrl(im.dataset.ph,3600);if(data)im.src=data.signedUrl});
  let p='<div class="hero"><div class="k">Treatment plan</div><h1>10 sessions</h1><p>Bodywork and breathwork, step by step, at your pace.</p></div>'+tools("plan");
  R.plan.forEach((s,i)=>{const b="plan."+i;p+='<section class="card ses"><div class="num">'+s.n+'</div>'+P(b+".focus",s.focus,"h2")+'<div class="row"><b>✋</b><div><span class="lbl">Bodywork</span>'+P(b+".bodywork",s.bodywork,"div")+'</div></div><div class="row"><b>🌬</b><div><span class="lbl">Breathwork</span>'+P(b+".breathwork",s.breathwork,"div")+'</div></div><div class="row"><b>🏠</b><div><span class="lbl">Home practice</span>'+P(b+".home",s.home,"div")+'</div></div></section>'});
- p+='<div class="nav2"><button class="sec2" data-go="res">← Assessment</button><button data-go="pdf">⤓ Export PDF</button></div><button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button><p class="disc">'+E(R.disclaimer)+'</p>';
+ p+='<div class="nav2"><button class="sec2" data-go="res">← Back</button><button data-go="pdf">⤓ Export PDF</button></div><button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button><p class="disc">'+E(R.disclaimer)+'</p>';
  $("#vPlan").innerHTML=stag(p);
 }
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-go]");if(!b)return;const g=b.dataset.go;
