@@ -86,7 +86,7 @@ async function goPractitioner(){if(!me){me=await DB.session().catch(()=>null);hd
 $("#goPract").onclick=()=>goPractitioner();
 $$("[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.go));
 const logoHome=$("#logoHome");if(logoHome)logoHome.onclick=()=>show("splash");
-$$("nav button").forEach(b=>b.onclick=()=>show(b.dataset.t));
+$$("nav button").forEach(b=>b.onclick=()=>{if(b.dataset.t==="list"&&$("#list").classList.contains("active")&&window.faListHome){faListHome();return}show(b.dataset.t)});
 $("#hIn").onclick=()=>{fillLastEmail();show("auth")};
 $("#hEdit").onclick=async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(me)show("profile");else{fillLastEmail();show("auth")}};
 async function logout(){closeChat();if(unsub){unsub();unsub=null}msgUid=null;me=null;msgs=[];sess=[];sessLoaded=false;photoData=null;hdr();show("splash");$("#unread").hidden=true;DB.signOut().catch(()=>{}).then(()=>refresh())}
@@ -329,7 +329,7 @@ let njKey="";const flagOf=c=>{try{const M=window.FA_CC||{},k=Object.keys(M).find
 const countryOfLoc=l=>{const c=String(l&&l.country||"").trim();if(c&&c!=="Other")return c;const t=" "+fold([l&&l.city,l&&l.address,l&&l.label].filter(Boolean).join(" "))+" ";if(!t.trim())return"";let best="";for(const n of Object.values(window.FA_CC||{})){const f=fold(n);if(f.length>3&&t.includes(" "+f)&&f.length>best.length)best=n}return best};
 function renderNewJ(){const box=$("#newJ");if(!box)return;const ps=all().filter(p=>p.photo&&p.consent!==false&&p.created_at).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,21);
  const key=ps.map(p=>p.id).join();if(key===njKey)return;njKey=key;box.hidden=ps.length<3;if(box.hidden)return;
- box.innerHTML=`<div class="njH"><b>Newly joined</b><small>Swipe →</small></div><div class="njRow">${ps.map(p=>{const locs=(p.locations&&p.locations.length?p.locations:[p]);const co=locs.map(countryOfLoc).find(Boolean)||"";const fn=String(p.name||"").trim().split(/\s+/)[0]||"";
+ box.innerHTML=`<div class="njH"><b>New faces</b><small>Swipe →</small></div><div class="njRow">${ps.map(p=>{const locs=(p.locations&&p.locations.length?p.locations:[p]);const co=locs.map(countryOfLoc).find(Boolean)||"";const fn=String(p.name||"").trim().split(/\s+/)[0]||"";
   return `<button type="button" class="nj" data-nj="${esc(p.id)}" aria-label="${esc(practiceTitle(p))}${co?", "+esc(co):""}"><span class="njAv"><img src="${esc(p.photo)}" alt="" loading="lazy"><i>${esc(fn)}</i></span><small>${flagOf(co)} ${esc(co)}</small></button>`}).join("")}</div>`}
 function openNJ(id){const p=all().find(x=>x.id===id);if(!p)return;try{window.FA_ev&&FA_ev("pract_view",{pid:p.id,source:"newly_joined",props:{from:"newly_joined"}})}catch(e){}
  let s=$("#njSheet");if(!s){s=document.createElement("div");s.id="njSheet";s.className="njSheet";document.body.appendChild(s);s.addEventListener("click",e=>{if(e.target===s||e.target.closest(".njX"))s.hidden=true})}
@@ -758,10 +758,39 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const HS=[];let skip=0;
  const hpush=k=>{try{history.pushState({fa:k},"")}catch(e){}HS.push(k)};
  const hpop=k=>{if(HS.length&&HS[HS.length-1]===k){HS.pop();skip++;try{history.back()}catch(e){skip--}}};
- window.addEventListener("popstate",()=>{if(skip){skip--;return}const k=HS.pop();if(k==="sheet")hideSheet();else if(k==="city")hideCity();else if(k==="seeall")leaveSeeAll();else if(k==="pe"&&window.faPeBack)faPeBack();else if(k==="log"){if($("#log").classList.contains("active"))show("profile")}});
+ window.addEventListener("popstate",()=>{if(skip){skip--;return}const k=HS.pop();if(k==="sheet")hideSheet();else if(k==="city")hideCity();else if(k==="seeall")leaveSeeAll();else if(k==="region"){BR=null;renderList()}else if(k==="pe"&&window.faPeBack)faPeBack();else if(k==="log"){if($("#log").classList.contains("active"))show("profile")}});
  window.faH={push:hpush,pop:hpop};
  // ---- model
- let model={groups:[],grid:[],gridLabel:""};const sel={};let seeAll=false,savedTop=0;
+ let model={groups:[],grid:[],gridLabel:""};const sel={};let seeAll=false,savedTop=0;let BR=null;
+ const AMR=new Set("United States|Canada|Mexico|Brazil|Argentina|Chile|Peru|Colombia|Ecuador|Bolivia|Uruguay|Paraguay|Venezuela|Costa Rica|Panama|Guatemala|Honduras|Nicaragua|El Salvador|Belize|Cuba|Dominican Republic|Puerto Rico|Jamaica|Trinidad and Tobago|Bahamas|Barbados|Haiti|Guyana|Suriname".split("|"));
+ const APR=new Set("Australia|New Zealand|Japan|China|India|Indonesia|Thailand|Vietnam|Malaysia|Singapore|Philippines|South Korea|Korea|Taiwan|Hong Kong|Sri Lanka|Nepal|Bangladesh|Pakistan|Cambodia|Laos|Myanmar|Fiji|Bali|Mongolia".split("|"));
+ const AFR=new Set("South Africa|Egypt|Morocco|Kenya|Nigeria|Ghana|Tanzania|Uganda|Ethiopia|Tunisia|Algeria|Namibia|Botswana|Zimbabwe|Mauritius|Senegal|Israel|United Arab Emirates|Saudi Arabia|Qatar|Jordan|Lebanon|Iran|Iraq|Kuwait|Oman|Bahrain".split("|"));
+ const REGS=["Europe","Americas","Asia & Pacific","Africa & Middle East","Online & other"];
+ const regionOf=c=>!c||c===OTHER?"Online & other":AMR.has(c)?"Americas":APR.has(c)?"Asia & Pacific":AFR.has(c)?"Africa & Middle East":"Europe";
+ const bub=(ps,n,more)=>`<span class="brFaces">${ps.filter(p=>p.photo).slice(0,n).map(p=>`<img src="${esc(p.photo)}" alt="" loading="lazy" decoding="async">`).join("")}${more>0?`<i>+${more}</i>`:""}</span>`;
+ const uniq=list=>{const m=new Map();list.forEach(({p})=>m.set(p.id,p));return[...m.values()]};
+ function browseHtml(groups){const lc=$("#list");
+  if(BR){const gs=groups.filter(g=>regionOf(g.c)===BR);if(!gs.length){BR=null;return browseHtml(groups)}
+   lc.dataset.br="reg";
+   {const nb=$("#listNav");if(nb){nb.hidden=false;nb.innerHTML=`<button type="button" class="brBack" data-br="home"><b>←</b> Back to regions</button>`}}
+   return `<div class="brRegH"><small>${esc(BR)}</small><span>${gs.length} countr${gs.length===1?"y":"ies"} · A–Z</span></div><div class="brCos">${gs.map(g=>{const ps=uniq(g.list);return `<button type="button" class="brCo" data-co="${esc(g.c)}"><span class="brFl">${flagC(g.c)}</span><span class="brCoT"><b>${esc(g.c)}</b><small>${ps.length} practitioner${ps.length===1?"":"s"}</small></span>${bub(ps,4,0)}<em>›</em></button>`}).join("")}</div>`}
+  lc.dataset.br="home";const by=new Map();groups.forEach(g=>{const r=regionOf(g.c);if(!by.has(r))by.set(r,{n:0,ids:new Map()});const o=by.get(r);o.n++;g.list.forEach(({p})=>o.ids.set(p.id,p))});
+  const tot=new Set();groups.forEach(g=>g.list.forEach(({p})=>tot.add(p.id)));const nc=groups.filter(g=>g.c!==OTHER).length;
+  return `<p class="brTot">${tot.size} practitioners in ${nc} countries</p><div class="brRegs">${REGS.filter(r=>by.has(r)).map((r,i)=>{const o=by.get(r),ps=[...o.ids.values()].sort((a,b)=>(!!b.photo)-(!!a.photo)),sh=Math.min(6,ps.filter(p=>p.photo).length);
+   return `<button type="button" class="brReg r${i}" data-reg="${esc(r)}"><span class="brRegT"><b>${esc(r)}</b><small>${r==="Online & other"?"":`${o.n} countr${o.n===1?"y":"ies"} · `}${ps.length} practitioner${ps.length===1?"":"s"}</small></span>${bub(ps,6,ps.length-sh)}<em>›</em></button>`}).join("")}</div>`}
+ function goPlace(v,co){const m=document.querySelector("main");fillPlaces();if(![...qp().options].some(x=>x.value===v))return false;BR=regionOf(co);savedTop=m?m.scrollTop:0;seeAll=true;hpush("seeall");setPlaceV(v);if(m)m.scrollTop=0;return true}
+ window.faListHome=()=>{BR=null;seeAll=false;const nb=$("#qName");if(nb)nb.value="";const lf=$("#listFilter");if(lf)lf.value="";const el=qp();if(el)el.value="";const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}while(HS.length&&HS[HS.length-1]!=="sheet"&&HS[HS.length-1]!=="pe")HS.pop();try{fillPlaces()}catch(e){}renderMarkers();renderList();const m=document.querySelector("main");if(m)m.scrollTop=0};
+ (function(){const w=$("#qWhere"),sg=$("#qSug");if(!w||!sg)return;let hits=[];
+  const build=q=>{q=fold(q.trim());if(!q)return[];const cs=new Map(),ci=new Map();filtered().length;all().filter(p=>p.consent!==false).forEach(p=>L0(p).forEach(l=>{const co=coOf(l);if(!co)return;const a=cs.get(co)||{t:"co",co,n:new Set()};a.n.add(p.id);cs.set(co,a);const c=isOnline(l)?"":faCity(l.city);if(!c)return;const k=fold(c)+"|"+co;const b=ci.get(k)||{t:"ci",c,co,n:new Set(),ps:[]};if(!b.n.has(p.id)){b.n.add(p.id);b.ps.push(p)}ci.set(k,b)}));
+   const sc=x=>{const s=fold(x.t==="ci"?x.c:x.co);return s.startsWith(q)?0:s.split(/[\s-]+/).some(w=>w.startsWith(q))?1:s.includes(q)?2:9};
+   return[...ci.values(),...cs.values()].map(x=>({x,s:sc(x)})).filter(o=>o.s<9).sort((a,b)=>a.s-b.s||b.x.n.size-a.x.n.size).slice(0,7).map(o=>o.x)};
+  const paint=()=>{hits=build(w.value);sg.hidden=!w.value.trim();if(sg.hidden)return;
+   sg.innerHTML=hits.length?hits.map((h,i)=>{const ps=h.t==="ci"?h.ps:all().filter(p=>h.n.has(p.id));const n=h.n.size;return `<button type="button" data-sg="${i}"><span class="sgI">${h.t==="ci"?"📍":flagOf(h.co)}</span><span class="sgT"><b>${esc(h.t==="ci"?h.c+", "+h.co:h.co)}</b><small>${h.t==="ci"?"City":"Country"} · ${n} practitioner${n===1?"":"s"}</small></span>${bub(ps,3,0)}</button>`}).join(""):`<p class="sgNo">No city or country found</p>`};
+  w.addEventListener("input",paint);w.addEventListener("focus",paint);
+  w.addEventListener("keydown",e=>{if(e.key==="Enter"&&hits[0]){e.preventDefault();pick(0)}if(e.key==="Escape"){sg.hidden=true;w.blur()}});
+  const pick=i=>{const h=hits[i];if(!h)return;sg.hidden=true;w.value="";w.blur();const v=h.t==="ci"?`ci:${h.c}|${h.co}`:`co:${h.co}`;if(!goPlace(v,h.co)&&h.t==="ci")goPlace(`co:${h.co}`,h.co)};
+  sg.addEventListener("click",e=>{const b=e.target.closest("[data-sg]");if(b)pick(+b.dataset.sg)});
+  document.addEventListener("click",e=>{if(!e.target.closest(".brSearch"))sg.hidden=true})})();
  const cityList=(c,list)=>{const m=new Map();list.forEach(({p})=>{const seen=new Set();L0(p).filter(l=>(coOf(l)||OTHER)===c).forEach(l=>{const n=cityOf(l);if(!n)return;const k=fold(n);if(seen.has(k))return;seen.add(k);const o=m.get(k)||{k,n,c:0};o.c++;m.set(k,o)})});return[...m.values()].sort((a,b)=>b.c-a.c||a.n.localeCompare(b.n,"en",{sensitivity:"base"}))};
  const inCity=(g,k)=>!k?g.list:g.list.map(({p})=>{const l=L0(p).find(l=>(coOf(l)||OTHER)===g.c&&fold(cityOf(l))===k);return l?{p,l}:null}).filter(Boolean);
  function tile(p,loc,g,i,nCh,d){const co=loc?coOf(loc):"";const fl=co?flagOf(co):"";const city=cityOf(loc)||co;
@@ -770,9 +799,9 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  function rowHtml(gi){const g=model.groups[gi];const list=inCity(g,sel[g.c]);return list.map(({p,l},i)=>tile(p,l,gi,i,1,null)).join("")}
  function chipLabel(g){const k=sel[g.c];if(!k)return"All cities";const o=g.cities.find(x=>x.k===k);return o?o.n:"All cities"}
  function nav(){const box=$("#listNav"),pp=placeParts(),lst=$("#list");const on=!!pp;if(lst)lst.classList.toggle("ptPlace",on);if(!box)return;box.hidden=!on;if(!on){box.innerHTML="";return}
-  box.innerHTML=`<button type="button" class="ptBack" data-nav="back"><b>‹</b> All countries</button><span class="ptCrumb">${pp.ci?`<button type="button" data-nav="co">${flagOf(pp.co)} ${esc(pp.co)}</button><em>›</em><b>${esc(pp.ci)}</b>`:`<b>${flagOf(pp.co)} ${esc(pp.co)}</b>`}</span>`}
+  box.innerHTML=`<button type="button" class="ptBack brBack" data-nav="back"><b>←</b> ${BR&&BR!=="Online & other"?"Back to "+esc(BR):"Back to regions"}</button><span class="ptCrumb">${pp.ci?`<button type="button" data-nav="co">${flagOf(pp.co)} ${esc(pp.co)}</button><em>›</em><b>${esc(pp.ci)}</b>`:`<b>${flagOf(pp.co)} ${esc(pp.co)}</b>`}</span>`}
  function setPlaceV(v){const el=qp();if(!el)return;fillPlaces();if(v&&![...el.options].some(o=>o.value===v))return;el.value=v;el.dispatchEvent(new Event("change"))}
- function leaveSeeAll(){const top=savedTop,was=seeAll;seeAll=false;const el=qp();if(el&&el.value){el.value="";el.dispatchEvent(new Event("change"))}else renderList();if(was)requestAnimationFrame(()=>{const m=document.querySelector("main");if(m)m.scrollTop=top})}
+ function leaveSeeAll(){const top=savedTop,was=seeAll;seeAll=false;if(BR){const lf=$("#listFilter");if(lf)lf.value=""}const el=qp();if(el&&el.value){el.value="";el.dispatchEvent(new Event("change"))}else renderList();if(was)requestAnimationFrame(()=>{const m=document.querySelector("main");if(m)m.scrollTop=top})}
  renderList=function(){renderNewJ();faHLPaint();faLiveCount();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));
   const _pe=qp(),n=ps.length,q=placeV(),mod=($("#listFilter")&&$("#listFilter").value)||"",nameQ=(($("#qName")||{}).value||"").trim();
   const active=!!(nearScope||q||mod||nameQ);
@@ -791,10 +820,12 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
    if(mod)fc.push(`<button type="button" class="fChip" data-clr="mod">${esc(mod)} <i>✕</i></button>`);
    if(nameQ)fc.push(`<button type="button" class="fChip" data-clr="name">“${esc(nameQ)}” <i>✕</i></button>`);
    if(nearScope)fc.push(`<button type="button" class="fChip" data-clr="near">📍 Near me <i>✕</i></button>`);
-   top=`<div class="fChips">${fc.join("")}</div>`;
+   top=`<div class="fChips">${fc.join("")}</div>`;$("#list").dataset.br=pp?"co":"res";
+   if(pp){const allIn=filteredNoPlace().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co)));const mc=new Map();(mod?all().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co))&&p.consent!==false):allIn).forEach(p=>(p.mods||[]).filter(Boolean).forEach(m=>mc.set(m,(mc.get(m)||0)+1)));const ms=[...mc.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
+    if(ms.length)top+=`<div class="brMods"><button type="button" class="cChip${mod?"":" on"}" data-mod="">All</button>${ms.map(([m,c])=>`<button type="button" class="cChip${mod===m?" on":""}" data-mod="${esc(m)}">${esc(m)} <i>${c}</i></button>`).join("")}</div>`}
    if(pp){const allIn=filteredNoPlace().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co)));const cs=cityList(pp.co,allIn.map(p=>({p})));
     if(cs.length>1)top+=`<div class="ptCities">${`<button type="button" class="cChip${pp.ci?"":" on"}" data-pl="co:${esc(pp.co)}">All ${esc(pp.co)} <i>${allIn.length}</i></button>`}${cs.map(c=>`<button type="button" class="cChip${pp.ci&&fold(pp.ci)===c.k?" on":""}" data-pl="ci:${esc(c.n)}|${esc(pp.co)}">${esc(c.n)} <i>${c.c}</i></button>`).join("")}</div>`}}
-  if(!n){model={groups:[],grid:[],gridLabel:""};box.innerHTML=top+"<p class=muted>No practitioners match your search.</p>";return}
+  if(!n){if(!active)$("#list").dataset.br="home";model={groups:[],grid:[],gridLabel:""};box.innerHTML=top+"<p class=muted>No practitioners match your search.</p>";return}
   if(active){model={groups:[],grid:ps.map(x=>x.p),gridLabel:pp?(pp.ci||pp.co):nearScope?"Near me":"Results"};
    const T=({p,d},i)=>tile(p,placeLoc(p)||L0(p)[0],-1,i,2,here?d:null);const k=ps.filter(x=>faIsHL(x.p)).length;
    if(pp&&pp.ci&&k&&k<n){box.innerHTML=top+`<div class="hlFeat"><div class="hlSecH feat">${faSeal(22)} MER &amp; BBTRS in ${esc(pp.ci)} <small>· ${k}</small></div><div class="ptRow featRow">${ps.slice(0,k).map(T).join("")}</div></div><div class="hlSecH hlOther">Other practitioners <small>· ${n-k}</small></div><div class="ptGrid">${ps.slice(k).map((x,j)=>T(x,j+k)).join("")}</div>`;return}
@@ -803,6 +834,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   const groups=[...by.entries()].map(([c,list])=>({c,list,cities:cityList(c,list)})).sort((a,b)=>(a.c===OTHER)-(b.c===OTHER)||a.c.localeCompare(b.c,"en",{sensitivity:"base"}));
   groups.forEach(g=>{if(sel[g.c]&&!g.cities.some(x=>x.k===sel[g.c]))delete sel[g.c]});
   model={groups,grid:[],gridLabel:""};
+  box.innerHTML=browseHtml(groups);return;
   box.innerHTML=groups.map((g,gi)=>`<section class="ptSec" data-gi="${gi}"><div class="ptH"><b>${flagC(g.c)} ${esc(g.c)} <span>· ${g.list.length}</span>${(n=>n?`<i class="hlN" title="MER &amp; BBTRS practitioners">★ ${n}</i>`:"")(g.list.filter(x=>faIsHL(x.p)).length)}</b>${g.cities.length>1?`<button type="button" class="cPick${sel[g.c]?" on":""}" data-pick="${gi}">${esc(chipLabel(g))} ▾</button>`:""}${g.c===OTHER?"":`<button type="button" class="ptAll" data-all="${gi}">See all ›</button>`}</div><div class="ptRow" data-c="${esc(g.c)}">${rowHtml(gi)}</div></section>`).join("");
   box.querySelectorAll(".ptRow[data-c]").forEach(r=>{if(keep[r.dataset.c])r.scrollLeft=keep[r.dataset.c]})};
  function filteredNoPlace(){const el=qp();const hf=()=>true;if(!el)return filtered().filter(hf);const v=el.value;el.value="";const r=filtered().filter(p=>!nearScope||nearScope.ok(p)).filter(hf);el.value=v;return r}
@@ -865,6 +897,10 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
    else if(k==="mod"){const el=$("#listFilter");if(el){el.value="";syncModFilter("listFilter")}}
    else if(k==="name"){const el=$("#qName");if(el){el.value="";renderList();renderMarkers()}}
    else if(k==="near")clearNear();return}
+  const md=t.closest("[data-mod]");if(md){const el=$("#listFilter");if(el){if(md.dataset.mod&&![...el.options].some(o=>o.value===md.dataset.mod)){const o=document.createElement("option");o.value=o.textContent=md.dataset.mod;el.appendChild(o)}el.value=md.dataset.mod;syncModFilter("listFilter")}return}
+  const rg=t.closest("[data-reg]");if(rg){BR=rg.dataset.reg;hpush("region");renderList();const m=document.querySelector("main");if(m)m.scrollTop=0;return}
+  if(t.closest('[data-br="home"]')){BR=null;hpop("region");renderList();const m=document.querySelector("main");if(m)m.scrollTop=0;return}
+  const cb=t.closest("[data-co]");if(cb){const r=BR;if(!goPlace("co:"+cb.dataset.co,cb.dataset.co))return;BR=r;nav();return}
   const pl=t.closest("[data-pl]");if(pl){setPlaceV(pl.dataset.pl);return}
   const pk=t.closest("[data-pick]");if(pk){showCity(+pk.dataset.pick);return}
   const a=t.closest("[data-all]");if(a){const g=model.groups[+a.dataset.all];if(!g)return;const k=sel[g.c];const o=k&&g.cities.find(x=>x.k===k);
