@@ -1,7 +1,8 @@
 // FasciApp Breathing practices (Lab) — Coherent, Longer exhale, Box.
 // Copy lightly paraphrased from Breathe for Stress and Sleep (Nisarga Eryk Dobosz).
 (function () {
-  const TOTAL_MS = 5 * 60 * 1000;
+  const DEF_MS = 5 * 60 * 1000;
+  const totMs = () => (PRACTICES[currentId] && PRACTICES[currentId].totalMs) || DEF_MS;
   const SAFE = "Stop if you feel dizzy or unwell. Breathe comfortably — never force the breath.";
 
   // Timing from the manual (Breathe_for_Stress_and_Sleep_Programme.txt):
@@ -61,9 +62,29 @@
         "It is known as a way to stay alert and clear-headed without becoming tense.",
         "Stay soft and nasal where you can; never force or push the breath."
       ]
+    },
+    f478: {
+      id: "f478",
+      title: "4-7-8 breathing",
+      tag: "For anxiety",
+      line: "In 4 · hold 7 · out 8 · 8 rounds (about 2½ minutes)",
+      totalMs: 8 * 19000,
+      phases: [
+        { name: "Inhale through the nose", ms: 4000, kind: "in" },
+        { name: "Hold", ms: 7000, kind: "hold" },
+        { name: "Exhale slowly", ms: 8000, kind: "out" }
+      ],
+      viz: "ball",
+      art: "calm",
+      desc: "4-7-8 breathing is a slow rhythm popularised by Dr Andrew Weil: inhale through the nose for 4, softly hold for 7, then exhale slowly for 8. One round takes 19 seconds; this practice guides you through 8 rounds. The exhale is the longest part of the cycle. If the hold feels like too much, shorten all the counts and keep the same proportions.",
+      why: [
+        "The long, slow exhale gives the mind one simple thing to follow.",
+        "Counting the rhythm can help when thoughts are racing.",
+        "If 4-7-8 feels strained, use shorter counts in the same ratio; comfort matters more than the numbers."
+      ]
     }
   };
-  const ORDER = ["coherent", "longer", "box"];
+  const ORDER = ["coherent", "longer", "box", "f478"];
 
   let root = null, raf = 0, running = false, startedAt = 0, elapsedBefore = 0, reduce = false;
   let currentId = null, soundOn = false, audio = null;
@@ -213,7 +234,7 @@
       <div class="breathCarousel" role="list">
         ${ORDER.map(id => {
           const p = PRACTICES[id];
-          const icon = p.viz === "wave" ? "wave" : p.viz === "box" ? "box" : "ball";
+          const icon = p.art || (p.viz === "wave" ? "wave" : p.viz === "box" ? "box" : "ball");
           return `<button type="button" class="breathCaroCard" role="listitem" data-breath-open="${esc(id)}" aria-label="${esc(p.title)}: ${esc(p.tag||"")}">
             ${window.FA_isNew&&FA_isNew("breath:"+id)?FA_NEW_TAG:""}<div class="breathCaroArt ${icon}" aria-hidden="true">${p.tag?`<span class="breathUseTag">${esc(p.tag)}</span>`:""}${isLocked(id)?`<span class="breathLock">${LOCKI}</span>`:""}</div>
             <span class="breathTags">${FREE[id]?'<span class="ltag free">Free</span>':`<span class="ltag lk">${isLocked(id)?LOCKI+' ':''}Members</span>`}</span>
@@ -328,7 +349,7 @@
           <div class="breathEnd" id="breathEnd" hidden>
             <div class="breathEndCard">
               <b>Well done</b>
-              <p>Five quiet minutes. Take a moment before you move on.</p>
+              <p>${totMs() === DEF_MS ? "Five quiet minutes." : "Two and a half quiet minutes."} Take a moment before you move on.</p>
               <button type="button" class="gold" data-breath-begin="${esc(id)}">Practice again</button>
               <button type="button" class="ghost sm" data-breath-close="1">Close</button>
             </div>
@@ -420,7 +441,7 @@
     const remEl = document.getElementById("breathRemain");
     const cueEl = document.getElementById("breathCue");
     const cntEl = document.getElementById("breathCount");
-    if (remEl) remEl.textContent = fmt(Math.max(0, TOTAL_MS - elapsed));
+    if (remEl) remEl.textContent = fmt(Math.max(0, totMs() - elapsed));
 
     if (!active && elapsed === 0) {
       if (cueEl) cueEl.textContent = "Ready when you are";
@@ -440,7 +461,7 @@
   function tick(now) {
     if (!running) return;
     const elapsed = elapsedBefore + (now - startedAt);
-    if (elapsed >= TOTAL_MS) { paint(TOTAL_MS, true); finish(); return; }
+    if (elapsed >= totMs()) { paint(totMs(), true); finish(); return; }
     paint(elapsed, true);
     raf = requestAnimationFrame(tick);
   }
@@ -540,7 +561,7 @@
       const p = PRACTICES[id];
       const go = document.getElementById("breathGo");
       if (state === "end") {
-        elapsedBefore = TOTAL_MS; paint(TOTAL_MS, true); finish(); return;
+        elapsedBefore = totMs(); paint(totMs(), true); finish(); return;
       }
       stop();
       let elapsed = 800;
@@ -557,7 +578,7 @@
       const remEl = document.getElementById("breathRemain");
       const cueEl = document.getElementById("breathCue");
       const cntEl = document.getElementById("breathCount");
-      if (remEl) remEl.textContent = fmt(Math.max(0, TOTAL_MS - elapsed));
+      if (remEl) remEl.textContent = fmt(Math.max(0, totMs() - elapsed));
       if (cueEl) cueEl.textContent = ph.name;
       if (cntEl) cntEl.textContent = String(Math.max(1, Math.ceil((ph.ms - phaseT) / 1000)));
       paintViz(p, ph, e, true);

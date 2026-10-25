@@ -752,3 +752,8 @@ body.peOpen{overflow:hidden}
 .ltPrice{display:inline-block;margin-top:6px;padding:2px 10px;border-radius:999px;background:#ffffff26;font-weight:800;font-size:13px}
 #labCourses .ltile.soon{min-height:250px;aspect-ratio:auto}
 .lcTile{justify-content:flex-start}
+.breathCaroArt.calm{background:
+  radial-gradient(circle at 50% 55%,#9C8FD6cc 0 16%,transparent 17%),
+  radial-gradient(circle at 50% 55%,#5FC9C333 0 26%,transparent 27%),
+  radial-gradient(circle at 50% 55%,#C99E6733 0 36%,transparent 37%),
+  radial-gradient(circle at 40% 35%,#1d2a4a,#02191E 70%)}
