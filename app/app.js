@@ -577,7 +577,36 @@ function renderLearn(){const box=$("#learnList");if(!box)return;const items=(win
   const foot=!ready?"Coming soon":locked?"Sign in to unlock":breath?"Open practices →":x.type==="youtube"?"Play video":lk?`<span class="lcta">${esc(x.cta||"Open")} ↗</span>`:"Open PDF ↗";
   return `<button type="button" class="lcard${ready?"":" lph"}${locked?" locked":""}" ${act} ${ready?"":"disabled"} aria-label="${esc(x.title)}: ${lk?esc(x.cta||"Open"):foot}">
    ${window.FA_isNew&&FA_isNew(x.title,x.newUntil)?FA_NEW_TAG:""}<div class="lthumb">${labCover(x,id)}${locked?`<span class="lockov">${LOCK}</span>`:""}</div>
-   <div class="lbody"><div class="lbadges">${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`}).join("");if(window.FasciBreath&&FasciBreath.mountLab)try{FasciBreath.mountLab()}catch(e){}}
+   <div class="lbody"><div class="lbadges">${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`}).join("");if(window.FasciBreath&&FasciBreath.mountLab)try{FasciBreath.mountLab()}catch(e){}labTiles()}
+// ===== Lab home: square tiles (v0.23.106) =====
+const LAB_TILES=[
+ {k:"c1",ic:"✿",t:"Breathe 21",s:"Course · Day 1 free",bg:"#16695f",img:"lab/course-breathe21.jpg",url:"https://payhip.com/b/jCza7",by:"Nisarga Eryk Dobosz",d:"Breathe for Stress and Sleep · 21 days · €24.90"},
+ {k:"c2",ic:"✦",t:"Self-Massage",s:"Course · 8+ hours",bg:"#78503c",img:"lab/course-selfmassage.jpg",url:"https://www.myofascialtrainings.com/online-courses/self-massage-course",by:"Satyarthi Peloquin",d:"Deep Self-Massage · 27 body zones"},
+ {k:"soon",t:"Course",s:"Coming soon"},
+ {k:"breathing",ic:"≋",t:"Breathing",s:"Guided practices",bg:"#96693a"},
+ {k:"listen",ic:"♪",t:"Listen",s:"Meditations",bg:"#463c6e"},
+ {k:"watch",ic:"▶",t:"Watch",s:"Videos",bg:"#19465f"},
+ {k:"live",ic:"◷",t:"Live",s:"Free sessions",bg:"#6e373c"},
+ {k:"books",ic:"✎",t:"Books",s:"Reading",bg:"#3c5032"}];
+function labGroupOf(sec){return sec==="Breathing practices"?"breathing":sec==="Listen"?"listen":sec==="Books"?"books":sec==="Free live sessions"?"live":/videos|anatomy/i.test(sec)?"watch":"more"}
+function labTiles(){const box=$("#learnList");if(!box)return;
+ [...box.children].forEach(el=>{if(el.id==="labTiles"||el.id==="labBackBar")return;let sec=el.id==="breathLabSec"?"Breathing practices":el.dataset.sec;if(!sec){const pv=el.previousElementSibling;sec=pv&&pv.dataset.sec}el.dataset.lg=labGroupOf(sec||"")});
+ const old=$("#labTiles");if(old)old.remove();const ob=$("#labBackBar");if(ob)ob.remove();
+ const t=document.createElement("div");t.id="labTiles";t.className="labTiles";
+ t.innerHTML=LAB_TILES.map(x=>x.k==="soon"?`<div class="ltile soon" aria-label="Course coming soon"><span class="ltLock">${LOCK}</span><small>Coming soon</small></div>`:
+  `<button type="button" class="ltile${x.url?" course":""}" style="--tb:${x.bg}" data-lt="${x.k}" aria-label="${esc(x.t)}: ${esc(x.s)}"><span class="ltIc" aria-hidden="true">${x.ic}</span>${x.img?`<img class="ltImg" src="${x.img}" alt="" loading="lazy">`:""}<span class="ltTx"><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span></button>`).join("");
+ const bb=document.createElement("div");bb.id="labBackBar";bb.className="labBackBar";bb.innerHTML=`<button type="button" class="back" data-ltback="1">← All Lab</button><h3 class="lsec" id="labSecTitle"></h3>`;
+ box.prepend(bb);box.prepend(t);labView(box.dataset.view||"")}
+function labView(k){const box=$("#learnList");if(!box)return;box.dataset.view=k;box.classList.toggle("lv-home",!k);
+ [...box.children].forEach(el=>{if(el.id==="labTiles")el.hidden=!!k;else if(el.id==="labBackBar")el.hidden=!k;else el.hidden=!k||el.dataset.lg!==k});
+ const x=LAB_TILES.find(q=>q.k===k),st=$("#labSecTitle");if(st)st.textContent=x?x.t:"";
+ const s=$("#learn");if(s){s.querySelectorAll(":scope > .muted, :scope > .quoteSlot").forEach(e=>e.hidden=!!k)}
+ const tgt=k?$("#labBackBar"):$("#learn");if(tgt)tgt.scrollIntoView({block:"start"})}
+function labCourse(x){closeVideo();const d=document.createElement("div");d.id="vModal";d.className="vmodal";d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");d.setAttribute("aria-label",x.t);
+ d.innerHTML=`<div class="vbox lcourse" style="--tb:${x.bg}"><div class="vtop"><b>Course</b><button type="button" class="vx" data-vclose="1" aria-label="Close">✕</button></div><div class="lcHead"><img src="${x.img}" alt=""><div><b>${esc(x.t)}</b><small>${esc(x.by)}</small></div></div><p>${esc(x.d)}</p><a class="gold big1 lcGo" href="${x.url}" target="_blank" rel="noopener">Open course ↗</a></div>`;
+ document.body.appendChild(d);d.onclick=e=>{if(e.target===d)closeVideo()};try{window.FA_ev&&FA_ev("lab_open",{props:{item:x.t,kind:"course",section:"Courses"}})}catch(e){}}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-lt]");if(b){const x=LAB_TILES.find(q=>q.k===b.dataset.lt);if(x.url)labCourse(x);else labView(x.k);return}
+ if(e.target.closest("[data-ltback]"))labView("")});
 document.addEventListener("click",e=>{const y=e.target.closest(".lcard[data-yt]");if(y){openVideo(y.dataset.yt,(y.querySelector(".lbody b")||{}).textContent||"Video");return}
  if(e.target.closest("[data-vclose]")){closeVideo();return}
  const br=e.target.closest(".lcard[data-breath]");if(br&&window.FasciBreath){window.FasciBreath.openMenu();return}

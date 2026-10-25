@@ -724,3 +724,17 @@ body.peOpen{overflow:hidden}
 .nbTile{flex:none;width:58px;height:58px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#FBE7B5,#C99E67 55%,#8A6537);box-shadow:0 4px 12px #00000059;font-family:Georgia,"Times New Roman",serif;font-size:30px;color:#02191E;position:relative;z-index:1}
 .newsCard.nb:not(:has(.nbIm,.nbTile)){padding-left:16px}
 .forgotSent{margin:6px 0 8px}.forgotSent p{margin:0 0 8px;font-size:13px}#forgotResend[disabled]{opacity:.55}
+/* v0.23.106 Lab tiles */
+.labTiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 8px}
+.ltile{position:relative;aspect-ratio:1/0.82;border:0;border-radius:18px;background:var(--tb);color:#fff;text-align:left;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-shadow:0 4px 14px #0004;cursor:pointer;transition:transform .12s}
+.ltile:active{transform:scale(.97)}
+.ltIc{position:absolute;top:12px;left:14px;font-size:24px;line-height:1;opacity:.95}
+.ltImg{position:absolute;top:10px;right:10px;width:44%;aspect-ratio:1;border-radius:50%;object-fit:cover;border:2px solid #fff3}
+.ltTx b{display:block;font-size:17px;font-weight:800}.ltTx small{display:block;font-size:12px;opacity:.85;margin-top:2px}
+.ltile.soon{background:none;border:1.5px solid #ffffff2e;box-shadow:none;align-items:center;justify-content:center;color:#ffffff70;cursor:default;gap:6px}
+.ltLock svg{width:22px;height:22px}
+.labBackBar{display:flex;flex-direction:column;align-items:flex-start;margin-top:6px}.labBackBar .lsec{margin-top:6px}
+.lcourse{max-width:420px;margin:0 16px;background:var(--tb);border-radius:20px;padding:6px 16px 18px;color:#fff}
+.lcHead{display:flex;gap:14px;align-items:center;margin:6px 0 10px}.lcHead img{width:76px;height:76px;border-radius:50%;object-fit:cover}.lcHead b{display:block;font-size:20px}.lcHead small{opacity:.85}
+.lcourse p{margin:0 0 16px;opacity:.92}.lcGo{display:block;text-align:center;text-decoration:none}
+#learnList:not(.lv-home) h3.lsec:not(#labSecTitle){display:none}#learnList:not(.lv-home) .lrowLbl{margin-top:14px}
