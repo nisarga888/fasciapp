@@ -36,9 +36,14 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:15px;borde
 button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;color:var(--mut)}
 .consent{display:flex;gap:10px;font-size:13px;color:var(--mut);line-height:1.45;margin-top:16px}.consent input{width:auto;flex:none;margin-top:3px;accent-color:var(--gold)}
 #form,.bar{transition:opacity .45s ease,transform .45s ease}.leave #form,.leave .bar{opacity:0;transform:translateY(-14px)}
+.steps{display:flex;gap:6px;margin:10px 0 4px;padding:5px;border-radius:30px;background:#02191Ecc;border:1px solid var(--ln);position:sticky;top:8px;z-index:20;backdrop-filter:blur(8px)}
+.steps a{flex:1;text-align:center;padding:9px 4px;border-radius:24px;font-size:12.5px;color:var(--mut);text-decoration:none;transition:background .3s,color .3s;white-space:nowrap}.steps a b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid currentColor;font-size:10px;margin-right:5px}
+.steps a.on{background:var(--gold);color:var(--bg);font-weight:600}.steps a.off{opacity:.35;pointer-events:none}
+.del{background:none;border:1px solid #e0915a88;color:#ffb48a;box-shadow:none;font-weight:500;margin-top:18px}
 .done{display:none;text-align:center;padding:60px 10px}.done h2{font-weight:300;color:var(--gold);font-size:26px}
 </style></head><body><div class="wrap" id="form">
-<div class="top"><a href="./">← FasciApp</a><a href="assessment-results.html">My assessments →</a></div>
+<div class="top"><a href="./">← FasciApp</a><a href="assessment-results.html">Records →</a></div>
+<nav class="steps" id="steps"><a class="on"><b>1</b>Intake</a><a class="off" data-s=""><b>2</b>Assessment</a><a class="off" data-s="#plan"><b>3</b>Plan</a></nav>
 <div class="hero"><div class="k">Fascia Lab</div><h1>Body Assessment</h1><p>Three photos and a short intake. Together they help plan each session around the whole body.</p></div>
 <div class="who" id="who">Checking sign-in…</div>
 
@@ -98,10 +103,11 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 <label class="f">Touch &amp; boundaries</label><div class="chips" data-k="touch" data-o="Light pressure,Medium pressure,Deep pressure,Ask before each area,Avoid some areas"></div>
 <input data-k="touch_notes" placeholder="Areas to avoid or other wishes" style="margin-top:10px">
 <label class="consent"><input type="checkbox" id="consent"> I agree this information and photos are stored privately for planning my sessions. I can ask for deletion at any time.</label></section>
+<button class="del" id="del" hidden>Delete this record</button>
 </div>
 <div class="done" id="done"><h2>Assessment saved ✓</h2><p style="color:var(--mut)">Stored privately in your account.</p><button onclick="location.reload()" style="max-width:280px;margin-top:20px">New assessment</button></div>
-<div class="bar" id="bar"><div><button id="go">Save assessment</button><div class="msg" id="msg"></div></div></div>
-<script src="config.js?v=0.23.126"></script><script src="track.js?v=0.23.126"></script>
+<div class="bar" id="bar"><div><button id="go">Save &amp; next: Assessment →</button><div class="msg" id="msg"></div></div></div>
+<script src="config.js?v=0.23.127"></script><script src="track.js?v=0.23.127"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
@@ -122,7 +128,20 @@ const files={};
 $$(".chips").forEach(c=>{const r=c.dataset.r;c.innerHTML=c.dataset.o.split(",").map(o=>'<label><input type="'+(r?"radio":"checkbox")+'" name="'+c.dataset.k+'" value="'+o+'">'+o+'</label>').join("")});
 $$('input[type=range]').forEach(r=>r.oninput=()=>r.nextElementSibling.value=r.value);
 $("#flags").onchange=()=>$("#warn").classList.toggle("on",!!$("#flags input:checked"));
-let user=null;sb.auth.getSession().then(({data})=>{user=data.session&&data.session.user;$("#who").innerHTML=user?'Signed in as <b>'+user.email+'</b>':'Please <a style="color:var(--gold)" href="./">sign in to FasciApp</a> to save.'});
+const EID=new URLSearchParams(location.search).get("id");let rec=null;
+const setImg=(v,src)=>{const l=$$("#photos .ph")[["front","side","back"].indexOf(v)];let i=l.querySelector("img");if(!i){i=document.createElement("img");l.prepend(i);const d=document.createElement("div");d.className="t";d.textContent=v+" ✓ choose again below";l.append(d)}i.src=src;l.classList.add("ok")};
+async function loadRec(){const {data,error}=await sb.from("assessments").select("*").eq("id",EID).maybeSingle();if(error||!data){msg("Record not found.");return}
+ rec=data;$(".hero h1").textContent="Edit intake";$(".hero p").textContent="Update answers or replace photos, then save. The written assessment is kept.";
+ $("#client_name").value=data.client_name||"";const d=Object.assign({},data.data||{},{red_flags:data.red_flags||[]});
+ $$("[data-k]").forEach(el=>{const k=el.dataset.k,v=d[k];if(v==null)return;if(el.classList.contains("chips")){const a=[].concat(v);el.querySelectorAll("input").forEach(i=>i.checked=a.includes(i.value))}else{el.value=v;if(el.type=="range")el.nextElementSibling.value=v}});
+ $("#warn").classList.toggle("on",!!(data.red_flags||[]).length);$("#consent").checked=true;
+ $$("#steps a").forEach(a=>{if(a.dataset.s!=null){a.classList.remove("off");a.href="assessment-results.html?id="+EID+a.dataset.s}});
+ $("#del").hidden=false;
+ for(const v of ["front","side","back"])if(data["photo_"+v]){const r=await sb.storage.from("assessment-photos").createSignedUrl(data["photo_"+v],3600);if(r.data)setImg(v,r.data.signedUrl)}}
+let user=null;sb.auth.getSession().then(({data})=>{user=data.session&&data.session.user;$("#who").innerHTML=user?'Signed in as <b>'+user.email+'</b>':'Please <a style="color:var(--gold)" href="./">sign in to FasciApp</a> to save.';if(user&&EID)loadRec()});
+$("#del").onclick=async()=>{if(!rec||!confirm("Delete this record and its photos? This can't be undone."))return;
+ await sb.storage.from("assessment-photos").remove(["front","side","back"].map(v=>rec["photo_"+v]).filter(Boolean));
+ const {error}=await sb.from("assessments").delete().eq("id",rec.id);if(error)return msg("Could not delete: "+error.message);document.body.classList.add("leave");setTimeout(()=>location.href="assessment-results.html",450)};
 // downscale photo to max 1600px JPEG before upload
 const shrink=f=>new Promise(res=>{const im=new Image();im.onload=()=>{const s=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);c.toBlob(b=>res(b||f),"image/jpeg",.85)};im.onerror=()=>res(f);im.src=URL.createObjectURL(f)});
 const collect=()=>{const d={};$$("[data-k]").forEach(el=>{const k=el.dataset.k;if(el.classList.contains("chips")){const v=[...el.querySelectorAll("input:checked")].map(i=>i.value);d[k]=el.dataset.r?(v[0]||null):v}else if(el.value!=="")d[k]=el.type=="number"||el.type=="range"?Number(el.value):el.value.trim()});return d};
@@ -130,13 +149,15 @@ const msg=t=>$("#msg").textContent=t;
 $("#go").onclick=async()=>{
  if(!user)return msg("Please sign in to FasciApp first.");
  if(!$("#consent").checked)return msg("Please tick the consent box at the end.");
- if(!files.front||!files.side||!files.back)return (msg("Please add all three photos."),$("#photos").scrollIntoView({block:"center"}));
+ if(!rec&&(!files.front||!files.side||!files.back))return (msg("Please add all three photos."),$("#photos").scrollIntoView({block:"center"}));
  const b=$("#go");b.disabled=true;b.textContent="Saving privately…";
- try{const id=crypto.randomUUID(),d=collect(),row={id,owner_id:user.id,client_name:$("#client_name").value.trim()||null,data:d,red_flags:d.red_flags||[]};delete d.red_flags;
-  for(const v of ["front","side","back"]){const p=user.id+"/"+id+"/"+v+".jpg";const {error}=await sb.storage.from("assessment-photos").upload(p,await shrink(files[v]),{contentType:"image/jpeg",upsert:true});if(error)throw error;row["photo_"+v]=p}
-  const {error}=await sb.from("assessments").insert(row);if(error)throw error;
-  window.FA_ph&&FA_ph("assessment_submitted",{});
+ try{let id2;const id=rec?rec.id:crypto.randomUUID(),d=collect(),row={id,owner_id:user.id,client_name:$("#client_name").value.trim()||null,data:d,red_flags:d.red_flags||[]};delete d.red_flags;
+  if(rec){row.id=id2=rec.id;row.owner_id=rec.owner_id}const rid=row.id;
+  for(const v of ["front","side","back"]){if(!files[v]){row["photo_"+v]=rec["photo_"+v];continue}const p=rec&&rec["photo_"+v]||(user.id+"/"+rid+"/"+v+".jpg");const {error}=await sb.storage.from("assessment-photos").upload(p,await shrink(files[v]),{contentType:"image/jpeg",upsert:true});if(error)throw error;row["photo_"+v]=p}
+  if(rec){const {error}=await sb.from("assessments").update({client_name:row.client_name,data:row.data,red_flags:row.red_flags,photo_front:row.photo_front,photo_side:row.photo_side,photo_back:row.photo_back,updated_at:new Date().toISOString()}).eq("id",rid);if(error)throw error}
+  else{const {error}=await sb.from("assessments").insert(row);if(error)throw error}
+  window.FA_ph&&FA_ph(rec?"assessment_updated":"assessment_submitted",{});
   b.textContent="Saved ✓";document.body.classList.add("leave");setTimeout(()=>location.href="assessment-results.html?id="+id,480);
- }catch(e){msg("Could not save: "+(e.message||e));b.disabled=false;b.textContent="Save assessment"}};
+ }catch(e){msg("Could not save: "+(e.message||e));b.disabled=false;b.textContent="Save & next: Assessment →"}};
 })();
 </script></body></html>

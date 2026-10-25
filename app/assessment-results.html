@@ -33,51 +33,93 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 .prep h2{font-weight:300;font-size:24px;margin:0 0 10px}.prep p{color:var(--mut);font-size:14.5px;line-height:1.6;margin:0 auto;max-width:340px}.prep .cue{margin-top:24px;color:var(--gold);font-size:13px;letter-spacing:2px;text-transform:uppercase;animation:cue 6s ease-in-out infinite}
 @keyframes cue{0%,45%{opacity:1}50%,95%{opacity:.35}}
 .li{display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--tx)}.li span{color:var(--mut);font-size:13px}.pill{font-size:11px;padding:3px 9px;border-radius:10px;border:1px solid var(--gold);color:var(--gold)}
+.steps{display:flex;gap:6px;margin:10px 0 4px;padding:5px;border-radius:30px;background:#02191Ecc;border:1px solid var(--ln);position:sticky;top:8px;z-index:20;backdrop-filter:blur(8px)}
+.steps a{flex:1;text-align:center;padding:9px 4px;border-radius:24px;font-size:12.5px;color:var(--mut);text-decoration:none;transition:background .3s,color .3s;white-space:nowrap;cursor:pointer}.steps a b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid currentColor;font-size:10px;margin-right:5px}
+.steps a.on{background:var(--gold);color:var(--bg);font-weight:600}
+.tools{display:flex;justify-content:flex-end;margin-top:8px}.tools button{width:auto;padding:8px 14px;font-size:13px;font-weight:500;background:none;border:1px solid var(--ln);color:var(--gold);box-shadow:none}
+.editing [data-p]{outline:1px dashed #c99e6788;outline-offset:3px;border-radius:6px;background:#02191E66}.editing [data-p]:focus{outline-color:var(--gold)}
+.nav2{display:grid;grid-template-columns:1fr 1.6fr;gap:10px;margin-top:24px}.nav2 .sec2{background:none;border:1px solid var(--ln);color:var(--gold);box-shadow:none;font-weight:500}
+.search{width:100%;font:inherit;font-size:16px;padding:13px 16px;border-radius:24px;border:1px solid #c99e6744;background:#02191Ecc;color:var(--tx);outline:none;margin-top:6px}.search:focus{border-color:var(--gold)}
+.toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,30px);opacity:0;background:var(--gold);color:var(--bg);padding:12px 20px;border-radius:24px;font-weight:600;font-size:14px;transition:.35s;z-index:50;pointer-events:none}.toast.on{opacity:1;transform:translate(-50%,0)}
+.pdfh{display:none}
+@media print{@page{size:A4;margin:14mm}
+ body{background:#fff!important;color:#1d2a2c}.wrap{max-width:none;padding:0}
+ .top,.steps,.tools,.nav2,button,#vLoad,#vPrep,#vList,.toast{display:none!important}
+ .view{display:block!important;animation:none!important;opacity:1!important}
+ .card{opacity:1!important;animation:none!important;background:#fff!important;box-shadow:none!important;border:1px solid #d9c4a3!important;break-inside:avoid;page-break-inside:avoid}
+ .it p,.str li,.core,.tbl td,.row,.ses h2,.hero h1,.hero p{color:#1d2a2c!important}.it h3,.lbl,.hero .k,.dir,.tbl td:first-child{color:#8a6537!important}
+ .core{background:#f7f1e8!important}.note{background:#f4f8f7!important;color:#1d2a2c!important;border-color:#9cc!important}.disc{color:#555!important}
+ .ses .num{background:#C99E67!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ #vPlan{break-before:page;page-break-before:always}
+ .pdfh{display:flex;align-items:center;justify-content:space-between;background:#02191E!important;color:#C99E67!important;padding:14px 18px;border-radius:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:13px;letter-spacing:2px;text-transform:uppercase}
+ .photos img{border:1px solid #d9c4a3}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;opacity:1!important}}
 </style></head><body><div class="wrap">
 <div class="top"><a href="./" id="back">← FasciApp</a><span style="font-size:12px;color:var(--mut)">Private · only you see this</span></div>
+<nav class="steps" id="steps" hidden><a data-s="intake"><b>1</b>Intake</a><a data-s="res"><b>2</b>Assessment</a><a data-s="plan"><b>3</b>Plan</a></nav>
+<div class="pdfh"><span>FasciApp · Body Assessment</span><span>fasciapp.app</span></div>
 <div id="vLoad" class="view on prep"><div class="orb"></div></div>
 <div id="vList" class="view"></div>
 <div id="vPrep" class="view prep"><div class="orb"></div><h2>Your assessment is being prepared</h2><p>Your photos and answers are saved safely. We're reading them carefully and writing your whole-body map and your 10-session plan.</p><p style="margin-top:12px">This page will update by itself. You can close it and come back any time.</p><div class="cue" id="cue">Breathe in</div></div>
 <div id="vRes" class="view"></div>
 <div id="vPlan" class="view"></div>
-</div>
-<script src="config.js?v=0.23.126"></script><script src="track.js?v=0.23.126"></script>
+</div><div class="toast" id="toast"></div>
+<script src="config.js?v=0.23.127"></script><script src="track.js?v=0.23.127"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
-const $=s=>document.querySelector(s),E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null;
-const show=(v,top=true)=>{if(cur===v)return;const o=cur;cur=v;o.classList.add("out");setTimeout(()=>{o.classList.remove("on","out");v.classList.add("on");if(top)scrollTo({top:0,behavior:"instant"})},280)};
+const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),2200)};
+const step=k=>$$("#steps a").forEach(a=>a.classList.toggle("on",a.dataset.s===k));
+const show=(v,top=true)=>{step(v.id=="vPlan"?"plan":"res");if(cur===v)return;const o=cur;cur=v;o.classList.add("out");setTimeout(()=>{o.classList.remove("on","out");v.classList.add("on");if(top)scrollTo({top:0,behavior:"instant"})},280)};
 setInterval(()=>{const c=$("#cue");c.textContent=c.textContent=="Breathe in"?"Breathe out":"Breathe in"},3000);
-const stag=(h)=>{let i=0;return h.replace(/class="card/g,()=>'style="animation-delay:'+(0.08*i++)+'s" class="card')};
-function renderRes(r){const R=r.report,ph=['front','side','back'].map(v=>'<img data-p="'+E(r['photo_'+v])+'" alt="'+v+'">').join('');
- let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(R.date||"")+'</p></div><div class="photos">'+ph+'</div>';
- h+='<div class="note '+(R.red_flag&&R.red_flag.level!="none"?"rf":"ok")+'">'+(R.red_flag&&R.red_flag.level!="none"?"⚠️ <b>Please get medical clearance before bodywork and breathwork.</b> ":"✓ ")+E(R.red_flag&&R.red_flag.text)+'</div>';
- R.sections.forEach((s,i)=>{h+='<section class="card"><div class="sh"><div class="n">'+(s.key=="map"?"◎":i)+'</div><h2>'+E(s.title)+'<small>'+E(s.subtitle||"")+'</small></h2></div>';
-  if(s.key=="map"){h+='<ul class="str">'+s.strengths.map(x=>'<li>'+E(x)+'</li>').join('')+'</ul><div class="core">'+E(s.core)+'</div><table class="tbl">'+s.links.map(l=>'<tr><td>'+E(l[0])+'</td><td>'+E(l[1])+'</td></tr>').join('')+'</table><div class="dir">'+E(s.direction)+'</div>'}
-  else h+=s.items.map(x=>'<div class="it"><h3>'+E(x.h)+'</h3><p>'+E(x.p)+'</p></div>').join('');h+='</section>'});
- if(R.photo_note)h+='<div class="note ph">📷 '+E(R.photo_note)+'</div>';
- h+='<button class="big" id="toPlan">See your 10-session treatment plan →</button><p class="disc">'+E(R.disclaimer)+'</p>';
- $("#vRes").innerHTML=stag(h);$("#toPlan").onclick=()=>{history.pushState({v:"plan"},"","#plan");show($("#vPlan"));window.FA_ph&&FA_ph("assessment_plan_open",{})};
- $("#vRes").querySelectorAll("img[data-p]").forEach(async im=>{const {data}=await sb.storage.from("assessment-photos").createSignedUrl(im.dataset.p,3600);if(data)im.src=data.signedUrl});
- let p='<div class="hero"><div class="k">Treatment plan</div><h1>Your 10 sessions</h1><p>Bodywork and breathwork, step by step. Each session builds on the last, at your pace.</p></div>';
- R.plan.forEach(s=>{p+='<section class="card ses"><div class="num">'+s.n+'</div><h2>'+E(s.focus)+'</h2><div class="row"><b>✋</b><div><span class="lbl">Bodywork</span>'+E(s.bodywork)+'</div></div><div class="row"><b>🌬</b><div><span class="lbl">Breathwork</span>'+E(s.breathwork)+'</div></div><div class="row"><b>🏠</b><div><span class="lbl">Home practice</span>'+E(s.home)+'</div></div></section>'});
- p+='<button class="big" id="toRes">← Back to your results</button><p class="disc">'+E(R.disclaimer)+'</p>';
- $("#vPlan").innerHTML=stag(p);$("#toRes").onclick=()=>history.back();
+const stag=h=>{let i=0;return h.replace(/class="card/g,()=>'style="animation-delay:'+Math.min(0.07*i++,.6)+'s" class="card')};
+const P=(path,v,tag="p",cls="")=>'<'+tag+(cls?' class="'+cls+'"':'')+' data-p="'+path+'">'+E(v)+'</'+tag+'>';
+const goIntake=()=>{document.body.style.transition="opacity .3s";document.body.style.opacity=0;setTimeout(()=>location.href="assessment.html?id="+id,300)};
+const goPlan=()=>{if(location.hash!="#plan")history.pushState({},"","#plan");show($("#vPlan"))};
+const goRes=()=>{if(location.hash=="#plan")history.pushState({},"",location.pathname+location.search);show($("#vRes"))};
+$$("#steps a").forEach(a=>a.onclick=()=>{const k=a.dataset.s;if(k=="intake")goIntake();else if(!row||!row.report)return;else k=="plan"?goPlan():goRes()});
+const tools=w=>'<div class="tools"><button data-edit="'+w+'">✎ Edit text</button></div>';
+function setPath(o,path,v){const k=path.split(".");let x=o;for(let j=0;j<k.length-1;j++)x=x[k[j]];x[k[k.length-1]]=v}
+async function saveReport(msg){$$("[data-p]").forEach(el=>setPath(row.report,el.dataset.p,el.innerText.trim()));
+ const {error}=await sb.from("assessments").update({report:row.report,updated_at:new Date().toISOString()}).eq("id",id);toast(error?"Could not save: "+error.message:msg||"Saved ✓");return !error}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-edit]");if(!b)return;const v=b.closest(".view"),on=!v.classList.contains("editing");
+ if(!on){await saveReport("Changes saved ✓")}v.classList.toggle("editing",on);v.querySelectorAll("[data-p]").forEach(x=>x.contentEditable=on);v.querySelectorAll("[data-edit]").forEach(x=>x.textContent=on?"✓ Save changes":"✎ Edit text");if(on)toast("Tap any text to edit")});
+function renderRes(r){const R=r.report,ph=['front','side','back'].map(v=>'<img data-ph="'+E(r['photo_'+v])+'" alt="'+v+'">').join('');
+ const rf=R.red_flag&&R.red_flag.level!="none";
+ let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(new Date(r.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))+'</p></div>'+tools("res")+'<div class="photos">'+ph+'</div>';
+ h+='<div class="note '+(rf?"rf":"ok")+'">'+(rf?"⚠️ <b>Please get medical clearance before bodywork and breathwork.</b> ":"✓ ")+P("red_flag.text",R.red_flag&&R.red_flag.text,"span")+'</div>';
+ R.sections.forEach((s,i)=>{const b="sections."+i;h+='<section class="card"><div class="sh"><div class="n">'+(s.key=="map"?"◎":i)+'</div><h2>'+E(s.title)+'<small>'+E(s.subtitle||"")+'</small></h2></div>';
+  if(s.key=="map"){h+='<ul class="str">'+s.strengths.map((x,j)=>P(b+".strengths."+j,x,"li")).join('')+'</ul>'+P(b+".core",s.core,"div","core")+'<table class="tbl">'+s.links.map((l,j)=>'<tr><td>'+E(l[0])+'</td>'+P(b+".links."+j+".1",l[1],"td")+'</tr>').join('')+'</table>'+P(b+".direction",s.direction,"div","dir")}
+  else h+=s.items.map((x,j)=>'<div class="it">'+P(b+".items."+j+".h",x.h,"h3")+P(b+".items."+j+".p",x.p)+'</div>').join('');h+='</section>'});
+ if(R.photo_note)h+='<div class="note ph">📷 '+P("photo_note",R.photo_note,"span")+'</div>';
+ h+='<div class="nav2"><button class="sec2" data-go="intake">← Intake</button><button data-go="plan">Next: Treatment plan →</button></div><p class="disc">'+E(R.disclaimer)+'</p>';
+ $("#vRes").innerHTML=stag(h);
+ $("#vRes").querySelectorAll("img[data-ph]").forEach(async im=>{const {data}=await sb.storage.from("assessment-photos").createSignedUrl(im.dataset.ph,3600);if(data)im.src=data.signedUrl});
+ let p='<div class="hero"><div class="k">Treatment plan</div><h1>10 sessions</h1><p>Bodywork and breathwork, step by step, at your pace.</p></div>'+tools("plan");
+ R.plan.forEach((s,i)=>{const b="plan."+i;p+='<section class="card ses"><div class="num">'+s.n+'</div>'+P(b+".focus",s.focus,"h2")+'<div class="row"><b>✋</b><div><span class="lbl">Bodywork</span>'+P(b+".bodywork",s.bodywork,"div")+'</div></div><div class="row"><b>🌬</b><div><span class="lbl">Breathwork</span>'+P(b+".breathwork",s.breathwork,"div")+'</div></div><div class="row"><b>🏠</b><div><span class="lbl">Home practice</span>'+P(b+".home",s.home,"div")+'</div></div></section>'});
+ p+='<div class="nav2"><button class="sec2" data-go="res">← Assessment</button><button data-go="pdf">⤓ Export PDF</button></div><button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button><p class="disc">'+E(R.disclaimer)+'</p>';
+ $("#vPlan").innerHTML=stag(p);
 }
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-go]");if(!b)return;const g=b.dataset.go;
+ if(g=="intake")goIntake();else if(g=="plan")goPlan();else if(g=="res")goRes();
+ else if(g=="pdf"){if($(".editing"))await saveReport();const t=document.title;document.title="Body Assessment - "+(row.client_name||"client")+" - "+new Date(row.created_at).toLocaleDateString("en-GB");window.FA_ph&&FA_ph("assessment_pdf",{});setTimeout(()=>{window.print();document.title=t},50)}
+ else if(g=="save"){if(await saveReport("Saved to your records ✓")){$$(".editing").forEach(v=>{v.classList.remove("editing");v.querySelectorAll("[data-p]").forEach(x=>x.contentEditable=false);v.querySelectorAll("[data-edit]").forEach(x=>x.textContent="✎ Edit text")});setTimeout(()=>location.href="assessment-results.html",1400)}}});
 window.onpopstate=()=>{if(!row||!row.report)return;show(location.hash=="#plan"?$("#vPlan"):$("#vRes"))};
 async function load(){const {data,error}=await sb.from("assessments").select("id,client_name,photo_front,photo_side,photo_back,report,report_ready_at,created_at").eq("id",id).maybeSingle();
- if(error||!data){$("#vList").innerHTML='<div class="prep"><h2>Assessment not found</h2><p>It may belong to another account.</p></div>';return show($("#vList"))}
- row=data;if(!data.report){show($("#vPrep"));timer=setTimeout(load,8000);return}
- renderRes(data);window.FA_ph&&FA_ph("assessment_results_open",{});show(location.hash=="#plan"?$("#vPlan"):$("#vRes"))}
-async function list(){const {data}=await sb.from("assessments").select("id,client_name,created_at,report_ready_at").order("created_at",{ascending:false});
- let h='<div class="hero"><div class="k">Fascia Lab</div><h1>My assessments</h1></div>';
- h+=(data&&data.length?data.map(a=>'<a class="card li" href="?id='+a.id+'"><div>'+E(a.client_name||"Assessment")+'<br><span>'+new Date(a.created_at).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})+'</span></div><span class="pill">'+(a.report_ready_at?"Ready":"Preparing")+'</span></a>').join(''):'<p style="text-align:center;color:var(--mut)">No assessments yet.</p>')+'<a href="assessment.html"><button class="big">+ New assessment</button></a>';
- $("#vList").innerHTML=stag(h);show($("#vList"))}
-sb.auth.getSession().then(({data})=>{if(!data.session){$("#vList").innerHTML='<div class="prep"><h2>Please sign in</h2><p><a style="color:var(--gold)" href="./">Sign in to FasciApp</a> to see your assessments.</p></div>';return show($("#vList"))}
- if(id){$("#back").href="assessment-results.html";$("#back").textContent="← My assessments";load()}else list()});
+ if(error||!data){$("#vList").innerHTML='<div class="prep"><h2>Record not found</h2><p>It may belong to another account.</p></div>';return show($("#vList"))}
+ const first=!row;row=data;$("#steps").hidden=false;if(!data.report){show($("#vPrep"));step("res");timer=setTimeout(load,8000);return}
+ renderRes(data);if(first)window.FA_ph&&FA_ph("assessment_results_open",{});show(location.hash=="#plan"?$("#vPlan"):$("#vRes"))}
+async function list(){const {data}=await sb.from("assessments").select("id,client_name,created_at,report_ready_at").order("created_at",{ascending:false});const A=data||[];
+ let h='<div class="hero"><div class="k">Fascia Lab</div><h1>Client records</h1><p>'+A.length+' assessment'+(A.length==1?'':'s')+'</p></div><input class="search" id="q" type="search" placeholder="Search by client name" autocomplete="off"><div id="recs"></div><a href="assessment.html" style="text-decoration:none"><button class="big">+ New assessment</button></a>';
+ $("#vList").innerHTML=h;
+ const paint=()=>{const q=$("#q").value.trim().toLowerCase(),f=A.filter(a=>(a.client_name||"").toLowerCase().includes(q));
+  $("#recs").innerHTML=stag(f.length?f.map(a=>'<a class="card li" href="?id='+a.id+'"><div>'+E(a.client_name||"Unnamed client")+'<br><span>'+new Date(a.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})+'</span></div><span class="pill">'+(a.report_ready_at?"Ready":"Preparing")+'</span></a>').join(''):'<p style="text-align:center;color:var(--mut);margin-top:24px">'+(A.length?'No client matches.':'No records yet.')+'</p>')};
+ $("#q").oninput=paint;paint();show($("#vList"))}
+sb.auth.getSession().then(({data})=>{if(!data.session){$("#vList").innerHTML='<div class="prep"><h2>Please sign in</h2><p><a style="color:var(--gold)" href="./?tab=lab">Sign in to FasciApp</a> to see your records.</p></div>';return show($("#vList"))}
+ if(id){$("#back").href="assessment-results.html";$("#back").textContent="← Records";load()}else{$("#back").href="./?tab=lab";$("#back").textContent="← Lab";list()}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&row&&!row.report){clearTimeout(timer);load()}});
 })();
 </script></body></html>

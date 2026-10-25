@@ -791,3 +791,5 @@ body.peOpen{overflow:hidden}
 
 .sgHd{margin:0;padding:10px 14px 6px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut)}
 .sgOther{border-top:1px solid #c99e6744;margin-top:2px}
+
+.asTile{text-decoration:none;color:inherit;grid-column:1/-1;aspect-ratio:auto;min-height:92px;border:1px solid #C99E6766}
