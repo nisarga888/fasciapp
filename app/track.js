@@ -4,6 +4,8 @@
 var FA_TRACK_DEFAULT = true;
 (function(){
   var C=window.FASCIAPP_CONFIG||{},U=C.SUPABASE_URL||"https://smgccthvratixddwfhmu.supabase.co",K=C.SUPABASE_ANON_KEY||"sb_publishable_CEZeH1MF1tHwQynmF-jOUA_ta6i-OR8";
+  // v0.23.117: forward every event to PostHog EU (Frankfurt) via its capture API. No posthog-js, no cookies/localStorage, no autocapture/pageview/recording, no person profiles, IP not stored.
+  var PH_HOST="https://eu.i.posthog.com",PH_KEY="phc_trWEUz8z2gqsJJtZ3KmyDkXqxqNbLZmfp6cgt7ZRaotG";
   var on=FA_TRACK_DEFAULT;
   try{if(localStorage.getItem("fa_track_test"))on=true}catch(e){}
   // v0.23.116: memory-only visit id. Nothing is stored on the device; a new random id per page load / visit.
@@ -20,6 +22,8 @@ var FA_TRACK_DEFAULT = true;
     var ev=String(event).toLowerCase().slice(0,40),pr=o.props||{};if(ev==="join"||ev==="visit"){var s=srcProps();for(var k in s)pr[k]=s[k]}
     var b={event:ev,sid:sid||null,props:pr};
     if(o.pid&&/^[0-9a-f-]{36}$/i.test(o.pid))b.practitioner_id=o.pid;if(o.source)b.source=String(o.source).slice(0,24);
+    try{var pp={$process_person_profile:false,$ip:null,$lib:"fa-track",$current_url:location.origin+location.pathname,$pathname:location.pathname};for(var k2 in pr)pp[k2]=pr[k2];if(b.source)pp.source=b.source;if(b.practitioner_id)pp.practitioner_id=b.practitioner_id;
+      fetch(PH_HOST+"/i/v0/e/",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({api_key:PH_KEY,event:ev,distinct_id:sid,properties:pp,timestamp:new Date().toISOString()})}).catch(function(){})}catch(e){}
     fetch(U+"/rest/v1/app_events",{method:"POST",keepalive:true,headers:{apikey:K,Authorization:"Bearer "+K,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify(b)}).catch(function(){});
   }catch(e){}};
   if(src.__new){delete src.__new;window.FA_ev("visit",{source:/\/app\//.test(location.pathname)?"app":"landing"})}
