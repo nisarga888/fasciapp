@@ -23,6 +23,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}textarea{min-he
 .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .ph{position:relative;aspect-ratio:3/4;border-radius:16px;border:1.5px dashed #c99e6788;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;overflow:hidden;background:#02191E88;color:var(--gold);font-size:13px;text-align:center}
 .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.ph.ok{border-style:solid}.ph input{display:none}
+.ph .pb{position:relative;z-index:3;display:flex;flex-direction:column;gap:5px;width:90%;margin-top:4px}.ph .pb label{display:block;padding:6px 4px;border-radius:10px;background:#02191Ee6;border:1px solid #c99e6788;color:var(--gold);font-size:11px;line-height:1.2;cursor:pointer}.ph.ok .pb{margin-top:auto;margin-bottom:30px}.ph.ok>span,.ph.ok>svg{display:none}.ph .er{position:relative;z-index:3;color:#ff9b8a;font-size:11px;padding:0 6px}.ph.dg{border-color:var(--gold);background:#0E4A50aa}
 .ph svg{width:42px;height:60px;opacity:.8}.ph .t{position:absolute;bottom:0;left:0;right:0;padding:6px;background:#02191Ecc;color:var(--tx);font-size:12px;z-index:2}
 .tip{font-size:12px;color:var(--mut);margin-top:10px;line-height:1.5}
 .rng{display:flex;align-items:center;gap:12px}.rng input{padding:0;accent-color:var(--gold);border:0;background:none}.rng output{min-width:42px;text-align:center;font-size:20px;color:var(--gold)}
@@ -98,7 +99,7 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 </div>
 <div class="done" id="done"><h2>Assessment saved ✓</h2><p style="color:var(--mut)">Stored privately in your account.</p><button onclick="location.reload()" style="max-width:280px;margin-top:20px">New assessment</button></div>
 <div class="bar" id="bar"><div><button id="go">Save assessment</button><div class="msg" id="msg"></div></div></div>
-<script src="config.js?v=0.23.124"></script><script src="track.js?v=0.23.124"></script>
+<script src="config.js?v=0.23.125"></script><script src="track.js?v=0.23.125"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
@@ -106,8 +107,15 @@ const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABAS
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const sil=v=>'<svg viewBox="0 0 40 60" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="20" cy="7" r="5"/>'+(v=="side"?'<path d="M20 12v20M20 16l3 12M20 32l-2 14 3 12M20 32l2 14-2 12"/>':'<path d="M20 12v20M20 15l-10 14M20 15l10 14M20 32l-6 26M20 32l6 26"/>')+'</svg>';
 const files={};
-["front","side","back"].forEach(v=>{const l=document.createElement("label");l.className="ph";l.innerHTML=sil(v)+'<span>'+v[0].toUpperCase()+v.slice(1)+'</span><input type="file" accept="image/*" capture="environment">';
- l.querySelector("input").onchange=e=>{const f=e.target.files[0];if(!f)return;files[v]=f;let i=l.querySelector("img");if(!i){i=document.createElement("img");l.append(i);const t=document.createElement("div");t.className="t";t.textContent=v+" ✓ tap to retake";l.append(t)}i.src=URL.createObjectURL(f);l.classList.add("ok")};
+["front","side","back"].forEach(v=>{const l=document.createElement("div");l.className="ph";l.innerHTML=sil(v)+'<span>'+v[0].toUpperCase()+v.slice(1)+'</span><div class="pb"><label>📷 Take photo<input type="file" accept="image/*" capture="environment"></label><label>🖼 Upload from gallery / computer<input type="file" accept="image/*,.heic,.heif"></label></div><div class="er"></div>';
+ const er=l.querySelector(".er");
+ const take=f=>{er.textContent="";if(!f)return;if(f.type&&!/^image\//.test(f.type)){er.textContent="Please choose an image (JPG or PNG).";return}
+  const u=URL.createObjectURL(f),t=new Image();t.onload=()=>{files[v]=f;let i=l.querySelector("img");if(!i){i=document.createElement("img");l.prepend(i);const d=document.createElement("div");d.className="t";d.textContent=v+" ✓ choose again below";l.append(d)}i.src=u;l.classList.add("ok")};
+  t.onerror=()=>{URL.revokeObjectURL(u);er.textContent="This photo format (e.g. HEIC) can't be opened here. Please use JPG or PNG."};t.src=u};
+ l.querySelectorAll("input").forEach(n=>n.onchange=e=>{take(e.target.files[0]);e.target.value=""});
+ ["dragenter","dragover"].forEach(x=>l.addEventListener(x,e=>{e.preventDefault();l.classList.add("dg")}));
+ ["dragleave","drop"].forEach(x=>l.addEventListener(x,e=>{e.preventDefault();l.classList.remove("dg")}));
+ l.addEventListener("drop",e=>take(e.dataTransfer.files[0]));
  $("#photos").append(l)});
 $$(".chips").forEach(c=>{const r=c.dataset.r;c.innerHTML=c.dataset.o.split(",").map(o=>'<label><input type="'+(r?"radio":"checkbox")+'" name="'+c.dataset.k+'" value="'+o+'">'+o+'</label>').join("")});
 $$('input[type=range]').forEach(r=>r.oninput=()=>r.nextElementSibling.value=r.value);
