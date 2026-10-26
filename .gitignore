@@ -7,3 +7,4 @@ package-lock.json
 *.pre-*.html
 *.csv
 .env*
+supabase/functions/scan-report/kb.ts
