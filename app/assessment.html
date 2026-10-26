@@ -93,6 +93,14 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 <label class="f">Stress level (0–10)</label><div class="rng"><input type="range" min="0" max="10" value="0" data-k="stress"><output>0</output></div>
 <label class="f">Breathing</label><div class="chips" data-k="breath" data-o="Shallow,Hold my breath,Chest breathing,Mouth breathing,Feels free"></div></section>
 
+<section class="sec"><div class="sh"><div class="n">✧</div><h2>How do you experience your body?<small>In your own words, then practitioner markers.</small></h2></div>
+<label class="f">How do you experience your body?</label><textarea data-k="body_experience" placeholder="e.g. I feel heavy in my legs, my head is always busy, my chest feels closed"></textarea>
+<div class="tip" style="margin-top:16px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;font-size:11px"><b>Practitioner markers · Grounding &amp; energetics</b></div>
+<label class="f">Where energy / charge sits</label><div class="chips" data-k="energetics" data-o="Legs,Lower body,Torso,Chest,Face &amp; eyes"></div>
+<label class="f">Grounding</label><div class="chips" data-k="energetics" data-o="Well grounded,Weak grounding"></div>
+<label class="f">Core</label><div class="chips" data-k="energetics" data-o="Strong core,Weak core,Fragmentation in the core,Fragmentation outside the core,Proportionate distribution"></div>
+<label class="f">Energetics notes <span class="opt">optional</span></label><textarea data-k="energetics_notes" placeholder="e.g. charge held high, eyes alert, legs cool and less present"></textarea></section>
+
 <section class="sec"><div class="sh"><div class="n">9</div><h2>Health &amp; medication</h2></div>
 <label class="f">Health conditions and medication</label><textarea data-k="health" placeholder="e.g. hypothyroid, ibuprofen as needed"></textarea>
 <label class="f">Do any of these apply?</label><div class="chips" id="flags" data-k="red_flags" data-o="Pregnancy,Blood thinners,Recent trauma or accident,Unexplained weight loss,Numbness or loss of strength"></div>
@@ -107,7 +115,7 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 </div>
 <div class="done" id="done"><h2>Assessment saved ✓</h2><p style="color:var(--mut)">Stored privately in your account.</p><button onclick="location.reload()" style="max-width:280px;margin-top:20px">New assessment</button></div>
 <div class="bar" id="bar"><div><button id="go">Save &amp; next: Assessment →</button><div class="msg" id="msg"></div></div></div>
-<script src="config.js?v=0.23.128"></script><script src="track.js?v=0.23.128"></script>
+<script src="config.js?v=0.23.129"></script><script src="track.js?v=0.23.129"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
@@ -144,7 +152,7 @@ $("#del").onclick=async()=>{if(!rec||!confirm("Delete this record and its photos
  const {error}=await sb.from("assessments").delete().eq("id",rec.id);if(error)return msg("Could not delete: "+error.message);document.body.classList.add("leave");setTimeout(()=>location.href="assessment-results.html",450)};
 // downscale photo to max 1600px JPEG before upload
 const shrink=f=>new Promise(res=>{const im=new Image();im.onload=()=>{const s=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);c.toBlob(b=>res(b||f),"image/jpeg",.85)};im.onerror=()=>res(f);im.src=URL.createObjectURL(f)});
-const collect=()=>{const d={};$$("[data-k]").forEach(el=>{const k=el.dataset.k;if(el.classList.contains("chips")){const v=[...el.querySelectorAll("input:checked")].map(i=>i.value);d[k]=el.dataset.r?(v[0]||null):v}else if(el.value!=="")d[k]=el.type=="number"||el.type=="range"?Number(el.value):el.value.trim()});return d};
+const collect=()=>{const d={};$$("[data-k]").forEach(el=>{const k=el.dataset.k;if(el.classList.contains("chips")){const v=[...el.querySelectorAll("input:checked")].map(i=>i.value);d[k]=el.dataset.r?(v[0]||null):(Array.isArray(d[k])?d[k].concat(v):v)}else if(el.value!=="")d[k]=el.type=="number"||el.type=="range"?Number(el.value):el.value.trim()});return d};
 const msg=t=>$("#msg").textContent=t;
 $("#go").onclick=async()=>{
  if(!user)return msg("Please sign in to FasciApp first.");
