@@ -44,6 +44,10 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 .pdfh{display:none}
 .bar{padding:8px 0}.bar .bl{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:5px}.bar .bl span{color:var(--gold)}.bar .tr{height:8px;border-radius:6px;background:#02191E;border:1px solid #c99e6733;overflow:hidden}.bar .fl{height:100%;background:linear-gradient(90deg,#d8b07a,#C99E67);border-radius:6px}
 .echips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.echips span{font-size:12.5px;padding:5px 11px;border-radius:16px;border:1px solid var(--gold);color:var(--gold)}
+.bm{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 4px}.bm figure{margin:0;text-align:center}.bm svg{width:100%;max-height:420px}.bm figcaption{font-size:11px;letter-spacing:2px;color:var(--gold);margin-top:2px}
+.bmg{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin:8px 0 12px}.bmg i{flex:1;height:8px;border-radius:4px;background:linear-gradient(90deg,#e2574c14,#e2574ccc)}
+.bl{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid #c99e671a;font-size:14px}.bl i{width:22px;height:12px;border-radius:6px;flex:none;border:1px solid #c99e6744}.bl b{font-weight:500;flex:1}.bl span{color:var(--mut);font-size:12.5px}
+.mk{width:22px;height:22px;border-radius:50%;border:1.4px solid var(--tx);display:grid;place-items:center;font-size:11px}.bms{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin:16px 0 4px}
 @media print{@page{size:A4;margin:14mm}
  body{background:#fff!important;color:#1d2a2c}.wrap{max-width:none;padding:0}
  .top,.steps,.tools,.nav2,button,#vLoad,#vPrep,#vList,.toast{display:none!important}
@@ -51,6 +55,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
  .card{opacity:1!important;animation:none!important;background:#fff!important;box-shadow:none!important;border:1px solid #d9c4a3!important}.it,.ses,.tbl tr,.photos{break-inside:avoid;page-break-inside:avoid}
  .it p,.str li,.core,.tbl td,.row,.ses h2,.hero h1,.hero p{color:#1d2a2c!important}.it h3,.lbl,.hero .k,.dir,.tbl td:first-child{color:#8a6537!important}
  .core{background:#f7f1e8!important}.note{background:#f4f8f7!important;color:#1d2a2c!important;border-color:#9cc!important}.disc{color:#555!important}
+ .bm svg,.bl i,.bmg i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.bm,.bl,.bmc .row{break-inside:avoid;page-break-inside:avoid}.bl b,.bl span,.bmc .row{color:#1d2a2c!important}.bms,.bm figcaption{color:#8a6537!important}.mk{border-color:#1d2a2c!important}
  .ses .num{background:#C99E67!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  #vPlan{break-before:page;page-break-before:always}
  .pdfh{display:flex;align-items:center;justify-content:space-between;background:#02191E!important;color:#C99E67!important;padding:14px 18px;border-radius:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:13px;letter-spacing:2px;text-transform:uppercase}
@@ -90,10 +95,26 @@ async function saveReport(msg){$$("[data-p]").forEach(el=>setPath(row.report,el.
  const {error}=await sb.from("assessments").update({report:row.report,data:row.data,updated_at:new Date().toISOString()}).eq("id",id);toast(error?"Could not save: "+error.message:msg||"Saved ✓");return !error}
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-edit]");if(!b)return;const v=b.closest(".view"),on=!v.classList.contains("editing");
  if(!on){await saveReport("Changes saved ✓")}v.classList.toggle("editing",on);v.querySelectorAll("[data-p],[data-d]").forEach(x=>x.contentEditable=on);v.querySelectorAll("[data-edit]").forEach(x=>x.textContent=on?"✓ Save changes":"✎ Edit text");if(on)toast("Tap any text to edit")});
+/* v0.23.132 Body map: report.body_map = {belts:{ocular..pelvic:0-3}, issues:[{label,view:"front|back|both",region|x,y,text}], note} */
+const BM_BELTS=[["ocular","Ocular",28,44],["oral","Oral",48,62],["cervical","Cervical",64,90],["thoracic","Thoracic",92,150],["diaphragmatic","Diaphragmatic",152,170],["abdominal","Abdominal",172,206],["pelvic","Pelvic & legs",208,460]];
+const BM_LV=["Balanced","Mild · to watch","To watch","Strong · over-charged"],BM_OP=[.07,.16,.36,.75];
+const BM_REG={eyes:[100,36],jaw:[100,56],neck_front:[100,74],neck_back:[100,66],shoulder_l:[62,92],shoulder_r:[138,92],shoulders:null,chest:[100,112],upper_back:[100,118],mid_back:[100,150],diaphragm:[100,160],belly:[100,190],lower_back:[100,200],pelvis:[100,230],hips:[100,230],knees:[100,360],feet:[100,440]};
+const BM_BODY='<ellipse cx="100" cy="38" rx="20" ry="25"/><path d="M91 58C92 68 91 75 87 82H113C109 75 108 68 109 58Z"/><path d="M87 80C70 83 57 85 51 94C45 104 46 128 48 160C50 195 56 215 60 232H140C144 215 150 195 152 160C154 128 155 104 149 94C143 85 130 83 113 80Z"/><path d="M52 93C41 97 37 113 36 134C34 166 30 202 27 240C26 250 37 252 38 242C42 205 46 170 50 138Z"/><path d="M148 93C159 97 163 113 164 134C166 166 170 202 173 240C174 250 163 252 162 242C158 205 154 170 150 138Z"/><path d="M60 228L140 228Q144 262 134 300L128 380Q126 420 124 440L132 452L108 452L104 380L101 262L99 262L96 380L92 452L68 452L76 440Q74 420 72 380L66 300Q56 262 60 228Z"/>';
+function bodyMap(M){if(!M||!M.belts)return"";const B=M.belts,I=M.issues||[];
+ const fig=v=>{const c="bmc"+v,b=BM_BELTS.map(([k,,a,z])=>'<rect x="0" y="'+a+'" width="200" height="'+(z-a)+'" fill="#e2574c" fill-opacity="'+BM_OP[Math.max(0,Math.min(3,+B[k]||0))]+'"/>').join("");
+  const ex=v=="back"?'<path d="M100 92V226" stroke="#c99e6755" stroke-dasharray="3 4"/><path d="M76 108q10 22 16 30M124 108q-10 22-16 30" stroke="#c99e6740" fill="none"/>':'<path d="M84 34h8M108 34h8M95 52h10" stroke="#c99e6755"/><path d="M70 110q30 10 60 0" stroke="#c99e6740" fill="none"/>';
+  let m="";I.forEach((it,j)=>{const w=it.view||"both";if(w!="both"&&w!=v)return;const pts=it.region=="shoulders"?[BM_REG.shoulder_l,BM_REG.shoulder_r]:[it.region&&BM_REG[it.region]?BM_REG[it.region]:[+it.x||100,+it.y||100]];
+   pts.forEach(([x,y])=>m+='<circle cx="'+x+'" cy="'+y+'" r="8.5" fill="#02191E" stroke="#F3EDE4" stroke-width="1.4"/><text x="'+x+'" y="'+(y+3.6)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#F3EDE4" font-family="sans-serif">'+(j+1)+'</text>')});
+  return '<figure><svg viewBox="0 0 200 460" role="img" aria-label="'+v+' view"><defs><clipPath id="'+c+'">'+BM_BODY+'</clipPath></defs><g fill="#0f3a40" stroke="#C99E67" stroke-width="1.3">'+BM_BODY+'</g><g clip-path="url(#'+c+')">'+b+'</g>'+ex+m+'</svg><figcaption>'+v.toUpperCase()+'</figcaption></figure>'};
+ let h='<section class="card bmc"><div class="sh"><div class="n">◈</div><h2>Body map<small>Reich’s seven belts of tension · possible issues</small></h2></div><div class="bm">'+fig("front")+fig("back")+'</div><div class="bmg">balanced<i></i>strong</div><div class="bms">Belts of tension</div>';
+ h+=BM_BELTS.map(([k,l],i)=>{const n=Math.max(0,Math.min(3,+B[k]||0));return '<div class="bl"><i style="background:rgba(226,87,76,'+(Math.max(BM_OP[n],.06)+.05)+')"></i><b>'+(i+1)+' '+l+'</b><span>'+BM_LV[n]+'</span></div>'}).join("");
+ if(I.length)h+='<div class="bms">Possible issues</div>'+I.map((it,j)=>'<div class="row"><b class="mk">'+(j+1)+'</b><div><span class="lbl">'+E(it.label||"")+'</span>'+E(it.text||"")+'</div></div>').join("");
+ if(M.note)h+='<p class="dir">'+E(M.note)+'</p>';return h+'</section>'}
 function renderRes(r){const R=r.report,ph=['front','side','back'].map(v=>'<img data-ph="'+E(r['photo_'+v])+'" alt="'+v+'">').join('');
  const rf=R.red_flag&&R.red_flag.level!="none";
  let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(new Date(r.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))+'</p></div>'+tools("res")+'<div class="photos">'+ph+'</div>';
  h+='<div class="note '+(rf?"rf":"ok")+'">'+(rf?"⚠️ <b>Please get medical clearance before bodywork and breathwork.</b> ":"✓ ")+P("red_flag.text",R.red_flag&&R.red_flag.text,"span")+'</div>';
+ h+=bodyMap(R.body_map);
  R.sections.forEach((s,i)=>{const b="sections."+i;h+='<section class="card"><div class="sh"><div class="n">'+(s.key=="map"?"◎":i)+'</div><h2>'+E(s.title)+'<small>'+E(s.subtitle||"")+'</small></h2></div>';
   if(s.key=="map"){h+='<ul class="str">'+s.strengths.map((x,j)=>P(b+".strengths."+j,x,"li")).join('')+'</ul>'+P(b+".core",s.core,"div","core")+'<table class="tbl">'+s.links.map((l,j)=>'<tr><td>'+E(l[0])+'</td>'+P(b+".links."+j+".1",l[1],"td")+'</tr>').join('')+'</table>'+P(b+".direction",s.direction,"div","dir")}
   else h+=s.items.map((x,j)=>'<div class="it">'+P(b+".items."+j+".h",x.h,"h3")+P(b+".items."+j+".p",x.p)+'</div>').join('');h+='</section>'});
