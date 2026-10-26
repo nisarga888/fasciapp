@@ -131,27 +131,28 @@ html.embed nav{display:none}html.embed .hero .hg{padding-top:6px}
 <div class="plan"><div class="pt">Single scan</div><div class="pp">€8</div><div class="pm">One-time · no subscription</div><ul><li>1 full scan</li><li>Report + 10-session plan</li><li>PDF export</li></ul><a class="btn" data-buy="single" href="#">Buy single scan</a></div>
 <div class="plan"><div class="tag">Most popular</div><div class="pt">Practitioner</div><div class="pp">€25<span>/month</span></div><div class="pm">Up to 30 scans a month</div><ul><li>Full assessment report</li><li>10-session treatment plan</li><li>Body map &amp; 12-page PDF</li></ul><a class="btn" data-buy="practitioner" href="#">Buy Practitioner</a></div>
 <div class="plan"><div class="pt">Pro</div><div class="pp">€49<span>/month</span></div><div class="pm">Unlimited scans · launch price</div><ul><li>Everything in Practitioner</li><li>Your own logo on the PDF</li><li>Client history</li></ul><a class="btn" data-buy="pro" href="#">Buy Pro</a></div></div>
-<p class="fee" style="color:#C99E67;font-style:normal">Use the same email at checkout as your FasciApp account so we can activate your plan.</p><p class="fee">Preparing each report takes real analysis work, hence the fee. We keep it low, just to cover that. Coupons can be entered at checkout. Thank you for understanding.</p></div></section>
+<p class="fee" style="color:#C99E67;font-style:normal">Pay by card. Use the same email as your FasciApp profile.</p><p class="fee">Preparing each report takes real analysis work, hence the fee. We keep it low, just to cover that. Coupons can be entered at checkout. Thank you for understanding.</p></div></section>
 
 
 <footer><div class="w"><p class="m">After purchase you get full access to the assessment. Photos are deleted from storage once the report is ready.</p><p class="disc">FasciApp Scan supports professional bodywork practice. It is not a medical diagnosis and does not replace advice from a doctor.</p><p>© 2026 FasciApp</p></div></footer>
 <script src="/app/config.js"></script><script src="/app/track.js"></script>
 <script>
-/* Swap these for the Payhip product links. Empty = "Coming soon". */
-var BUY_PRACTITIONER_URL="https://payhip.com/b/X3D0K";
-var BUY_SINGLE_URL="https://payhip.com/b/1LQCJ";
-var BUY_YEARLY_URL="https://payhip.com/b/3DF49";
-var BUY_PRO_URL="https://payhip.com/b/3XbfB";
+/* Stripe Payment Links. Empty = "Coming soon". */
+var BUY_PRACTITIONER_URL="https://buy.stripe.com/aFa9AU4Rc8y38Pm9GP6Zy01";
+var BUY_SINGLE_URL="https://buy.stripe.com/aFa28s6Zk9C7aXu2en6Zy00";
+var BUY_YEARLY_URL="https://buy.stripe.com/8x2fZi2J429F3v27yH6Zy03";
+var BUY_PRO_URL="https://buy.stripe.com/28EfZi83ocOjd5C3ir6Zy02";
 var EMB=/[?&]embed=1/.test(location.search);if(EMB)document.documentElement.classList.add("embed");
+function faEmail(){try{var j=JSON.parse(localStorage.getItem("fasciapp-auth")||"null");var u=j&&(j.user||(j.currentSession&&j.currentSession.user));return (u&&u.email)||""}catch(x){return ""}}
 function faSigned(){try{var j=JSON.parse(localStorage.getItem("fasciapp-auth")||"null");return !!(j&&(j.user||(j.currentSession&&j.currentSession.user)))}catch(x){return false}}
-document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('[data-buy]');if(!b)return;var k=b.dataset.buy;if(k==="trial"||faSigned()||!/payhip/.test(b.href))return;e.preventDefault();
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('[data-buy]');if(!b)return;var k=b.dataset.buy;if(k==="trial"||faSigned()||!/stripe/.test(b.href))return;e.preventDefault();
  if(EMB&&window.parent!==window)window.parent.postMessage({fa:"scan-buy",plan:k},location.origin);else{try{sessionStorage.setItem("fa_after","buy:"+k)}catch(x){}location.href="/app/?scan=buy&plan="+encodeURIComponent(k)}},true);
 document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('[data-buy="trial"]');if(a&&EMB&&window.parent!==window){e.preventDefault();window.parent.postMessage({fa:"scan-trial"},location.origin)}else if(a&&!faSigned()){try{sessionStorage.setItem("fa_after","scan")}catch(x){}}});
 (function(){var U={single:BUY_SINGLE_URL,practitioner:BUY_PRACTITIONER_URL,pro:BUY_PRO_URL,yearly:BUY_YEARLY_URL};
 function tr(n,p){try{window.FA_ev&&FA_ev(n,{props:p,source:"scan"})}catch(e){}}
 tr("scan_landing_view",{});
 document.querySelectorAll("[data-buy]").forEach(function(a){var k=a.dataset.buy;
- if(k!=="trial"){if(U[k]){a.href=U[k];a.target="_blank";a.rel="noopener"}else{a.href="mailto:info@bodyawareness.ee?subject=FasciApp%20Scan%20"+k;a.textContent="Coming soon – contact info@bodyawareness.ee";a.style.fontSize="13px"}}
+ if(k!=="trial"){if(U[k]){var em=faEmail();a.href=U[k]+(em?"?prefilled_email="+encodeURIComponent(em):"");a.target="_blank";a.rel="noopener"}else{a.href="mailto:info@bodyawareness.ee?subject=FasciApp%20Scan%20"+k;a.textContent="Coming soon – contact info@bodyawareness.ee";a.style.fontSize="13px"}}
  a.addEventListener("click",function(){tr("buy_click",{plan:k,live:!!U[k]})})});})();
 </script>
 </body></html>
