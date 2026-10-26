@@ -1,4 +1,4 @@
-window.FA_Q0=location.search;
+window.FA_Q0=window.FA_Q0||location.search;
 const CITY={tallinn:[59.437,24.7536],warsaw:[52.2297,21.0122],warszawa:[52.2297,21.0122],krakow:[50.0647,19.945],"kraków":[50.0647,19.945],kielce:[50.8661,20.6286],berlin:[52.52,13.405],lesvos:[39.2645,26.2777],mytilene:[39.1047,26.5552]};
 const DEMO=[];
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
@@ -1079,6 +1079,7 @@ function scanAfterLogin(){let a=null;try{a=sessionStorage.getItem("fa_after");se
 window.addEventListener("message",e=>{if(e.origin!==location.origin||!e.data)return;if(e.data.fa==="scan-trial")scanTrial();if(e.data.fa==="scan-buy")scanBuy(e.data.plan)});
 function scanBuy(k){const u=(window.FA_SCAN_BUY||{})[k];if(!u)return;if(me){location.href=u;return}try{sessionStorage.setItem("fa_after","buy:"+k)}catch(e){}try{fillLastEmail()}catch(e){}show("auth")}
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-scplans]");if(!a)return;e.preventDefault();scanLanding("#pricing")});
+setTimeout(async()=>{let a=null;try{a=sessionStorage.getItem("fa_after")}catch(e){}if(!a)return;if(!me){try{me=await DB.session()}catch(e){}}if(me){scanAfterLogin();return}try{fillLastEmail()}catch(e){}show("auth")},1500);
 {try{const q=new URLSearchParams(window.FA_Q0||"");if(q.get("scan")==="buy"){const k=q.get("plan");history.replaceState(null,"",location.pathname);setTimeout(async()=>{if(!me){try{me=await DB.session()}catch(e){}}scanBuy(k)},1200)}
  if(q.get("scan")==="trial"){history.replaceState(null,"",location.pathname);setTimeout(async()=>{if(!me){try{me=await DB.session()}catch(e){}}if(me)show("scan");else scanTrial()},1200)}}catch(e){}}
 async function scanPlansCard(){const P=$("#profile");if(!P||!me)return;let C=$("#scPlans");

@@ -145,8 +145,8 @@ var BUY_PRO_URL="https://payhip.com/b/3XbfB";
 var EMB=/[?&]embed=1/.test(location.search);if(EMB)document.documentElement.classList.add("embed");
 function faSigned(){try{var j=JSON.parse(localStorage.getItem("fasciapp-auth")||"null");return !!(j&&(j.user||(j.currentSession&&j.currentSession.user)))}catch(x){return false}}
 document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('[data-buy]');if(!b)return;var k=b.dataset.buy;if(k==="trial"||faSigned()||!/payhip/.test(b.href))return;e.preventDefault();
- if(EMB&&window.parent!==window)window.parent.postMessage({fa:"scan-buy",plan:k},location.origin);else location.href="/app/?scan=buy&plan="+encodeURIComponent(k)},true);
-document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('[data-buy="trial"]');if(a&&EMB&&window.parent!==window){e.preventDefault();window.parent.postMessage({fa:"scan-trial"},location.origin)}});
+ if(EMB&&window.parent!==window)window.parent.postMessage({fa:"scan-buy",plan:k},location.origin);else{try{sessionStorage.setItem("fa_after","buy:"+k)}catch(x){}location.href="/app/?scan=buy&plan="+encodeURIComponent(k)}},true);
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('[data-buy="trial"]');if(a&&EMB&&window.parent!==window){e.preventDefault();window.parent.postMessage({fa:"scan-trial"},location.origin)}else if(a&&!faSigned()){try{sessionStorage.setItem("fa_after","scan")}catch(x){}}});
 (function(){var U={single:BUY_SINGLE_URL,practitioner:BUY_PRACTITIONER_URL,pro:BUY_PRO_URL,yearly:BUY_YEARLY_URL};
 function tr(n,p){try{window.FA_ev&&FA_ev(n,{props:p,source:"scan"})}catch(e){}}
 tr("scan_landing_view",{});
