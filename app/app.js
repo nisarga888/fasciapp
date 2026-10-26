@@ -422,7 +422,7 @@ function setupSafariChrome(){const ua=navigator.userAgent||"";
   if(event==="PASSWORD_RECOVERY"){recovery=true;showResetForm();return}
   if(event==="SIGNED_IN"||event==="TOKEN_REFRESHED"||event==="INITIAL_SESSION"){
    me=session?.user?{user_id:session.user.id,email:session.user.email}:(await DB.session().catch(()=>null));hdr();
-   if(me&&me.email)rememberEmail(me.email);if(me&&event==="SIGNED_IN")scanAfterLogin()}
+   if(me&&me.email)rememberEmail(me.email);if(me&&event==="SIGNED_IN")scanAfterLogin();if(me)scanEnsure()}
   if(event==="SIGNED_OUT"){me=null;hdr()}
  });
  if(faAuthLinkError()){}else if(wantReset){// give the client a moment to pick up hash tokens from the email link
@@ -1074,19 +1074,22 @@ function scanLanding(hash){const S=$("#scan");if(!S)return;S.classList.add("scLa
  if(!f){f=document.createElement("iframe");f.id="scFrame";f.title="FasciApp Scan";f.src=src;S.append(f)}else if(hash&&!f.src.endsWith(hash))f.src=src}
 function scanHub(){const S=$("#scan");if(S)S.classList.remove("scLand")}
 function scanTrial(){if(!me){try{sessionStorage.setItem("fa_after","scan")}catch(e){}try{fillLastEmail()}catch(e){}show("auth");return}scanHub();show("scan")}
-function scanAfterLogin(){let a=null;try{a=sessionStorage.getItem("fa_after");sessionStorage.removeItem("fa_after")}catch(e){}if(a==="scan")setTimeout(()=>show("scan"),900)}
-window.addEventListener("message",e=>{if(e.origin!==location.origin||!e.data||e.data.fa!=="scan-trial")return;scanTrial()});
+function scanAfterLogin(){let a=null;try{a=sessionStorage.getItem("fa_after");sessionStorage.removeItem("fa_after")}catch(e){}if(a==="scan")setTimeout(()=>show("scan"),900);if(a&&a.startsWith("buy:")){const u=(window.FA_SCAN_BUY||{})[a.slice(4)];if(u)setTimeout(()=>location.href=u,600)}}
+window.addEventListener("message",e=>{if(e.origin!==location.origin||!e.data)return;if(e.data.fa==="scan-trial")scanTrial();if(e.data.fa==="scan-buy")scanBuy(e.data.plan)});
+function scanBuy(k){const u=(window.FA_SCAN_BUY||{})[k];if(!u)return;if(me){location.href=u;return}try{sessionStorage.setItem("fa_after","buy:"+k)}catch(e){}try{fillLastEmail()}catch(e){}show("auth")}
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-scplans]");if(!a)return;e.preventDefault();scanLanding("#pricing")});
-{try{const q=new URLSearchParams(location.search);if(q.get("scan")==="trial"){history.replaceState(null,"",location.pathname);setTimeout(async()=>{if(!me){try{me=await DB.session()}catch(e){}}if(me)show("scan");else scanTrial()},700)}}catch(e){}}
+{try{const q=new URLSearchParams(location.search);if(q.get("scan")==="buy"){const k=q.get("plan");history.replaceState(null,"",location.pathname);setTimeout(async()=>{if(!me){try{me=await DB.session()}catch(e){}}scanBuy(k)},700)}
+ if(q.get("scan")==="trial"){history.replaceState(null,"",location.pathname);setTimeout(async()=>{if(!me){try{me=await DB.session()}catch(e){}}if(me)show("scan");else scanTrial()},700)}}catch(e){}}
 async function scanPlansCard(){const P=$("#profile");if(!P||!me)return;let C=$("#scPlans");
  try{if(!scanSb){const c=window.FASCIAPP_CONFIG||{};scanSb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}
  const {data}=await scanSb.rpc("fa_scan_status");if(!data){if(C)C.remove();return}
  let h;const B=window.FA_SCAN_BUY,N={practitioner:"Practitioner · €25/month",pro:"Pro · €49/month",yearly:"Yearly · €249/year",single:"Single scan · €8"};
  if(data.admin)h='<b>FasciApp Scan</b><p>Unlimited (admin) · '+data.scans_used+' scans</p>';
  else if(data.active)h='<b>Your Scan plan</b><p>'+esc(N[data.plan]||data.plan)+(data.expires_at?' · renews/ends '+new Date(data.expires_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}):'')+' · '+data.scans_used+' scans used</p>';
- else if(data.scans_used>=1&&!(data.trial_remaining>0))h='<b>Scan plans</b><p>Your free scan is used. Get more scans:</p><div class="scpG">'+["single","practitioner","pro","yearly"].map(k=>'<a href="'+B[k]+'" target="_blank" rel="noopener"'+(k==="yearly"?' class="hot"':'')+'>'+N[k]+'</a>').join("")+'</div><a class="scpGo" href="#" data-scplans-go>Get more scans</a>';
+ else if(data.scans_used>=1&&!(data.trial_remaining>0))h='<b>Scan plans</b><p>Your free scan is used. Get more scans:</p><div class="scpG">'+["single","practitioner","pro","yearly"].map(k=>'<a href="'+B[k]+'" target="_blank" rel="noopener"'+(k==="yearly"?' class="hot"':'')+'>'+N[k]+'</a>').join("")+'</div><p style="font-size:12px;color:#9fb3b5;margin:8px 0 0">Use the same email at checkout as your FasciApp account so we can activate your plan.</p><a class="scpGo" href="#" data-scplans-go>Get more scans</a>';
  else if(data.trial_remaining>0)h='<b>FasciApp Scan</b><p>'+(data.plan==="single"?'You have '+data.trial_remaining+' scan ready.':'Your free scan is waiting: full assessment and 10-session plan.')+'</p><a class="scpGo" href="#" data-sctrial>'+(data.plan==="single"?'Start a scan':'Try 1 free scan')+'</a><a class="scpLk" href="#" data-scplans-go>See plans</a>';
  else{if(C)C.remove();return}
  if(!C){C=document.createElement("div");C.id="scPlans";C.className="scPlans";const h2=P.querySelector("h2");(h2||P.firstChild).after(C)}C.innerHTML=h}catch(e){}}
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-scplans-go]");if(!a)return;e.preventDefault();show("scan");scanLanding("#pricing")});
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-sctrial]");if(!a)return;e.preventDefault();scanTrial()});
+let scanEnsured=false;async function scanEnsure(){if(scanEnsured||!me)return;scanEnsured=true;try{if(!scanSb){const c=window.FASCIAPP_CONFIG||{};scanSb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}await scanSb.rpc("fa_scan_status")}catch(e){scanEnsured=false}}

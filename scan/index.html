@@ -131,7 +131,7 @@ html.embed nav{display:none}html.embed .hero .hg{padding-top:6px}
 <div class="plan"><div class="pt">Single scan</div><div class="pp">€8</div><div class="pm">One-time · no subscription</div><ul><li>1 full scan</li><li>Report + 10-session plan</li><li>PDF export</li></ul><a class="btn" data-buy="single" href="#">Buy single scan</a></div>
 <div class="plan"><div class="tag">Most popular</div><div class="pt">Practitioner</div><div class="pp">€25<span>/month</span></div><div class="pm">Up to 30 scans a month</div><ul><li>Full assessment report</li><li>10-session treatment plan</li><li>Body map &amp; 12-page PDF</li></ul><a class="btn" data-buy="practitioner" href="#">Buy Practitioner</a></div>
 <div class="plan"><div class="pt">Pro</div><div class="pp">€49<span>/month</span></div><div class="pm">Unlimited scans · launch price</div><ul><li>Everything in Practitioner</li><li>Your own logo on the PDF</li><li>Client history</li></ul><a class="btn" data-buy="pro" href="#">Buy Pro</a></div></div>
-<p class="fee">Preparing each report takes real analysis work, hence the fee. We keep it low, just to cover that. Coupons can be entered at checkout. Thank you for understanding.</p></div></section>
+<p class="fee" style="color:#C99E67;font-style:normal">Use the same email at checkout as your FasciApp account so we can activate your plan.</p><p class="fee">Preparing each report takes real analysis work, hence the fee. We keep it low, just to cover that. Coupons can be entered at checkout. Thank you for understanding.</p></div></section>
 
 
 <footer><div class="w"><p class="m">After purchase you get full access to the assessment. Photos are deleted from storage once the report is ready.</p><p class="disc">FasciApp Scan supports professional bodywork practice. It is not a medical diagnosis and does not replace advice from a doctor.</p><p>© 2026 FasciApp</p></div></footer>
@@ -143,6 +143,9 @@ var BUY_SINGLE_URL="https://payhip.com/b/1LQCJ";
 var BUY_YEARLY_URL="https://payhip.com/b/3DF49";
 var BUY_PRO_URL="https://payhip.com/b/3XbfB";
 var EMB=/[?&]embed=1/.test(location.search);if(EMB)document.documentElement.classList.add("embed");
+function faSigned(){try{var j=JSON.parse(localStorage.getItem("fasciapp-auth")||"null");return !!(j&&(j.user||(j.currentSession&&j.currentSession.user)))}catch(x){return false}}
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('[data-buy]');if(!b)return;var k=b.dataset.buy;if(k==="trial"||faSigned()||!/payhip/.test(b.href))return;e.preventDefault();
+ if(EMB&&window.parent!==window)window.parent.postMessage({fa:"scan-buy",plan:k},location.origin);else location.href="/app/?scan=buy&plan="+encodeURIComponent(k)},true);
 document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('[data-buy="trial"]');if(a&&EMB&&window.parent!==window){e.preventDefault();window.parent.postMessage({fa:"scan-trial"},location.origin)}});
 (function(){var U={single:BUY_SINGLE_URL,practitioner:BUY_PRACTITIONER_URL,pro:BUY_PRO_URL,yearly:BUY_YEARLY_URL};
 function tr(n,p){try{window.FA_ev&&FA_ev(n,{props:p,source:"scan"})}catch(e){}}

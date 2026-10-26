@@ -807,7 +807,7 @@ body.peOpen{overflow:hidden}
 #scan .scPriv{text-align:center;color:#9fb3b5;font-size:12px;margin-top:18px}#scan .scEm{text-align:center;color:#9fb3b5;margin-top:18px}
 
 /* v0.23.142 in-app Scan landing + profile plans */
-#scan.scLand>*:not(#scFrame){display:none!important}#scFrame{display:none}#scan.scLand #scFrame{display:block;flex:1;min-height:0;width:100%;height:100%;border:0;border-radius:14px;background:#02191E}
+#scan.scLand>*:not(#scFrame){display:none!important}#scFrame{display:none}#scan.scLand #scFrame{display:block;width:100%;height:calc(100dvh - 56px - var(--nav-h,76px) - 24px);min-height:420px;border:0;border-radius:14px;background:#02191E}
 .scPlans{margin:12px 0;padding:14px 16px;border-radius:18px;background:linear-gradient(180deg,#0c3036,#0a2a30);border:1px solid #c99e6744;color:#F3EDE4}.scPlans b{color:#C99E67;font-size:12px;letter-spacing:1.5px;text-transform:uppercase}.scPlans p{margin:6px 0 10px;font-size:14px;color:#cfdcdb}
 .scpG{display:grid;grid-template-columns:1fr 1fr;gap:8px}.scpG a{display:block;text-align:center;padding:10px 6px;border-radius:12px;border:1px solid #c99e6766;color:#F3EDE4;text-decoration:none;font-size:12.5px}.scpG a.hot{border-color:#C99E67;background:#c99e671a}
 .scpGo{display:block;text-align:center;margin-top:10px;padding:12px;border-radius:24px;background:linear-gradient(90deg,#d8b07a,#C99E67);color:#02191E;font-weight:600;text-decoration:none}
