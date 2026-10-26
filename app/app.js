@@ -1056,12 +1056,14 @@ document.addEventListener("click",e=>{const j=e.target.closest&&e.target.closest
 let scanSb=null;async function scanLoad(){const L=$("#scList");if(!L)return;if(!me){show("map");return}
  L.innerHTML='<p class="scEm">Loading…</p>';
  try{if(!scanSb){const c=window.FASCIAPP_CONFIG||{};scanSb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}
-  scanAccess();const {data,error}=await scanSb.from("assessments").select("id,client_name,created_at,report_ready_at,report").order("created_at",{ascending:false});if(error)throw error;const A=data||[];
+  if(!(await scanAccess()))return;const {data,error}=await scanSb.from("assessments").select("id,client_name,created_at,report_ready_at,report").order("created_at",{ascending:false});if(error)throw error;const A=data||[];
   $("#scCount").textContent="My assessments · "+A.length;
   L.innerHTML=A.length?A.map(a=>'<a class="scLi" href="assessment-results.html?id='+encodeURIComponent(a.id)+'"><div>'+esc(a.client_name||"Unnamed client")+'<small>'+new Date(a.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})+'</small></div><span class="scSt">'+(a.report_ready_at||a.report?"Ready":"Preparing")+'</span></a>').join(""):'<p class="scEm">No records yet.</p>'}
  catch(e){L.innerHTML='<p class="scEm">Could not load records. <a href="assessment-results.html" style="color:#C99E67">Open records</a></p>'}}
 
 /* v0.23.133 Scan access: free trial (3) or plan; admin unlimited */
-async function scanAccess(){const N=$("#scNew"),I=$("#scInfo");if(!N||!scanSb)return;try{const {data}=await scanSb.rpc("fa_scan_status");if(!data)return;
+/* v0.23.135: admin = hub (free, unlimited); active paid plan = hub; everyone else = Scan landing */
+async function scanAccess(){const N=$("#scNew"),I=$("#scInfo");if(!N||!scanSb)return true;try{const {data}=await scanSb.rpc("fa_scan_status");if(!data)return true;
+ if(!data.admin&&!data.active){location.href="/scan/";return false}
  if(data.allowed){N.href="assessment.html";N.textContent="＋ New assessment";I.innerHTML=data.admin?"":data.active?'Plan: '+esc(data.plan)+' · '+data.scans_used+' scans used':'Free trial · '+data.trial_remaining+' of 3 scans left · <a href="/scan/" style="color:#C99E67">See plans</a>'}
- else{N.href="/scan/#pricing";N.textContent="Choose a plan to continue";I.innerHTML='Your 3 free scans are used. <a href="/scan/" style="color:#C99E67">See plans</a>'}}catch(e){}}
+ else{N.href="/scan/#pricing";N.textContent="Choose a plan to continue";I.innerHTML='Your 3 free scans are used. <a href="/scan/" style="color:#C99E67">See plans</a>'}}catch(e){}return true}
