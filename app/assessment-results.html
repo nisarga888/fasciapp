@@ -42,6 +42,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 .search{width:100%;font:inherit;font-size:16px;padding:13px 16px;border-radius:24px;border:1px solid #c99e6744;background:#02191Ecc;color:var(--tx);outline:none;margin-top:6px}.search:focus{border-color:var(--gold)}
 .toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,30px);opacity:0;background:var(--gold);color:var(--bg);padding:12px 20px;border-radius:24px;font-weight:600;font-size:14px;transition:.35s;z-index:50;pointer-events:none}.toast.on{opacity:1;transform:translate(-50%,0)}
 .pdfh{display:none}
+.bar{padding:8px 0}.bar .bl{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:5px}.bar .bl span{color:var(--gold)}.bar .tr{height:8px;border-radius:6px;background:#02191E;border:1px solid #c99e6733;overflow:hidden}.bar .fl{height:100%;background:linear-gradient(90deg,#d8b07a,#C99E67);border-radius:6px}
 .echips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.echips span{font-size:12.5px;padding:5px 11px;border-radius:16px;border:1px solid var(--gold);color:var(--gold)}
 @media print{@page{size:A4;margin:14mm}
  body{background:#fff!important;color:#1d2a2c}.wrap{max-width:none;padding:0}
@@ -53,7 +54,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
  .ses .num{background:#C99E67!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  #vPlan{break-before:page;page-break-before:always}
  .pdfh{display:flex;align-items:center;justify-content:space-between;background:#02191E!important;color:#C99E67!important;padding:14px 18px;border-radius:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:13px;letter-spacing:2px;text-transform:uppercase}
- .photos img{border:1px solid #d9c4a3}.echips span{color:#8a6537!important;border-color:#c99e67!important}}
+ .photos img{border:1px solid #d9c4a3}.bar .fl{-webkit-print-color-adjust:exact;print-color-adjust:exact}.bar .bl{color:#1d2a2c!important}.echips span{color:#8a6537!important;border-color:#c99e67!important}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;opacity:1!important}}
 </style></head><body><div class="wrap">
 <div class="top"><a href="./" id="back">← FasciApp</a><span style="font-size:12px;color:var(--mut)">Private · only you see this</span></div>
@@ -65,7 +66,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 <div id="vRes" class="view"></div>
 <div id="vPlan" class="view"></div>
 </div><div class="toast" id="toast"></div>
-<script src="config.js?v=0.23.129"></script><script src="track.js?v=0.23.129"></script>
+<script src="config.js?v=0.23.130"></script><script src="track.js?v=0.23.130"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
@@ -101,6 +102,8 @@ function renderRes(r){const R=r.report,ph=['front','side','back'].map(v=>'<img d
   h+='<div class="it"><h3>In your own words</h3><p data-d="body_experience">'+E(D.body_experience||"—")+'</p></div>';
   h+='<div class="it"><h3>Grounding &amp; energetics</h3>'+(en.length?'<div class="echips">'+en.map(x=>'<span>'+E(x)+'</span>').join('')+'</div>':'<p>—</p>')+'<p style="font-size:12px;color:var(--mut);margin-top:6px">Change markers in the intake (step 1).</p></div>';
   h+='<div class="it"><h3>Energetics notes</h3><p data-d="energetics_notes">'+E(D.energetics_notes||"—")+'</p></div></section>'}}
+ {const S=(r.data||{}).pattern_scores;if(S){const L=[["schizoid","Schizoid · right to exist"],["oral","Oral · right to needs"],["psychopathic","Psychopathic · right to trust"],["masochistic","Masochistic · right to autonomy"],["rigid","Rigid · right to love and sexuality"]];
+  h+='<section class="card"><div class="sh"><div class="n">◈</div><h2>Pattern scores<small>Tentative self-report, combined with body reading</small></h2></div>'+L.map(([k,l])=>{const v=Number(S[k]||0);return '<div class="bar"><div class="bl">'+l+'<span>'+v+' / 15</span></div><div class="tr"><div class="fl" style="width:'+(v/15*100)+'%"></div></div></div>'}).join('')+'<p style="font-size:12px;color:var(--mut);margin-top:8px">Change answers in the intake (step 1).</p></section>'}}
  if(R.photo_note)h+='<div class="note ph">📷 '+P("photo_note",R.photo_note,"span")+'</div>';
  h+='<div class="nav2"><button class="sec2" data-go="intake">← Intake</button><button data-go="plan">Next: Treatment plan →</button></div><p class="disc">'+E(R.disclaimer)+'</p>';
  $("#vRes").innerHTML=stag(h);
