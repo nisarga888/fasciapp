@@ -138,7 +138,7 @@
 <section id="inbox" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><h2>Messages</h2><div id="convs"></div></section>
 <div id="chat" class="chat" hidden><div class="chatH"><div class="chatT"><b id="chatName"></b><small class="chatSub">Message in FasciApp · replies arrive in your Inbox</small></div><button type="button" id="chatX" class="ghost sm" aria-label="Close">✕</button></div>
  <div id="chatLog" class="chatLog"></div><form id="chatForm" class="chatF"><textarea id="chatTxt" rows="1" maxlength="1000" placeholder="Message…" enterkeyhint="send" autocomplete="off"></textarea><button class="gold chatSend" aria-label="Send message"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button></form><p id="chatErr" class="msg"></p></div>
-<section id="scan" class="screen"><div class="scH"><small>Body Reading · Beta</small><h2>Body Reading</h2><p>Photos, intake and patterns, then a holistic reading and a 10-session plan.</p></div><a class="scNew" href="assessment.html">＋ New assessment</a><div class="scSH" id="scCount">My assessments</div><div id="scList"></div><p class="scPriv">🔒 Private · only you see this</p></section>
+<section id="scan" class="screen"><div class="scH"><small>Body Reading · Beta</small><h2>Body Reading</h2><p>Photos, intake and patterns, then a holistic reading and a 10-session plan.</p></div><a class="scNew" id="scNew" href="assessment.html">＋ New assessment</a><p id="scInfo" style="text-align:center;font-size:13px;color:#9fb3b5;margin:8px 0 0"></p><div class="scSH" id="scCount">My assessments</div><div id="scList"></div><p class="scPriv">🔒 Private · only you see this</p></section>
 <section id="log" class="screen"><button type="button" class="back mapBack" data-go="profile">← My profile</button><h2>Session log</h2>
  <div id="logNeed" class="card center" hidden><p>Sign in as a practitioner to keep your training session log.</p><button class="gold big1" data-go="auth">Sign in / Create account</button></div>
  <div id="logBox" hidden>
@@ -220,7 +220,7 @@
 
 <script src="config.js?v=0.23.100"></script><script src="track.js?v=0.23.124"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script><script>window.supabase||document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"><\/script>')</script>
-<script src="learn.js?v=0.23.115"></script><script src="news.js?v=0.23.103"></script><script src="quotes.js?v=0.23.71"></script><script src="data.js?v=0.23.120"></script><script src="breath.js?v=0.23.113"></script><script src="app.js?v=0.23.131"></script>
+<script src="learn.js?v=0.23.115"></script><script src="news.js?v=0.23.103"></script><script src="quotes.js?v=0.23.71"></script><script src="data.js?v=0.23.120"></script><script src="breath.js?v=0.23.113"></script><script src="app.js?v=0.23.133"></script>
 <script>
 if("serviceWorker" in navigator&&navigator.serviceWorker){
   // Never reload while the user is using the app: apply a new version only when the app is in the background or on next open.

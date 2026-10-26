@@ -66,7 +66,7 @@ window.show=show;function show(t){if(window.faSheetClose)faSheetClose();if((t===
 let showT=null;function afterShow(t){try{if(t==="scan")scanLoad();if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
-function hdr(){document.body.classList.toggle("authed",!!me);if(window.faJoinUpd)faJoinUpd();{const lb=$("#labBtn");if(lb)lb.hidden=!!me}$("#tabInbox").hidden=!MSG_ON;{let ad=false;try{ad=isAdmin()}catch(e){}const ts=$("#tabScan");if(ts)ts.hidden=!ad;const pl=document.querySelector('#tabs [data-t="profile"] span');if(pl)pl.textContent=ad?"Profile":"My profile";if(!ad&&$("#scan")&&$("#scan").classList.contains("active"))show("map")}$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
+function hdr(){document.body.classList.toggle("authed",!!me);if(window.faJoinUpd)faJoinUpd();{const lb=$("#labBtn");if(lb)lb.hidden=!!me}$("#tabInbox").hidden=!MSG_ON;{let ad=false;try{ad=isAdmin()}catch(e){}const ts=$("#tabScan");if(ts)ts.hidden=!me;const pl=document.querySelector('#tabs [data-t="profile"] span');if(pl)pl.textContent=ad?"Profile":"My profile";if(!me&&$("#scan")&&$("#scan").classList.contains("active"))show("map")}$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 // v0.23.100: the people cache lives in IndexedDB. The old localStorage snapshot (fa_people_v1) outgrew Safari's ~5 MB quota
 // (photos are data URLs), so its updates failed silently and an old list (e.g. 82 people) was painted on every start.
 var faFresh=false,pCache=null;try{localStorage.removeItem("fa_people_v1")}catch(e){}
@@ -1053,10 +1053,15 @@ document.addEventListener("click",e=>{const j=e.target.closest&&e.target.closest
 
 
 /* v0.23.131 Body Reading hub (admin only) */
-let scanSb=null;async function scanLoad(){const L=$("#scList");if(!L)return;let ad=false;try{ad=isAdmin()}catch(e){}if(!ad){show("map");return}
+let scanSb=null;async function scanLoad(){const L=$("#scList");if(!L)return;if(!me){show("map");return}
  L.innerHTML='<p class="scEm">Loading…</p>';
  try{if(!scanSb){const c=window.FASCIAPP_CONFIG||{};scanSb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}
-  const {data,error}=await scanSb.from("assessments").select("id,client_name,created_at,report_ready_at,report").order("created_at",{ascending:false});if(error)throw error;const A=data||[];
+  scanAccess();const {data,error}=await scanSb.from("assessments").select("id,client_name,created_at,report_ready_at,report").order("created_at",{ascending:false});if(error)throw error;const A=data||[];
   $("#scCount").textContent="My assessments · "+A.length;
   L.innerHTML=A.length?A.map(a=>'<a class="scLi" href="assessment-results.html?id='+encodeURIComponent(a.id)+'"><div>'+esc(a.client_name||"Unnamed client")+'<small>'+new Date(a.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})+'</small></div><span class="scSt">'+(a.report_ready_at||a.report?"Ready":"Preparing")+'</span></a>').join(""):'<p class="scEm">No records yet.</p>'}
  catch(e){L.innerHTML='<p class="scEm">Could not load records. <a href="assessment-results.html" style="color:#C99E67">Open records</a></p>'}}
+
+/* v0.23.133 Scan access: free trial (3) or plan; admin unlimited */
+async function scanAccess(){const N=$("#scNew"),I=$("#scInfo");if(!N||!scanSb)return;try{const {data}=await scanSb.rpc("fa_scan_status");if(!data)return;
+ if(data.allowed){N.href="assessment.html";N.textContent="＋ New assessment";I.innerHTML=data.admin?"":data.active?'Plan: '+esc(data.plan)+' · '+data.scans_used+' scans used':'Free trial · '+data.trial_remaining+' of 3 scans left · <a href="/scan/" style="color:#C99E67">See plans</a>'}
+ else{N.href="/scan/#pricing";N.textContent="Choose a plan to continue";I.innerHTML='Your 3 free scans are used. <a href="/scan/" style="color:#C99E67">See plans</a>'}}catch(e){}}

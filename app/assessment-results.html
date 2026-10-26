@@ -71,7 +71,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 <div id="vRes" class="view"></div>
 <div id="vPlan" class="view"></div>
 </div><div class="toast" id="toast"></div>
-<script src="config.js?v=0.23.130"></script><script src="track.js?v=0.23.130"></script>
+<script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
@@ -142,7 +142,9 @@ window.onpopstate=()=>{if(!row||!row.report)return;show(location.hash=="#plan"?$
 async function load(){const {data,error}=await sb.from("assessments").select("id,client_name,data,photo_front,photo_side,photo_back,report,report_ready_at,created_at").eq("id",id).maybeSingle();
  if(error||!data){$("#vList").innerHTML='<div class="prep"><h2>Record not found</h2><p>It may belong to another account.</p></div>';return show($("#vList"))}
  const first=!row;row=data;$("#steps").hidden=false;if(!data.report){show($("#vPrep"));step("res");timer=setTimeout(load,8000);return}
- renderRes(data);if(first)window.FA_ph&&FA_ph("assessment_results_open",{});show(location.hash=="#plan"?$("#vPlan"):$("#vRes"))}
+ renderRes(data);if(first)window.FA_ph&&FA_ph("assessment_results_open",{});if(first&&data.report_ready_at){try{window.FA_ev&&FA_ev("report_ready",{once:"rr",props:{},source:"scan"})}catch(e){}}
+ /* v0.23.133: photos are deleted from storage once the report is ready (records created from 26 Oct 2026 on) */
+ if(data.report_ready_at&&new Date(data.created_at)>=new Date("2026-10-26T12:00:00Z")){const P=["front","side","back"].map(v=>data["photo_"+v]).filter(Boolean);if(P.length)setTimeout(async()=>{try{const r=await sb.storage.from("assessment-photos").remove(P);if(!r.error)await sb.from("assessments").update({photo_front:null,photo_side:null,photo_back:null}).eq("id",data.id)}catch(e){}},4000)}show(location.hash=="#plan"?$("#vPlan"):$("#vRes"))}
 async function list(){const {data}=await sb.from("assessments").select("id,client_name,created_at,report_ready_at").order("created_at",{ascending:false});const A=data||[];
  let h='<div class="hero"><div class="k">Fascia Lab</div><h1>Client records</h1><p>'+A.length+' assessment'+(A.length==1?'':'s')+'</p></div><input class="search" id="q" type="search" placeholder="Search by client name" autocomplete="off"><div id="recs"></div><a href="assessment.html" style="text-decoration:none"><button class="big">+ New assessment</button></a>';
  $("#vList").innerHTML=h;
