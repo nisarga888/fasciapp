@@ -153,7 +153,7 @@ async function loadRec(){const {data,error}=await sb.from("assessments").select(
 let user=null;sb.auth.getSession().then(({data})=>{user=data.session&&data.session.user;$("#who").innerHTML=user?'Signed in as <b>'+user.email+'</b>':'Please <a style="color:var(--gold)" href="./">sign in to FasciApp</a> to save.';if(user&&EID)loadRec();if(user&&!EID)scanGate()});
 const ev=(n,p)=>{try{window.FA_ev&&FA_ev(n,{props:p||{},source:"scan"})}catch(e){}};
 async function scanGate(){try{const {data,error}=await sb.rpc("fa_scan_status");if(error||!data)return;
- if(!data.allowed){const b=$("#go");b.disabled=true;b.textContent="No scans left";$("#msg").innerHTML='Your 3 free scans are used. <a style="color:var(--gold)" href="/scan/#pricing">Choose a plan to continue →</a>';ev("scan_gate_blocked",{plan:data.plan});return}
+ if(!data.allowed){const b=$("#go");b.disabled=true;b.textContent="No scans left";$("#msg").innerHTML='Your free scan is used. <a style="color:var(--gold)" href="/scan/#pricing">Choose a plan to continue →</a>';ev("scan_gate_blocked",{plan:data.plan});return}
  if(!data.admin&&!data.active){$("#who").insertAdjacentHTML("beforeend",' · <span style="color:var(--gold)">Free trial: '+data.trial_remaining+' scan'+(data.trial_remaining==1?'':'s')+' left</span>')}
  ev("assessment_started",{plan:data.admin?"admin":data.plan})}catch(e){}}
 $("#del").onclick=async()=>{if(!rec||!confirm("Delete this record and its photos? This can't be undone."))return;

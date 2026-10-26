@@ -1065,5 +1065,5 @@ let scanSb=null;async function scanLoad(){const L=$("#scList");if(!L)return;if(!
 /* v0.23.135: admin = hub (free, unlimited); active paid plan = hub; everyone else = Scan landing */
 async function scanAccess(){const N=$("#scNew"),I=$("#scInfo");if(!N||!scanSb)return true;try{const {data}=await scanSb.rpc("fa_scan_status");if(!data)return true;
  if(!data.admin&&!data.active){location.href="/scan/";return false}
- if(data.allowed){N.href="assessment.html";N.textContent="＋ New assessment";I.innerHTML=data.admin?"":data.active?'Plan: '+esc(data.plan)+' · '+data.scans_used+' scans used':'Free trial · '+data.trial_remaining+' of 3 scans left · <a href="/scan/" style="color:#C99E67">See plans</a>'}
- else{N.href="/scan/#pricing";N.textContent="Choose a plan to continue";I.innerHTML='Your 3 free scans are used. <a href="/scan/" style="color:#C99E67">See plans</a>'}}catch(e){}return true}
+ if(data.allowed){N.href="assessment.html";N.textContent="＋ New assessment";I.innerHTML=data.admin?"":data.active?'Plan: '+esc(data.plan)+' · '+data.scans_used+' scans used':'Free trial · '+data.trial_remaining+' free scan left · <a href="/scan/" style="color:#C99E67">See plans</a>'}
+ else{N.href="/scan/#pricing";N.textContent="Choose a plan to continue";I.innerHTML='Your free scan is used. <a href="/scan/" style="color:#C99E67">See plans</a>'}}catch(e){}return true}
