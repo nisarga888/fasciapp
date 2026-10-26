@@ -63,7 +63,7 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(hit){renderMarkers();renderList();show("list");return true}return false}catch(e){return false}}
 window.show=show;function show(t){if(window.faSheetClose)faSheetClose();if((t==="map"||t==="list")&&window.faJoinUpd)faJoinUpd();$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||(t==="log"&&b.dataset.t==="profile")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
-let showT=null;function afterShow(t){try{if(t==="scan")scanLoad();if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
+let showT=null;function afterShow(t){try{if(t==="scan")scanLoad();if(t==="profile")setTimeout(scanPlansCard,300);if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
 function hdr(){document.body.classList.toggle("authed",!!me);if(window.faJoinUpd)faJoinUpd();{const lb=$("#labBtn");if(lb)lb.hidden=!!me}$("#tabInbox").hidden=!MSG_ON;{let ad=false;try{ad=isAdmin()}catch(e){}const ts=$("#tabScan");if(ts)ts.hidden=false;const pl=document.querySelector('#tabs [data-t="profile"] span');if(pl)pl.textContent=ad?"Profile":"My profile";}$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
@@ -422,7 +422,7 @@ function setupSafariChrome(){const ua=navigator.userAgent||"";
   if(event==="PASSWORD_RECOVERY"){recovery=true;showResetForm();return}
   if(event==="SIGNED_IN"||event==="TOKEN_REFRESHED"||event==="INITIAL_SESSION"){
    me=session?.user?{user_id:session.user.id,email:session.user.email}:(await DB.session().catch(()=>null));hdr();
-   if(me&&me.email)rememberEmail(me.email)}
+   if(me&&me.email)rememberEmail(me.email);if(me&&event==="SIGNED_IN")scanAfterLogin()}
   if(event==="SIGNED_OUT"){me=null;hdr()}
  });
  if(faAuthLinkError()){}else if(wantReset){// give the client a moment to pick up hash tokens from the email link
@@ -1053,7 +1053,7 @@ document.addEventListener("click",e=>{const j=e.target.closest&&e.target.closest
 
 
 /* v0.23.131 Body Reading hub (admin only) */
-let scanSb=null;async function scanLoad(){const L=$("#scList");if(!L)return;if(!me){location.href="/scan/";return}
+let scanSb=null;async function scanLoad(){const L=$("#scList");if(!L)return;if(!me){scanLanding();return}scanHub();
  L.innerHTML='<p class="scEm">Loading…</p>';
  try{if(!scanSb){const c=window.FASCIAPP_CONFIG||{};scanSb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}
   if(!(await scanAccess()))return;const {data,error}=await scanSb.from("assessments").select("id,client_name,created_at,report_ready_at,report").order("created_at",{ascending:false});if(error)throw error;const A=data||[];
@@ -1064,6 +1064,29 @@ let scanSb=null;async function scanLoad(){const L=$("#scList");if(!L)return;if(!
 /* v0.23.133 Scan access: free trial (3) or plan; admin unlimited */
 /* v0.23.135: admin = hub (free, unlimited); active paid plan = hub; everyone else = Scan landing */
 async function scanAccess(){const N=$("#scNew"),I=$("#scInfo");if(!N||!scanSb)return true;try{const {data}=await scanSb.rpc("fa_scan_status");if(!data)return true;
- if(!data.admin&&!data.active){location.href="/scan/";return false}
- if(data.allowed){N.href="assessment.html";N.textContent="＋ New assessment";I.innerHTML=data.admin?"":data.active?'Plan: '+esc(data.plan)+' · '+data.scans_used+' scans used':'Free trial · '+data.trial_remaining+' free scan left · <a href="/scan/" style="color:#C99E67">See plans</a>'}
+ if(!data.admin&&!data.active&&!(data.trial_remaining>0)){scanLanding("#pricing");return false}
+ if(data.allowed){N.href="assessment.html";N.textContent="＋ New assessment";I.innerHTML=data.admin?"":data.active?'Plan: '+esc(data.plan)+' · '+data.scans_used+' scans used':(data.plan==="single"?'':'Free trial · ')+data.trial_remaining+' scan'+(data.trial_remaining==1?'':'s')+' left · <a href="#" data-scplans style="color:#C99E67">See plans</a>'}
  else{N.href="/scan/#pricing";N.textContent="Choose a plan to continue";I.innerHTML='Your free scan is used. <a href="/scan/" style="color:#C99E67">See plans</a>'}}catch(e){}return true}
+
+/* v0.23.142 Scan landing inside the app (iframe of /scan/?embed=1), trial sign-in flow, profile plans card */
+window.FA_SCAN_BUY={single:"https://payhip.com/b/1LQCJ",practitioner:"https://payhip.com/b/X3D0K",pro:"https://payhip.com/b/3XbfB",yearly:"https://payhip.com/b/3DF49"};
+function scanLanding(hash){const S=$("#scan");if(!S)return;S.classList.add("scLand");let f=$("#scFrame");const src="/scan/?embed=1"+(hash||"");
+ if(!f){f=document.createElement("iframe");f.id="scFrame";f.title="FasciApp Scan";f.src=src;S.append(f)}else if(hash&&!f.src.endsWith(hash))f.src=src}
+function scanHub(){const S=$("#scan");if(S)S.classList.remove("scLand")}
+function scanTrial(){if(!me){try{sessionStorage.setItem("fa_after","scan")}catch(e){}try{fillLastEmail()}catch(e){}show("auth");return}scanHub();show("scan")}
+function scanAfterLogin(){let a=null;try{a=sessionStorage.getItem("fa_after");sessionStorage.removeItem("fa_after")}catch(e){}if(a==="scan")setTimeout(()=>show("scan"),900)}
+window.addEventListener("message",e=>{if(e.origin!==location.origin||!e.data||e.data.fa!=="scan-trial")return;scanTrial()});
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-scplans]");if(!a)return;e.preventDefault();scanLanding("#pricing")});
+{try{const q=new URLSearchParams(location.search);if(q.get("scan")==="trial"){history.replaceState(null,"",location.pathname);setTimeout(async()=>{if(!me){try{me=await DB.session()}catch(e){}}if(me)show("scan");else scanTrial()},700)}}catch(e){}}
+async function scanPlansCard(){const P=$("#profile");if(!P||!me)return;let C=$("#scPlans");
+ try{if(!scanSb){const c=window.FASCIAPP_CONFIG||{};scanSb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}
+ const {data}=await scanSb.rpc("fa_scan_status");if(!data){if(C)C.remove();return}
+ let h;const B=window.FA_SCAN_BUY,N={practitioner:"Practitioner · €25/month",pro:"Pro · €49/month",yearly:"Yearly · €249/year",single:"Single scan · €8"};
+ if(data.admin)h='<b>FasciApp Scan</b><p>Unlimited (admin) · '+data.scans_used+' scans</p>';
+ else if(data.active)h='<b>Your Scan plan</b><p>'+esc(N[data.plan]||data.plan)+(data.expires_at?' · renews/ends '+new Date(data.expires_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}):'')+' · '+data.scans_used+' scans used</p>';
+ else if(data.scans_used>=1&&!(data.trial_remaining>0))h='<b>Scan plans</b><p>Your free scan is used. Get more scans:</p><div class="scpG">'+["single","practitioner","pro","yearly"].map(k=>'<a href="'+B[k]+'" target="_blank" rel="noopener"'+(k==="yearly"?' class="hot"':'')+'>'+N[k]+'</a>').join("")+'</div><a class="scpGo" href="#" data-scplans-go>Get more scans</a>';
+ else if(data.trial_remaining>0)h='<b>FasciApp Scan</b><p>'+(data.plan==="single"?'You have '+data.trial_remaining+' scan ready.':'Your free scan is waiting: full assessment and 10-session plan.')+'</p><a class="scpGo" href="#" data-sctrial>'+(data.plan==="single"?'Start a scan':'Try 1 free scan')+'</a><a class="scpLk" href="#" data-scplans-go>See plans</a>';
+ else{if(C)C.remove();return}
+ if(!C){C=document.createElement("div");C.id="scPlans";C.className="scPlans";const h2=P.querySelector("h2");(h2||P.firstChild).after(C)}C.innerHTML=h}catch(e){}}
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-scplans-go]");if(!a)return;e.preventDefault();show("scan");scanLanding("#pricing")});
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-sctrial]");if(!a)return;e.preventDefault();scanTrial()});

@@ -150,7 +150,7 @@ async function loadRec(){const {data,error}=await sb.from("assessments").select(
  $$("#steps a").forEach(a=>{if(a.dataset.s!=null){a.classList.remove("off");a.href="assessment-results.html?id="+EID+a.dataset.s}});
  $("#del").hidden=false;
  for(const v of ["front","side","back"])if(data["photo_"+v]){const r=await sb.storage.from("assessment-photos").createSignedUrl(data["photo_"+v],3600);if(r.data)setImg(v,r.data.signedUrl)}}
-let user=null;sb.auth.getSession().then(({data})=>{user=data.session&&data.session.user;$("#who").innerHTML=user?'Signed in as <b>'+user.email+'</b>':'Please <a style="color:var(--gold)" href="./">sign in to FasciApp</a> to save.';if(user&&EID)loadRec();if(user&&!EID)scanGate()});
+let user=null;sb.auth.getSession().then(({data})=>{user=data.session&&data.session.user;if(!user){location.replace("./?scan=trial");return}$("#who").innerHTML=user?'Signed in as <b>'+user.email+'</b>':'Please <a style="color:var(--gold)" href="./">sign in to FasciApp</a> to save.';if(user&&EID)loadRec();if(user&&!EID)scanGate()});
 const ev=(n,p)=>{try{window.FA_ev&&FA_ev(n,{props:p||{},source:"scan"})}catch(e){}};
 async function scanGate(){try{const {data,error}=await sb.rpc("fa_scan_status");if(error||!data)return;
  if(!data.allowed){const b=$("#go");b.disabled=true;b.textContent="No scans left";$("#msg").innerHTML='Your free scan is used. <a style="color:var(--gold)" href="/scan/#pricing">Choose a plan to continue →</a>';ev("scan_gate_blocked",{plan:data.plan});return}
