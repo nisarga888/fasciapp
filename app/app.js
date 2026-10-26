@@ -66,7 +66,7 @@ window.show=show;function show(t){if(window.faSheetClose)faSheetClose();if((t===
 let showT=null;function afterShow(t){try{if(t==="scan")scanLoad();if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
-function hdr(){document.body.classList.toggle("authed",!!me);if(window.faJoinUpd)faJoinUpd();{const lb=$("#labBtn");if(lb)lb.hidden=!!me}$("#tabInbox").hidden=!MSG_ON;{let ad=false;try{ad=isAdmin()}catch(e){}const ts=$("#tabScan");if(ts)ts.hidden=!me;const pl=document.querySelector('#tabs [data-t="profile"] span');if(pl)pl.textContent=ad?"Profile":"My profile";if(!me&&$("#scan")&&$("#scan").classList.contains("active"))show("map")}$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
+function hdr(){document.body.classList.toggle("authed",!!me);if(window.faJoinUpd)faJoinUpd();{const lb=$("#labBtn");if(lb)lb.hidden=!!me}$("#tabInbox").hidden=!MSG_ON;{let ad=false;try{ad=isAdmin()}catch(e){}const ts=$("#tabScan");if(ts)ts.hidden=false;const pl=document.querySelector('#tabs [data-t="profile"] span');if(pl)pl.textContent=ad?"Profile":"My profile";}$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 // v0.23.100: the people cache lives in IndexedDB. The old localStorage snapshot (fa_people_v1) outgrew Safari's ~5 MB quota
 // (photos are data URLs), so its updates failed silently and an old list (e.g. 82 people) was painted on every start.
 var faFresh=false,pCache=null;try{localStorage.removeItem("fa_people_v1")}catch(e){}
@@ -1053,7 +1053,7 @@ document.addEventListener("click",e=>{const j=e.target.closest&&e.target.closest
 
 
 /* v0.23.131 Body Reading hub (admin only) */
-let scanSb=null;async function scanLoad(){const L=$("#scList");if(!L)return;if(!me){show("map");return}
+let scanSb=null;async function scanLoad(){const L=$("#scList");if(!L)return;if(!me){location.href="/scan/";return}
  L.innerHTML='<p class="scEm">Loading…</p>';
  try{if(!scanSb){const c=window.FASCIAPP_CONFIG||{};scanSb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}
   if(!(await scanAccess()))return;const {data,error}=await scanSb.from("assessments").select("id,client_name,created_at,report_ready_at,report").order("created_at",{ascending:false});if(error)throw error;const A=data||[];
