@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.155";const faU=()=>{try{return me}catch(e){return window.faMe}};let C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.156";const faU=()=>{try{return me}catch(e){return window.faMe}};let vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
@@ -22,15 +22,18 @@ window.faRemCheck=async function(){const b=q("#calRem");if(!b)return;const scr=(
  b.onclick=e=>{if(e.target.closest("button")){dis[s.id]=1;try{sessionStorage.setItem("fa_remdis",JSON.stringify(dis))}catch(x){}b.hidden=true;return}sel=dkey(s.t);show("cal")}};
 setInterval(()=>window.faRemCheck&&faRemCheck(),60000);
 /* ---------- profile panels ---------- */
+function profCard(){const v=q("#profView"),h=v&&v.querySelector(".bHead");if(!h)return "";const img=h.querySelector(".bAv img"),fb=h.querySelector(".bFb"),nm=(h.querySelector("h3")||{}).textContent||"",wh=((h.querySelector(".bWhere")||{}).textContent||"").replace(/^\s*📍\s*/,"");
+ const ch=[...h.querySelectorAll(".bChs span")].slice(0,2).map(x=>'<span>'+E(x.textContent)+'</span>').join("");
+ return '<div class="faPan faProf"><span class="fpAv">'+(img?'<img src="'+E(img.getAttribute("src"))+'" alt="">':'<b>'+E(fb?fb.textContent:"")+'</b>')+'</span><span class="fpTx"><b>'+E(nm)+'</b><small>'+E(wh)+'</small><span class="fpCh">'+ch+'</span></span><button type="button" class="fpEd" data-fap="edit">Edit profile</button></div>'}
 window.faPanels=async function(){const v=q("#profView");if(!v)return;const head=v.querySelector(".bHead");let P=q("#faPanels");
  if(!P||!v.contains(P)){if(P)P.remove();P=document.createElement("div");P.id="faPanels";P.className="faPanels";if(head)head.after(P);else v.prepend(P)}
  const pan=(k,ic,t,sub,em)=>'<button type="button" class="faPan" data-fap="'+k+'"><span class="fpIc">'+ic+'</span><span class="fpTx"><b>'+t+'</b><small>'+sub+'</small>'+(em?'<em>'+em+'</em>':'')+'</span><span class="fpAr">›</span></button>';
- const draw=(a,b,c)=>{P.innerHTML=pan("edit","✎","Edit your profile","Photo, bio, locations, contacts","")+pan("scan","◎","Assessment plan","Body Scan",c)+pan("cal","📅","Plan your sessions","Calendar &amp; reminders",a)+pan("log","📖","Session log","Monitor past sessions",b)};
+ const draw=(a,b,c)=>{P.innerHTML=profCard()+pan("scan","◎","Assessment plan","Body Scan",c)+pan("cal","📅","Plan your sessions","Calendar &amp; reminders",a)+pan("log","📖","Session log","Monitor past sessions",b)};
  draw(P.dataset.a||"",P.dataset.b||"",P.dataset.c||"");
  if(!v.dataset.mode)v.dataset.mode="clean";v.classList.toggle("faClean",v.dataset.mode==="clean");v.classList.toggle("faEdit",v.dataset.mode==="edit");
  let BK=q("#faBack");if(!BK||!v.contains(BK)){BK=document.createElement("button");BK.type="button";BK.id="faBack";BK.className="faBack";BK.textContent="← My profile";BK.onclick=()=>{v.dataset.mode="clean";v.classList.add("faClean");v.classList.remove("faEdit");window.scrollTo(0,0);try{q("#profile").scrollTop=0;q("#profile").scrollIntoView({block:"start"})}catch(x){}};v.prepend(BK)}
  P.onclick=e=>{const k=(e.target.closest("[data-fap]")||{}).dataset;if(!k)return;const f=k.fap;
-  if(f==="cal")show("cal");else if(f==="log")show("log");else if(f==="scan"){try{scanHub()}catch(x){}show("scan")}else{v.dataset.mode="edit";v.classList.remove("faClean");v.classList.add("faEdit");window.scrollTo(0,0);try{q("#profile").scrollTop=0;q("#faBack").scrollIntoView({block:"start"})}catch(x){}}};
+  if(f==="cal")show("cal");else if(f==="log")show("log");else if(f==="scan"){try{scanHub()}catch(x){}const sb2=q("#scBack");if(sb2)sb2.hidden=false;show("scan")}else{v.dataset.mode="edit";v.classList.remove("faClean");v.classList.add("faEdit");window.scrollTo(0,0);try{q("#profile").scrollTop=0;q("#faBack").scrollIntoView({block:"start"})}catch(x){}}};
  const sp=q("#scPlans");if(sp)sp.style.display="none";
  try{await load(true)}catch(e){}let n=null;try{n=nextS()}catch(e){}const a=n?"Next: "+E(nice(n.t))+" · "+E(n.client_name):"No sessions planned yet";
  let b="";try{const ss=await DB.sessions();const m=dkey(new Date()).slice(0,7);const c=ss.filter(s=>String(s.date||"").slice(0,7)===m).length;b=c+" session"+(c==1?"":"s")+" this month"}catch(e){}
@@ -45,7 +48,16 @@ addEventListener("pageshow",e=>{if(e.persisted)location.reload()});
 /* ---------- calendar ---------- */
 function render(){const today=dkey(new Date());if(!sel)sel=today;if(!wk0)wk0=monday(sel);const days=[...Array(7)].map((_,i)=>addD(wk0,i));
  q("#calMon").textContent=fmt(noon(days[3]),{month:"long",year:"numeric"});
- q("#calWk").innerHTML=days.map(k=>{const n=list.filter(s=>dkey(s.t)===k).length,d=noon(k);return '<button type="button" data-k="'+k+'" class="'+(k===sel?"on ":"")+(k===today?"td":"")+'"><small>'+fmt(d,{weekday:"short"})+'</small><b>'+fmt(d,{day:"numeric"})+'</b><i>'+"<s></s>".repeat(Math.min(n,3))+'</i></button>'}).join("");
+ const tg=q("#calVm");if(tg)tg.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.vm===vm));
+ const cell=(k,out)=>{const n=list.filter(s=>dkey(s.t)===k).length,d=noon(k);return '<button type="button" data-k="'+k+'" class="'+(k===sel?"on ":"")+(k===today?"td ":"")+(out?"out":"")+'">'+(vm==="week"?'<small>'+fmt(d,{weekday:"short"})+'</small>':'')+'<b>'+fmt(d,{day:"numeric"})+'</b><i>'+"<s></s>".repeat(Math.min(n,3))+'</i></button>'};
+ {const mp=q("#calPick");if(mp)mp.value=sel.slice(0,7)}
+ const W=q("#calWk");W.classList.toggle("calMo",vm!=="week");
+ if(vm==="year"){const y=+sel.slice(0,4);let h='<div class="calYr">';for(let m=1;m<=12;m++){const ym=y+"-"+String(m).padStart(2,"0"),f=ym+"-01";let k=monday(f),g="";for(let i=0;i<42;i++){if(i%7===0&&i>0&&k.slice(0,7)!==ym)break;const has=k.slice(0,7)===ym&&list.some(s=>dkey(s.t)===k);g+='<span class="'+(k.slice(0,7)!==ym?"o":"")+(has?" d":"")+(k===today?" t":"")+'">'+(k.slice(0,7)===ym?+k.slice(8):"")+'</span>';k=addD(k,1)}
+  h+='<button type="button" class="calYm'+(ym===today.slice(0,7)?" cur":"")+'" data-ym="'+ym+'"><b>'+fmt(noon(f),{month:"short"})+'</b><span class="g">'+g+'</span></button>'}W.innerHTML=h+'</div>';q("#calMon").textContent=String(y)}
+ else if(vm==="month"){const ym=sel.slice(0,7),f=ym+"-01",st=monday(f);let k=st,h='<div class="calDh">'+["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(x=>'<span>'+x+'</span>').join("")+'</div><div class="calGr">';
+  for(let i=0;i<42;i++){if(i%7===0&&i>0&&k.slice(0,7)!==ym)break;h+=cell(k,k.slice(0,7)!==ym);k=addD(k,1)}W.innerHTML=h+'</div>';q("#calMon").textContent=fmt(noon(f),{month:"long",year:"numeric"})}
+ else W.innerHTML=days.map(k=>cell(k)).join("");
+ if(0)q("#calWk").innerHTML=days.map(k=>{const n=list.filter(s=>dkey(s.t)===k).length,d=noon(k);return '<button type="button" data-k="'+k+'" class="'+(k===sel?"on ":"")+(k===today?"td":"")+'"><small>'+fmt(d,{weekday:"short"})+'</small><b>'+fmt(d,{day:"numeric"})+'</b><i>'+"<s></s>".repeat(Math.min(n,3))+'</i></button>'}).join("");
  const L=list.filter(s=>dkey(s.t)===sel);const sd=noon(sel);
  q("#calDay").textContent=fmt(sd,{weekday:"long"})+" "+fmt(sd,{day:"numeric",month:"short"})+" · "+L.length+" session"+(L.length==1?"":"s");
  const rl={none:"No reminder","1h":"Reminder 1 hour before","1d":"Reminder 1 day before"};
@@ -57,9 +69,12 @@ function openSheet(s){editId=s?s.id:null;const f=q("#calForm");f.reset();q("#cal
  q("#calDim").classList.add("open");q("#calSheet").classList.add("open")}
 function closeSheet(){q("#calDim").classList.remove("open");q("#calSheet").classList.remove("open")}
 document.addEventListener("DOMContentLoaded",init);if(document.readyState!=="loading")init();
-let did=false;function init(){if(did||!q("#cal"))return;did=true;watchProf();
- q("#calWk").onclick=e=>{const b=e.target.closest("[data-k]");if(b){sel=b.dataset.k;render()}};
- q("#calPrev").onclick=()=>{wk0=addD(wk0,-7);sel=wk0;render()};q("#calNext").onclick=()=>{wk0=addD(wk0,7);sel=wk0;render()};
+let did=false;function init(){if(did||!q("#cal"))return;did=true;document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>{const x=q("#scBack");if(x)x.hidden=true}));{const x=q("#scBack");if(x)x.addEventListener("click",()=>{x.hidden=true})}watchProf();
+ q("#calWk").onclick=e=>{const ym=e.target.closest("[data-ym]");if(ym){sel=ym.dataset.ym+"-01";wk0=monday(sel);vm="month";render();return}const b=e.target.closest("[data-k]");if(b){sel=b.dataset.k;wk0=monday(sel);render()}};
+ const mv=n=>{if(vm==="year"){sel=(+sel.slice(0,4)+n)+"-01-01";wk0=monday(sel)}else if(vm==="month"){let [y,m]=sel.split("-").map(Number);m+=n;if(m<1){m=12;y--}if(m>12){m=1;y++}sel=y+"-"+String(m).padStart(2,"0")+"-01";wk0=monday(sel)}else{wk0=addD(wk0,7*n);sel=wk0}render()};q("#calPrev").onclick=()=>mv(-1);q("#calNext").onclick=()=>mv(1);
+ let sx=null,sy=0;const W=q("#calWk");W.addEventListener("touchstart",e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});W.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;sx=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))mv(dx<0?1:-1)},{passive:true});
+ const mp=q("#calPick");if(mp){mp.onchange=()=>{if(!/^\d{4}-\d{2}$/.test(mp.value))return;sel=mp.value+"-01";wk0=monday(sel);vm="month";render()}}
+ const tg=q("#calVm");if(tg)tg.onclick=e=>{const b=e.target.closest("[data-vm]");if(!b)return;vm=b.dataset.vm;wk0=monday(sel);render()};
  q("#calToday").onclick=()=>{sel=dkey(new Date());wk0=monday(sel);render()};
  q("#calAdd").onclick=()=>openSheet(null);q("#calDim").onclick=closeSheet;q("#calX").onclick=closeSheet;
  q("#calList").onclick=e=>{const b=e.target.closest("[data-id]");if(b)openSheet(list.find(s=>s.id===b.dataset.id))};

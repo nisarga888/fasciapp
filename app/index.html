@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 
-<link rel="stylesheet" href="styles.css?v=0.23.155"></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="faG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE7B5"/><stop offset=".45" stop-color="#D9B06F"/><stop offset=".7" stop-color="#C99E67"/><stop offset="1" stop-color="#8A6537"/></linearGradient><linearGradient id="faG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9B7440"/><stop offset="1" stop-color="#F6DFA9"/></linearGradient><radialGradient id="faC" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#0E4A50"/><stop offset="1" stop-color="#02191E"/></radialGradient></defs></svg>
+<link rel="stylesheet" href="styles.css?v=0.23.156"></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="faG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE7B5"/><stop offset=".45" stop-color="#D9B06F"/><stop offset=".7" stop-color="#C99E67"/><stop offset="1" stop-color="#8A6537"/></linearGradient><linearGradient id="faG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9B7440"/><stop offset="1" stop-color="#F6DFA9"/></linearGradient><radialGradient id="faC" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#0E4A50"/><stop offset="1" stop-color="#02191E"/></radialGradient></defs></svg>
 <div id="demoBanner" class="banner" hidden>Demo mode: saved on this device</div>
 <section id="splash" class="screen active">
  <svg class="biglogo logoMark" width="150" height="150" aria-hidden="true" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -138,9 +138,9 @@
 <section id="inbox" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><h2>Messages</h2><div id="convs"></div></section>
 <div id="chat" class="chat" hidden><div class="chatH"><div class="chatT"><b id="chatName"></b><small class="chatSub">Message in FasciApp · replies arrive in your Inbox</small></div><button type="button" id="chatX" class="ghost sm" aria-label="Close">✕</button></div>
  <div id="chatLog" class="chatLog"></div><form id="chatForm" class="chatF"><textarea id="chatTxt" rows="1" maxlength="1000" placeholder="Message…" enterkeyhint="send" autocomplete="off"></textarea><button class="gold chatSend" aria-label="Send message"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button></form><p id="chatErr" class="msg"></p></div>
-<section id="scan" class="screen"><div class="scH"><small>Body Reading · Beta</small><h2>Body Reading</h2><p>Photos, intake and patterns, then a holistic reading and a 10-session plan.</p></div><a class="scNew" id="scNew" href="assessment.html">＋ New assessment</a><p id="scInfo" style="text-align:center;font-size:13px;color:#9fb3b5;margin:8px 0 0"></p><div class="scSH" id="scCount">My assessments</div><div id="scList"></div><p class="scPriv">🔒 Private · only you see this</p></section>
+<section id="scan" class="screen"><button type="button" id="scBack" class="back mapBack scBack" data-go="profile" hidden>← My profile</button><div class="scH"><small>Body Reading · Beta</small><h2>Body Reading</h2><p>Photos, intake and patterns, then a holistic reading and a 10-session plan.</p></div><a class="scNew" id="scNew" href="assessment.html">＋ New assessment</a><p id="scInfo" style="text-align:center;font-size:13px;color:#9fb3b5;margin:8px 0 0"></p><div class="scSH" id="scCount">My assessments</div><div id="scList"></div><p class="scPriv">🔒 Private · only you see this</p></section>
 <section id="cal" class="screen"><button type="button" class="back mapBack" data-go="profile">← My profile</button><h2>Plan your sessions</h2>
- <div class="calTop"><button type="button" id="calPrev" aria-label="Previous week">‹</button><b id="calMon"></b><button type="button" id="calNext" aria-label="Next week">›</button><button type="button" id="calToday" class="calTd">Today</button></div>
+ <div id="calVm" class="calVm"><button type="button" data-vm="week" class="on">Week</button><button type="button" data-vm="month">Month</button><button type="button" data-vm="year">Year</button></div><div class="calTop"><button type="button" id="calPrev" aria-label="Previous week">‹</button><span class="calMw"><b id="calMon" role="button" tabindex="0"></b><input type="month" id="calPick" aria-label="Jump to month"></span><button type="button" id="calNext" aria-label="Next week">›</button><button type="button" id="calToday" class="calTd">Today</button></div>
  <div id="calWk" class="calWk"></div><div id="calDay" class="calDay"></div><div id="calList"></div>
  <button type="button" id="calAdd" class="gold big1 calAdd">＋ Add session</button><p class="muted calTz">Times in Warsaw time. Reminders show in the app only.</p></section>
 <section id="log" class="screen"><button type="button" class="back mapBack" data-go="profile">← My profile</button><h2>Session log</h2>
@@ -157,7 +157,8 @@
     <div class="sessCol">
      <label class="lbl">Date *<input name="date" type="date" required></label>
      <label class="lbl">Format *<select name="format" required><option value="In person" selected>In person</option><option value="Online">Online</option></select></label>
-     <label class="lbl">Session type *<select name="session_type" required><option value="MER" selected>MER</option><option value="BBTRS">BBTRS</option></select></label>
+     <label class="lbl">Session type *<select name="session_type" required><option value="MER" selected>MER</option><option value="BBTRS">BBTRS</option><option value="Other">Other</option></select></label>
+     <label class="lbl" id="sfOtherL" hidden>Modality name *<input name="session_other" maxlength="40" placeholder="e.g. Craniosacral"></label>
     </div>
    </div>
    <label class="lbl sessComment">Comment<textarea name="comment" rows="2" placeholder="Short note (no names or health details)"></textarea></label>
@@ -230,7 +231,7 @@
 
 <script src="config.js?v=0.23.100"></script><script src="track.js?v=0.23.124"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script><script>window.supabase||document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"><\/script>')</script>
-<script src="learn.js?v=0.23.115"></script><script src="news.js?v=0.23.103"></script><script src="quotes.js?v=0.23.71"></script><script src="data.js?v=0.23.146"></script><script src="breath.js?v=0.23.113"></script><script src="app.js?v=0.23.155"></script><script src="cal.js?v=0.23.155"></script>
+<script src="learn.js?v=0.23.115"></script><script src="news.js?v=0.23.103"></script><script src="quotes.js?v=0.23.71"></script><script src="data.js?v=0.23.146"></script><script src="breath.js?v=0.23.113"></script><script src="app.js?v=0.23.156"></script><script src="cal.js?v=0.23.156"></script>
 <script>
 if("serviceWorker" in navigator&&navigator.serviceWorker){
   // Never reload while the user is using the app: apply a new version only when the app is in the background or on next open.

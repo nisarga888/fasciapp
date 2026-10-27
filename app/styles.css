@@ -835,3 +835,30 @@ body.peOpen{overflow:hidden}
 #profView.faEdit #faPanels{display:none}#profView.faEdit .bSet,#profView.faEdit .bOut{display:none}#profView:not(.faEdit) #faBack{display:none}
 .faBack{background:none;border:0;color:#C99E67;font:600 15px inherit;font-family:inherit;padding:4px 0 12px;cursor:pointer}
 #profile:has(#faPanels) #scPlans{display:none!important}
+/* v0.23.156 symmetric cards */
+#profView.faClean>.bHead{display:none!important}#profView.faClean+*{}
+.faPanels .faPan{height:104px;padding:0 16px;margin:0 0 12px;border-radius:20px;box-sizing:border-box}
+.faProf{cursor:default;background:linear-gradient(135deg,#0d343b,#062126)}
+.fpAv{width:64px;height:64px;border-radius:50%;flex:none;padding:2px;background:linear-gradient(135deg,#FBE7B5,#C99E67 55%,#8A6537);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px #0006}
+.fpAv img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid #02191E}.fpAv b{width:100%;height:100%;border-radius:50%;background:#02191E;color:#C99E67;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:22px}
+.faProf .fpTx b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.faProf .fpTx small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fpCh{display:flex;gap:4px;margin-top:5px;overflow:hidden;white-space:nowrap}.fpCh span{font-size:10.5px;padding:2px 7px;border-radius:999px;border:1px solid #C99E6788;color:#C99E67;flex:none}
+.fpEd{flex:none;align-self:center;background:#C99E67;color:#02191E;border:0;border-radius:999px;padding:8px 12px;font:700 12px inherit;font-family:inherit;cursor:pointer}
+.faPanels .fpIc{width:64px;height:64px;border-radius:18px;font-size:26px}
+.faPanels .faPan{height:88px;margin:0 0 10px}.faPanels .fpIc{width:56px;height:56px;font-size:24px}.fpAv{width:60px;height:60px}
+#profile:has(#profView.faClean) .mapBack{display:none}#profile:has(#profView.faClean)>h2{margin:4px 0 12px;font-size:24px}
+#profView.faClean .bSet{margin:4px auto 6px}#profView.faClean .bOut{margin-top:4px}#profView.faClean .bOut button{padding:9px 28px}
+#profile:has(#profView.faClean)>h2{display:none}#profView.faClean{padding-top:10px}
+.faPanels .faPan{height:78px;margin:0 0 9px;padding:0 14px;gap:12px}.faPanels .fpIc{width:50px;height:50px;font-size:22px;border-radius:15px}.fpAv{width:54px;height:54px}
+.faPanels .fpTx b{font-size:17px}.faPanels .fpTx small{font-size:12.5px}.faPanels .fpTx em{font-size:12.5px;margin-top:2px}
+.fpEd{padding:7px 11px;font-size:11.5px}
+#profView.faClean{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:18px}#profView.faClean>#faPanels{flex:0 0 100%}
+#profView.faClean .bSet{margin:4px 0}#profView.faClean .bOut{margin:4px 0}#profView.faClean .bOut button{padding:7px 22px;font-size:14px}
+#profile:has(#profView.faClean) .faVer{margin:6px 0 4px}
+.calVm{display:flex;background:#0a2a30;border:1px solid #C99E6744;border-radius:999px;padding:3px;margin:4px 0 10px}.calVm button{flex:1;border:0;background:none;color:#9fb3b5;border-radius:999px;padding:7px;font:600 13px inherit;font-family:inherit}.calVm button.on{background:#C99E67;color:#02191E}
+.calWk.calMo{display:block}.calDh{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:#9fb3b5;margin-bottom:4px}.calGr{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}.calGr button{padding:6px 0}.calGr button b{font-size:15px;font-weight:600}.calGr button.out{opacity:.35}
+.calMw{flex:1;position:relative;text-align:center}.calMw b{cursor:pointer;border-bottom:1px dashed #C99E6788}.calMw b::after{content:" ▾";font-size:13px;color:#C99E67}#calPick{position:absolute;inset:0;opacity:0;width:100%;height:100%;-webkit-appearance:none;cursor:pointer}
+.calYr{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.calYm{background:#0a2a30;border:1px solid #C99E6733;border-radius:12px;padding:6px 5px;color:#F3EDE4;font-family:inherit}.calYm.cur{border-color:#C99E67}.calYm b{display:block;font-size:12px;color:#C99E67;margin-bottom:3px}
+.calYm .g{display:grid;grid-template-columns:repeat(7,1fr);font-size:7.5px;line-height:11px;color:#9fb3b5}.calYm .g span.d{background:#C99E67;color:#02191E;border-radius:50%;font-weight:700}.calYm .g span.t{color:#fff;font-weight:700}
+.scBack{position:relative;z-index:5}#scan.scLand .scBack{position:fixed;top:calc(var(--hdr-h) + 6px);left:14px;background:#02191Eee;border:1px solid #C99E67;border-radius:999px;padding:6px 14px;z-index:50}
+#profView.faEdit #jrCard{display:none!important}
