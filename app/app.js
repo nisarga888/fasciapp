@@ -986,7 +986,7 @@ function profViewB(p,v,f){const h2=document.querySelector("#profile h2");if(h2)h
  ${card("locs","📍","Locations",`<p>${L.slice(0,3).map(lt).join("<br>")}</p><small>${L.length} of 3 places</small>`,!co0)}
  <button type="button" class="bSet" data-bact="settings">⚙ Settings</button>
  <div class="bOut"><button type="button" class="ghost" id="pOut2">Log out</button></div>`;
- v.hidden=false;f.hidden=true;
+ v.hidden=false;f.hidden=true;setTimeout(()=>window.faPanels&&faPanels(),0);
  v.onclick=e=>{const t=e.target;
   const a=t.closest("[data-bact]");if(a){const k=a.dataset.bact;if(k==="preview"){if(window.faPreviewMe)faPreviewMe(p)}else if(k==="settings")bSetOpen(p);else show("log");return}
   if(t.closest("#pOut2")){logout();return}
