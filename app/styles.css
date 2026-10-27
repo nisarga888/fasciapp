@@ -921,3 +921,4 @@ body.peOpen{overflow:hidden}
 /* v0.23.178 unified ringed-circle art */
 .faT[data-fap=edit]::after{display:none}
 .faArt{top:12px;right:auto;left:calc(64% - 6px);transform:translateX(-50%);width:44%;height:auto;aspect-ratio:1;box-sizing:border-box;padding:7%;border-radius:50%;border:2px solid #C99E67;box-shadow:0 0 0 4px #C99E6722,0 6px 16px #0007;background:radial-gradient(circle at 50% 35%,#ffffff1f,#02191E55 75%);filter:none;overflow:visible}
+.faArt{padding:4%}
