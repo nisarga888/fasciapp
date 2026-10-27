@@ -901,3 +901,6 @@ body.peOpen{overflow:hidden}
 .faTav{position:absolute;top:12px;left:12px;width:58px;height:58px;border-radius:50%;overflow:hidden;border:2px solid #fff4;background:#ffffff22;display:flex;align-items:center;justify-content:center}.faTav img{width:100%;height:100%;object-fit:cover}.faTav b{font-size:20px}
 .faTch span{display:inline-block;font-size:10.5px;background:#ffffff26;border-radius:999px;padding:2px 7px;margin:0 3px 2px 0}
 .faTbar{display:block;height:5px;background:#ffffff26;border-radius:4px;overflow:hidden}.faTbar i{display:block;height:5px;background:#F3D9A8}
+/* v0.23.174 scan emphasis */
+.hcSc{color:#9fb3b5;font-size:12px}.hcSc.on{color:#C99E67;font-weight:600}
+.clScanCta{display:flex;flex-direction:column;gap:6px;margin:6px 0 12px}.clCtaB{display:block;text-align:center;text-decoration:none;background:#C99E67;color:#02191E;font-weight:700;font-size:16px;border-radius:14px;padding:14px}.clCtaS{align-self:center;color:#C99E67;font-size:14px;text-decoration:none}.clScanCta small{text-align:center;color:#9fb3b5;font-size:12.5px}
