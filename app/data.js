@@ -3,7 +3,7 @@
 const cfg=window.FASCIAPP_CONFIG||{};
 const LS={get:(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
 const FIELDS=["name","practice_name","mods","address","city","country","lat","lng","phone","email","website","bio","photo","consent","whatsapp","news_optin","news_optin_at"];
-const SF=["initials","date","duration","format","session_type","comment"];const pickS=x=>Object.fromEntries(SF.map(k=>[k,x[k]===""?null:(x[k]??null)]));
+const SF=["initials","client_name","date","duration","format","session_type","comment"];const pickS=x=>Object.fromEntries(SF.map(k=>[k,x[k]===""?null:(x[k]??null)]));
 const META_RE=/^⟦([^⟧]*)⟧\s*/;
 function unpackSession(row){if(!row)return row;let format=row.format,session_type=row.session_type,comment=row.comment||"";
  if(!format||!session_type){const m=META_RE.exec(comment);if(m){const parts=String(m[1]||"").split("|");
