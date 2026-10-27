@@ -140,7 +140,7 @@ const files={};
 $$(".chips").forEach(c=>{const r=c.dataset.r;c.innerHTML=c.dataset.o.split(",").map(o=>'<label><input type="'+(r?"radio":"checkbox")+'" name="'+c.dataset.k+'" value="'+o+'">'+o+'</label>').join("")});
 $$('input[type=range]').forEach(r=>r.oninput=()=>r.nextElementSibling.value=r.value);
 $("#flags").onchange=()=>$("#warn").classList.toggle("on",!!$("#flags input:checked"));
-const EID=new URLSearchParams(location.search).get("id");let rec=null;
+const EID=new URLSearchParams(location.search).get("id");let rec=null;{const cn=new URLSearchParams(location.search).get("client");if(cn&&!EID)addEventListener("DOMContentLoaded",()=>{const i=document.getElementById("client_name");if(i&&!i.value)i.value=cn.slice(0,80)})}
 const setImg=(v,src)=>{const l=$$("#photos .ph")[["front","side","back"].indexOf(v)];let i=l.querySelector("img");if(!i){i=document.createElement("img");l.prepend(i);const d=document.createElement("div");d.className="t";d.textContent=v+" ✓ tap to replace";l.append(d)}i.src=src;l.classList.add("ok")};
 async function loadRec(){const {data,error}=await sb.from("assessments").select("*").eq("id",EID).maybeSingle();if(error||!data){msg("Record not found.");return}
  rec=data;$(".hero h1").textContent="Edit intake";$(".hero p").textContent="Update answers or replace photos, then save. The written assessment is kept.";
