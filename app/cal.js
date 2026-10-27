@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.164";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.165";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
@@ -14,7 +14,7 @@ async function load(force){if(loaded&&!force)return list;try{const {data,error}=
 window.faCalReset=()=>{loaded=false;list=[];asm=null};
 /* v0.23.160 assessments link + auto-log past sessions into Session log */
 let asm=null;async function loadAsm(){if(asm)return asm;try{const {data}=await sb().from("assessments").select("id,client_name,created_at,report_ready_at,report").order("created_at",{ascending:false});asm=data||[]}catch(e){asm=[]}return asm}
-const matchAsm=n=>{n=(n||"").trim().toLowerCase();return n&&(asm||[]).find(a=>(a.client_name||"").trim().toLowerCase()===n)||null};
+const matchAsm=n=>{n=ck(n);return n&&(asm||[]).find(a=>ck(a.client_name)===n)||null};
 const asmFor=s=>s.assessment_id||(matchAsm(s.client_name)||{}).id||null;
 window.faAsmLink=(id,nm)=>id?'<a class="calAv" href="assessment-results.html?id='+encodeURIComponent(id)+'">View assessment</a>':'<a class="calAv" href="assessment.html?client='+encodeURIComponent(nm||"")+'">Start assessment</a>';
 window.faOpenCal=async id=>{show("cal");await window.faCalLoad();const s=list.find(x=>x.id===id);if(s){sel=dkey(s.t);wk0=monday(sel);render();openSheet(s)}};
@@ -104,13 +104,13 @@ let did=false;function init(){if(did||!q("#cal"))return;did=true;document.queryS
  q("#calDel").onclick=async()=>{if(!editId||!confirm("Delete this session?"))return;const r=await sb().from("planned_sessions").delete().eq("id",editId);if(r.error){q("#calSt").textContent="Could not delete: "+r.error.message;return}closeSheet();await load(true);render()}}
 
 /* v0.23.161 Clients overview: planned sessions + log entries + scans grouped by client name */
-let cKey=null;const ck=n=>(n||"").trim().toLowerCase();
+let cKey=null;const ck=n=>(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/ł/g,"l").replace(/Ł/g,"L").trim().replace(/\s+/g," ").toLowerCase();
 async function cData(){await load(true);asm=null;await loadAsm();let S=[];try{const r=await sb().from("sessions").select("*").order("date");S=r.data||[]}catch(e){}
  const byP={};list.forEach(p=>byP[p.id]=p);const G={};const g=(n)=>{const k=ck(n);if(!k)return null;return G[k]||(G[k]={k,name:n.trim(),plan:[],log:[],asm:[]})};
  list.forEach(p=>{const c=g(p.client_name);if(c)c.plan.push(p)});
  S.forEach(x=>{const p=x.planned_id&&byP[x.planned_id];const c=g(p?p.client_name:(x.client_name||x.initials));if(c)c.log.push(x)});
  (asm||[]).forEach(a=>{const c=g(a.client_name);if(c)c.asm.push(a)});
- return Object.values(G).map(c=>{const now=new Date(),d=[...c.plan.filter(p=>p.t<now).map(p=>dkey(p.t)),...c.log.filter(x=>!x.planned_id).map(x=>x.date)].sort();c.n=c.plan.length+c.log.filter(x=>!x.planned_id).length;c.last=d.pop()||"";return c}).sort((a,b)=>(b.last||"").localeCompare(a.last||"")||a.name.localeCompare(b.name))}
+ return Object.values(G).map(c=>{const now=new Date(),d=[...c.plan.filter(p=>p.t<now).map(p=>dkey(p.t)),...c.log.filter(x=>!x.planned_id).map(x=>x.date)].sort();c.n=c.plan.filter(p=>p.t<now).length+c.log.filter(x=>!x.planned_id).length;c.last=d.pop()||"";return c}).sort((a,b)=>(b.last||"").localeCompare(a.last||"")||a.name.localeCompare(b.name))}
 const dd=k=>k?fmt(noon(k),{day:"numeric",month:"short",year:"numeric"}):"—";
 window.faClients=async function(key){if(!faU()){show("auth");return}show("clients");cKey=key===undefined?null:key;const B=q("#clBody");B.innerHTML='<p class="muted center">Loading…</p>';await window.faAutoLog();const C=await cData();
  if(!cKey){const nx=c=>{const u=c.plan.filter(p=>p.t>=new Date()).sort((a,b)=>a.t-b.t)[0];return u?'<br><small class="clNx">📅 next '+fmt(u.t,{weekday:"short",day:"numeric",month:"short"})+'</small>':''};
@@ -124,7 +124,13 @@ window.faClients=async function(key){if(!faU()){show("auth");return}show("client
   ...c.asm.map(a=>({k:a.created_at,h:'<div class="clEv sc"><span class="clD">'+dd(dkey(new Date(a.created_at)))+'</span><b>◎ Scan assessment</b><span class="clA"><a href="assessment-results.html?id='+encodeURIComponent(a.id)+'">View</a></span></div>'}))].sort((a,b)=>b.k.localeCompare(a.k));
  B.innerHTML='<button type="button" class="back mapBack" id="clBk">← Clients</button><div class="clKick">CLIENT REVIEW</div>'+(ct?'<div class="calCt">'+ctLinks(ct)+'</div>':'')+
   '<div class="card clProg"><b>Progress summary</b><div class="clNums"><div><b>'+c.n+'</b><small>session'+(c.n==1?'':'s')+'</small></div><div><b>'+c.asm.length+'</b><small>scan'+(c.asm.length==1?'':'s')+'</small></div><div><b>'+c.plan.filter(p=>p.t>=now).length+'</b><small>planned</small></div></div>'+(lastNote?'<p>'+E(lastNote)+'</p>':'')+'<small class="muted">Last session '+dd(c.last)+'</small></div>'+
-  '<div class="clBtns"><button type="button" class="gold sm" id="clPlan">＋ Plan session</button><button type="button" class="ghost sm" id="clNote">＋ Log note</button><a class="ghost sm clScan" href="assessment.html?client='+encodeURIComponent(c.name)+'">◎ Start scan</a></div>'+asmCard+'<b class="clTlH">Timeline</b><div class="clTl">'+(T.map(x=>x.h).join("")||'<p class="muted">Nothing yet.</p>')+'</div>';
- q("#clBk").onclick=()=>window.faClients();q("#clPlan").onclick=()=>window.faPlanFor(c.name);q("#clNote").onclick=()=>window.faLogFor&&window.faLogFor(c.name);
+  '<div class="clBtns"><button type="button" class="gold sm" id="clPlan">＋ Plan session</button><button type="button" class="ghost sm" id="clNote">＋ Log note</button><a class="ghost sm clScan" href="assessment.html?client='+encodeURIComponent(c.name)+'">◎ Start scan</a>'+(C.length>1?'<div class="clMg"><select id="clMgS"><option value="">Merge with…</option>'+C.filter(x=>x.k!==c.k).map(x=>'<option value="'+E(x.k)+'">'+E(x.name)+' ('+x.n+' sessions, '+x.asm.length+' scans)</option>').join("")+'</select></div>':'')+'</div>'+asmCard+'<b class="clTlH">Timeline</b><div class="clTl">'+(T.map(x=>x.h).join("")||'<p class="muted">Nothing yet.</p>')+'</div>';
+ q("#clBk").onclick=()=>window.faClients();{const M=q("#clMgS");if(M)M.onchange=async()=>{const o=C.find(x=>x.k===M.value);if(!o)return;
+  if(!confirm('Merge "'+o.name+'" into "'+c.name+'"?\n\n'+o.plan.length+' calendar session(s), '+o.log.filter(x=>!x.planned_id).length+' log entr(ies) and '+o.asm.length+' scan(s) will be renamed to "'+c.name+'". This cannot be undone automatically.')){M.value="";return}
+  try{const ids=a=>a.map(x=>x.id);let r;
+   if(o.plan.length){r=await sb().from("planned_sessions").update({client_name:c.name}).in("id",ids(o.plan));if(r.error)throw r.error}
+   const L=o.log.filter(x=>!x.planned_id);if(L.length){r=await sb().from("sessions").update({client_name:c.name}).in("id",ids(L));if(r.error)throw r.error}
+   if(o.asm.length){r=await sb().from("assessments").update({client_name:c.name}).in("id",ids(o.asm));if(r.error)throw r.error}
+   window.faClients(c.k)}catch(x){alert("Could not merge: "+(x.message||x));M.value=""}}}q("#clPlan").onclick=()=>window.faPlanFor(c.name);q("#clNote").onclick=()=>window.faLogFor&&window.faLogFor(c.name);
  B.onclick=e=>{const o=e.target.closest("[data-op]"),v=e.target.closest("[data-vl]");if(o){e.preventDefault();window.faOpenCal(o.dataset.op)}if(v){e.preventDefault();window.faShowLog(v.dataset.vl)}}};
 })();
