@@ -155,4 +155,4 @@ sb.auth.getSession().then(({data})=>{if(!data.session){$("#vList").innerHTML='<d
  if(id){$("#back").href="assessment-results.html";$("#back").textContent="← Records";load()}else{$("#back").href="./";$("#back").textContent="← FasciApp";list()}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&row&&!row.report){clearTimeout(timer);load()}});
 })();
-</script></body></html>
+</script><script>/* v0.23.168 back to Calendar & clients or the client */(function(){function b(){try{var r=JSON.parse(sessionStorage.getItem("fa_ret")||"null");if(!r)return;var a=document.getElementById("back")||document.querySelector('a[href="./"]');if(a){a.href="./?go="+encodeURIComponent(r.go);a.textContent="← "+r.label}}catch(e){}}b();addEventListener("DOMContentLoaded",b);setTimeout(b,1200)})();</script></body></html>

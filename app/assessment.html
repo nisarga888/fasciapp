@@ -178,4 +178,4 @@ $("#go").onclick=async()=>{
   b.textContent="Saved ✓";document.body.classList.add("leave");setTimeout(()=>location.href="assessment-results.html?id="+id,480);
  }catch(e){if(/SCAN_LIMIT/.test(e.message||"")){$("#msg").innerHTML='No scans left. <a style="color:var(--gold)" href="/scan/#pricing">Choose a plan →</a>';b.textContent="No scans left";return}msg("Could not save: "+(e.message||e));b.disabled=false;b.textContent="Save & next: Assessment →"}};
 })();
-</script></body></html>
+</script><script>/* v0.23.168 back to Calendar & clients or the client */(function(){function b(){try{var r=JSON.parse(sessionStorage.getItem("fa_ret")||"null");if(!r)return;var a=document.getElementById("back")||document.querySelector('a[href="./"]');if(a){a.href="./?go="+encodeURIComponent(r.go);a.textContent="← "+r.label}}catch(e){}}b();addEventListener("DOMContentLoaded",b);setTimeout(b,1200)})();</script></body></html>
