@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.170";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.171";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
@@ -190,6 +190,7 @@ function picker(inp,onPick){if(!inp||inp._pk)return;inp._pk=1;inp.setAttribute("
  inp.addEventListener("blur",()=>setTimeout(()=>{P.hidden=true},150))}
 {const f=q("#calForm");if(f)picker(f.client,n=>{const c=list.filter(x=>ck(x.client_name)===ck(n)).pop();if(c){if(!f.cemail.value)f.cemail.value=c.client_email||"";if(!f.cphone.value)f.cphone.value=c.client_phone||"";setMod(f,c.modality)}});
  const g=q("#sessForm");if(g)picker(g.client_name,n=>{g.initials.value=n.split(/\s+/).filter(Boolean).map(w=>w[0].toUpperCase()).join("").slice(0,4)})}
+{const Q=q("#calQ");if(Q)picker(Q,n=>{Q.value="";filt();window.faHub("clients",ck(n))})}
 /* review log */
 {const pc=q("#logBox .prog");if(pc){pc.classList.add("faRevC");pc.setAttribute("role","button");pc.tabIndex=0;const l=document.createElement("span");l.className="faRevL";l.textContent="Review log ›";pc.append(l);pc.onclick=()=>window.faReview()}}
 window.faReview=async function(){const L=q("#log");let R=q("#logRev");if(!R){R=document.createElement("div");R.id="logRev";L.append(R)}L.classList.add("rv");R.innerHTML='<button type="button" class="back mapBack" id="lrBk">← Session log</button><h2>Review log</h2><p class="muted">Loading…</p>';q("#lrBk").onclick=()=>{L.classList.remove("rv");window.scrollTo(0,0)};
