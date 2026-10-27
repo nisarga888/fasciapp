@@ -834,3 +834,4 @@ body.peOpen{overflow:hidden}
 #profView.faClean>*:not(.bHead):not(#faPanels):not(.bSet):not(.bOut){display:none!important}#profView.faClean .bBtns{display:none}
 #profView.faEdit #faPanels{display:none}#profView.faEdit .bSet,#profView.faEdit .bOut{display:none}#profView:not(.faEdit) #faBack{display:none}
 .faBack{background:none;border:0;color:#C99E67;font:600 15px inherit;font-family:inherit;padding:4px 0 12px;cursor:pointer}
+#profile:has(#faPanels) #scPlans{display:none!important}

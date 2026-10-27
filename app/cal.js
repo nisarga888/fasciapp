@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.153";const faU=()=>{try{return me}catch(e){return window.faMe}};let C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.154";const faU=()=>{try{return me}catch(e){return window.faMe}};let C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
@@ -25,7 +25,7 @@ setInterval(()=>window.faRemCheck&&faRemCheck(),60000);
 window.faPanels=async function(){const v=q("#profView");if(!v)return;const head=v.querySelector(".bHead");let P=q("#faPanels");
  if(!P||!v.contains(P)){if(P)P.remove();P=document.createElement("div");P.id="faPanels";P.className="faPanels";if(head)head.after(P);else v.prepend(P)}
  const pan=(k,ic,t,sub,em)=>'<button type="button" class="faPan" data-fap="'+k+'"><span class="fpIc">'+ic+'</span><span class="fpTx"><b>'+t+'</b><small>'+sub+'</small>'+(em?'<em>'+em+'</em>':'')+'</span><span class="fpAr">›</span></button>';
- const draw=(a,b,c)=>{P.innerHTML=pan("cal","📅","Plan your sessions","Calendar &amp; reminders",a)+pan("log","📖","Session log","Monitor past sessions",b)+pan("scan","◎","Assessment plan","Body Scan",c)+pan("edit","✎","Edit your profile","Photo, bio, locations, contacts","")};
+ const draw=(a,b,c)=>{P.innerHTML=pan("scan","◎","Assessment plan","Body Scan",c)+pan("cal","📅","Plan your sessions","Calendar &amp; reminders",a)+pan("log","📖","Session log","Monitor past sessions",b)+pan("edit","✎","Edit your profile","Photo, bio, locations, contacts","")};
  draw(P.dataset.a||"",P.dataset.b||"",P.dataset.c||"");
  if(!v.dataset.mode)v.dataset.mode="clean";v.classList.toggle("faClean",v.dataset.mode==="clean");v.classList.toggle("faEdit",v.dataset.mode==="edit");
  let BK=q("#faBack");if(!BK||!v.contains(BK)){BK=document.createElement("button");BK.type="button";BK.id="faBack";BK.className="faBack";BK.textContent="← My profile";BK.onclick=()=>{v.dataset.mode="clean";v.classList.add("faClean");v.classList.remove("faEdit");window.scrollTo(0,0);try{q("#profile").scrollTop=0;q("#profile").scrollIntoView({block:"start"})}catch(x){}};v.prepend(BK)}
@@ -34,7 +34,7 @@ window.faPanels=async function(){const v=q("#profView");if(!v)return;const head=
  const sp=q("#scPlans");if(sp)sp.style.display="none";
  try{await load(true)}catch(e){}let n=null;try{n=nextS()}catch(e){}const a=n?"Next: "+E(nice(n.t))+" · "+E(n.client_name):"No sessions planned yet";
  let b="";try{const ss=await DB.sessions();const m=dkey(new Date()).slice(0,7);const c=ss.filter(s=>String(s.date||"").slice(0,7)===m).length;b=c+" session"+(c==1?"":"s")+" this month"}catch(e){}
- let c="";try{const {data}=await sb().rpc("fa_scan_status");if(data){if(data.admin)c="Unlimited (admin)";else if(data.active)c=faScanLeft(data);else if(data.trial_remaining>0)c=data.trial_remaining+" free scan"+(data.trial_remaining==1?"":"s")+" left";else c="See plans"}}catch(e){}
+ let c="";try{const {data}=await sb().rpc("fa_scan_status");if(data){let na=0;try{const r=await sb().from("assessments").select("id",{count:"exact",head:true});na=r.count||0}catch(x){}const u=Math.max(data.scans_used||0,na),dn=u+" scan"+(u==1?"":"s")+" done",PN={practitioner:"Practitioner",pro:"Pro",yearly:"Yearly",single:"Single scan"};if(data.admin)c="Unlimited (admin) · "+dn;else if(data.active){if(data.plan==="practitioner")c="Practitioner · "+Math.max(0,30-u)+" of 30 left · "+dn;else if(data.plan==="single")c="Single scan · "+(data.trial_remaining||0)+" left · "+dn;else c=(PN[data.plan]||data.plan)+" · Unlimited · "+dn}else if(data.trial_remaining>0)c=data.trial_remaining+" free scan"+(data.trial_remaining==1?"":"s")+" left · "+dn;else c="See plans · "+dn}}catch(e){}
  P.dataset.a=a;P.dataset.b=b;P.dataset.c=c;draw(a,b,c);faRemCheck()};
 /* version label + update check (v0.23.151) */
 async function verLabel(){const P=q("#profile");if(!P)return;let L=q("#faVer");if(!L){L=document.createElement("p");L.id="faVer";L.className="faVer";P.append(L)}L.textContent="FasciApp v"+BUILD;L.onclick=null;
