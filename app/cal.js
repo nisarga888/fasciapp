@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.174";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.175";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
@@ -45,7 +45,7 @@ window.faPanels=async function(){const v=q("#profView");if(!v)return;const head=
  draw(P.dataset.a||"",P.dataset.b||"",P.dataset.c||"");
  if(!v.dataset.mode)v.dataset.mode="clean";v.classList.toggle("faClean",v.dataset.mode==="clean");v.classList.toggle("faEdit",v.dataset.mode==="edit");
  let BK=q("#faBack");if(!BK||!v.contains(BK)){BK=document.createElement("button");BK.type="button";BK.id="faBack";BK.className="faBack";BK.textContent="← My profile";BK.onclick=()=>{v.dataset.mode="clean";v.classList.add("faClean");v.classList.remove("faEdit");window.scrollTo(0,0);try{q("#profile").scrollTop=0;q("#profile").scrollIntoView({block:"start"})}catch(x){}};v.prepend(BK)}
- P.onclick=e=>{const k=(e.target.closest("[data-fap]")||{}).dataset;if(!k)return;const f=k.fap;
+ P.onclick=e=>{const k=(e.target.closest("[data-fap]")||{}).dataset;if(!k)return;const f=k.fap;if(f==="photo"){e.stopPropagation();const ph=q("#photo");v.dataset.mode="edit";v.classList.remove("faClean");v.classList.add("faEdit");if(ph){ph.click();if(!ph._faH){ph._faH=1;ph.addEventListener("change",()=>setTimeout(()=>{const pv=q("#phPrev");if(pv)pv.scrollIntoView({block:"center"})},400))}}return}
   if(f==="log"){window.faHub("log");setTimeout(()=>window.faReview&&window.faReview(),50)}else if(f==="cal"||f==="clients"||f==="scan")window.faHub(f);else{v.dataset.mode="edit";v.classList.remove("faClean");v.classList.add("faEdit");window.scrollTo(0,0);try{q("#profile").scrollTop=0;q("#faBack").scrollIntoView({block:"start"})}catch(x){}}};
  const sp=q("#scPlans");if(sp)sp.style.display="none";
  try{await load(true)}catch(e){}let n=null;try{n=nextS()}catch(e){}const a=n?"Next: "+E(nice(n.t))+" · "+E(n.client_name):"No sessions planned yet";
@@ -54,7 +54,7 @@ window.faPanels=async function(){const v=q("#profView");if(!v)return;const head=
  P.dataset.a=a;P.dataset.b=b;P.dataset.c=c;draw(a,b,c);faRemCheck()};
 function tiles(a,b,c){const v=q("#profView"),h=v&&v.querySelector(".bHead");let img=null,fb=null,nm="",ch="";if(h){img=h.querySelector(".bAv img");fb=h.querySelector(".bFb");nm=(h.querySelector("h3")||{}).textContent||"";ch=[...h.querySelectorAll(".bChs span")].slice(0,3).map(x=>'<span>'+E(x.textContent)+'</span>').join("")}
  const [bn,bp]=(b||"").split("|");const T=(k,bg,ic,t,body)=>'<button type="button" class="ltile faT" data-fap="'+k+'" style="--tb:'+bg+'">'+ic+'<span class="faTt"><b>'+t+'</b>'+body+'</span></button>';
- return '<div class="faGrid">'+T("edit","#2f5d7a",'<span class="faTav">'+(img?'<img src="'+E(img.getAttribute("src"))+'" alt="">':'<b>'+E(fb?fb.textContent:"")+'</b>')+'</span>',E(nm||"My profile"),'<span class="faTch">'+ch+'</span><small>Edit profile ›</small>')
+ return '<div class="faGrid">'+T("edit","#2f5d7a",'<span class="faTph'+(img?'':' nf')+'">'+(img?'<img src="'+E(img.getAttribute("src"))+'" alt="">':'<b>'+E(fb?fb.textContent:"")+'</b>')+'</span><span class="faTpe" data-fap="photo" role="button" aria-label="Change photo">✎</span>',E(nm||"My profile"),'<span class="faTch">'+ch+'</span><small>Edit profile ›</small>')
   +T("cal","#16695f",'<span class="ltIc">📅</span>',"Calendar &amp; clients",'<small>'+(a||"Loading…")+'</small>')
   +T("log","#78503c",'<span class="ltIc">📖</span>',"Session log",'<small>'+E(bn||"Review log")+'</small>'+(bp?'<span class="faTbar"><i style="width:'+E(bp)+'%"></i></span>':'')+'<small>Review log ›</small>')
   +T("scan","#4a3f5e",'<span class="ltIc">◎</span>',"Body reading",'<small>'+(c||"Body Scan")+'</small>')+'</div>'}

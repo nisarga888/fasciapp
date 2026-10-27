@@ -904,3 +904,7 @@ body.peOpen{overflow:hidden}
 /* v0.23.174 scan emphasis */
 .hcSc{color:#9fb3b5;font-size:12px}.hcSc.on{color:#C99E67;font-weight:600}
 .clScanCta{display:flex;flex-direction:column;gap:6px;margin:6px 0 12px}.clCtaB{display:block;text-align:center;text-decoration:none;background:#C99E67;color:#02191E;font-weight:700;font-size:16px;border-radius:14px;padding:14px}.clCtaS{align-self:center;color:#C99E67;font-size:14px;text-decoration:none}.clScanCta small{text-align:center;color:#9fb3b5;font-size:12.5px}
+/* v0.23.175 profile photo tile */
+.faT[data-fap=edit]{padding:0;justify-content:flex-end}.faTph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}.faTph img{width:100%;height:100%;object-fit:cover}.faTph.nf{background:radial-gradient(circle at 50% 35%,#3f7598,#2f5d7a 70%)}.faTph b{font-size:46px;font-weight:300;opacity:.9;margin-bottom:34px}
+.faT[data-fap=edit]::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0000 40%,#02191Ecc 100%);pointer-events:none}
+.faT[data-fap=edit] .faTt{position:relative;z-index:2;padding:12px}.faTpe{position:absolute;z-index:3;top:9px;right:9px;width:32px;height:32px;border-radius:50%;background:#02191Ecc;border:1px solid #C99E67;color:#C99E67;display:flex;align-items:center;justify-content:center;font-size:15px}
