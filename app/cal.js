@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.156";const faU=()=>{try{return me}catch(e){return window.faMe}};let vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.157";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
@@ -61,6 +61,9 @@ function render(){const today=dkey(new Date());if(!sel)sel=today;if(!wk0)wk0=mon
  const L=list.filter(s=>dkey(s.t)===sel);const sd=noon(sel);
  q("#calDay").textContent=fmt(sd,{weekday:"long"})+" "+fmt(sd,{day:"numeric",month:"short"})+" · "+L.length+" session"+(L.length==1?"":"s");
  const rl={none:"No reminder","1h":"Reminder 1 hour before","1d":"Reminder 1 day before"};
+ {const U=q("#calUp");if(U){const now=new Date(),A=list.filter(x=>showPast||x.t>=new Date(now-36e5*2)).sort((a,b)=>a.t-b.t);
+  U.innerHTML='<div class="cuH"><b>'+(showPast?"All sessions":"Upcoming sessions")+' · '+A.length+'</b><button type="button" id="cuPast">'+(showPast?"Hide past":"Show past")+'</button></div>'+(A.length?A.map(x=>'<button type="button" class="cuIt'+(dkey(x.t)===sel?" sel":"")+(x.t<now?" past":"")+'" data-id="'+x.id+'"><span class="cuD"><b>'+fmt(x.t,{day:"numeric"})+'</b><small>'+fmt(x.t,{month:"short"})+'</small></span><span class="cuT"><span>'+fmt(x.t,{weekday:"short"})+' '+hm(x.t)+'</span><b>'+E(x.client_name)+'</b></span>'+(x.reminder!=="none"?'<span class="cuR" title="'+(x.reminder==="1h"?"1 hour before":"1 day before")+'">⏰ '+(x.reminder==="1h"?"1h":"1d")+'</span>':'')+'</button>').join(""):'<p class="muted center calEm">No sessions planned yet.</p>');
+  q("#cuPast").onclick=()=>{showPast=!showPast;render()}}}
  q("#calList").innerHTML=L.length?L.map(s=>'<button type="button" class="calIt'+(s.t<new Date()?" past":"")+'" data-id="'+s.id+'"><b>'+hm(s.t)+'</b><span><span class="cn">'+E(s.client_name)+'</span><small>'+rl[s.reminder]+(s.note?' · '+E(s.note):'')+'</small></span></button>').join(""):'<p class="muted center calEm">No sessions this day.</p>'}
 window.faCalLoad=async function(){if(!faU()){show("auth");return}render();await load(true);render()};
 function openSheet(s){editId=s?s.id:null;const f=q("#calForm");f.reset();q("#calSt").textContent="";
@@ -77,7 +80,7 @@ let did=false;function init(){if(did||!q("#cal"))return;did=true;document.queryS
  const tg=q("#calVm");if(tg)tg.onclick=e=>{const b=e.target.closest("[data-vm]");if(!b)return;vm=b.dataset.vm;wk0=monday(sel);render()};
  q("#calToday").onclick=()=>{sel=dkey(new Date());wk0=monday(sel);render()};
  q("#calAdd").onclick=()=>openSheet(null);q("#calDim").onclick=closeSheet;q("#calX").onclick=closeSheet;
- q("#calList").onclick=e=>{const b=e.target.closest("[data-id]");if(b)openSheet(list.find(s=>s.id===b.dataset.id))};
+ q("#calList").onclick=e=>{const b=e.target.closest("[data-id]");if(b)openSheet(list.find(s=>s.id===b.dataset.id))};q("#calUp").onclick=e=>{const b=e.target.closest("[data-id]");if(b)openSheet(list.find(s=>s.id===b.dataset.id))};
  q("#calForm").onsubmit=async e=>{e.preventDefault();const f=e.target,st=q("#calSt");const nm=f.client.value.trim();if(!f.date.value||!f.time.value||!nm){st.textContent="Please add date, time and client name.";return}
   const row={client_name:nm.slice(0,80),starts_at:fromWarsaw(f.date.value,f.time.value).toISOString(),reminder:(f.querySelector("input[name=rem]:checked")||{}).value||"none",note:f.note.value.trim().slice(0,500)||null};
   st.textContent="Saving…";try{const r=editId?await sb().from("planned_sessions").update(row).eq("id",editId):await sb().from("planned_sessions").insert(row);if(r.error)throw r.error;sel=f.date.value;wk0=monday(sel);closeSheet();await load(true);render()}catch(x){st.textContent="Could not save: "+(x.message||x)}};
