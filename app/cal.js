@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.152";const faU=()=>{try{return me}catch(e){return window.faMe}};let C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.153";const faU=()=>{try{return me}catch(e){return window.faMe}};let C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
@@ -27,8 +27,10 @@ window.faPanels=async function(){const v=q("#profView");if(!v)return;const head=
  const pan=(k,ic,t,sub,em)=>'<button type="button" class="faPan" data-fap="'+k+'"><span class="fpIc">'+ic+'</span><span class="fpTx"><b>'+t+'</b><small>'+sub+'</small>'+(em?'<em>'+em+'</em>':'')+'</span><span class="fpAr">›</span></button>';
  const draw=(a,b,c)=>{P.innerHTML=pan("cal","📅","Plan your sessions","Calendar &amp; reminders",a)+pan("log","📖","Session log","Monitor past sessions",b)+pan("scan","◎","Assessment plan","Body Scan",c)+pan("edit","✎","Edit your profile","Photo, bio, locations, contacts","")};
  draw(P.dataset.a||"",P.dataset.b||"",P.dataset.c||"");
+ if(!v.dataset.mode)v.dataset.mode="clean";v.classList.toggle("faClean",v.dataset.mode==="clean");v.classList.toggle("faEdit",v.dataset.mode==="edit");
+ let BK=q("#faBack");if(!BK||!v.contains(BK)){BK=document.createElement("button");BK.type="button";BK.id="faBack";BK.className="faBack";BK.textContent="← My profile";BK.onclick=()=>{v.dataset.mode="clean";v.classList.add("faClean");v.classList.remove("faEdit");window.scrollTo(0,0);try{q("#profile").scrollTop=0;q("#profile").scrollIntoView({block:"start"})}catch(x){}};v.prepend(BK)}
  P.onclick=e=>{const k=(e.target.closest("[data-fap]")||{}).dataset;if(!k)return;const f=k.fap;
-  if(f==="cal")show("cal");else if(f==="log")show("log");else if(f==="scan"){try{scanHub()}catch(x){}show("scan")}else{const t=v.querySelector(".bMeter")||head;t.scrollIntoView({behavior:"smooth",block:"start"})}};
+  if(f==="cal")show("cal");else if(f==="log")show("log");else if(f==="scan"){try{scanHub()}catch(x){}show("scan")}else{v.dataset.mode="edit";v.classList.remove("faClean");v.classList.add("faEdit");window.scrollTo(0,0);try{q("#profile").scrollTop=0;q("#faBack").scrollIntoView({block:"start"})}catch(x){}}};
  const sp=q("#scPlans");if(sp)sp.style.display="none";
  try{await load(true)}catch(e){}let n=null;try{n=nextS()}catch(e){}const a=n?"Next: "+E(nice(n.t))+" · "+E(n.client_name):"No sessions planned yet";
  let b="";try{const ss=await DB.sessions();const m=dkey(new Date()).slice(0,7);const c=ss.filter(s=>String(s.date||"").slice(0,7)===m).length;b=c+" session"+(c==1?"":"s")+" this month"}catch(e){}
@@ -38,7 +40,7 @@ window.faPanels=async function(){const v=q("#profView");if(!v)return;const head=
 async function verLabel(){const P=q("#profile");if(!P)return;let L=q("#faVer");if(!L){L=document.createElement("p");L.id="faVer";L.className="faVer";P.append(L)}L.textContent="FasciApp v"+BUILD;L.onclick=null;
  try{const t=await (await fetch("sw.js?c="+Date.now(),{cache:"no-store"})).text();const m=t.match(/fasciapp-v([\d.]+)/);if(m&&m[1]!==BUILD){L.innerHTML="FasciApp v"+BUILD+" · <b>Update available: tap to refresh</b>";L.onclick=async()=>{try{const r=await navigator.serviceWorker.getRegistration();if(r)await r.update()}catch(e){}location.reload()}}}catch(e){}}
 function watchProf(){const v=q("#profView");if(!v||v._faW)return;v._faW=1;new MutationObserver(()=>{if(v.querySelector(".bHead")&&!q("#faPanels"))faPanels()}).observe(v,{childList:true})}
-window.faProfShown=()=>{watchProf();verLabel();setTimeout(()=>faPanels(),0)};
+window.faProfShown=()=>{{const v=q("#profView");if(v)v.dataset.mode="clean"}watchProf();verLabel();setTimeout(()=>faPanels(),0)};
 addEventListener("pageshow",e=>{if(e.persisted)location.reload()});
 /* ---------- calendar ---------- */
 function render(){const today=dkey(new Date());if(!sel)sel=today;if(!wk0)wk0=monday(sel);const days=[...Array(7)].map((_,i)=>addD(wk0,i));

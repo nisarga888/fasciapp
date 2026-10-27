@@ -831,3 +831,6 @@ body.peOpen{overflow:hidden}
 .calDelB{display:block;width:100%;margin-top:8px;color:#e8a0a0!important}
 .calRem{position:fixed;top:calc(var(--hdr-h) + 8px);left:12px;right:12px;max-width:456px;margin:auto;z-index:2500;display:flex;gap:10px;align-items:center;background:#0a2a30;border:1px solid #C99E67;border-radius:16px;padding:10px 12px;box-shadow:0 6px 18px #0008;cursor:pointer}.calRem[hidden]{display:none}.calRem>span{font-size:20px}.calRem div{flex:1}.calRem b{display:block;font-size:14px}.calRem small{color:#C99E67;font-size:13px}.calRem button{background:none;border:0;color:#9fb3b5;font-size:16px}
 .faVer{text-align:center;color:#9fb3b5;font-size:12px;margin:18px 0 8px;opacity:.8}.faVer b{color:#C99E67;cursor:pointer}
+#profView.faClean>*:not(.bHead):not(#faPanels):not(.bSet):not(.bOut){display:none!important}#profView.faClean .bBtns{display:none}
+#profView.faEdit #faPanels{display:none}#profView.faEdit .bSet,#profView.faEdit .bOut{display:none}#profView:not(.faEdit) #faBack{display:none}
+.faBack{background:none;border:0;color:#C99E67;font:600 15px inherit;font-family:inherit;padding:4px 0 12px;cursor:pointer}
