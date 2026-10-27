@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.151";const faU=()=>{try{return me}catch(e){return window.faMe}};let C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.152";const faU=()=>{try{return me}catch(e){return window.faMe}};let C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
@@ -22,15 +22,15 @@ window.faRemCheck=async function(){const b=q("#calRem");if(!b)return;const scr=(
  b.onclick=e=>{if(e.target.closest("button")){dis[s.id]=1;try{sessionStorage.setItem("fa_remdis",JSON.stringify(dis))}catch(x){}b.hidden=true;return}sel=dkey(s.t);show("cal")}};
 setInterval(()=>window.faRemCheck&&faRemCheck(),60000);
 /* ---------- profile panels ---------- */
-window.faPanels=async function(){const v=q("#profView");if(!v||v.hidden||!faU())return;const head=v.querySelector(".bHead");if(!head)return;let P=q("#faPanels");
- if(!P){P=document.createElement("div");P.id="faPanels";P.className="faPanels";head.after(P)}
+window.faPanels=async function(){const v=q("#profView");if(!v)return;const head=v.querySelector(".bHead");let P=q("#faPanels");
+ if(!P||!v.contains(P)){if(P)P.remove();P=document.createElement("div");P.id="faPanels";P.className="faPanels";if(head)head.after(P);else v.prepend(P)}
  const pan=(k,ic,t,sub,em)=>'<button type="button" class="faPan" data-fap="'+k+'"><span class="fpIc">'+ic+'</span><span class="fpTx"><b>'+t+'</b><small>'+sub+'</small>'+(em?'<em>'+em+'</em>':'')+'</span><span class="fpAr">›</span></button>';
  const draw=(a,b,c)=>{P.innerHTML=pan("cal","📅","Plan your sessions","Calendar &amp; reminders",a)+pan("log","📖","Session log","Monitor past sessions",b)+pan("scan","◎","Assessment plan","Body Scan",c)+pan("edit","✎","Edit your profile","Photo, bio, locations, contacts","")};
  draw(P.dataset.a||"",P.dataset.b||"",P.dataset.c||"");
  P.onclick=e=>{const k=(e.target.closest("[data-fap]")||{}).dataset;if(!k)return;const f=k.fap;
   if(f==="cal")show("cal");else if(f==="log")show("log");else if(f==="scan"){try{scanHub()}catch(x){}show("scan")}else{const t=v.querySelector(".bMeter")||head;t.scrollIntoView({behavior:"smooth",block:"start"})}};
  const sp=q("#scPlans");if(sp)sp.style.display="none";
- await load(true);const n=nextS();const a=n?"Next: "+E(nice(n.t))+" · "+E(n.client_name):"No sessions planned yet";
+ try{await load(true)}catch(e){}let n=null;try{n=nextS()}catch(e){}const a=n?"Next: "+E(nice(n.t))+" · "+E(n.client_name):"No sessions planned yet";
  let b="";try{const ss=await DB.sessions();const m=dkey(new Date()).slice(0,7);const c=ss.filter(s=>String(s.date||"").slice(0,7)===m).length;b=c+" session"+(c==1?"":"s")+" this month"}catch(e){}
  let c="";try{const {data}=await sb().rpc("fa_scan_status");if(data){if(data.admin)c="Unlimited (admin)";else if(data.active)c=faScanLeft(data);else if(data.trial_remaining>0)c=data.trial_remaining+" free scan"+(data.trial_remaining==1?"":"s")+" left";else c="See plans"}}catch(e){}
  P.dataset.a=a;P.dataset.b=b;P.dataset.c=c;draw(a,b,c);faRemCheck()};
