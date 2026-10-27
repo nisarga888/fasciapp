@@ -912,3 +912,9 @@ body.peOpen{overflow:hidden}
 .faArt{position:absolute;top:8px;right:6px;width:72%;height:auto;pointer-events:none;filter:drop-shadow(0 4px 10px #0006)}
 .faT[data-fap=cal]{background:radial-gradient(circle at 75% 20%,#1d8073,#0e4a50 75%)}.faT[data-fap=log]{background:radial-gradient(circle at 75% 20%,#8a5e45,#4a3226 80%)}.faT[data-fap=scan]{background:radial-gradient(circle at 70% 25%,#2b5d63,#1c1d3a 85%)}
 .faT[data-fap=cal] .faTt,.faT[data-fap=log] .faTt,.faT[data-fap=scan] .faTt{position:relative;z-index:1;text-shadow:0 1px 4px #0009}
+/* v0.23.177 profile tile matches illustrated tiles */
+.faT[data-fap=edit]{background:radial-gradient(circle at 70% 22%,#2f6b86,#10293b 82%)!important}
+.faTph,.faTph.nf{inset:auto;top:12px;left:calc(64% - 6px);transform:translateX(-50%);width:44%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:2px solid #C99E67;box-shadow:0 0 0 4px #C99E6722,0 6px 16px #0007;background:radial-gradient(circle at 50% 35%,#3f7598,#1d3f55 75%)}
+.faTph b{margin:0;font-size:30px;color:#F6DFA9;font-weight:400;letter-spacing:1px}
+.faTpe{top:calc(12px + 31%);right:auto;left:calc(64% - 6px + 10%);width:30px;height:30px}
+.faT[data-fap=edit] .faTt{text-shadow:0 1px 4px #0009}
