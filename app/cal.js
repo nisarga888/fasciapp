@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.157";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.158";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
@@ -45,6 +45,8 @@ async function verLabel(){const P=q("#profile");if(!P)return;let L=q("#faVer");i
 function watchProf(){const v=q("#profView");if(!v||v._faW)return;v._faW=1;new MutationObserver(()=>{if(v.querySelector(".bHead")&&!q("#faPanels"))faPanels()}).observe(v,{childList:true})}
 window.faProfShown=()=>{{const v=q("#profView");if(v)v.dataset.mode="clean"}watchProf();verLabel();setTimeout(()=>faPanels(),0)};
 addEventListener("pageshow",e=>{if(e.persisted)location.reload()});
+function ctLinks(s){const e=s.client_email,p=s.client_phone,d=p?p.replace(/[^\d+]/g,""):"",w=d.replace(/^\+/,"").replace(/^00/,"");let h="";
+ if(e)h+='<a href="mailto:'+E(encodeURIComponent(e).replace(/%40/g,"@"))+'">✉️ '+E(e)+'</a>';if(d)h+='<a href="tel:'+E(d)+'">📞 '+E(p)+'</a>'+(w.length>=8?'<a href="https://wa.me/'+E(w)+'" target="_blank" rel="noopener">💬 WhatsApp</a>':'');return h}
 /* ---------- calendar ---------- */
 function render(){const today=dkey(new Date());if(!sel)sel=today;if(!wk0)wk0=monday(sel);const days=[...Array(7)].map((_,i)=>addD(wk0,i));
  q("#calMon").textContent=fmt(noon(days[3]),{month:"long",year:"numeric"});
@@ -64,10 +66,10 @@ function render(){const today=dkey(new Date());if(!sel)sel=today;if(!wk0)wk0=mon
  {const U=q("#calUp");if(U){const now=new Date(),A=list.filter(x=>showPast||x.t>=new Date(now-36e5*2)).sort((a,b)=>a.t-b.t);
   U.innerHTML='<div class="cuH"><b>'+(showPast?"All sessions":"Upcoming sessions")+' · '+A.length+'</b><button type="button" id="cuPast">'+(showPast?"Hide past":"Show past")+'</button></div>'+(A.length?A.map(x=>'<button type="button" class="cuIt'+(dkey(x.t)===sel?" sel":"")+(x.t<now?" past":"")+'" data-id="'+x.id+'"><span class="cuD"><b>'+fmt(x.t,{day:"numeric"})+'</b><small>'+fmt(x.t,{month:"short"})+'</small></span><span class="cuT"><span>'+fmt(x.t,{weekday:"short"})+' '+hm(x.t)+'</span><b>'+E(x.client_name)+'</b></span>'+(x.reminder!=="none"?'<span class="cuR" title="'+(x.reminder==="1h"?"1 hour before":"1 day before")+'">⏰ '+(x.reminder==="1h"?"1h":"1d")+'</span>':'')+'</button>').join(""):'<p class="muted center calEm">No sessions planned yet.</p>');
   q("#cuPast").onclick=()=>{showPast=!showPast;render()}}}
- q("#calList").innerHTML=L.length?L.map(s=>'<button type="button" class="calIt'+(s.t<new Date()?" past":"")+'" data-id="'+s.id+'"><b>'+hm(s.t)+'</b><span><span class="cn">'+E(s.client_name)+'</span><small>'+rl[s.reminder]+(s.note?' · '+E(s.note):'')+'</small></span></button>').join(""):'<p class="muted center calEm">No sessions this day.</p>'}
+ q("#calList").innerHTML=L.length?L.map(s=>'<button type="button" class="calIt'+(s.t<new Date()?" past":"")+'" data-id="'+s.id+'"><b>'+hm(s.t)+'</b><span><span class="cn">'+E(s.client_name)+'</span><small>'+rl[s.reminder]+(s.note?' · '+E(s.note):'')+(s.client_email||s.client_phone?' · '+(s.client_email?'✉️':'')+(s.client_phone?'📞':''):'')+'</small></span></button>').join(""):'<p class="muted center calEm">No sessions this day.</p>'}
 window.faCalLoad=async function(){if(!faU()){show("auth");return}render();await load(true);render()};
 function openSheet(s){editId=s?s.id:null;const f=q("#calForm");f.reset();q("#calSt").textContent="";
- f.date.value=s?dkey(s.t):sel||dkey(new Date());f.time.value=s?hm(s.t):"10:00";f.client.value=s?s.client_name:"";f.note.value=s?(s.note||""):"";
+ f.date.value=s?dkey(s.t):sel||dkey(new Date());f.time.value=s?hm(s.t):"10:00";f.client.value=s?s.client_name:"";f.note.value=s?(s.note||""):"";f.cemail.value=s?(s.client_email||""):"";f.cphone.value=s?(s.client_phone||""):"";q("#calCt").innerHTML=s?ctLinks(s):"";
  (f.querySelector('input[name=rem][value="'+(s?s.reminder:"1h")+'"]')||{}).checked=true;q("#calSheetT").textContent=s?"Edit session":"Add session";q("#calDel").hidden=!s;
  q("#calDim").classList.add("open");q("#calSheet").classList.add("open")}
 function closeSheet(){q("#calDim").classList.remove("open");q("#calSheet").classList.remove("open")}
@@ -82,7 +84,7 @@ let did=false;function init(){if(did||!q("#cal"))return;did=true;document.queryS
  q("#calAdd").onclick=()=>openSheet(null);q("#calDim").onclick=closeSheet;q("#calX").onclick=closeSheet;
  q("#calList").onclick=e=>{const b=e.target.closest("[data-id]");if(b)openSheet(list.find(s=>s.id===b.dataset.id))};q("#calUp").onclick=e=>{const b=e.target.closest("[data-id]");if(b)openSheet(list.find(s=>s.id===b.dataset.id))};
  q("#calForm").onsubmit=async e=>{e.preventDefault();const f=e.target,st=q("#calSt");const nm=f.client.value.trim();if(!f.date.value||!f.time.value||!nm){st.textContent="Please add date, time and client name.";return}
-  const row={client_name:nm.slice(0,80),starts_at:fromWarsaw(f.date.value,f.time.value).toISOString(),reminder:(f.querySelector("input[name=rem]:checked")||{}).value||"none",note:f.note.value.trim().slice(0,500)||null};
+  const row={client_name:nm.slice(0,80),starts_at:fromWarsaw(f.date.value,f.time.value).toISOString(),reminder:(f.querySelector("input[name=rem]:checked")||{}).value||"none",note:f.note.value.trim().slice(0,500)||null,client_email:f.cemail.value.trim().slice(0,120)||null,client_phone:f.cphone.value.trim().slice(0,40)||null};
   st.textContent="Saving…";try{const r=editId?await sb().from("planned_sessions").update(row).eq("id",editId):await sb().from("planned_sessions").insert(row);if(r.error)throw r.error;sel=f.date.value;wk0=monday(sel);closeSheet();await load(true);render()}catch(x){st.textContent="Could not save: "+(x.message||x)}};
  q("#calDel").onclick=async()=>{if(!editId||!confirm("Delete this session?"))return;const r=await sb().from("planned_sessions").delete().eq("id",editId);if(r.error){q("#calSt").textContent="Could not delete: "+r.error.message;return}closeSheet();await load(true);render()}}
 })();

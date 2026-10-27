@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 
-<link rel="stylesheet" href="styles.css?v=0.23.157"></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="faG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE7B5"/><stop offset=".45" stop-color="#D9B06F"/><stop offset=".7" stop-color="#C99E67"/><stop offset="1" stop-color="#8A6537"/></linearGradient><linearGradient id="faG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9B7440"/><stop offset="1" stop-color="#F6DFA9"/></linearGradient><radialGradient id="faC" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#0E4A50"/><stop offset="1" stop-color="#02191E"/></radialGradient></defs></svg>
+<link rel="stylesheet" href="styles.css?v=0.23.158"></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="faG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE7B5"/><stop offset=".45" stop-color="#D9B06F"/><stop offset=".7" stop-color="#C99E67"/><stop offset="1" stop-color="#8A6537"/></linearGradient><linearGradient id="faG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9B7440"/><stop offset="1" stop-color="#F6DFA9"/></linearGradient><radialGradient id="faC" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#0E4A50"/><stop offset="1" stop-color="#02191E"/></radialGradient></defs></svg>
 <div id="demoBanner" class="banner" hidden>Demo mode: saved on this device</div>
 <section id="splash" class="screen active">
  <svg class="biglogo logoMark" width="150" height="150" aria-hidden="true" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -189,6 +189,7 @@
 <div id="calRem" class="calRem" hidden></div><div id="calDim" class="calDim"></div><div id="calSheet" class="calSheet" role="dialog" aria-label="Session"><div class="grab"></div><div class="calSh"><b id="calSheetT">Add session</b><button type="button" id="calX" aria-label="Close">✕</button></div>
 <form id="calForm"><div class="calR"><label>Date<input type="date" name="date" required></label><label class="t">Time<input type="time" name="time" required></label></div>
 <label>Client name<input name="client" maxlength="80" placeholder="e.g. Anna" required></label>
+<div class="calR"><label>Email (optional)<input name="cemail" type="email" maxlength="120" placeholder="anna@example.com" autocapitalize="none"></label><label>Phone (optional)<input name="cphone" type="tel" maxlength="40" placeholder="+48 600 000 000"></label></div><div id="calCt" class="calCt"></div>
 <div class="lbl2">Reminder</div><div class="calChips"><label><input type="radio" name="rem" value="none"><span>None</span></label><label><input type="radio" name="rem" value="1h"><span>1 hour before</span></label><label><input type="radio" name="rem" value="1d"><span>1 day before</span></label></div>
 <label>Note (optional)<textarea name="note" maxlength="500" rows="2"></textarea></label>
 <button class="gold big1">Save</button><button type="button" id="calDel" class="ghost calDelB" hidden>Delete session</button><p id="calSt" class="msg"></p></form></div>
@@ -231,7 +232,7 @@
 
 <script src="config.js?v=0.23.100"></script><script src="track.js?v=0.23.124"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script><script>window.supabase||document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"><\/script>')</script>
-<script src="learn.js?v=0.23.115"></script><script src="news.js?v=0.23.103"></script><script src="quotes.js?v=0.23.71"></script><script src="data.js?v=0.23.146"></script><script src="breath.js?v=0.23.113"></script><script src="app.js?v=0.23.157"></script><script src="cal.js?v=0.23.157"></script>
+<script src="learn.js?v=0.23.115"></script><script src="news.js?v=0.23.103"></script><script src="quotes.js?v=0.23.71"></script><script src="data.js?v=0.23.146"></script><script src="breath.js?v=0.23.113"></script><script src="app.js?v=0.23.158"></script><script src="cal.js?v=0.23.158"></script>
 <script>
 if("serviceWorker" in navigator&&navigator.serviceWorker){
   // Never reload while the user is using the app: apply a new version only when the app is in the background or on next open.
