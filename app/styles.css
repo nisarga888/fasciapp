@@ -908,3 +908,7 @@ body.peOpen{overflow:hidden}
 .faT[data-fap=edit]{padding:0;justify-content:flex-end}.faTph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}.faTph img{width:100%;height:100%;object-fit:cover}.faTph.nf{background:radial-gradient(circle at 50% 35%,#3f7598,#2f5d7a 70%)}.faTph b{font-size:46px;font-weight:300;opacity:.9;margin-bottom:34px}
 .faT[data-fap=edit]::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0000 40%,#02191Ecc 100%);pointer-events:none}
 .faT[data-fap=edit] .faTt{position:relative;z-index:2;padding:12px}.faTpe{position:absolute;z-index:3;top:9px;right:9px;width:32px;height:32px;border-radius:50%;background:#02191Ecc;border:1px solid #C99E67;color:#C99E67;display:flex;align-items:center;justify-content:center;font-size:15px}
+/* v0.23.176 tile art */
+.faArt{position:absolute;top:8px;right:6px;width:72%;height:auto;pointer-events:none;filter:drop-shadow(0 4px 10px #0006)}
+.faT[data-fap=cal]{background:radial-gradient(circle at 75% 20%,#1d8073,#0e4a50 75%)}.faT[data-fap=log]{background:radial-gradient(circle at 75% 20%,#8a5e45,#4a3226 80%)}.faT[data-fap=scan]{background:radial-gradient(circle at 70% 25%,#2b5d63,#1c1d3a 85%)}
+.faT[data-fap=cal] .faTt,.faT[data-fap=log] .faTt,.faT[data-fap=scan] .faTt{position:relative;z-index:1;text-shadow:0 1px 4px #0009}
