@@ -63,8 +63,8 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(place){setPlace(place);hit=true}
  if(hit){renderMarkers();renderList();show("list");return true}return false}catch(e){return false}}
 window.show=show;function show(t){if(window.faSheetClose)faSheetClose();if((t==="map"||t==="list")&&window.faJoinUpd)faJoinUpd();$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
- $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||(t==="log"&&b.dataset.t==="profile")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
-let showT=null;function afterShow(t){try{if(t==="scan")scanLoad();if(t==="profile")setTimeout(scanPlansCard,300);if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
+ $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||((t==="log"||t==="cal")&&b.dataset.t==="profile")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
+let showT=null;function afterShow(t){try{if(t==="scan")scanLoad();if(t==="profile"){setTimeout(scanPlansCard,300);setTimeout(()=>window.faPanels&&faPanels(),400)}if(t==="cal"&&window.faCalLoad)faCalLoad();if(window.faRemCheck)setTimeout(faRemCheck,500);if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
 function hdr(){document.body.classList.toggle("authed",!!me);if(window.faJoinUpd)faJoinUpd();{const lb=$("#labBtn");if(lb)lb.hidden=!!me}$("#tabInbox").hidden=!MSG_ON;{let ad=false;try{ad=isAdmin()}catch(e){}const ts=$("#tabScan");if(ts)ts.hidden=false;const pl=document.querySelector('#tabs [data-t="profile"] span');if(pl)pl.textContent=ad?"Profile":"My profile";}$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
@@ -1102,3 +1102,5 @@ function faScanLeft(d,hub){const P={practitioner:"Practitioner",pro:"Pro",yearly
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-scplans-go]");if(!a)return;e.preventDefault();show("scan");scanLanding("#pricing")});
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-sctrial]");if(!a)return;e.preventDefault();scanTrial()});
 let scanEnsured=false;async function scanEnsure(){if(scanEnsured||!me)return;scanEnsured=true;try{if(!scanSb){const c=window.FASCIAPP_CONFIG||{};scanSb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}await scanSb.rpc("fa_scan_status")}catch(e){scanEnsured=false}}
+
+try{Object.defineProperty(window,"faMe",{get:()=>me})}catch(e){}
