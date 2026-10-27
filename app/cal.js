@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.159";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.160";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
@@ -11,7 +11,19 @@ const fmt=(d,o)=>new Intl.DateTimeFormat("en-GB",Object.assign({timeZone:TZ},o))
 const nice=d=>fmt(d,{weekday:"short"})+" "+fmt(d,{day:"numeric",month:"short"})+" "+hm(d);
 function monday(k){const wd=(new Date(noon(k)).getUTCDay()+6)%7;return addD(k,-wd)}
 async function load(force){if(loaded&&!force)return list;try{const {data,error}=await sb().from("planned_sessions").select("*").order("starts_at");if(error)throw error;list=(data||[]).map(r=>Object.assign(r,{t:new Date(r.starts_at)}));loaded=true}catch(e){list=[]}return list}
-window.faCalReset=()=>{loaded=false;list=[]};
+window.faCalReset=()=>{loaded=false;list=[];asm=null};
+/* v0.23.160 assessments link + auto-log past sessions into Session log */
+let asm=null;async function loadAsm(){if(asm)return asm;try{const {data}=await sb().from("assessments").select("id,client_name,created_at").order("created_at",{ascending:false});asm=data||[]}catch(e){asm=[]}return asm}
+const matchAsm=n=>{n=(n||"").trim().toLowerCase();return n&&(asm||[]).find(a=>(a.client_name||"").trim().toLowerCase()===n)||null};
+const asmFor=s=>s.assessment_id||(matchAsm(s.client_name)||{}).id||null;
+window.faAsmLink=id=>id?'<a class="calAv" href="assessment-results.html?id='+encodeURIComponent(id)+'">View assessment</a>':"";
+let alRun=null;window.faAutoLog=function(){return alRun||(alRun=(async()=>{try{const u=faU();if(!u)return 0;await load(true);await loadAsm();const now=new Date();let n=0;
+ for(const s of list.filter(x=>x.t<now&&!x.logged_session_id)){const nm=(s.client_name||"").trim(),first=nm.split(/\s+/)[0]||"Client",ini=nm.split(/\s+/).filter(Boolean).map(w=>w[0].toUpperCase()).join("").slice(0,4)||"C";
+  const row={initials:ini,client_name:first.slice(0,80),date:dkey(s.t),duration:60,format:"In person",session_type:s.modality||"MER",comment:s.note||null,planned_id:s.id,assessment_id:asmFor(s)};
+  let r=await sb().from("sessions").insert(row).select("id").single();let id=r.data&&r.data.id;
+  if(!id){const e=await sb().from("sessions").select("id").eq("planned_id",s.id).maybeSingle();id=e.data&&e.data.id}
+  if(id){await sb().from("planned_sessions").update({logged_session_id:id}).eq("id",s.id);s.logged_session_id=id;n++}}
+ return n}catch(e){return 0}finally{setTimeout(()=>{alRun=null},0)}})())};
 const nextS=()=>list.find(s=>s.t>new Date());
 const remMs={"1h":36e5,"1d":864e5};
 /* ---------- reminder banner ---------- */
@@ -66,10 +78,11 @@ function render(){const today=dkey(new Date());if(!sel)sel=today;if(!wk0)wk0=mon
  {const U=q("#calUp");if(U){const now=new Date(),A=list.filter(x=>showPast||x.t>=new Date(now-36e5*2)).sort((a,b)=>a.t-b.t);
   U.innerHTML='<div class="cuH"><b>'+(showPast?"All sessions":"Upcoming sessions")+' · '+A.length+'</b><button type="button" id="cuPast">'+(showPast?"Hide past":"Show past")+'</button></div>'+(A.length?A.map(x=>'<button type="button" class="cuIt'+(dkey(x.t)===sel?" sel":"")+(x.t<now?" past":"")+'" data-id="'+x.id+'"><span class="cuD"><b>'+fmt(x.t,{day:"numeric"})+'</b><small>'+fmt(x.t,{month:"short"})+'</small></span><span class="cuT"><span>'+fmt(x.t,{weekday:"short"})+' '+hm(x.t)+'</span><b>'+E(x.client_name)+'</b></span>'+(x.reminder!=="none"?'<span class="cuR" title="'+(x.reminder==="1h"?"1 hour before":"1 day before")+'">⏰ '+(x.reminder==="1h"?"1h":"1d")+'</span>':'')+'</button>').join(""):'<p class="muted center calEm">No sessions planned yet.</p>');
   q("#cuPast").onclick=()=>{showPast=!showPast;render()}}}
- q("#calList").innerHTML=L.length?L.map(s=>'<button type="button" class="calIt'+(s.t<new Date()?" past":"")+'" data-id="'+s.id+'"><b>'+hm(s.t)+'</b><span><span class="cn">'+E(s.client_name)+'</span><small>'+rl[s.reminder]+(s.note?' · '+E(s.note):'')+(s.client_email||s.client_phone?' · '+(s.client_email?'✉️':'')+(s.client_phone?'📞':''):'')+'</small></span></button>').join(""):'<p class="muted center calEm">No sessions this day.</p>'}
-window.faCalLoad=async function(){if(!faU()){show("auth");return}render();await load(true);render()};
+ q("#calList").innerHTML=L.length?L.map(s=>'<button type="button" class="calIt'+(s.t<new Date()?" past":"")+'" data-id="'+s.id+'"><b>'+hm(s.t)+'</b><span><span class="cn">'+E(s.client_name)+'</span><small>'+rl[s.reminder]+(s.note?' · '+E(s.note):'')+(s.client_email||s.client_phone?' · '+(s.client_email?'✉️':'')+(s.client_phone?'📞':''):'')+(s.modality?' · '+E(s.modality):'')+(asmFor(s)?' · 📋':'')+'</small></span></button>').join(""):'<p class="muted center calEm">No sessions this day.</p>'}
+window.faCalLoad=async function(){if(!faU()){show("auth");return}render();await load(true);render();await window.faAutoLog();render()};
 function openSheet(s){editId=s?s.id:null;const f=q("#calForm");f.reset();q("#calSt").textContent="";
- f.date.value=s?dkey(s.t):sel||dkey(new Date());f.time.value=s?hm(s.t):"10:00";f.client.value=s?s.client_name:"";f.note.value=s?(s.note||""):"";f.cemail.value=s?(s.client_email||""):"";f.cphone.value=s?(s.client_phone||""):"";q("#calCt").innerHTML=s?ctLinks(s):"";
+ f.date.value=s?dkey(s.t):sel||dkey(new Date());f.time.value=s?hm(s.t):"10:00";f.client.value=s?s.client_name:"";f.note.value=s?(s.note||""):"";f.cemail.value=s?(s.client_email||""):"";f.cphone.value=s?(s.client_phone||""):"";q("#calCt").innerHTML=s?ctLinks(s):"";f.mod.value=s&&s.modality||"MER";
+ {const A=q("#calAsmt");A.innerHTML='<option value="">Auto-match by name</option>'+(asm||[]).map(a=>'<option value="'+a.id+'">'+E(a.client_name||"Unnamed")+' · '+fmt(new Date(a.created_at),{day:"numeric",month:"short",year:"numeric"})+'</option>').join("");A.value=s&&s.assessment_id||"";q("#calAv").innerHTML=s?faAsmLink(asmFor(s))+(s.logged_session_id?' <span class="muted">· In Session log ✓</span>':''):"";loadAsm().then(()=>{if(A.options.length<2&&asm.length){A.innerHTML+=asm.map(a=>'<option value="'+a.id+'">'+E(a.client_name||"Unnamed")+'</option>').join("");A.value=s&&s.assessment_id||""}})}
  (f.querySelector('input[name=rem][value="'+(s?s.reminder:"1h")+'"]')||{}).checked=true;q("#calSheetT").textContent=s?"Edit session":"Add session";q("#calDel").hidden=!s;
  q("#calDim").classList.add("open");q("#calSheet").classList.add("open")}
 function closeSheet(){q("#calDim").classList.remove("open");q("#calSheet").classList.remove("open")}
@@ -84,7 +97,7 @@ let did=false;function init(){if(did||!q("#cal"))return;did=true;document.queryS
  q("#calAdd").onclick=()=>openSheet(null);q("#calDim").onclick=closeSheet;q("#calX").onclick=closeSheet;
  q("#calList").onclick=e=>{const b=e.target.closest("[data-id]");if(b)openSheet(list.find(s=>s.id===b.dataset.id))};q("#calUp").onclick=e=>{const b=e.target.closest("[data-id]");if(b)openSheet(list.find(s=>s.id===b.dataset.id))};
  q("#calForm").onsubmit=async e=>{e.preventDefault();const f=e.target,st=q("#calSt");const nm=f.client.value.trim();if(!f.date.value||!f.time.value||!nm){st.textContent="Please add date, time and client name.";return}
-  const row={client_name:nm.slice(0,80),starts_at:fromWarsaw(f.date.value,f.time.value).toISOString(),reminder:(f.querySelector("input[name=rem]:checked")||{}).value||"none",note:f.note.value.trim().slice(0,500)||null,client_email:f.cemail.value.trim().slice(0,120)||null,client_phone:f.cphone.value.trim().slice(0,40)||null};
-  st.textContent="Saving…";try{const r=editId?await sb().from("planned_sessions").update(row).eq("id",editId):await sb().from("planned_sessions").insert(row);if(r.error)throw r.error;sel=f.date.value;wk0=monday(sel);closeSheet();await load(true);render()}catch(x){st.textContent="Could not save: "+(x.message||x)}};
+  const row={client_name:nm.slice(0,80),starts_at:fromWarsaw(f.date.value,f.time.value).toISOString(),reminder:(f.querySelector("input[name=rem]:checked")||{}).value||"none",note:f.note.value.trim().slice(0,500)||null,client_email:f.cemail.value.trim().slice(0,120)||null,client_phone:f.cphone.value.trim().slice(0,40)||null,modality:f.mod.value||"MER"};{await loadAsm();row.assessment_id=f.asmt.value||(matchAsm(nm)||{}).id||null}
+  st.textContent="Saving…";try{const r=editId?await sb().from("planned_sessions").update(row).eq("id",editId):await sb().from("planned_sessions").insert(row);if(r.error)throw r.error;sel=f.date.value;wk0=monday(sel);closeSheet();await load(true);render();await window.faAutoLog();render()}catch(x){st.textContent="Could not save: "+(x.message||x)}};
  q("#calDel").onclick=async()=>{if(!editId||!confirm("Delete this session?"))return;const r=await sb().from("planned_sessions").delete().eq("id",editId);if(r.error){q("#calSt").textContent="Could not delete: "+r.error.message;return}closeSheet();await load(true);render()}}
 })();

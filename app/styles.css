@@ -866,3 +866,5 @@ body.peOpen{overflow:hidden}
 .cuIt{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:9px 12px;background:#0a2a30;border:1px solid transparent;border-radius:14px;margin:0 0 7px;color:#F3EDE4;font-family:inherit}.cuIt.sel{border-color:#C99E67}.cuIt.past{opacity:.55}
 .cuD{width:42px;flex:none;text-align:center;background:#02191E;border-radius:10px;padding:3px 0}.cuD b{display:block;font-size:17px;color:#C99E67;line-height:1.1}.cuD small{font-size:10.5px;color:#9fb3b5;text-transform:uppercase}.cuT{flex:1;min-width:0}.cuT span{display:block;font-size:12px;color:#9fb3b5}.cuT b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cuR{font-size:12px;color:#C99E67;flex:none}
 .calCt{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 10px}.calCt:empty{display:none}.calCt a{font-size:13px;color:#C99E67;border:1px solid #C99E6766;border-radius:999px;padding:6px 11px;text-decoration:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.calAv{font-size:13px;color:#C99E67;text-decoration:underline}#calAv:empty{display:none}#calAv{margin:-2px 0 10px;font-size:13px}
