@@ -115,7 +115,7 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
    return out},
   async mine(){const s=await sess();if(!s)return null;return norm(chk(await sb.from("practitioners").select("*").eq("user_id",s.user_id).maybeSingle()))},
   async save(p){p=canonP(p);const s=await sess();try{sessionStorage.removeItem("fa_list_v2_0");sessionStorage.removeItem("fa_list_v2_1");const X=JSON.parse(localStorage.getItem("fa_ph_extra")||"{}");if(s&&s.user_id&&p.photo&&/^data:/.test(p.photo)){X["u:"+s.user_id]={t:Date.now(),p:p.photo,own:1};localStorage.setItem("fa_ph_extra",JSON.stringify(X))}}catch(e){}const pn=(p.practice_name||"").trim()||null;let L=stripLocMeta(p.locations||[]);
-   const base0=pick(p);base0.practice_name=pn;
+   const base0=pick(p);base0.practice_name=pn;base0.consent=true;// v0.23.182: every practitioner is public automatically
    base0.news_optin=!!p.news_optin;base0.news_optin_at=p.news_optin?(p.news_optin_at||new Date().toISOString()):null;
    const upsert=async row=>{const r=await sb.from("practitioners").upsert(row,{onConflict:"user_id"}).select().single();return r};
    const newsEmbed=()=>noNewsCol?newsMeta(p):null;
