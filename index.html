@@ -302,8 +302,9 @@ if(matchMedia("(display-mode: standalone)").matches)location.replace("app/");
       var cfg=window.FASCIAPP_CONFIG||{};
       if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY||!window.supabase)throw new Error('no sb');
       var sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-      var r=await sb.from('practitioners').select('country,city,locations,lat,lng').eq('consent',true);
-      if(r.error)throw r.error;
+      var r=null;try{var c=JSON.parse(localStorage.getItem('fa_cnt_v1')||'null');if(c&&Date.now()-c.t<21600000)r={data:c.d}}catch(e){}
+      if(!r){r=await sb.from('practitioners').select('country,city,locations,lat,lng').eq('consent',true);
+      if(r.error)throw r.error;try{localStorage.setItem('fa_cnt_v1',JSON.stringify({t:Date.now(),d:r.data}))}catch(e){}}
       var rows=r.data||[];
       var countries=new Set();
       var CITY_CC={tallinn:'estonia',berlin:'germany',lisbon:'portugal',amsterdam:'netherlands',bali:'indonesia',bangkok:'thailand',sydney:'australia','new york':'united states','mexico city':'mexico','cape town':'south africa',athens:'greece',barcelona:'spain'};

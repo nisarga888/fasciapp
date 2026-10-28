@@ -93,14 +93,28 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   async updatePassword(password){chk(await sb.auth.updateUser({password}));return sess()},
   onAuth(cb){try{const {data:{subscription}}=sb.auth.onAuthStateChange((event,session)=>cb(event,session));return ()=>subscription.unsubscribe()}catch(e){return ()=>{}}},
   async list(){const s=await sess().catch(()=>null);// logged-out visitors never receive phone numbers (pair with column grant in fasciapp-v76-contact.sql)
-   if(s)return chk(await sb.from("practitioners").select("*").order("created_at")).map(norm);
-   // logged out: no phone, no email (has_email flag from fasciapp-v76-contact.sql). Before that SQL runs, email is stripped right away.
-   const base="id,user_id,name,mods,address,city,country,lat,lng,website,bio,photo,consent,whatsapp,created_at,locations,practice_name";
-   let r=await sb.from("practitioners").select(base+",has_email").order("created_at");
-   if(r.error){r=await sb.from("practitioners").select(base+",email").order("created_at");(r.data||[]).forEach(p=>{p.has_email=!!(p.email&&String(p.email).trim());delete p.email})}
-   return chk(r).map(norm)},
+   // Egress fix v0.23.181: photos are NOT pulled from the DB (they were ~4 MB of base64 per load). They come from static
+   // webp files in app/ph/ (tools/export_photos.py). Only people missing from that index get their photo fetched, by id.
+   // Result cached in sessionStorage for 10 min; DB.save() clears it.
+   const ck="fa_list_v2_"+(s?1:0);try{const c=JSON.parse(sessionStorage.getItem(ck)||"null");if(c&&Date.now()-c.t<600000)return c.d}catch(e){}
+   const base="id,user_id,name,mods,address,city,country,lat,lng,website,bio,consent,whatsapp,created_at,locations,practice_name";
+   const ixP=fetch("ph/index.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).catch(()=>({}));
+   let r;
+   if(s){r=await sb.from("practitioners").select(base+",phone,email,news_optin,news_optin_at").order("created_at");
+    if(r.error)r=await sb.from("practitioners").select(base+",phone,email").order("created_at");}
+   else{r=await sb.from("practitioners").select(base+",has_email").order("created_at");
+    if(r.error){r=await sb.from("practitioners").select(base+",email").order("created_at");(r.data||[]).forEach(p=>{p.has_email=!!(p.email&&String(p.email).trim());delete p.email})}}
+   const rows=chk(r),ix=await ixP;const miss=[];
+   const PK="fa_ph_extra";let X={};try{X=JSON.parse(localStorage.getItem(PK)||"{}")}catch(e){}
+   rows.forEach(p=>{const o=X["u:"+p.user_id];if(o&&o.own)p.photo=o.p;else if(ix[p.id])p.photo="ph/"+ix[p.id];else{p.photo=null;miss.push(p.id)}});
+   if(miss.length){
+    const need=miss.filter(id=>!(X[id]&&Date.now()-X[id].t<86400000));
+    for(let i=0;i<need.length;i+=20){try{const q=await sb.from("practitioners").select("id,photo").in("id",need.slice(i,i+20));(q.data||[]).forEach(o=>X[o.id]={t:Date.now(),p:o.photo||null})}catch(e){}}
+    rows.forEach(p=>{if(!p.photo&&X[p.id])p.photo=X[p.id].p});try{localStorage.setItem(PK,JSON.stringify(X))}catch(e){}}
+   const out=rows.map(norm);try{sessionStorage.setItem(ck,JSON.stringify({t:Date.now(),d:out}))}catch(e){}
+   return out},
   async mine(){const s=await sess();if(!s)return null;return norm(chk(await sb.from("practitioners").select("*").eq("user_id",s.user_id).maybeSingle()))},
-  async save(p){p=canonP(p);const s=await sess();const pn=(p.practice_name||"").trim()||null;let L=stripLocMeta(p.locations||[]);
+  async save(p){p=canonP(p);const s=await sess();try{sessionStorage.removeItem("fa_list_v2_0");sessionStorage.removeItem("fa_list_v2_1");const X=JSON.parse(localStorage.getItem("fa_ph_extra")||"{}");if(s&&s.user_id&&p.photo&&/^data:/.test(p.photo)){X["u:"+s.user_id]={t:Date.now(),p:p.photo,own:1};localStorage.setItem("fa_ph_extra",JSON.stringify(X))}}catch(e){}const pn=(p.practice_name||"").trim()||null;let L=stripLocMeta(p.locations||[]);
    const base0=pick(p);base0.practice_name=pn;
    base0.news_optin=!!p.news_optin;base0.news_optin_at=p.news_optin?(p.news_optin_at||new Date().toISOString()):null;
    const upsert=async row=>{const r=await sb.from("practitioners").upsert(row,{onConflict:"user_id"}).select().single();return r};

@@ -21,8 +21,14 @@ Deno.serve(async (req) => {
   if (!key) return new Response("disabled: no GEMINI_API_KEY", { status: 503 });
   const { id } = await req.json();
   const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-  const { data: a } = await sb.from("assessments").select("*").eq("id", id).maybeSingle();
+  const { data: a } = await sb.from("assessments").select("id,client_name,red_flags,data,photo_front,photo_side,photo_back,report").eq("id", id).maybeSingle();
   if (!a || a.report) return new Response("skip");
+  // Daily cap: at most DAILY_CAP automatic Gemini reports per UTC day (cost guard, ~€10/month budget).
+  const DAILY_CAP = Number(Deno.env.get("SCAN_DAILY_CAP") || 50);
+  const day0 = new Date(); day0.setUTCHours(0, 0, 0, 0);
+  const { count } = await sb.from("assessments").select("id", { count: "exact", head: true })
+    .gte("report_ready_at", day0.toISOString()).eq("report->>auto", "true");
+  if ((count ?? 0) >= DAILY_CAP) return new Response("daily cap reached", { status: 429 });
   const imgs = (await Promise.all([a.photo_front, a.photo_side, a.photo_back].map((p) => b64(sb, p)))).filter(Boolean);
   const intake = { client_name: a.client_name, red_flags: a.red_flags, data: a.data, photos: "front, side, back in that order" };
   let r: any, j: any, used = MODEL;
