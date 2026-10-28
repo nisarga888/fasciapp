@@ -1,0 +1,20 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FasciApp//Fascia Live//EN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:fascia-live-20261125@fasciapp.app
+DTSTAMP:20261028T082500Z
+DTSTART:20261125T180000Z
+DTEND:20261125T190000Z
+SUMMARY:Fascia Live – free Zoom event with Nisarga
+DESCRIPTION:The amazing world of fascia\, guided meditation and FasciApp body reading scan. The Zoom link is in your confirmation email.
+LOCATION:Zoom (link in your confirmation email)
+URL:https://fasciapp.app/live
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Fascia Live starts in 1 hour
+END:VALARM
+END:VEVENT
+END:VCALENDAR
