@@ -2,7 +2,7 @@
 (function(){
 var C=window.FASCIAPP_CONFIG||{},f=document.getElementById('live-form'),m=document.getElementById('live-msg');
 f.addEventListener('submit',async function(e){e.preventDefault();
- if(f.website.value)return; // honeypot
+ if(f.hp_zx7&&f.hp_zx7.value)return; // honeypot (hidden with display:none so autofill can't fill it)
  var b=f.querySelector('button');b.disabled=true;m.textContent='Saving…';
  var row={name:f.name.value.trim(),email:f.email.value.trim().toLowerCase(),consent:f.consent.checked,event:'fascia-live-2026-11-25',source:(new URLSearchParams(location.search).get('utm_source')||document.referrer||'direct').slice(0,200)};
  var ok=false;

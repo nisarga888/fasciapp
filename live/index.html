@@ -53,7 +53,7 @@ label.c{display:flex;gap:10px;font-size:14px}label.c input{width:auto}summary{co
 
 <h2>Your host</h2><div class="card"><b>Nisarga Eryk Dobosz</b><br>Creator of FasciApp · 25 years of bodywork · breathwork since 2009.</div>
 
-<h2 id="signup">Reserve your free spot</h2><div class="badge">FREE · 60-minute FasciApp webinar on Zoom</div><p>Wednesday, 25 November 2026 · 19:00 Warsaw (CET) · 20:00 Tallinn</p><form class="card" id="live-form" ><!-- TODO: wire to Flodesk form "Fascia Live" (FORM_ID pending) via fd-bridge.js --><label>Name<input name="name" required maxlength="120" placeholder="Your first name"></label><label>Email<input name="email" type="email" required placeholder="you@email.com"><input name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px"></label>
+<h2 id="signup">Reserve your free spot</h2><div class="badge">FREE · 60-minute FasciApp webinar on Zoom</div><p>Wednesday, 25 November 2026 · 19:00 Warsaw (CET) · 20:00 Tallinn</p><form class="card" id="live-form" ><!-- TODO: wire to Flodesk form "Fascia Live" (FORM_ID pending) via fd-bridge.js --><label>Name<input name="name" required maxlength="120" placeholder="Your first name"></label><label>Email<input name="email" type="email" required placeholder="you@email.com"><span style="display:none" aria-hidden="true"><input name="hp_zx7" tabindex="-1" autocomplete="off"></span></label>
 <label class="c"><input name="consent" type="checkbox" required> I agree to receive the Zoom link, reminders and the free ebook by email. I can unsubscribe anytime.</label><br><button class="btn">Send me the Zoom link</button> <a class="btn" style="background:#C99E67" href="fascia-live.ics" download>Add to calendar</a><p id="live-msg" aria-live="polite"></p></form>
 
 <h2>FAQ</h2>
