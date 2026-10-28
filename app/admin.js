@@ -1,9 +1,11 @@
-/* v0.23.184 Admin-only: all practitioners by modality (Profile screen). Reuses the already-loaded, cached public list: no extra DB calls. */
+/* v0.23.185 Admin-only: all practitioners by modality (Profile screen). Reuses the already-loaded, cached public list: no extra DB calls. */
 (function(){
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let mod="",txt="",nm="";
 const adm=()=>{try{return isAdmin()}catch(e){return false}};
-const P=()=>{try{return people||[]}catch(e){return []}};
+const CANON={"sound healing":"Sound Healing","soundhealing":"Sound Healing","qigong":"Qigong","qi gong":"Qigong","yin yoga":"Yin Yoga","lomi lomi":"Lomi Lomi","lomi lomi massage":"Lomi Lomi","reflexology":"Reflexology","réflexology":"Reflexology"};
+const cm=m=>{const t=String(m||"").trim();return CANON[t.toLowerCase()]||t};
+let PC=null,PS=null;const P=()=>{let a;try{a=people||[]}catch(e){a=[]}if(a!==PS){PS=a;PC=a.map(p=>({...p,mods:[...new Set((p.mods||[]).map(cm).filter(Boolean))]}))}return PC};
 const locs=p=>{const L=(p.locations&&p.locations.length)?p.locations:[p];const s=[];L.forEach(l=>{const t=[l.city,l.country].map(x=>String(x||"").trim()).filter(Boolean).join(", ");if(t&&!s.includes(t))s.push(t)});return s.join(" · ")||"—"};
 function rows(){const f=txt.toLowerCase(),n=nm.trim().toLowerCase();return P().filter(p=>(!n||[p.name,p.practice_name].join(" ").toLowerCase().includes(n))&&(!mod||(p.mods||[]).includes(mod))&&(!f||[p.name,p.practice_name,locs(p),(p.mods||[]).join(" ")].join(" ").toLowerCase().includes(f)))}
 const pr=m=>m==="MER"?0:m==="BBTRS"?1:2;
