@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.183";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.184";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
