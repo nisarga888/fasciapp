@@ -928,3 +928,8 @@ body.peOpen{overflow:hidden}
 
 /* v0.23.181 newsletter block */
 .nlBox{max-width:420px;margin:26px auto 8px;padding:16px 16px 10px;border:1px solid #c99e6755;border-radius:16px;background:#0a2a3080;text-align:center}.nlT{margin:0 0 10px;color:var(--gold);font-size:15px}.nlRow{display:flex;gap:8px}.nlRow input[type=email]{flex:1;min-width:0;padding:11px 14px;border-radius:24px;border:1px solid #c99e6777;background:#02191e;color:var(--tx);font:inherit}.nlRow button{padding:10px 18px}.nlHp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}.nlC{font-size:11px;color:var(--mut);margin:8px 0 0;line-height:1.4}.nlC a{color:var(--mut)}.nlS{font-size:13px;color:var(--gold);margin:6px 0 0;min-height:1em}
+.admPr select,.admPr input{width:100%;box-sizing:border-box;margin:0 0 8px;padding:10px 12px;border-radius:12px;border:1px solid #c99e6766;background:#02191E;color:#F3EDE4;font-size:15px}
+.admN{font-size:12px;color:#9fb3b5;margin:2px 0 8px}.admL{max-height:60vh;overflow:auto;display:flex;flex-direction:column;gap:6px}
+.admR{display:block;text-align:left;width:100%;padding:10px 12px;border-radius:12px;border:1px solid #c99e6733;background:#0a2a30;color:#F3EDE4;font:inherit;cursor:pointer}
+.admR b{display:block;color:#F3EDE4;font-size:14.5px;letter-spacing:0;text-transform:none}.admLoc{display:block;font-size:12.5px;color:#9fb3b5;margin:2px 0 5px}
+.admM i{display:inline-block;font-style:normal;font-size:11.5px;padding:2px 8px;margin:0 4px 4px 0;border-radius:10px;border:1px solid #c99e6755;color:#e6d3b3}.admM i.on{background:#c99e6733;border-color:#C99E67}.admE{color:#9fb3b5}
