@@ -57,7 +57,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
  .core{background:#f7f1e8!important}.note{background:#f4f8f7!important;color:#1d2a2c!important;border-color:#9cc!important}.disc{color:#555!important}
  .bm svg,.bl i,.bmg i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.bm,.bl,.bmc .row{break-inside:avoid;page-break-inside:avoid}.bl b,.bl span,.bmc .row{color:#1d2a2c!important}.bms,.bm figcaption{color:#8a6537!important}.mk{border-color:#1d2a2c!important}
  .ses .num{background:#C99E67!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- #vPlan{break-before:page;page-break-before:always}
+ .view:not(.on){display:none!important}.bm svg{max-height:170px!important}.bm{font-size:11px}.npb{break-inside:avoid;page-break-inside:avoid}.pgb{display:block!important;break-before:page;page-break-before:always;height:0}
  .pdfh{display:flex;align-items:center;justify-content:space-between;background:#02191E!important;color:#C99E67!important;padding:14px 18px;border-radius:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:13px;letter-spacing:2px;text-transform:uppercase}
  .photos img{border:1px solid #d9c4a3}.bar .fl{-webkit-print-color-adjust:exact;print-color-adjust:exact}.bar .bl{color:#1d2a2c!important}.echips span{color:#8a6537!important;border-color:#c99e67!important}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;opacity:1!important}}
@@ -68,6 +68,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 .gD{border-top:1px solid #c99e671a;padding:4px 0}.gD summary{cursor:pointer;list-style:none;display:flex;gap:8px;padding:10px 0;font-size:15px}.gD summary::-webkit-details-marker{display:none}.gD summary span{margin-left:auto;color:var(--gold);font-size:12.5px}.gD summary::after{content:"›";color:var(--gold);transition:transform .2s}.gD[open] summary::after{transform:rotate(90deg)}
 .gPrac{border-color:#4fa3a088}
 @media print{.gft{break-inside:auto}.gHero p,.gCore,.gDay,.gD summary,.gNote{color:#1d2a2c!important}.gHero .k,.gDay b,.gD summary span{color:#8a6537!important}.gCore,.gDay{background:#f7f1e8!important;border-color:#d9c4a3!important}.gPent,.gHero{break-inside:avoid;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact}.bar .tr{background:#efe7da!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.gHero{break-after:avoid}.gPent text{fill:#5a4a33}.gD summary::after{display:none}}
+.pgb{display:none}.lead{font-size:15px;line-height:1.6;margin:0 0 10px}.gCore span{display:block;font-style:normal;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:3px}
 </style></head><body><div class="wrap">
 <div class="top"><a href="./" id="back">← FasciApp</a><span style="font-size:12px;color:var(--mut)">Private · only you see this</span></div>
 <nav class="steps" id="steps" hidden><a data-s="intake"><b>1</b>Intake</a><a data-s="res"><b>2</b>Assessment</a><a data-s="plan"><b>3</b>Plan</a></nav>
@@ -79,7 +80,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 <div id="vPlan" class="view"></div>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="gifts.js?v=0.23.188"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="gifts.js?v=0.23.189"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
@@ -117,41 +118,39 @@ function bodyMap(M){if(!M||!M.belts)return"";const B=M.belts,I=M.issues||[];
  h+=BM_BELTS.map(([k,l],i)=>{const n=Math.max(0,Math.min(3,+B[k]||0));return '<div class="bl"><i style="background:rgba(226,87,76,'+(Math.max(BM_OP[n],.06)+.05)+')"></i><b>'+(i+1)+' '+l+'</b><span>'+BM_LV[n]+'</span></div>'}).join("");
  if(I.length)h+='<div class="bms">Possible issues</div>'+I.map((it,j)=>'<div class="row"><b class="mk">'+(j+1)+'</b><div><span class="lbl">'+E(it.label||"")+'</span>'+E(it.text||"")+'</div></div>').join("");
  if(M.note)h+='<p class="dir">'+E(M.note)+'</p>';return h+'</section>'}
-/* v0.23.188 Five Gifts: data.gifts (new questionnaire) or legacy data.pattern_scores */
-function giftsCard(D){const F=window.FA_GIFTS;if(!F)return"";const g=D.gifts||F.fromLegacy(D.pattern_scores);if(!g)return"";const G=F.G,O=F.ORDER,P1=G[g.primary],P2=G[g.secondary];
+/* v0.23.189 Five Gifts (concise): leading gift chart + primary only. data.gifts or legacy data.pattern_scores */
+function giftsOf(D){const F=window.FA_GIFTS;return F?(D.gifts||F.fromLegacy(D.pattern_scores)):null}
+function giftsCard(D){const F=window.FA_GIFTS,g=giftsOf(D);if(!g)return"";const G=F.G,O=F.ORDER,P1=G[g.primary],P2=G[g.secondary];
  const ang=k=>(-90+72*O.indexOf(k))*Math.PI/180,pt=(k,r)=>[100+r*Math.cos(ang(k)),100+r*Math.sin(ang(k))];
  const grid=[25,50,75,100].map(q=>'<polygon points="'+O.map(k=>pt(k,q*.72).join(",")).join(" ")+'" fill="none" stroke="#c99e6733"/>').join("")+O.map(k=>'<line x1="100" y1="100" x2="'+pt(k,72)[0]+'" y2="'+pt(k,72)[1]+'" stroke="#c99e6726"/>').join("");
  const shape='<polygon points="'+O.map(k=>pt(k,Math.max(6,g.pct[k])*.72).join(",")).join(" ")+'" fill="#C99E6755" stroke="#C99E67" stroke-width="1.6"/>'+O.map(k=>{const [x,y]=pt(k,Math.max(6,g.pct[k])*.72);return '<circle cx="'+x+'" cy="'+y+'" r="3" fill="'+(k==g.primary?"#F3EDE4":"#C99E67")+'"/>'}).join("");
- const lab=O.map(k=>{const [x,y]=pt(k,90);return '<text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-size="10.5" fill="'+(k==g.primary||k==g.secondary?"#C99E67":"#9fb3b5")+'" font-family="sans-serif" font-weight="'+(k==g.primary?700:400)+'">'+G[k].name+'</text>'}).join("");
- const head=g.blend?'A blend of '+P1.name+' and '+P2.name:'Your leading gift: '+P1.name;
- let h='<section class="card gft"><div class="sh"><div class="n">✦</div><h2>Your Five Gifts<small>Self-reflection'+(g.source&&g.source!="questionnaire"?' · from your '+E(g.source):'')+'</small></h2></div>';
- h+='<div class="gHero"><div class="k">'+E(head)+'</div><p>'+E(P1.gifts)+'</p>'+(g.blend?'<p>'+E(P2.gifts)+'</p>':'')+'</div>';
+ const lab=O.map(k=>{const [x,y]=pt(k,90);return '<text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-size="10.5" fill="'+(k==g.primary?"#C99E67":"#9fb3b5")+'" font-family="sans-serif" font-weight="'+(k==g.primary?700:400)+'">'+G[k].name+'</text>'}).join("");
+ let h=card("1","Your leading gift",P1.name+" · "+P1.right)+'<div class="gHero"><p>'+E(P1.gifts)+'</p></div>';
  h+='<svg class="gPent" viewBox="-20 -8 240 216" role="img" aria-label="Five Gifts chart">'+grid+shape+lab+'</svg>';
- h+=g.rank.map(k=>{const v=g.pct[k];return '<div class="bar"><div class="bl">'+G[k].icon+' '+G[k].name+' <em>'+G[k].right.toLowerCase()+'</em><span>'+v+'% · '+E(g.bands[k])+'</span></div><div class="tr"><div class="fl" style="width:'+Math.max(2,v)+'%"></div></div></div>'}).join("");
- h+='<p class="gNote">Every pattern began as a wise way to stay safe, and each carries a gift. Most people have all five; the highest shows where your energy most often goes, especially under stress. '+(g.blend?'Your top two are close, so read both.':'')+'</p></section>';
- const full=(x,tag)=>'<section class="card gft"><div class="sh"><div class="n">'+x.icon+'</div><h2>'+tag+': '+x.name+'<small>'+E(x.right)+' · '+E(x.trad)+'</small></h2></div>'+body(x)+'</section>';
- const body=x=>'<div class="gCore">'+E(x.core)+'</div>'+[["Your gifts",x.gifts],["How you learned to stay safe",x.safe],["What can happen under stress",x.stress],["How this may show up in your body",x.body],["What supports you",x.supports]].map(([a,b],i)=>'<div class="it"><h3>'+(i+2)+'. '+a+'</h3><p>'+E(b)+'</p></div>').join("")+'<div class="it"><h3>7. Breathwork suggestions</h3><table class="tbl">'+x.breath.map(([a,b])=>'<tr><td>'+a+'</td><td>'+E(b)+'</td></tr>').join("")+'</table></div><div class="gDay"><b>A gentle daily practice</b>'+E(x.daily)+'</div>';
- h+=full(P1,g.blend?"Blend":"Primary gift")+full(P2,g.blend?"Blend":"Secondary gift");
- const rest=g.rank.slice(2);h+='<section class="card gft"><div class="sh"><div class="n">◇</div><h2>Your other gifts<small>Less in the foreground right now · tap to read</small></h2></div>'+rest.map(k=>'<details class="gD"><summary>'+G[k].icon+' '+G[k].name+'<span>'+g.pct[k]+'% · '+E(g.bands[k])+'</span></summary>'+body(G[k])+'</details>').join("")+'</section>';
- h+='<section class="card gft gPrac"><div class="sh"><div class="n">⚕</div><h2>For your practitioner<small>Summary to share before your session</small></h2></div><table class="tbl"><tr><td>Pattern</td><td>'+E(P1.name+' ('+P1.trad+') '+g.pct[g.primary]+'%')+(g.blend?' · blend with ':' · then ')+E(P2.name+' ('+P2.trad+') '+g.pct[g.secondary]+'%')+'</td></tr><tr><td>Core question</td><td>'+E(P1.core)+'</td></tr><tr><td>Pace · intensity</td><td>'+E(P1.breath[0][1]+' '+P1.breath[1][1])+'</td></tr><tr><td>Approach</td><td>'+E(P1.prac)+(g.blend||g.pct[g.secondary]>=40?' '+E(P2.prac):'')+'</td></tr><tr><td>Success looks like</td><td>'+E(P1.breath[3][1])+'</td></tr></table><p class="gNote">Self-report, to be read together with the body reading and the person’s own words. Answers can change in the intake (step 1).</p></section>';
- return h+'<p class="disc">'+E(F.DISC)+'</p>'}
+ h+=g.rank.map(k=>'<div class="bar"><div class="bl">'+G[k].name+'<span>'+g.pct[k]+'% · '+E(g.bands[k])+'</span></div><div class="tr"><div class="fl" style="width:'+Math.max(2,g.pct[k])+'%"></div></div></div>').join("");
+ h+='<p class="gNote">Each pattern began as a wise way to stay safe and carries a gift. Most people have all five.'+(g.blend?' '+E(P2.name)+' is close behind, so you may recognise yourself there too.':'')+'</p></section>';
+ h+='<div class="pgb"></div>'+card("2",P1.name.toUpperCase()+": "+P1.right,P1.trad)+'<div class="gCore"><span>Core question</span>'+E(P1.core)+'</div>'+[["Your gifts",P1.gifts],["How you learned to stay safe",P1.safe],["What can happen under stress",P1.stress],["How this may show up in your body",P1.body],["What supports you",P1.supports]].map(([a,b])=>'<div class="it"><h3>'+a+'</h3><p>'+E(b)+'</p></div>').join("")+'<div class="it"><h3>Breathwork suggestions</h3><table class="tbl">'+P1.breath.map(([a,b])=>'<tr><td>'+a+'</td><td>'+E(b)+'</td></tr>').join("")+'</table></div></section>';
+ return h}
+function pracCard(D,n){const F=window.FA_GIFTS,g=giftsOf(D);if(!g)return"";const P1=F.G[g.primary];
+ return card(n,"For the practitioner","Summary to share before your session").replace('class="card"','class="card npb"')+'<table class="tbl"><tr><td>Pattern</td><td>'+E(P1.name+" · "+P1.trad+" · "+g.pct[g.primary]+"%")+'</td></tr><tr><td>Core question</td><td>'+E(P1.core)+'</td></tr><tr><td>Pace · intensity</td><td>'+E(P1.breath[0][1]+" "+P1.breath[1][1])+'</td></tr><tr><td>Approach</td><td>'+E(P1.prac)+'</td></tr><tr><td>Success looks like</td><td>'+E(P1.breath[3][1])+'</td></tr></table></section>'}
+const card=(n,t,sub)=>'<section class="card"><div class="sh"><div class="n">'+n+'</div><h2>'+E(t)+(sub?'<small>'+E(sub)+'</small>':'')+'</h2></div>';
 addEventListener("beforeprint",()=>document.querySelectorAll("details.gD").forEach(d=>d.open=true));
-function renderRes(r){const R=r.report,ph=['front','side','back'].map(v=>'<img data-ph="'+E(r['photo_'+v])+'" alt="'+v+'">').join('');
- const rf=R.red_flag&&R.red_flag.level!="none";
- let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(new Date(r.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))+'</p></div>'+tools("res")+'<div class="photos">'+ph+'</div>';
- h+='<div class="note '+(rf?"rf":"ok")+'">'+(rf?"⚠️ <b>Please get medical clearance before bodywork and breathwork.</b> ":"✓ ")+P("red_flag.text",R.red_flag&&R.red_flag.text,"span")+'</div>';
- h+=bodyMap(R.body_map);
- R.sections.forEach((s,i)=>{const b="sections."+i;h+='<section class="card"><div class="sh"><div class="n">'+(s.key=="map"?"◎":i)+'</div><h2>'+E(s.title)+'<small>'+E(s.subtitle||"")+'</small></h2></div>';
-  if(s.key=="map"){h+='<ul class="str">'+s.strengths.map((x,j)=>P(b+".strengths."+j,x,"li")).join('')+'</ul>'+P(b+".core",s.core,"div","core")+'<table class="tbl">'+s.links.map((l,j)=>'<tr><td>'+E(l[0])+'</td>'+P(b+".links."+j+".1",l[1],"td")+'</tr>').join('')+'</table>'+P(b+".direction",s.direction,"div","dir")}
-  else h+=s.items.map((x,j)=>'<div class="it">'+P(b+".items."+j+".h",x.h,"h3")+P(b+".items."+j+".p",x.p)+'</div>').join('');h+='</section>'});
- {const D=r.data||{},en=[].concat(D.energetics||[]);if(D.body_experience||en.length||D.energetics_notes){
-  h+='<section class="card"><div class="sh"><div class="n">✧</div><h2>How you experience your body<small>Intake · grounding &amp; energetics</small></h2></div>';
-  h+='<div class="it"><h3>In your own words</h3><p data-d="body_experience">'+E(D.body_experience||"—")+'</p></div>';
-  h+='<div class="it"><h3>Grounding &amp; energetics</h3>'+(en.length?'<div class="echips">'+en.map(x=>'<span>'+E(x)+'</span>').join('')+'</div>':'<p>—</p>')+'<p style="font-size:12px;color:var(--mut);margin-top:6px">Change markers in the intake (step 1).</p></div>';
-  h+='<div class="it"><h3>Energetics notes</h3><p data-d="energetics_notes">'+E(D.energetics_notes||"—")+'</p></div></section>'}}
- h+=giftsCard(r.data||{});
- if(R.photo_note)h+='<div class="note ph">📷 '+P("photo_note",R.photo_note,"span")+'</div>';
- h+='<div class="nav2"><button class="sec2" data-go="intake">← Intake</button><button data-go="plan">Next: Treatment plan →</button></div><p class="disc">'+E(R.disclaimer)+'</p>';
+function renderRes(r){const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs=R.sections||[],sx=k=>{const i=secs.findIndex(s=>s.key==k);return i<0?null:{s:secs[i],b:"sections."+i}};
+ const rf=R.red_flag&&R.red_flag.level!="none";let n=0;const N=()=>String(++n);
+ let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(new Date(r.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))+'</p></div>'+tools("res");
+ if(rf)h+='<div class="note rf">⚠️ <b>Please get medical clearance before bodywork and breathwork.</b> '+P("red_flag.text",R.red_flag.text,"span")+'</div>';
+ const gh=giftsCard(D);if(gh){h+=gh;n=2}
+ /* Body type: summary + key links + direction (from the whole-being map) */
+ {const m=sx("map");h+='<div class="pgb"></div>'+card(N(),"Your body type","The most useful points");if(R.summary)h+=P("summary",R.summary,"p","lead");
+  if(m){const keep=["Body signs","Energetics","Fascial lines","Emotional theme","Nervous system"];h+='<table class="tbl">'+m.s.links.map((l,j)=>keep.includes(l[0])?'<tr><td>'+E(l[0])+'</td>'+P(m.b+".links."+j+".1",l[1],"td")+'</tr>':'').join('')+'</table>';
+   if(m.s.strengths&&m.s.strengths.length)h+='<div class="it"><h3>Strengths</h3><ul class="str">'+m.s.strengths.slice(0,3).map((x,j)=>P(m.b+".strengths."+j,x,"li")).join('')+'</ul></div>';
+   if(m.s.direction)h+=P(m.b+".direction",m.s.direction,"div","dir")}h+='</section>'}
+ /* Belts of tension: visual */
+ if(R.body_map)h+='<div class="pgb"></div>'+bodyMap(R.body_map).replace('<div class="n">◈</div><h2>Body map<small>Reich’s seven belts of tension · possible issues</small>','<div class="n">'+N()+'</div><h2>Belts of tension<small>Where tension sits · Reich’s seven belts</small>');
+ /* Body reading: one segment, view by view */
+ {const bd=sx("body");if(bd){const skip=/zones of fear|energetics/i;h+='<div class="pgb"></div>'+card(N(),"Body reading","Front, side and back");h+=bd.s.items.map((x,j)=>skip.test(x.h)?'':'<div class="it">'+P(bd.b+".items."+j+".h",x.h,"h3")+P(bd.b+".items."+j+".p",x.p)+'</div>').join('')+'</section>'}}
+ h+=pracCard(D,N());
+ h+='<div class="nav2"><button class="sec2" data-go="pdf">⤓ Export PDF</button><button data-go="plan">Next: Treatment plan →</button></div><p class="disc">'+E(F?F.DISC:R.disclaimer)+'</p>';
  $("#vRes").innerHTML=stag(h);
  $("#vRes").querySelectorAll("img[data-ph]").forEach(async im=>{const {data}=await sb.storage.from("assessment-photos").createSignedUrl(im.dataset.ph,3600);if(data)im.src=data.signedUrl});
  let p='<div class="hero"><div class="k">Treatment plan</div><h1>10 sessions</h1><p>Bodywork and breathwork, step by step, at your pace.</p></div>'+tools("plan");
