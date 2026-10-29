@@ -57,23 +57,27 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 <div class="tip">Tips: full body in frame, plain wall behind, fitted clothes, camera at hip height about 2–3 m away.</div></section>
 
 <section class="sec"><div class="sh"><div class="n">1</div><h2>Main complaint &amp; goal</h2></div>
+<label class="f">Reason for coming</label><div class="chips" data-k="reasons" data-o="Pain,Stiffness,Posture,Breath,Stress,Emotional tension,Other"></div>
 <label class="f">What brings you in?</label><textarea data-k="complaint" placeholder="e.g. lower back pain after sitting"></textarea>
 <label class="f">What would you like to be able to do again?</label><textarea data-k="goal" placeholder="e.g. play with my kids without pain"></textarea></section>
 
 <section class="sec"><div class="sh"><div class="n">2</div><h2>Pain map</h2></div>
 <label class="f">Where does it hurt?</label><div class="chips" data-k="pain_areas" data-o="Head,Jaw,Neck,Shoulders,Upper back,Chest,Arms,Elbows,Wrists / hands,Lower back,Abdomen,Pelvis,Hips,Glutes,Thighs,Knees,Calves,Ankles,Feet"></div>
 <label class="f">Intensity (0–10)</label><div class="rng"><input type="range" min="0" max="10" value="0" data-k="pain_intensity"><output>0</output></div>
-<label class="f">Type of pain</label><div class="chips" data-k="pain_type" data-o="Sharp,Dull,Burning,Radiating,Aching,Tingling"></div></section>
+<label class="f">Type of pain</label><div class="chips" data-k="pain_type" data-o="Sharp,Dull,Burning,Radiating,Aching,Tingling,Pulling,Heavy,Tight"></div>
+<label class="f">Constant or comes and goes?</label><div class="chips" data-k="pain_pattern" data-r="1" data-o="Constant,Comes and goes"></div></section>
 
 <section class="sec"><div class="sh"><div class="n">3</div><h2>Tension &amp; stiffness</h2></div>
 <label class="f">Where do you feel tight or restricted?</label><div class="chips" data-k="tension_areas" data-o="Jaw,Neck,Shoulders,Upper back,Chest,Diaphragm,Lower back,Hips,Hamstrings,Calves,Feet"></div>
-<label class="f">When is it worse?</label><div class="chips" data-k="tension_when" data-o="Morning,Evening,After sitting,After standing,After exercise,Under stress,Cold weather"></div></section>
+<label class="f">When is it worse?</label><div class="chips" data-k="tension_when" data-o="Morning,Evening,After sitting,After standing,After exercise,Under stress,Cold weather,Night"></div></section>
 
 <section class="sec"><div class="sh"><div class="n">4</div><h2>History &amp; timeline</h2></div>
 <div class="row"><div><label class="f">When did it start?</label><input data-k="started" placeholder="e.g. 2 years ago"></div>
 <div><label class="f">Onset</label><select data-k="onset"><option value="">Choose</option><option>Sudden</option><option>Gradual</option><option>Not sure</option></select></div></div>
 <label class="f">What makes it better?</label><input data-k="better" placeholder="e.g. walking, warmth">
-<label class="f">What makes it worse?</label><input data-k="worse" placeholder="e.g. long drives"></section>
+<label class="f">What makes it worse?</label><input data-k="worse" placeholder="e.g. long drives">
+<label class="f">When it started, what was happening in your life then? <span class="opt">optional</span></label><textarea data-k="started_life" placeholder="Share only what feels right"></textarea>
+<label class="f">Previous treatment and what helped</label><input data-k="prev_treatment" placeholder="e.g. massage 2024, helped for a week"></section>
 
 <section class="sec"><div class="sh"><div class="n">5</div><h2>Injuries, surgeries &amp; scars<small>Old ones count too. Scars often shape fascial patterns.</small></h2></div>
 <textarea data-k="injuries" placeholder="e.g. broken left ankle 2015, C-section 2019"></textarea></section>
@@ -93,7 +97,9 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 <section class="sec"><div class="sh"><div class="n">8</div><h2>Sleep, stress &amp; breath</h2></div>
 <label class="f">Sleep quality</label><div class="chips" data-k="sleep" data-r="1" data-o="Good,Okay,Poor,Very poor"></div>
 <label class="f">Stress level (0–10)</label><div class="rng"><input type="range" min="0" max="10" value="0" data-k="stress"><output>0</output></div>
-<label class="f">Breathing</label><div class="chips" data-k="breath" data-o="Shallow,Hold my breath,Chest breathing,Mouth breathing,Feels free"></div></section>
+<label class="f">Breathing</label><div class="chips" data-k="breath" data-o="Shallow,Hold my breath,Chest breathing,Mouth breathing,Sigh a lot,Feels free"></div>
+<label class="f">Under stress my body tends to</label><div class="chips" data-k="stress_response" data-o="Tense up,Go numb or spacey,Get restless,Collapse"></div>
+<label class="f">Breathwork or meditation experience <span class="opt">optional</span></label><input data-k="breath_experience" placeholder="e.g. yoga, some breathwork"></section>
 
 <section class="sec"><div class="sh"><div class="n">✧</div><h2>How do you experience your body?<small>In your own words, then practitioner markers.</small></h2></div>
 <label class="f">How do you experience your body?</label><textarea data-k="body_experience" placeholder="e.g. I feel heavy in my legs, my head is always busy, my chest feels closed"></textarea>
@@ -108,20 +114,39 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 
 <section class="sec"><div class="sh"><div class="n">9</div><h2>Health &amp; medication</h2></div>
 <label class="f">Health conditions and medication</label><textarea data-k="health" placeholder="e.g. hypothyroid, ibuprofen as needed"></textarea>
-<label class="f">Do any of these apply?</label><div class="chips" id="flags" data-k="red_flags" data-o="Pregnancy,Blood thinners,Recent trauma or accident,Unexplained weight loss,Numbness or loss of strength"></div>
+<label class="f">Do any of these apply? <span class="opt">any yes → see a doctor before hands-on work</span></label><div class="chips" id="flags" data-k="red_flags" data-o="Pregnancy,Blood thinners,Recent trauma or accident,Unexplained weight loss,Numbness or loss of strength,Fever or night sweats,Constant or night pain not changed by position,Bowel or bladder changes / groin numbness,Chest pain / palpitations / unexplained breathlessness,Swollen hot or painful calf,Known cancer / osteoporosis / aneurysm / hernia / inflammatory flare,Surgery in the last 6 weeks,Dizziness / fainting / stroke / vertebral artery history"></div>
 <div class="warn" id="warn">⚠️ <b>Please check with a doctor first.</b> One or more of these needs medical clearance before bodywork.</div></section>
 
 <section class="sec"><div class="sh"><div class="n">10</div><h2>Emotional background &amp; touch <span class="opt">optional</span></h2></div>
 <label class="f">Anything you'd like your practitioner to know?</label><textarea data-k="emotional" placeholder="Share only what feels right"></textarea>
 <label class="f">Touch &amp; boundaries</label><div class="chips" data-k="touch" data-o="Light pressure,Medium pressure,Deep pressure,Ask before each area,Avoid some areas"></div>
 <input data-k="touch_notes" placeholder="Areas to avoid or other wishes" style="margin-top:10px">
+<label class="f">Clothing and draping</label><div class="chips" data-k="draping" data-r="1" data-o="Underwear,Shorts and top,Other"></div>
+<label class="f">Your stop signal</label><input data-k="stop_signal" placeholder="e.g. the word “pause” or a raised hand">
+<label class="f">Emotions, sounds, tears or movement may arise</label><div class="chips" data-k="release_ok" data-r="1" data-o="That’s okay,Talk about it first"></div>
+<label class="f">Photo consent</label><div class="chips" data-k="photo_consent" data-o="Front,Sides,Back,None"></div>
 <label class="consent"><input type="checkbox" id="consent"> I agree this information and photos are stored privately for planning my sessions. I can ask for deletion at any time.</label></section>
+
+<section class="sec"><div class="sh"><div class="n">✚</div><h2>Practitioner · after the scan<small>Confirm or correct the photo reading.</small></h2></div>
+<div class="row3"><div><label class="f">Side</label><input data-k="obs_side" placeholder="head forward, pelvis neutral"></div><div><label class="f">Front</label><input data-k="obs_front" placeholder="shoulders level, feet straight"></div><div><label class="f">Back</label><input data-k="obs_back" placeholder="R shoulder lower"></div></div>
+<label class="f">Movement and palpation · tick the restricted side</label>
+<label class="f" style="margin-top:8px;font-size:12px">Neck rotation</label><div class="chips" data-k="mv_neck_rotation" data-o="L restricted,R restricted,Painful"></div>
+<label class="f" style="margin-top:8px;font-size:12px">Neck side-bend</label><div class="chips" data-k="mv_neck_side_bend" data-o="L restricted,R restricted,Painful"></div>
+<label class="f" style="margin-top:8px;font-size:12px">Arm elevation</label><div class="chips" data-k="mv_arm_elevation" data-o="L restricted,R restricted,Painful"></div>
+<label class="f" style="margin-top:8px;font-size:12px">Hand behind back</label><div class="chips" data-k="mv_hand_behind_back" data-o="L restricted,R restricted,Painful"></div>
+<label class="f" style="margin-top:8px;font-size:12px">Thoracic rotation</label><div class="chips" data-k="mv_thoracic_rotation" data-o="L restricted,R restricted,Painful"></div>
+<label class="f" style="margin-top:8px;font-size:12px">Rib expansion</label><div class="chips" data-k="mv_rib_expansion" data-o="L restricted,R restricted,Painful"></div>
+<label class="f" style="margin-top:8px;font-size:12px">Hip IR / ER</label><div class="chips" data-k="mv_hip_ir_er" data-o="L restricted,R restricted,Painful"></div>
+<label class="f" style="margin-top:8px;font-size:12px">Forward fold</label><div class="chips" data-k="mv_forward_fold" data-o="L restricted,R restricted,Painful"></div>
+<label class="f" style="margin-top:8px;font-size:12px">Single-leg balance</label><div class="chips" data-k="mv_single_leg_balance" data-o="L restricted,R restricted,Painful"></div>
+<label class="f" style="margin-top:8px;font-size:12px">Foot arch / toes</label><div class="chips" data-k="mv_foot_arch_toes" data-o="L restricted,R restricted,Painful"></div>
+<label class="f">Findings that contradict the hypothesis</label><textarea data-k="contradictions" placeholder="e.g. palpation: upper trap soft, levator dense"></textarea></section>
 <button class="del" id="del" hidden>Delete this record</button>
 </div>
 <div class="done" id="done"><h2>Assessment saved ✓</h2><p style="color:var(--mut)">Stored privately in your account.</p><button onclick="location.reload()" style="max-width:280px;margin-top:20px">New assessment</button></div>
 <div class="bar" id="bar"><div><button id="go">Save &amp; next: Assessment →</button><div class="msg" id="msg"></div></div></div>
 <script>try{localStorage.setItem("faScanSeen","1")}catch(e){}</script><script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="gifts.js?v=0.23.190"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="gifts.js?v=0.23.191"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
