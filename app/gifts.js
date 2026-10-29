@@ -1,4 +1,4 @@
-/* v0.23.188 Five Gifts self-reflection (character structure traditions: Reich, Lowen, Pierrakos). Shared by assessment.html + assessment-results.html */
+/* v0.23.190 Five Gifts self-reflection (character structure traditions: Reich, Lowen, Pierrakos). Shared by assessment.html + assessment-results.html */
 (function(){
 const SCALE=["Not true","Rarely","Sometimes","Often","Very true"];
 const INTRO="Rate how true each statement is for you, especially under stress or in close relationships.";
@@ -83,7 +83,17 @@ l:{k:"l",name:"Love",right:"The right to love and sexuality",trad:"Rigid / Achie
  prac:"Keep it soft and flowing; there is no right way to breathe. Melt rather than achieve. Approach sexuality themes with extra care and consent."}};
 const ORDER=["e","n","t","a","l"];
 const DISC="This is an educational self-reflection tool, not a diagnosis. It is based on character structure traditions (Reich, Lowen, Pierrakos) and has not been scientifically validated as a personality test. It does not replace psychotherapy or medical care. Breathwork is not suitable for everyone. Please consult a doctor first if you are pregnant or have a heart condition, epilepsy, serious psychiatric history, or other medical concerns.";
-const band=p=>p>=75?"Strong pattern":p>=40?"Present":"Less active";
+/* v0.23.190 one set of bands everywhere (app + PDF): 70% / 35% */
+const BANDS=[[70,"strong","Strong","70%+"],[35,"present","Present","35–69%"],[0,"less","Less active","under 35%"]];
+const bandKey=p=>BANDS.find(b=>p>=b[0])[1];
+const band=p=>"pattern "+BANDS.find(b=>p>=b[0])[2].toLowerCase();
+/* challenge / gift lines per theme (from the texts above) */
+const CG={
+e:{ch:["Feeling safe enough to be fully here, in your body","Staying present when someone gets close","Taking up space instead of withdrawing"],gf:["Depth, sensitivity and intuition","Creativity and a rich inner world","Clarity: you perceive what others miss"]},
+n:{ch:["Believing your needs are allowed","Asking directly for what you need","Standing on your own legs while staying connected"],gf:["Warmth, openness and generosity","Empathy: you sense what others need","You open hearts and connect easily"]},
+t:{ch:["Letting go of control","Allowing yourself to be supported","Showing vulnerability without feeling weak"],gf:["Inner strength and courage","Natural leadership and charisma","Protectiveness: you stand up for others"]},
+a:{ch:["Saying a clear yes and no","Expressing what you feel without shame","Moving freely, without pressure to perform"],gf:["Loyalty, patience and endurance","Warmth and groundedness","Dependability: you can carry a lot"]},
+l:{ch:["Opening your heart without having to earn love","Receiving care and pleasure","Softening effort and perfectionism"],gf:["Integrity and reliability","Drive, passion and dedication","Grace and commitment to what matters"]}};
 /* answers {g1:0-4,...} -> scores. Max per gift = 4 × items. Blend if top two are within 10% (≈ 1-2 points on the original 12-point scale). */
 function score(ans,src){const sc={},mx={};ORDER.forEach(k=>{sc[k]=0;mx[k]=0});Q.forEach(([id,g])=>{if(ans[id]!=null){sc[g]+=+ans[id];mx[g]+=4}});
  const pct={};ORDER.forEach(k=>pct[k]=mx[k]?Math.round(sc[k]/mx[k]*100):0);return finish(pct,sc,src||"questionnaire",Object.keys(ans).length)}
@@ -91,5 +101,5 @@ function finish(pct,sc,src,n){const rk=ORDER.slice().sort((a,b)=>pct[b]-pct[a]),
  return {v:1,source:src,answered:n,scores:sc,pct,bands:Object.fromEntries(ORDER.map(k=>[k,band(pct[k])])),primary:rk[0],secondary:rk[1],blend,rank:rk}}
 /* legacy: older scans stored pattern_scores (5 items × 0-3 = 0-15 per structure) */
 function fromLegacy(ps){if(!ps)return null;const pct={},sc={};ORDER.forEach(k=>{const v=+ps[G[k].legacy]||0;sc[k]=v;pct[k]=Math.round(v/15*100)});return finish(pct,sc,"earlier patterns questionnaire",25)}
-window.FA_GIFTS={Q,NEW,G,ORDER,SCALE,INTRO,DISC,band,score,fromLegacy};
+window.FA_GIFTS={Q,NEW,G,ORDER,SCALE,INTRO,DISC,band,bandKey,BANDS,CG,score,fromLegacy};
 })();
