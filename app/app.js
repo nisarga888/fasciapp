@@ -94,8 +94,8 @@ async function logout(){closeChat();if(unsub){unsub();unsub=null}msgUid=null;me=
 $("#hOut").onclick=logout;$("#pOut").onclick=logout;
 
 // auth
-function showAuthMain(){$("#authForm").hidden=false;$("#forgotForm").hidden=true;$("#resetForm").hidden=true;$("#authLook").parentElement.hidden=false}
-function showForgot(){$("#authForm").hidden=true;$("#forgotForm").hidden=false;$("#resetForm").hidden=true;$("#authTitle").textContent="Reset your password";
+function showAuthMain(){try{FaCaptcha.mount("auth")}catch(e){}$("#authForm").hidden=false;$("#forgotForm").hidden=true;$("#resetForm").hidden=true;$("#authLook").parentElement.hidden=false}
+function showForgot(){try{FaCaptcha.mount("forgot")}catch(e){}$("#authForm").hidden=true;$("#forgotForm").hidden=false;$("#resetForm").hidden=true;$("#authTitle").textContent="Reset your password";
  $("#forgotMsg").textContent="";$("#forgotEmail").value=$("#email").value||"";$("#forgotEmail").focus()}
 function showResetForm(){show("auth");$("#authForm").hidden=true;$("#forgotForm").hidden=true;$("#resetForm").hidden=false;
  $("#authTitle").textContent="Set new password";$$(".seg").forEach(s=>s.hidden=true);
