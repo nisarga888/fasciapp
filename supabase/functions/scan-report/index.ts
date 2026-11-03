@@ -31,20 +31,32 @@ Deno.serve(async (req) => {
   if ((count ?? 0) >= DAILY_CAP) return new Response("daily cap reached", { status: 429 });
   const imgs = (await Promise.all([a.photo_front, a.photo_side, a.photo_back].map((p) => b64(sb, p)))).filter(Boolean);
   const intake = { client_name: a.client_name, red_flags: a.red_flags, data: a.data, photos: "front, side, back in that order" };
-  let r: any, j: any, used = MODEL;
+  // v18 (3 Nov 2026): retry on bad or incomplete model output too, not only on missing candidates,
+  // so one truncated/invalid answer no longer leaves the report stuck on "Preparing". Prompt and format unchanged.
+  let r: any, j: any, used = MODEL, report: any = null, why = "";
+  const t0 = Date.now();
   for (const m of [MODEL, "gemini-3.8-flash", MODEL, "gemini-3.7-flash", MODEL]) {
-    r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`, {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ system_instruction: { parts: [{ text: SYS }] },
-      contents: [{ role: "user", parts: [{ text: "Intake:\n" + JSON.stringify(intake) }, ...imgs] }],
-      generationConfig: { responseMimeType: "application/json", temperature: 0.4, maxOutputTokens: 16000, thinkingConfig: { thinkingLevel: "low" } } }),
-  });
-  j = await r.json();
-    used = m; if (j?.candidates?.[0]) break; await new Promise((z) => setTimeout(z, 3000));
+    const t1 = Date.now();
+    try {
+      r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ system_instruction: { parts: [{ text: SYS }] },
+          contents: [{ role: "user", parts: [{ text: "Intake:\n" + JSON.stringify(intake) }, ...imgs] }],
+          generationConfig: { responseMimeType: "application/json", temperature: 0.4, maxOutputTokens: 16000, thinkingConfig: { thinkingLevel: "low" } } }),
+      });
+      j = await r.json();
+    } catch (e) { j = { error: { message: String(e) } }; }
+    used = m;
+    const txt = j?.candidates?.[0]?.content?.parts?.map((p: any) => p.text || "").join("");
+    let out: any = null;
+    if (txt) { try { out = JSON.parse(String(txt).replace(/^```(json)?|```$/g, "").trim()); } catch { out = null; } }
+    if (out && Array.isArray(out.plan) && out.body_map) { report = out; console.log(`scan-report ${id} ok ${m} ${Date.now() - t1}ms`); break; }
+    why = JSON.stringify({ m, fr: j?.candidates?.[0]?.finishReason, err: j?.error?.message, u: j?.usageMetadata, t: String(txt ?? "").slice(0, 200) });
+    console.log(`scan-report ${id} retry after ${Date.now() - t1}ms: ${why}`);
+    await new Promise((z) => setTimeout(z, 2000));
   }
-  const txt = j?.candidates?.[0]?.content?.parts?.map((p: any) => p.text || "").join("");
-  let report; try { report = JSON.parse(String(txt).replace(/^```(json)?|```$/g, "").trim()); } catch { return new Response("bad model output: " + JSON.stringify({ fr: j?.candidates?.[0]?.finishReason, err: j?.error?.message, u: j?.usageMetadata, t: String(txt).slice(0, 200) }), { status: 502 }); }
-  if (!Array.isArray(report.plan) || !report.body_map) return new Response("incomplete", { status: 502 });
+  if (!report) return new Response("bad model output: " + why, { status: 502 });
+  console.log(`scan-report ${id} total ${Date.now() - t0}ms`);
   // Never name Anatomy Trains in client-facing text (Nisarga, 3 Nov 2026)
   const scrub = (v: any): any => typeof v === "string"
     ? v.replace(/,?\s*(BioDynamic|Biodynamic) Breathwork,? and Anatomy Trains/g, " and Biodynamic Breathwork").replace(/Myofascial Energetic Release\s+and Biodynamic/g, "Myofascial Energetic Release and Biodynamic").replace(/based on (your|photos and your) (photos and )?answers/g, "based on the client\u2019s photos and answers")
