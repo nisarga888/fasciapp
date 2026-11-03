@@ -4,7 +4,7 @@ import { KB, EXAMPLE } from "./kb.ts";
 const MODEL = Deno.env.get("SCAN_MODEL") || "gemini-3.5-flash";
 const SYS = `You are FasciApp Scan, writing a body-reading assessment for a bodywork practitioner using the MER & BBTRS approach.
 Use ONLY this knowledge base:\n${KB}\n
-Rules: not a medical diagnosis; non-medical, tentative, kind language ("may", "suggests"); never diagnose or promise cures; if intake shows red flags, set red_flag text recommending a doctor first.
+Rules: never write the words "Anatomy Trains" (or Thomas Myers) anywhere in the report: the knowledge base uses it internally only; call them "myofascial lines" or "fascial lines". The disclaimer says the reflection is drawn from Myofascial Energetic Release and Biodynamic Breathwork perspectives. Not a medical diagnosis; non-medical, tentative, kind language ("may", "suggests"); never diagnose or promise cures; if intake shows red flags, set red_flag text recommending a doctor first.
 The example below is a DIFFERENT client: use it only for format, depth and tone; never copy its findings, wording or plan. Base everything on this client's intake and photos.
 Return ONLY JSON with exactly the same keys and shape as this example report (sections, 10-item plan with n/focus/bodywork/breathwork/home, body_map with belts 0-3 and numbered issues, summary, disclaimer, photo_note, red_flag, client, date, version):\n${EXAMPLE}`;
 async function b64(sb: any, p: string | null) {
@@ -45,6 +45,13 @@ Deno.serve(async (req) => {
   const txt = j?.candidates?.[0]?.content?.parts?.map((p: any) => p.text || "").join("");
   let report; try { report = JSON.parse(String(txt).replace(/^```(json)?|```$/g, "").trim()); } catch { return new Response("bad model output: " + JSON.stringify({ fr: j?.candidates?.[0]?.finishReason, err: j?.error?.message, u: j?.usageMetadata, t: String(txt).slice(0, 200) }), { status: 502 }); }
   if (!Array.isArray(report.plan) || !report.body_map) return new Response("incomplete", { status: 502 });
+  // Never name Anatomy Trains in client-facing text (Nisarga, 3 Nov 2026)
+  const scrub = (v: any): any => typeof v === "string"
+    ? v.replace(/,?\s*(BioDynamic|Biodynamic) Breathwork,? and Anatomy Trains/g, " and Biodynamic Breathwork").replace(/Myofascial Energetic Release\s+and Biodynamic/g, "Myofascial Energetic Release and Biodynamic")
+        .replace(/Anatomy Trains(['’]s?)?\s+(view|perspectives?|model|lines?|map)/gi, "myofascial lines $2").replace(/myofascial lines (lines?|view|perspectives?|model|map)/gi, (m, w) => /^lines?$/i.test(w) ? "myofascial lines" : "myofascial lines " + w)
+        .replace(/\(?\s*Anatomy Trains\s*\)?/gi, " myofascial lines ").replace(/ {2,}/g, " ").replace(/ ([.,;:])/g, "$1").trim().replace(/^myofascial lines/, "Myofascial lines")
+    : Array.isArray(v) ? v.map(scrub) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, scrub(x)])) : v;
+  report = scrub(report);
   report.version = "auto-" + used; report.auto = true;
   await sb.from("assessments").update({ report, report_ready_at: new Date().toISOString() }).eq("id", id).is("report", null);
   return new Response(JSON.stringify({ ok: true, usage: j.usageMetadata }), { headers: { "Content-Type": "application/json" } });

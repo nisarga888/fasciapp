@@ -157,6 +157,20 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
  .gMain .gPent{float:right;width:230px!important;max-width:230px!important;margin:4px 0 6px 14px}.gMain .gPS,.gMain .gBar,.gMain .gLeg{overflow:hidden}.gMain .gExp{clear:both}}
 /* v0.23.202 top steps: Intake / Breathwork (BBTRS) / MER */
 .steps a{line-height:1.15;padding:7px 4px;border-radius:20px}.steps a small{display:block;font-size:10px;font-weight:400;opacity:.8;margin-top:2px;letter-spacing:.3px}.steps a b{width:17px;height:17px;margin-right:4px}
+/* v0.23.203 part index (Breathwork + MER) */
+.idx{margin:14px 0 20px;padding:12px;border-radius:18px;background:#0b2e33;border:1px solid #c99e6744}
+.idxK{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold);font-weight:700;margin:2px 6px 9px}
+.idx a{display:flex;align-items:center;gap:11px;min-height:44px;padding:8px 12px;border-radius:13px;background:#02191E99;border:1px solid var(--ln);color:var(--tx);text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.idx a+a{margin-top:6px}.idx a:active{background:#c99e6726}
+#pBIdx,#pMIdx{scroll-margin-top:96px}
+.idx a b{flex:none;width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--bg);display:grid;place-items:center;font-size:12px}
+.idx a span{flex:1;font-size:14.5px;line-height:1.3}.idx a i{font-style:normal;color:var(--gold);font-size:18px}
+.toIdx{margin-left:auto;order:3;flex:none;align-self:center;font-size:11.5px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--gold);border:1px solid #c99e6755;border-radius:20px;padding:4px 10px;white-space:nowrap;cursor:pointer;text-decoration:none;background:#02191E66}
+h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
+[data-ix]{scroll-margin-top:92px}
+.idxFab{position:fixed;right:14px;bottom:18px;z-index:30;width:auto;padding:10px 16px;font-size:14px;border-radius:24px;opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .2s,transform .2s}
+.idxFab.on{opacity:1;transform:none;pointer-events:auto}
+@media print{.idx,.toIdx,.idxFab{display:none!important}}
 .nav2 button{white-space:nowrap;padding-left:10px;padding-right:10px}.nav2.eq{grid-template-columns:1fr 1fr}</style></head><body><div class="wrap">
 <div class="top"><a href="./" id="back">← FasciApp</a><span style="font-size:12px;color:var(--mut)">Private · only you see this</span></div>
 <nav class="steps" id="steps" hidden><a data-s="intake"><b>1</b>Intake<small>Form · summary</small></a><a data-s="bbtrs"><b>2</b>Breathwork<small>BBTRS · plan</small></a><a data-s="mer"><b>3</b>MER<small>Myofascial · plan</small></a></nav>
@@ -334,12 +348,28 @@ function renderRes(r){const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs=R.sec
  $("#vRes").innerHTML=stag(h);
  /* v0.23.200 print flow: long cards may continue on the next page (between items), short cards stay whole */
  $("#vRes").querySelectorAll(".card").forEach(c=>{const g=c.classList.contains("gMain");if(g||c.querySelectorAll("tr,li,.it,.sR,.gBox,.row,.ses2,p").length>4){c.classList.add("flow");const k=c.closest(".keep");if(k&&!g)k.classList.add("flow")/* v0.23.201: part headers may also flow; .segH keeps with the first lines of its card */}});
+ /* v0.23.203: clickable index at the top of Breathwork and MER, with "↑ Index" back links */
+ {const mk=(pid,list)=>{const pt=document.getElementById(pid);if(!pt||!list.length)return;const ix=pid+"Idx";
+   const nav='<nav class="idx" id="'+ix+'"><div class="idxK">In this part · tap to jump</div>'+list.map((o,i)=>{const t=o.tg||o.el;t.id=t.id||pid+"x"+(i+1);t.dataset.ix=1;return '<a data-j="'+t.id+'"><b>'+(o.n||i+1)+'</b><span>'+E(o.t)+'</span><i>›</i></a>'}).join("")+'</nav>';
+   const sg=pt.querySelector(".segH");sg?sg.insertAdjacentHTML("afterend",nav):pt.insertAdjacentHTML("afterbegin",nav);
+   list.forEach(o=>{if(!o.el.closest("[data-p]"))o.el.insertAdjacentHTML("beforeend",'<a class="toIdx" data-idx="'+ix+'">↑ Index</a>')})};
+  const tx=e=>(e.childNodes[0]&&e.childNodes[0].nodeType==3?e.childNodes[0].textContent:e.textContent).replace(/\s*\(hypothesis\)\s*/i,"").trim();
+  mk("pB",[...$$("#pB .subH[id^=pt]")].map(e=>({el:e,n:e.querySelector("b").textContent,t:e.querySelector("h3").textContent})));
+  const ml=[...$$("#pM .card .sh h2, #pM h3.mH, #pM .subH2")].map(e=>{const c=e.closest(".card"),first=c&&c.querySelector(".sh h2, h3.mH")===e;
+   let t=tx(e);t=t.charAt(0).toUpperCase()+t.slice(1).toLowerCase().replace(/^(\d+)-session/,"$1-session");if(e.matches(".sh h2"))t=tx(e);
+   return {el:e.matches(".sh h2")?e.parentNode:e,tg:e.matches(".subH2")?e:first?c:null,t}});
+  mk("pM",ml)}
  $("#vRes").querySelectorAll("img[data-ph]").forEach(async im=>{const {data}=await sb.storage.from("assessment-photos").createSignedUrl(im.dataset.ph,3600);if(data)im.src=data.signedUrl});
 }
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-go]");if(!b)return;const g=b.dataset.go;
  if(g=="intake")goIntake();else if(g=="plan")goPart("mer");else if(g=="res")goPart("bbtrs");
  else if(g=="pdf"){if($(".editing"))await saveReport();const t=document.title;document.title="Body Assessment - "+(row.client_name||"client")+" - "+new Date(row.created_at).toLocaleDateString("en-GB");window.FA_ph&&FA_ph("assessment_pdf",{});setTimeout(()=>{window.print();document.title=t},50)}
  else if(g=="save"){if(await saveReport("Saved to your records ✓")){$$(".editing").forEach(v=>{v.classList.remove("editing");v.querySelectorAll("[data-p],[data-d]").forEach(x=>x.contentEditable=false);v.querySelectorAll("[data-edit]").forEach(x=>x.textContent="✎ Edit text")});setTimeout(()=>location.href="assessment-results.html",1400)}}});
+document.addEventListener("click",e=>{const a=e.target.closest("[data-j],[data-idx]");if(!a)return;e.preventDefault();const t=document.getElementById(a.dataset.j||a.dataset.idx);if(t)t.scrollIntoView({behavior:"smooth",block:"start"})});
+{const f=document.createElement("button");f.className="idxFab";f.type="button";f.textContent="☰ Index";document.body.appendChild(f);
+ const cur=()=>{const p=document.querySelector("#vRes.on .part.on");return p&&document.getElementById(p.id+"Idx")};
+ f.onclick=()=>{const n=cur();if(n)n.scrollIntoView({behavior:"smooth",block:"start"})};
+ const upd=()=>{const n=cur();f.classList.toggle("on",!!n&&n.getBoundingClientRect().bottom<0)};addEventListener("scroll",upd,{passive:true});addEventListener("hashchange",upd);setInterval(upd,800)}
 window.onpopstate=()=>{if(!row||!row.report)return;goPart(hashStep(),false)};
 async function load(){const {data,error}=await sb.from("assessments").select("id,client_name,data,red_flags,photo_front,photo_side,photo_back,report,report_ready_at,created_at").eq("id",id).maybeSingle();
  if(error||!data){$("#vList").innerHTML='<div class="prep"><h2>Record not found</h2><p>It may belong to another account.</p></div>';return show($("#vList"))}
