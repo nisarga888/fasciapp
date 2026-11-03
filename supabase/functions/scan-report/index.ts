@@ -4,7 +4,7 @@ import { KB, EXAMPLE } from "./kb.ts";
 const MODEL = Deno.env.get("SCAN_MODEL") || "gemini-3.5-flash";
 const SYS = `You are FasciApp Scan, writing a body-reading assessment for a bodywork practitioner using the MER & BBTRS approach.
 Use ONLY this knowledge base:\n${KB}\n
-Rules: never write the words "Anatomy Trains" (or Thomas Myers) anywhere in the report: the knowledge base uses it internally only; call them "myofascial lines" or "fascial lines". The disclaimer says the reflection is drawn from Myofascial Energetic Release and Biodynamic Breathwork perspectives. Not a medical diagnosis; non-medical, tentative, kind language ("may", "suggests"); never diagnose or promise cures; if intake shows red flags, set red_flag text recommending a doctor first.
+Rules: the report is for the therapist, about the client: write every text field in neutral third person ("the client", the client's first name where natural, "they/their"); never address the reader as "you" or "your"; homework and home practice are suggestions for the client; only quoted client beliefs may stay first person. Never write the words "Anatomy Trains" (or Thomas Myers) anywhere in the report: the knowledge base uses it internally only; call them "myofascial lines" or "fascial lines". The disclaimer says the reflection is drawn from Myofascial Energetic Release and Biodynamic Breathwork perspectives. Not a medical diagnosis; non-medical, tentative, kind language ("may", "suggests"); never diagnose or promise cures; if intake shows red flags, set red_flag text recommending a doctor first.
 The example below is a DIFFERENT client: use it only for format, depth and tone; never copy its findings, wording or plan. Base everything on this client's intake and photos.
 Return ONLY JSON with exactly the same keys and shape as this example report (sections, 10-item plan with n/focus/bodywork/breathwork/home, body_map with belts 0-3 and numbered issues, summary, disclaimer, photo_note, red_flag, client, date, version):\n${EXAMPLE}`;
 async function b64(sb: any, p: string | null) {
@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
   if (!Array.isArray(report.plan) || !report.body_map) return new Response("incomplete", { status: 502 });
   // Never name Anatomy Trains in client-facing text (Nisarga, 3 Nov 2026)
   const scrub = (v: any): any => typeof v === "string"
-    ? v.replace(/,?\s*(BioDynamic|Biodynamic) Breathwork,? and Anatomy Trains/g, " and Biodynamic Breathwork").replace(/Myofascial Energetic Release\s+and Biodynamic/g, "Myofascial Energetic Release and Biodynamic")
+    ? v.replace(/,?\s*(BioDynamic|Biodynamic) Breathwork,? and Anatomy Trains/g, " and Biodynamic Breathwork").replace(/Myofascial Energetic Release\s+and Biodynamic/g, "Myofascial Energetic Release and Biodynamic").replace(/based on (your|photos and your) (photos and )?answers/g, "based on the client\u2019s photos and answers")
         .replace(/Anatomy Trains(['’]s?)?\s+(view|perspectives?|model|lines?|map)/gi, "myofascial lines $2").replace(/myofascial lines (lines?|view|perspectives?|model|map)/gi, (m, w) => /^lines?$/i.test(w) ? "myofascial lines" : "myofascial lines " + w)
         .replace(/\(?\s*Anatomy Trains\s*\)?/gi, " myofascial lines ").replace(/ {2,}/g, " ").replace(/ ([.,;:])/g, "$1").trim().replace(/^myofascial lines/, "Myofascial lines")
     : Array.isArray(v) ? v.map(scrub) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, scrub(x)])) : v;

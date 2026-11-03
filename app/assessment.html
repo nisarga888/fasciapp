@@ -43,7 +43,13 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 .del{background:none;border:1px solid #e0915a88;color:#ffb48a;box-shadow:none;font-weight:500;margin-top:18px}
 .done{display:none;text-align:center;padding:60px 10px}.done h2{font-weight:300;color:var(--gold);font-size:26px}
 .gIn{font-size:14px;line-height:1.55;color:var(--tx);margin:0 0 10px}.gIn span{color:var(--mut)}.gSc{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11.5px;color:var(--gold);margin-bottom:10px}.gPr{position:sticky;top:62px;z-index:5;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--mut);background:#0b2e34ee;padding:8px 10px;border-radius:14px;margin-bottom:4px}.gT{flex:1;height:6px;border-radius:4px;background:#02191E;border:1px solid #c99e6733;overflow:hidden}.gT i{display:block;height:100%;width:0;background:linear-gradient(90deg,#d8b07a,#C99E67);transition:width .3s}.rt.r5{grid-template-columns:repeat(5,1fr);gap:5px}.rt.r5 label{font-size:10.5px;padding:7px 1px}
-/* v0.23.202 top steps */.steps a{line-height:1.15;padding:7px 4px;border-radius:20px}.steps a small{display:block;font-size:10px;font-weight:400;opacity:.8;margin-top:2px;letter-spacing:.3px}.steps a b{width:17px;height:17px;margin-right:4px}</style></head><body><div class="wrap" id="form">
+/* v0.23.202 top steps */.steps a{line-height:1.15;padding:7px 4px;border-radius:20px}.steps a small{display:block;font-size:10px;font-weight:400;opacity:.8;margin-top:2px;letter-spacing:.3px}.steps a b{width:17px;height:17px;margin-right:4px}/* v0.23.204 height/weight units */
+.unT{display:inline-flex;gap:4px;padding:4px;border-radius:22px;border:1px solid var(--ln,#c99e6733);background:#02191E99;margin:2px 0 10px}
+.unT button{width:auto;padding:7px 14px;font-size:13px;font-weight:500;border-radius:18px;background:none;color:var(--mut,#9fb3b5);box-shadow:none}
+.unT button.on{background:linear-gradient(90deg,#d8b07a,#C99E67);color:#02191E;font-weight:600}
+.ftin{display:grid;grid-template-columns:1fr 1fr;gap:5px}.ftin input{min-width:0;padding-left:8px;padding-right:4px}
+body:not(.imp) .unI,body.imp .unM{display:none}
+</style></head><body><div class="wrap" id="form">
 <div class="top"><a href="./">← FasciApp</a><a href="assessment-results.html">Records →</a></div>
 <nav class="steps" id="steps"><a class="on"><b>1</b>Intake<small>Form · summary</small></a><a class="off" data-s="#bbtrs"><b>2</b>Breathwork<small>BBTRS · plan</small></a><a class="off" data-s="#mer"><b>3</b>MER<small>Myofascial · plan</small></a></nav>
 <div class="hero"><div class="k">Fascia Lab</div><h1>Body Assessment</h1><p>Three photos and a short intake. Together they help plan each session around the whole body.</p></div>
@@ -83,9 +89,12 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 <textarea data-k="injuries" placeholder="e.g. broken left ankle 2015, C-section 2019"></textarea></section>
 
 <section class="sec"><div class="sh"><div class="n">6</div><h2>Body basics</h2></div>
+<div class="unT" id="unT" role="group" aria-label="Units"><button type="button" data-u="m">cm · kg</button><button type="button" data-u="i">ft/in · lbs</button></div>
 <div class="row3"><div><label class="f">Age</label><input type="number" inputmode="numeric" data-k="age" min="0" max="120"></div>
-<div><label class="f">Height cm</label><input type="number" inputmode="numeric" data-k="height_cm"></div>
-<div><label class="f">Weight kg</label><input type="number" inputmode="decimal" data-k="weight_kg"></div></div>
+<div class="unM"><label class="f">Height cm</label><input type="number" inputmode="numeric" data-k="height_cm" id="hCm"></div>
+<div class="unM"><label class="f">Weight kg</label><input type="number" inputmode="decimal" step="0.1" data-k="weight_kg" id="wKg"></div>
+<div class="unI"><label class="f">Height ft · in</label><div class="ftin"><input type="number" inputmode="numeric" id="hFt" min="0" max="8" placeholder="ft" aria-label="feet"><input type="number" inputmode="numeric" id="hIn" min="0" max="11" placeholder="in" aria-label="inches"></div></div>
+<div class="unI"><label class="f">Weight lbs</label><input type="number" inputmode="decimal" id="wLb" placeholder="lbs"></div></div>
 <label class="f">Dominant hand</label><div class="chips" data-k="dominant_hand" data-r="1" data-o="Right,Left,Both"></div>
 <label class="f">Known structural issues</label><div class="chips" data-k="structural" data-o="Scoliosis,Leg length difference,Flat feet,Hypermobility,None known"></div>
 <input data-k="structural_other" placeholder="Other" style="margin-top:10px"></section>
@@ -171,7 +180,7 @@ const setImg=(v,src)=>{const l=$$("#photos .ph")[["front","side","back"].indexOf
 async function loadRec(){const {data,error}=await sb.from("assessments").select("*").eq("id",EID).maybeSingle();if(error||!data){msg("Record not found.");return}
  rec=data;$(".hero h1").textContent="Edit intake";$(".hero p").textContent="Update answers or replace photos, then save. The written assessment is kept.";
  $("#client_name").value=data.client_name||"";const d=Object.assign({},data.data||{},{red_flags:data.red_flags||[]});
- $$("[data-k]").forEach(el=>{const k=el.dataset.k,v=d[k];if(v==null)return;if(el.classList.contains("chips")){const a=[].concat(v);el.querySelectorAll("input").forEach(i=>i.checked=a.includes(i.value))}else{el.value=v;if(el.type=="range")el.nextElementSibling.value=v}});
+ $$("[data-k]").forEach(el=>{const k=el.dataset.k,v=d[k];if(v==null)return;if(el.classList.contains("chips")){const a=[].concat(v);el.querySelectorAll("input").forEach(i=>i.checked=a.includes(i.value))}else{el.value=v;if(el.type=="range")el.nextElementSibling.value=v}});window.FA_unitsRefresh&&FA_unitsRefresh();
  $("#warn").classList.toggle("on",!!(data.red_flags||[]).length);$("#consent").checked=true;const PT=((data.data||{}).gifts||{}).answers||{};for(const q in PT){const x=document.querySelector('#pqs input[name="pq_'+q+'"][value="'+PT[q]+'"]');if(x)x.checked=true}gUpd();
  $$("#steps a").forEach(a=>{if(a.dataset.s!=null){a.classList.remove("off");a.href="assessment-results.html?id="+EID+a.dataset.s}});
  $("#del").hidden=false;
@@ -205,4 +214,16 @@ $("#go").onclick=async()=>{
   b.textContent="Saved ✓";document.body.classList.add("leave");setTimeout(()=>location.href="assessment-results.html?id="+id+(rec?"#intake":"#bbtrs"),480);
  }catch(e){if(/SCAN_LIMIT/.test(e.message||"")){$("#msg").innerHTML='No scans left. <a style="color:var(--gold)" href="/scan/#pricing">Choose a plan →</a>';b.textContent="No scans left";return}msg("Could not save: "+(e.message||e));b.disabled=false;b.textContent="Save & next: Breathwork →"}};
 })();
-</script><script>/* v0.23.168 back to Calendar & clients or the client */(function(){function b(){try{var r=JSON.parse(sessionStorage.getItem("fa_ret")||"null");if(!r)return;var a=document.getElementById("back")||document.querySelector('a[href="./"]');if(a){a.href="./?go="+encodeURIComponent(r.go);a.textContent="← "+r.label}}catch(e){}}b();addEventListener("DOMContentLoaded",b);setTimeout(b,1200)})();</script></body></html>
+</script><script>/* v0.23.168 back to Calendar & clients or the client */(function(){function b(){try{var r=JSON.parse(sessionStorage.getItem("fa_ret")||"null");if(!r)return;var a=document.getElementById("back")||document.querySelector('a[href="./"]');if(a){a.href="./?go="+encodeURIComponent(r.go);a.textContent="← "+r.label}}catch(e){}}b();addEventListener("DOMContentLoaded",b);setTimeout(b,1200)})();</script><script>/* v0.23.204: height/weight unit toggle. Always stores metric (height_cm whole, weight_kg 1 decimal). */
+(()=>{const g=i=>document.getElementById(i),KEY="fa_units",hCm=g("hCm"),wKg=g("wKg"),hFt=g("hFt"),hIn=g("hIn"),wLb=g("wLb");
+ let u=localStorage.getItem(KEY)||((navigator.language||"")=="en-US"?"i":"m");
+ const toImp=()=>{const cm=+hCm.value,kg=+wKg.value;if(hCm.value!==""&&cm>0){let t=Math.round(cm/2.54),f=Math.floor(t/12);hFt.value=f;hIn.value=t-f*12}else{hFt.value="";hIn.value=""}
+  wLb.value=wKg.value!==""&&kg>0?Math.round(kg/0.45359237):""};
+ const fromImp=()=>{const f=hFt.value,i=hIn.value;if(f===""&&i===""){hCm.value=""}else{hCm.value=Math.round(((+f||0)*12+(+i||0))*2.54)}
+  wKg.value=wLb.value===""?"":Math.round(+wLb.value*0.45359237*10)/10};
+ [hFt,hIn,wLb].forEach(x=>x.addEventListener("input",fromImp));
+ const set=v=>{u=v;localStorage.setItem(KEY,v);document.body.classList.toggle("imp",v=="i");document.querySelectorAll("#unT button").forEach(b=>b.classList.toggle("on",b.dataset.u==v));if(v=="i")toImp()};
+ document.querySelectorAll("#unT button").forEach(b=>b.onclick=()=>set(b.dataset.u));
+ window.FA_unitsRefresh=()=>{if(u=="i")toImp()};set(u)})();
+</script>
+</body></html>
