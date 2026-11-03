@@ -149,6 +149,12 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
  .part+.part .segH{margin-top:18px!important}.segH{break-after:avoid;page-break-after:avoid}}
 @media print{.ses2{display:grid;grid-template-columns:1fr 1fr;column-gap:16px;align-items:start}.ses2>.sTop,.ses2>.sAim,.ses2>.sNote,.ses2>.sL,.ses2>.snd,.ses2>.bxp,.ses2>.sFlag{grid-column:1/-1}.ses2 .sAim{margin:6px 0 2px!important}.ses2 .sNote{margin-top:6px;padding:7px 10px}}
 .ovP.p3{background:#F3EDE40d;border-color:#F3EDE444}.ovP.p3 span{color:#F3EDE4}
+/* v0.23.200 print flow: no half-empty pages */
+@media print{.card.flow,.keep.flow{break-inside:auto!important;page-break-inside:auto!important}.card.flow{-webkit-box-decoration-break:clone;box-decoration-break:clone}
+ .card.flow tr,.card.flow li,.card.flow .it,.card.flow .sR,.card.flow .gBox,.card.flow .row,.card.flow .ft,.card.flow .ses2,.card.flow .gPent,.card.flow .bar,.card.flow .gLeg,.card.flow .gNote,.card.flow p,.card.flow svg,.card.flow .gCore,.card.flow .gCG>*{break-inside:avoid;page-break-inside:avoid}
+ .card.flow h2,.card.flow h3,.card.flow .gK,.card.flow .gSub,.card.flow .gTrad,.card.flow .bsName{break-after:avoid;page-break-after:avoid}p{orphans:3;widows:3}
+ #pM>.pgb{display:none!important}
+ .gMain .gPent{float:right;width:230px!important;max-width:230px!important;margin:4px 0 6px 14px}.gMain .gPS,.gMain .gBar,.gMain .gLeg{overflow:hidden}.gMain .gExp{clear:both}}
 </style></head><body><div class="wrap">
 <div class="top"><a href="./" id="back">← FasciApp</a><span style="font-size:12px;color:var(--mut)">Private · only you see this</span></div>
 <nav class="steps" id="steps" hidden><a data-s="intake"><b>1</b>Intake</a><a data-s="res"><b>2</b>Assessment</a><a data-s="plan"><b>3</b>Plan</a></nav>
@@ -324,6 +330,8 @@ function renderRes(r){const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs=R.sec
  h+='<div class="part'+(faTab=="M"?" on":"")+'" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Physiological and emotional patterns and myofascial restrictions: body type, myofascial lines and the bodywork assessment",0),mer)+mc+mLink+'</div>';
  h+='<div class="nav2"><button class="sec2" data-go="pdf">⤓ Export PDF</button><button data-go="plan">Next: Treatment plan →</button></div><p class="disc">'+E(F?F.DISC:R.disclaimer)+'</p>';
  $("#vRes").innerHTML=stag(h);
+ /* v0.23.200 print flow: long cards may continue on the next page (between items), short cards stay whole */
+ $("#vRes").querySelectorAll(".card").forEach(c=>{const g=c.classList.contains("gMain");if(g||c.querySelectorAll("tr,li,.it,.sR,.gBox,.row,.ses2,p").length>4){c.classList.add("flow");const k=c.closest(".keep");if(k&&!g&&!k.querySelector(".segH"))k.classList.add("flow")}});
  $("#vRes").querySelectorAll("img[data-ph]").forEach(async im=>{const {data}=await sb.storage.from("assessment-photos").createSignedUrl(im.dataset.ph,3600);if(data)im.src=data.signedUrl});
  let p='<div class="hero"><div class="k">Treatment plan</div><h1>10 sessions</h1><p>Bodywork and breathwork, step by step, at your pace.</p></div>'+tools("plan");
  R.plan.forEach((s,i)=>{const b="plan."+i;p+='<section class="card ses"><div class="num">'+s.n+'</div>'+P(b+".focus",s.focus,"h2")+'<div class="row"><b>✋</b><div><span class="lbl">Bodywork</span>'+P(b+".bodywork",s.bodywork,"div")+'</div></div><div class="row"><b>🌬</b><div><span class="lbl">Breathwork</span>'+P(b+".breathwork",s.breathwork,"div")+'</div></div><div class="row"><b>🏠</b><div><span class="lbl">Home practice</span>'+P(b+".home",s.home,"div")+'</div></div></section>'});
