@@ -1,4 +1,4 @@
-/* v0.23.190 Five Gifts self-reflection (character structure traditions: Reich, Lowen, Pierrakos). Shared by assessment.html + assessment-results.html */
+/* v0.23.195 reich names added. v0.23.190 Five Gifts self-reflection (character structure traditions: Reich, Lowen, Pierrakos). Shared by assessment.html + assessment-results.html */
 (function(){
 const SCALE=["Not true","Rarely","Sometimes","Often","Very true"];
 const INTRO="Rate how true each statement is for you, especially under stress or in close relationships.";
@@ -31,7 +31,7 @@ const Q=[
 ["g25","l","I worry that if I fully open my heart, I will be rejected."]];
 const NEW=new Set(["g16","g17","g18","g19","g20","g21","g22","g23","g24","g25"]);
 const G={
-e:{k:"e",name:"Existence",right:"The right to exist",trad:"Schizoid",legacy:"schizoid",icon:"✧",
+e:{k:"e",reich:"Schizoid",name:"Existence",right:"The right to exist",trad:"Schizoid",legacy:"schizoid",icon:"✧",
  core:"Do I feel I have the right to be here, to take up space, to be in my body?",
  gifts:"Depth, sensitivity, intuition, independence, creativity and clarity. You perceive what others miss and have a rich inner world.",
  safe:"When the world felt too intense or unsafe, you learned to withdraw inward: into your mind, into needing little, into staying out of reach.",
@@ -41,7 +41,7 @@ e:{k:"e",name:"Existence",right:"The right to exist",trad:"Schizoid",legacy:"sch
  breath:[["Pace","Slow and gentle, in short rounds."],["Intensity","Low. Strong charge can lead to dissociation."],["Focus","Grounding, feet, orienting to the room, eyes open if needed, and contact with the facilitator."],["Success looks like","More presence, not a big release."]],
  daily:"Feet on the floor: press your feet down for 5 slow breaths, eyes open, and name three things you can see in the room.",
  prac:"Go slow, keep eyes-open orienting available and check presence often. Short rounds, low charge."},
-n:{k:"n",name:"Need",right:"The right to our needs",trad:"Oral",legacy:"oral",icon:"◌",
+n:{k:"n",reich:"Oral",name:"Need",right:"The right to our needs",trad:"Oral",legacy:"oral",icon:"◌",
  core:"Do I feel my needs are allowed, and that they can be met?",
  gifts:"Warmth, openness, generosity, empathy and receptivity. You open hearts easily and know how to connect.",
  safe:"When support wasn’t reliably there, you learned to reach out, stay close and sense what others need, so connection wouldn’t disappear.",
@@ -51,7 +51,7 @@ n:{k:"n",name:"Need",right:"The right to our needs",trad:"Oral",legacy:"oral",ic
  breath:[["Pace","Build gradually, with rest pauses."],["Intensity","Moderate. Energy can run out quickly."],["Focus","Legs and grounding, containing and holding energy, receiving support, and nourishing yourself afterwards."],["Success looks like","Feeling supported from within, not only by the facilitator."]],
  daily:"Stand with soft knees, hands on your belly, and breathe into your legs for 1 minute. Then ask for one small thing you need today, out loud.",
  prac:"Build charge gradually with rests; support standing and legs; plan a nourishing close and invite direct requests."},
-t:{k:"t",name:"Trust",right:"The right to trust",trad:"Psychopathic / Challenger",legacy:"psychopathic",icon:"△",
+t:{k:"t",reich:"Psychopathic",name:"Trust",right:"The right to trust",trad:"Psychopathic / Challenger",legacy:"psychopathic",icon:"△",
  core:"Can I trust and be supported without losing my power or control?",
  gifts:"Strength, courage, leadership, charisma and protectiveness. You take responsibility and stand up for others.",
  safe:"When trust was broken or vulnerability was used against you, you learned to stay in control, read people carefully and not depend on anyone.",
@@ -61,7 +61,7 @@ t:{k:"t",name:"Trust",right:"The right to trust",trad:"Psychopathic / Challenger
  breath:[["Pace","Steady and clear, with room for pauses."],["Intensity","Can be strong, but surrender is the edge, so invite softening rather than pushing harder."],["Focus","Belly and pelvis, the long exhale, letting go, and the vulnerability beneath strength."],["Success looks like","Allowing yourself to be held and supported. Clear agreements and choice at every step help."]],
  daily:"Lie down with a hand on your belly and let 6 long exhales go a little longer than the inhale. Let the floor hold you.",
  prac:"Make clear agreements and offer choice at every step. Invite softening rather than more effort; work belly, pelvis and the long exhale."},
-a:{k:"a",name:"Autonomy",right:"The right to autonomy",trad:"Masochistic / Endurer",legacy:"masochistic",icon:"▢",
+a:{k:"a",reich:"Masochistic",name:"Autonomy",right:"The right to autonomy",trad:"Masochistic / Endurer",legacy:"masochistic",icon:"▢",
  core:"Can I say yes and no freely, and express myself without shame or pressure?",
  gifts:"Loyalty, patience, endurance, warmth and groundedness. You are dependable and can carry a lot.",
  safe:"When your will or self-expression was pressured or shamed, you learned to hold it in, comply and endure, and to avoid open conflict.",
@@ -71,7 +71,7 @@ a:{k:"a",name:"Autonomy",right:"The right to autonomy",trad:"Masochistic / Endur
  breath:[["Pace","Your own, with no pressure to “release”."],["Intensity","Moderate, with space for sound, voice and movement."],["Focus","Jaw, throat and pelvis, saying “no” out loud, pushing and kicking, and rest afterwards."],["Success looks like","Spontaneous expression that you choose, not one that is demanded of you."]],
  daily:"Let your jaw hang loose and sigh out loud 5 times. Then say one clear “no” (or “yes”) today that you really mean.",
  prac:"Let the client set the pace, with no pressure to release. Invite voice, sound, pushing and a clear “no”; rest afterwards."},
-l:{k:"l",name:"Love",right:"The right to love and sexuality",trad:"Rigid / Achiever",legacy:"rigid",icon:"♡",
+l:{k:"l",reich:"Rigid",name:"Love",right:"The right to love and sexuality",trad:"Rigid / Achiever",legacy:"rigid",icon:"♡",
  core:"Can I open my heart and receive love and pleasure without having to earn it?",
  gifts:"Integrity, drive, reliability, grace and dedication. You bring passion and commitment to what matters.",
  safe:"When love felt tied to performance, or an open heart met rejection or shame, you learned to protect the heart through effort, control and doing things well.",
@@ -101,5 +101,6 @@ function finish(pct,sc,src,n){const rk=ORDER.slice().sort((a,b)=>pct[b]-pct[a]),
  return {v:1,source:src,answered:n,scores:sc,pct,bands:Object.fromEntries(ORDER.map(k=>[k,band(pct[k])])),primary:rk[0],secondary:rk[1],blend,rank:rk}}
 /* legacy: older scans stored pattern_scores (5 items × 0-3 = 0-15 per structure) */
 function fromLegacy(ps){if(!ps)return null;const pct={},sc={};ORDER.forEach(k=>{const v=+ps[G[k].legacy]||0;sc[k]=v;pct[k]=Math.round(v/15*100)});return finish(pct,sc,"earlier patterns questionnaire",25)}
-window.FA_GIFTS={Q,NEW,G,ORDER,SCALE,INTRO,DISC,band,bandKey,BANDS,CG,score,fromLegacy};
+const nm=k=>G[k].name+" ("+G[k].reich+")";
+window.FA_GIFTS={nm,Q,NEW,G,ORDER,SCALE,INTRO,DISC,band,bandKey,BANDS,CG,score,fromLegacy};
 })();
