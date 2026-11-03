@@ -174,14 +174,17 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 /* v0.23.204 training note */
 .trN{margin:4px 0 14px;padding:12px 14px 12px 16px;border-radius:14px;background:#c99e6714;border:1px solid #c99e6740;border-left:3px solid var(--gold);font-size:13.5px;line-height:1.5;color:var(--tx)}.trN b{color:var(--gold);font-weight:600}
 @media print{.trN{background:#fbf6ee!important;border-color:#d9c4a3!important;border-left-color:#C99E67!important;color:#2a2a2a!important;break-inside:avoid;break-before:avoid;page-break-before:avoid}.segH{break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid}.trN b{color:#8a6537!important}}
+/* v0.23.205 support line */.faHelp{text-align:center;font-size:12.5px;color:#9fb3b5;margin:18px 0 6px}.faHelp a{color:#C99E67;text-decoration:none;border-bottom:1px solid #c99e6766}@media print{.faHelp{display:none!important}}
+#vPrep .faHelp{margin-top:22px}.wrap:has(#vPrep.on) #faHelp{display:none}
 .nav2 button{white-space:nowrap;padding-left:10px;padding-right:10px}.nav2.eq{grid-template-columns:1fr 1fr}</style></head><body><div class="wrap">
 <div class="top"><a href="./" id="back">← FasciApp</a><span style="font-size:12px;color:var(--mut)">Private · only you see this</span></div>
 <nav class="steps" id="steps" hidden><a data-s="intake"><b>1</b>Intake<small>Form · summary</small></a><a data-s="bbtrs"><b>2</b>Breathwork<small>BBTRS · plan</small></a><a data-s="mer"><b>3</b>MER<small>Myofascial · plan</small></a></nav>
 <div class="pdfh"><span>FasciApp · Body Assessment</span><span>fasciapp.app</span></div>
 <div id="vLoad" class="view on prep"><div class="orb"></div></div>
 <div id="vList" class="view"></div>
-<div id="vPrep" class="view prep"><div class="orb"></div><h2>Your assessment is being prepared</h2><p>Your photos and answers are saved safely. We're reading them carefully and writing your whole-body map and your session plan.</p><p style="margin-top:12px">This page will update by itself. You can close it and come back any time.</p><div class="cue" id="cue">Breathe in</div></div>
+<div id="vPrep" class="view prep"><div class="orb"></div><h2>Your assessment is being prepared</h2><p>Your photos and answers are saved safely. We're reading them carefully and writing your whole-body map and your session plan.</p><p style="margin-top:12px">This page will update by itself. You can close it and come back any time.</p><div class="cue" id="cue">Breathe in</div><p class="faHelp"><span style="display:block;color:var(--tx);font-size:13.5px;margin-bottom:8px">Your report is being prepared. This can take up to a minute, depending on your internet connection.</span>Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p></div>
 <div id="vRes" class="view"></div>
+<p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
 <script src="mer.js?v=0.23.191"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>

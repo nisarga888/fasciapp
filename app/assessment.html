@@ -49,6 +49,7 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 .unT button.on{background:linear-gradient(90deg,#d8b07a,#C99E67);color:#02191E;font-weight:600}
 .ftin{display:grid;grid-template-columns:1fr 1fr;gap:5px}.ftin input{min-width:0;padding-left:8px;padding-right:4px}
 body:not(.imp) .unI,body.imp .unM{display:none}
+/* v0.23.205 support line */.faHelp{text-align:center;font-size:12.5px;color:#9fb3b5;margin:18px 0 6px}.faHelp a{color:#C99E67;text-decoration:none;border-bottom:1px solid #c99e6766}@media print{.faHelp{display:none!important}}
 </style></head><body><div class="wrap" id="form">
 <div class="top"><a href="./">← FasciApp</a><a href="assessment-results.html">Records →</a></div>
 <nav class="steps" id="steps"><a class="on"><b>1</b>Intake<small>Form · summary</small></a><a class="off" data-s="#bbtrs"><b>2</b>Breathwork<small>BBTRS · plan</small></a><a class="off" data-s="#mer"><b>3</b>MER<small>Myofascial · plan</small></a></nav>
@@ -151,6 +152,7 @@ body:not(.imp) .unI,body.imp .unM{display:none}
 <label class="f" style="margin-top:8px;font-size:12px">Foot arch / toes</label><div class="chips" data-k="mv_foot_arch_toes" data-o="L restricted,R restricted,Painful"></div>
 <label class="f">Findings that contradict the hypothesis</label><textarea data-k="contradictions" placeholder="e.g. palpation: upper trap soft, levator dense"></textarea></section>
 <button class="del" id="del" hidden>Delete this record</button>
+<p class="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div>
 <div class="done" id="done"><h2>Assessment saved ✓</h2><p style="color:var(--mut)">Stored privately in your account.</p><button onclick="location.reload()" style="max-width:280px;margin-top:20px">New assessment</button></div>
 <div class="bar" id="bar"><div><button id="go">Save &amp; next: Breathwork →</button><div class="msg" id="msg"></div></div></div>
