@@ -43,9 +43,9 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 .del{background:none;border:1px solid #e0915a88;color:#ffb48a;box-shadow:none;font-weight:500;margin-top:18px}
 .done{display:none;text-align:center;padding:60px 10px}.done h2{font-weight:300;color:var(--gold);font-size:26px}
 .gIn{font-size:14px;line-height:1.55;color:var(--tx);margin:0 0 10px}.gIn span{color:var(--mut)}.gSc{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11.5px;color:var(--gold);margin-bottom:10px}.gPr{position:sticky;top:62px;z-index:5;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--mut);background:#0b2e34ee;padding:8px 10px;border-radius:14px;margin-bottom:4px}.gT{flex:1;height:6px;border-radius:4px;background:#02191E;border:1px solid #c99e6733;overflow:hidden}.gT i{display:block;height:100%;width:0;background:linear-gradient(90deg,#d8b07a,#C99E67);transition:width .3s}.rt.r5{grid-template-columns:repeat(5,1fr);gap:5px}.rt.r5 label{font-size:10.5px;padding:7px 1px}
-</style></head><body><div class="wrap" id="form">
+/* v0.23.202 top steps */.steps a{line-height:1.15;padding:7px 4px;border-radius:20px}.steps a small{display:block;font-size:10px;font-weight:400;opacity:.8;margin-top:2px;letter-spacing:.3px}.steps a b{width:17px;height:17px;margin-right:4px}</style></head><body><div class="wrap" id="form">
 <div class="top"><a href="./">← FasciApp</a><a href="assessment-results.html">Records →</a></div>
-<nav class="steps" id="steps"><a class="on"><b>1</b>Intake</a><a class="off" data-s=""><b>2</b>Assessment</a><a class="off" data-s="#plan"><b>3</b>Plan</a></nav>
+<nav class="steps" id="steps"><a class="on"><b>1</b>Intake<small>Form · summary</small></a><a class="off" data-s="#bbtrs"><b>2</b>Breathwork<small>BBTRS · plan</small></a><a class="off" data-s="#mer"><b>3</b>MER<small>Myofascial · plan</small></a></nav>
 <div class="hero"><div class="k">Fascia Lab</div><h1>Body Assessment</h1><p>Three photos and a short intake. Together they help plan each session around the whole body.</p></div>
 <div class="who" id="who">Checking sign-in…</div>
 
@@ -144,7 +144,7 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 <button class="del" id="del" hidden>Delete this record</button>
 </div>
 <div class="done" id="done"><h2>Assessment saved ✓</h2><p style="color:var(--mut)">Stored privately in your account.</p><button onclick="location.reload()" style="max-width:280px;margin-top:20px">New assessment</button></div>
-<div class="bar" id="bar"><div><button id="go">Save &amp; next: Assessment →</button><div class="msg" id="msg"></div></div></div>
+<div class="bar" id="bar"><div><button id="go">Save &amp; next: Breathwork →</button><div class="msg" id="msg"></div></div></div>
 <script>try{localStorage.setItem("faScanSeen","1")}catch(e){}</script><script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
 <script src="gifts.js?v=0.23.191"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
@@ -202,7 +202,7 @@ $("#go").onclick=async()=>{
   if(rec){const {error}=await sb.from("assessments").update({client_name:row.client_name,data:row.data,red_flags:row.red_flags,photo_front:row.photo_front,photo_side:row.photo_side,photo_back:row.photo_back,updated_at:new Date().toISOString()}).eq("id",rid);if(error)throw error}
   else{const {error}=await sb.from("assessments").insert(row);if(error)throw error}
   window.FA_ph&&FA_ph(rec?"assessment_updated":"assessment_submitted",{});if(!rec)ev("assessment_saved",{});
-  b.textContent="Saved ✓";document.body.classList.add("leave");setTimeout(()=>location.href="assessment-results.html?id="+id,480);
- }catch(e){if(/SCAN_LIMIT/.test(e.message||"")){$("#msg").innerHTML='No scans left. <a style="color:var(--gold)" href="/scan/#pricing">Choose a plan →</a>';b.textContent="No scans left";return}msg("Could not save: "+(e.message||e));b.disabled=false;b.textContent="Save & next: Assessment →"}};
+  b.textContent="Saved ✓";document.body.classList.add("leave");setTimeout(()=>location.href="assessment-results.html?id="+id+(rec?"#intake":"#bbtrs"),480);
+ }catch(e){if(/SCAN_LIMIT/.test(e.message||"")){$("#msg").innerHTML='No scans left. <a style="color:var(--gold)" href="/scan/#pricing">Choose a plan →</a>';b.textContent="No scans left";return}msg("Could not save: "+(e.message||e));b.disabled=false;b.textContent="Save & next: Breathwork →"}};
 })();
 </script><script>/* v0.23.168 back to Calendar & clients or the client */(function(){function b(){try{var r=JSON.parse(sessionStorage.getItem("fa_ret")||"null");if(!r)return;var a=document.getElementById("back")||document.querySelector('a[href="./"]');if(a){a.href="./?go="+encodeURIComponent(r.go);a.textContent="← "+r.label}}catch(e){}}b();addEventListener("DOMContentLoaded",b);setTimeout(b,1200)})();</script></body></html>
