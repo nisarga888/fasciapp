@@ -1065,14 +1065,15 @@ let scanSb=null;async function scanLoad(){const L=$("#scList");if(!L)return;if(!
  catch(e){L.innerHTML='<p class="scEm">Could not load records. <a href="assessment-results.html" style="color:#C99E67">Open records</a></p>'}}
 
 /* v0.23.133 Scan access: free trial (3) or plan; admin unlimited */
+/* v0.23.197 no free trial for new users (existing remaining trials still work); plans: single €3, monthly €25, yearly €150 */
 /* v0.23.135: admin = hub (free, unlimited); active paid plan = hub; everyone else = Scan landing */
 async function scanAccess(){const N=$("#scNew"),I=$("#scInfo");if(!N||!scanSb)return true;try{const {data}=await scanSb.rpc("fa_scan_status");if(!data)return true;
  if(!data.admin&&!data.active&&!(data.trial_remaining>0)){scanLanding("#pricing");return false}
  if(data.allowed){N.href="assessment.html";N.textContent="＋ New assessment";I.innerHTML=data.admin?"":data.active?faScanLeft(data,1):(data.plan==="single"?'':'Free trial · ')+data.trial_remaining+' scan'+(data.trial_remaining==1?'':'s')+' left · <a href="#" data-scplans style="color:#C99E67">See plans</a>'}
- else{N.href="/scan/#pricing";N.textContent="Choose a plan to continue";I.innerHTML='Your free scan is used. <a href="/scan/" style="color:#C99E67">See plans</a>'}}catch(e){}return true}
+ else{N.href="/scan/#pricing";N.textContent="Choose a plan to continue";I.innerHTML='No scans left. <a href="/scan/" style="color:#C99E67">See plans</a>'}}catch(e){}return true}
 
 /* v0.23.146 Stripe links; v0.23.142 Scan landing inside the app (iframe of /scan/?embed=1), trial sign-in flow, profile plans card */
-window.FA_SCAN_BUY={single:"https://buy.stripe.com/aFa28s6Zk9C7aXu2en6Zy00",practitioner:"https://buy.stripe.com/aFa9AU4Rc8y38Pm9GP6Zy01",pro:"https://buy.stripe.com/28EfZi83ocOjd5C3ir6Zy02",yearly:"https://buy.stripe.com/8x2fZi2J429F3v27yH6Zy03"};
+window.FA_SCAN_BUY={single:"https://buy.stripe.com/cNi8wQ1F0dSnc1y6uD6Zy08",practitioner:"https://buy.stripe.com/aFa9AU4Rc8y38Pm9GP6Zy01",yearly:"https://buy.stripe.com/9B6eVe4Rc15B1mUaKT6Zy09"};
 function faBuyUrl(k){const u=(window.FA_SCAN_BUY||{})[k];if(!u)return "";return me&&me.email?u+"?prefilled_email="+encodeURIComponent(me.email):u}
 function scanLanding(hash){const S=$("#scan");if(!S)return;S.classList.add("scLand");let f=$("#scFrame");const src="/scan/?embed=1"+(hash||"");
  if(!f){f=document.createElement("iframe");f.id="scFrame";f.title="FasciApp Scan";f.src=src;S.append(f)}else if(hash&&!f.src.endsWith(hash))f.src=src}
@@ -1088,15 +1089,15 @@ setTimeout(async()=>{let a=null;try{a=sessionStorage.getItem("fa_after")}catch(e
 async function scanPlansCard(){const P=$("#profile");if(!P||!me)return;let C=$("#scPlans");
  try{if(!scanSb){const c=window.FASCIAPP_CONFIG||{};scanSb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}
  const {data}=await scanSb.rpc("fa_scan_status");if(!data){if(C)C.remove();return}
- let h;const B=window.FA_SCAN_BUY,N={practitioner:"Practitioner · €25/month",pro:"Pro · €49/month",yearly:"Yearly · €249/year",single:"Single scan · €8"};
+ let h;const B=window.FA_SCAN_BUY,N={practitioner:"Monthly · €25/month",pro:"Pro (old plan)",yearly:"Yearly · €150/year · 50% off",single:"Single scan · €3"};
  if(data.admin)h='<b>FasciApp Scan</b><p>Unlimited (admin) · '+data.scans_used+' scans</p>';
  else if(data.active)h='<b>Your Scan plan</b><p>'+esc(N[data.plan]||data.plan)+' · '+faScanLeft(data)+(data.expires_at?' · renews/ends '+new Date(data.expires_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}):'')+'</p><a class="scpLk" href="#" data-scopen>Open Scan →</a>';
- else if(data.scans_used>=1&&!(data.trial_remaining>0))h='<b>Scan plans</b><p>Your free scan is used. Get more scans:</p><div class="scpG">'+["single","practitioner","pro","yearly"].map(k=>'<a href="'+faBuyUrl(k)+'" target="_blank" rel="noopener"'+(k==="yearly"?' class="hot"':'')+'>'+N[k]+'</a>').join("")+'</div><p style="font-size:12px;color:#9fb3b5;margin:8px 0 0">Use the same email at checkout as your FasciApp account so we can activate your plan.</p><a class="scpGo" href="#" data-scplans-go>Get more scans</a>';
+ else if(!(data.trial_remaining>0))h='<b>Scan plans</b><p>'+(data.scans_used>=1?'No scans left. Get more scans:':'Client assessment and 10-session plan. Choose a plan:')+'</p><div class="scpG">'+["single","practitioner","yearly"].map(k=>'<a href="'+faBuyUrl(k)+'" target="_blank" rel="noopener"'+(k==="yearly"?' class="hot"':'')+'>'+N[k]+'</a>').join("")+'</div><p style="font-size:12px;color:#9fb3b5;margin:8px 0 0">Use the same email at checkout as your FasciApp account so we can activate your plan.</p><a class="scpGo" href="#" data-scplans-go>Get more scans</a>';
  else if(data.trial_remaining>0)h='<b>FasciApp Scan</b><p>'+(data.plan==="single"?'You have '+data.trial_remaining+' scan ready.':'Your free scan is waiting: full assessment and 10-session plan.')+'</p><a class="scpGo" href="#" data-sctrial>'+(data.plan==="single"?'Start a scan':'Try 1 free scan')+'</a><a class="scpLk" href="#" data-scplans-go>See plans</a>';
  else{if(C)C.remove();return}
  if(!C){C=document.createElement("div");C.id="scPlans";C.className="scPlans";const h2=P.querySelector("h2");(h2||P.firstChild).after(C)}C.innerHTML=h;C.onclick=data.active&&!data.admin?(e=>{e.preventDefault();try{scanHub()}catch(x){}show("scan")}):null;C.style.cursor=data.active&&!data.admin?"pointer":""}catch(e){}}
 /* v0.23.147 scans left: Practitioner cap 30/month; uses scans_used (counter, display only, not enforced) */
-function faScanLeft(d,hub){const P={practitioner:"Practitioner",pro:"Pro",yearly:"Yearly",single:"Single scan"},u=d.scans_used||0;let t;
+function faScanLeft(d,hub){const P={practitioner:"Monthly",pro:"Pro",yearly:"Yearly",single:"Single scan"},u=d.scans_used||0;let t;
  if(d.plan==="practitioner"){const n=Math.max(0,30-u);t=hub?n+" scan"+(n==1?"":"s")+" available":n+" scan"+(n==1?"":"s")+" left this month"}
  else if(d.plan==="single"){const n=d.trial_remaining||0;t=n+" scan"+(n==1?"":"s")+" left"}
  else t="Unlimited scans";return hub?esc(P[d.plan]||d.plan)+" plan · "+t:t}
