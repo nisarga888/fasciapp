@@ -943,3 +943,6 @@ body.peOpen{overflow:hidden}
 /* v0.23.205 support line */
 .faHelp{text-align:center;font-size:12.5px;color:#9fb3b5;margin:18px 0 6px}.faHelp a{color:#C99E67;text-decoration:none;border-bottom:1px solid #c99e6766}@media print{.faHelp{display:none!important}}
 #scan .faHelp{margin-top:10px}.scPlans .faHelp{margin:10px 0 0;text-align:left}
+
+/* v0.23.207 post-payment banner on scan hub */
+.scPaid{background:#C99E67;color:#02191E;text-align:center;padding:12px 14px;font-weight:600;font-size:14.5px;border-radius:12px;margin:6px 0 14px;line-height:1.4}.scPaid span{display:block;font-weight:400;font-size:12.5px;margin-top:5px}.scPaid a{color:#02191E}

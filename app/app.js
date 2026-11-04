@@ -1077,6 +1077,8 @@ window.FA_SCAN_BUY={single:"https://buy.stripe.com/cNi8wQ1F0dSnc1y6uD6Zy08",prac
 function faBuyUrl(k){const u=(window.FA_SCAN_BUY||{})[k];if(!u)return "";return me&&me.email?u+"?prefilled_email="+encodeURIComponent(me.email):u}
 function scanLanding(hash){const S=$("#scan");if(!S)return;S.classList.add("scLand");let f=$("#scFrame");const src="/scan/?embed=1"+(hash||"");
  if(!f){f=document.createElement("iframe");f.id="scFrame";f.title="FasciApp Scan";f.src=src;S.append(f)}else if(hash&&!f.src.endsWith(hash))f.src=src}
+/* v0.23.207 post-payment banner on the scan hub */
+function faPaidBanner(){const S=$("#scan");if(!S||$("#scPaid"))return;const d=document.createElement("div");d.id="scPaid";d.className="scPaid";d.innerHTML='Thank you! Your payment is received and your scans are now active.<span>If your scan doesn\u2019t unlock within a minute (for example if you paid with a different email than your FasciApp account), write to <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a>.</span>';const h=S.querySelector(".scH");(h||S.firstChild).before(d)}
 function scanHub(){const S=$("#scan");if(S)S.classList.remove("scLand")}
 function scanTrial(){if(!me){try{sessionStorage.setItem("fa_after","scan")}catch(e){}try{fillLastEmail()}catch(e){}show("auth");return}scanHub();show("scan")}
 function scanAfterLogin(){let a=null;try{a=sessionStorage.getItem("fa_after");sessionStorage.removeItem("fa_after")}catch(e){}if(a==="scan")setTimeout(()=>show("scan"),900);if(a&&a.startsWith("buy:")){const k=a.slice(4);if(faBuyUrl(k))setTimeout(()=>faCheckout(k),600)}}
@@ -1091,6 +1093,8 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-scplans]");if(!a)return;e.preventDefault();scanLanding("#pricing")});
 setTimeout(async()=>{let a=null;try{a=sessionStorage.getItem("fa_after")}catch(e){}if(!a)return;if(!me){try{me=await DB.session()}catch(e){}}if(me){scanAfterLogin();return}try{fillLastEmail()}catch(e){}show("auth")},1500);
 {try{const q=new URLSearchParams(window.FA_Q0||"");if(q.get("scan")==="buy"){const k=q.get("plan");history.replaceState(null,"",location.pathname);setTimeout(async()=>{if(!me){try{me=await DB.session()}catch(e){}}scanBuy(k)},1200)}
+ if(q.get("scan")==="hub"){const paid=q.get("paid")==="1";history.replaceState(null,"",location.pathname);
+  setTimeout(async()=>{if(!me){try{me=await DB.session()}catch(e){}}if(paid)faPaidBanner();if(me){scanHub();show("scan");if(paid){setTimeout(scanLoad,3000);setTimeout(scanLoad,8000)}}else scanTrial()},1200)}
  if(q.get("scan")==="trial"){history.replaceState(null,"",location.pathname);setTimeout(async()=>{if(!me){try{me=await DB.session()}catch(e){}}if(me)show("scan");else scanTrial()},1200)}}catch(e){}}
 async function scanPlansCard(){const P=$("#profile");if(!P||!me)return;let C=$("#scPlans");
  try{if(!scanSb){const c=window.FASCIAPP_CONFIG||{};scanSb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}

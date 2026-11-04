@@ -43,7 +43,7 @@ function emailHtml(plan: string, scans: number, expires: string | null) {
 <tr><td style="padding:26px 26px 8px;text-align:center;color:#C99E67;font-size:22px;letter-spacing:.5px">FasciApp</td></tr>
 <tr><td style="padding:6px 26px 4px;font-size:18px;color:#F3EDE4;text-align:center"><b>Your scan access is active</b></td></tr>
 <tr><td style="padding:14px 26px;font-size:15px;line-height:1.55;color:#F3EDE4">Thank you for your purchase.<br>Plan: <b>${PLAN_NAME[plan] || plan}</b><br>${what}</td></tr>
-<tr><td align="center" style="padding:8px 26px 22px"><a href="https://fasciapp.app/scan/" style="display:inline-block;background:#C99E67;color:#02191E;text-decoration:none;font-weight:bold;padding:12px 26px;border-radius:24px">Start a scan</a></td></tr>
+<tr><td align="center" style="padding:8px 26px 22px"><a href="https://fasciapp.app/app/?scan=hub" style="display:inline-block;background:#C99E67;color:#02191E;text-decoration:none;font-weight:bold;padding:12px 26px;border-radius:24px">Start a scan</a></td></tr>
 <tr><td style="padding:0 26px 24px;font-size:13px;color:#9fb3b5;text-align:center">Need help? Write to <a href="mailto:hello@fasciapp.app" style="color:#C99E67">hello@fasciapp.app</a></td></tr>
 </table></td></tr></table></body></html>`;
 }
