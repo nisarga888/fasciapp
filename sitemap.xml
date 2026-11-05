@@ -5,4 +5,6 @@
  <url><loc>https://fasciapp.app/terms.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
  <url><loc>https://fasciapp.app/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 <url><loc>https://fasciapp.app/scan/</loc></url>
+ <url><loc>https://fasciapp.app/app/trainees/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+ <url><loc>https://fasciapp.app/app/trainees/join.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>

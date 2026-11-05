@@ -1,0 +1,73 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Join BBTRS Practitioners in Training – FasciApp</title>
+<meta name="description" content="Create an account and list yourself as a BBTRS practitioner in training. Your profile is published straight away.">
+<link rel="canonical" href="https://fasciapp.app/app/trainees/join.html">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#02191E">
+<link rel="icon" href="../favicon-32-v4.png" type="image/png" sizes="32x32">
+<link rel="stylesheet" href="../styles.css?v=0.23.208">
+<link rel="stylesheet" href="trainees.css?v=0.23.208">
+</head><body class="tr">
+<div class="trTop"><a class="brand" href="./">Fasci<span>App</span></a><nav><a href="./">Directory</a><a href="../?join=1">Practitioner map</a></nav></div>
+<h1 id="joinH">Practitioners in training</h1>
+<p class="trOffer" id="joinLead">This registration is only for the BBTRS training directory. It is separate from <a href="../?join=1">practitioner map registration</a>. New listings are published as soon as you save. There is nothing to pay and no booking button: people contact you by WhatsApp or email.</p>
+
+<div id="authBox">
+  <div class="seg"><button id="tabUp" class="on" type="button">Create account</button><button id="tabIn" type="button">Sign in</button></div>
+  <form id="authForm" class="card" method="post" action="#">
+    <label class="lbl">Email<input id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false" required></label>
+    <label class="lbl" id="pwL">Password<input id="pw" name="password" type="password" autocomplete="new-password" required minlength="6" placeholder="at least 6 characters"></label>
+    <p id="forgotWrap" class="muted" hidden><a href="#" id="forgotLink">Forgot password?</a></p>
+    <label class="consent" id="agreeL"><input type="checkbox" id="agree"> I'm 18+ and accept the <a href="../../terms.html" target="_blank" rel="noopener">Terms</a> and <a href="../../privacy.html" target="_blank" rel="noopener">Privacy Policy</a></label>
+    <div id="tsAuth" class="tsBox" aria-label="Security check"></div>
+    <button id="authBtn" class="gold big1">Create account</button>
+    <p id="authMsg" class="msg" role="status"></p>
+  </form>
+  <form id="forgotForm" class="card" hidden>
+    <p class="muted">Enter the email for your account. We'll send a link to choose a new password.</p>
+    <label class="lbl">Email<input id="forgotEmail" type="email" autocomplete="username" required></label>
+    <div id="tsForgot" class="tsBox" aria-label="Security check"></div>
+    <button class="gold big1">Send reset link</button>
+    <p id="forgotMsg" class="msg" role="status"></p>
+    <button type="button" id="forgotBack" class="ghost">← Back to sign in</button>
+  </form>
+  <form id="resetForm" class="card" hidden>
+    <p class="muted">Choose a new password (at least 6 characters).</p>
+    <label class="lbl">New password<input id="newPw" type="password" autocomplete="new-password" required minlength="6"></label>
+    <label class="lbl">Confirm password<input id="newPw2" type="password" autocomplete="new-password" required minlength="6"></label>
+    <button class="gold big1">Save new password</button>
+    <p id="resetMsg" class="msg" role="status"></p>
+  </form>
+</div>
+
+<form id="profForm" class="card" hidden>
+  <p id="who" class="muted"></p>
+  <div class="ph"><img id="phPrev" class="av big" alt="" hidden><label class="phbtn">Add profile photo<input id="photo" type="file" accept="image/*" hidden></label></div>
+  <label class="lbl">Full name<input name="name" required maxlength="80" autocomplete="name" placeholder="First and last name"></label>
+  <label class="lbl">Country<select name="country" id="country" required><option value="">Country</option></select></label>
+  <label class="lbl">Cohort start<input name="cohort" id="cohort" required maxlength="40" placeholder="March 2025" autocomplete="off"></label>
+  <p id="cohortHelp" class="trHint">Type the month and year your cohort started.</p>
+  <div class="lbl">Spoken languages</div>
+  <div id="langBox" class="trLang"></div>
+  <div class="trAdd"><input id="langNew" maxlength="40" placeholder="Add a language" aria-label="Add a language"><button type="button" id="langAdd" class="ghost sm">Add</button></div>
+  <label class="lbl">Short bio<textarea name="bio" rows="4" required maxlength="600" placeholder="A few sentences about your training and how you practise"></textarea></label>
+  <label class="lbl">Website (optional)<input name="website" type="url" inputmode="url" maxlength="300" placeholder="https://"></label>
+  <label class="lbl">Contact email<input name="email" type="email" maxlength="120" autocomplete="email" placeholder="you@example.com"></label>
+  <label class="lbl">WhatsApp number<input name="whatsapp" type="tel" inputmode="tel" maxlength="40" autocomplete="tel" placeholder="+1 202 555 0123"></label>
+  <p class="trHint">Add an email, a WhatsApp number, or both. Signed-in visitors can see them. Everyone else only sees that a contact exists.</p>
+  <p id="liveNote" class="trHint"></p>
+  <button class="gold big1" id="saveBtn">Publish my profile</button>
+  <button type="button" id="hideBtn" class="ghost" hidden>Hide my listing</button>
+  <button type="button" id="delBtn" class="ghost" hidden>Delete my listing</button>
+  <button type="button" id="signOut" class="ghost">Log out</button>
+  <p id="profMsg" class="msg" role="status"></p>
+</form>
+<p class="trFoot"><a href="./">Back to the directory</a></p>
+<script src="../config.js?v=0.23.100"></script>
+<script src="../vendor/supabase-js-2.118.0.min.js"></script>
+<script src="../captcha.js?v=0.23.193"></script>
+<script src="../data.js?v=0.23.193"></script>
+<script src="trainee-lib.js?v=0.23.208"></script>
+<script src="join.js?v=0.23.208"></script>
+</body></html>
