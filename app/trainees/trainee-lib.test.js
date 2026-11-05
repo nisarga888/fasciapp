@@ -81,6 +81,14 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   assert.ok(cols.includes("has_email"));
   assert.ok(cols.includes("has_whatsapp"));
   assert.equal(/alter table public\.assessments/i.test(sql), false);
+  assert.match(sql, /cohort_month smallint,/);
+  assert.equal(/cohort_month smallint not null/.test(sql), false);
+  assert.equal(/cohort_year smallint not null/.test(sql), false);
+  assert.match(sql, /is_test = false and cohort_month is not null and cohort_year is not null/);
+  assert.match(sql, /auth\.uid\(\) = 'fea03ec6-5408-494d-8848-228c34f357de'::uuid/);
+  assert.equal(/jwt\(\) ->> 'email'/.test(sql), false);
+  assert.equal(TR.isAdminUser("fea03ec6-5408-494d-8848-228c34f357de"), true);
+  assert.equal(TR.isAdminUser("00000000-0000-4000-8000-000000000000"), false);
   const seed = fs.readFileSync(path.join(__dirname, "../../supabase/migrations/20261105163100_bbtrs_trainees_test_seed.sql"), "utf8");
   const samples = fs.readFileSync(path.join(__dirname, "test-profiles.js"), "utf8");
   for (const name of ["Nisarga", "Giten", "Aisha", "Prema"]) {
@@ -94,6 +102,16 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   assert.match(samples, /cohort_label: "TEST"/);
   assert.match(samples, /country: "TEST"/);
   assert.match(dir, /href="\.\.\/\?search=1"/);
+  const landing = fs.readFileSync(path.join(__dirname, "../../index.html"), "utf8");
+  const lab = landing.match(/<!--LAB:START[\s\S]*?<!--LAB:END-->/);
+  assert.ok(lab, "landing Lab block");
+  assert.match(lab[0], /href="app\/trainees\/"/);
+  assert.equal(/Body assessment|app\/assessment\.html/i.test(landing), false);
+  assert.match(landing, /Practitioners in training/);
+  const repair = fs.readFileSync(path.join(__dirname, "../../supabase/migrations/20261105164000_bbtrs_trainees_cohort_admin_fix.sql"), "utf8");
+  assert.match(repair, /alter column cohort_month drop not null/);
+  assert.match(repair, /alter column cohort_year drop not null/);
+  assert.match(repair, /auth\.uid\(\) = 'fea03ec6-5408-494d-8848-228c34f357de'::uuid/);
   const rows = require("./test-profiles.js");
   assert.equal(rows.length, 4);
   rows.forEach(r => {

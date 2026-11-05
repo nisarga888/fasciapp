@@ -3,6 +3,7 @@ node_modules/
 package.json
 package-lock.json
 *.mjs
+!gen-landing-lab.mjs
 *.sql
 !supabase/migrations/*.sql
 *.pre-*.html
