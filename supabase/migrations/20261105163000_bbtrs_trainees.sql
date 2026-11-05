@@ -22,14 +22,15 @@
 --   https://fasciapp.app/app/trainees/join.html?reset=1
 -- so trainee confirmation and password-reset emails return to the trainee page.
 
+-- Same admin account the app already uses. Matched by auth user id, not email:
+-- sign-up does not require a confirmed email, so a JWT email is not a stable check.
 create or replace function public.fa_bbtrs_is_admin()
 returns boolean
 language sql
 stable
-security definer
 set search_path = public
 as $$
-  select lower(coalesce(auth.jwt() ->> 'email', '')) = 'nisarga8@gmail.com'
+  select auth.uid() = 'fea03ec6-5408-494d-8848-228c34f357de'::uuid
 $$;
 
 revoke all on function public.fa_bbtrs_is_admin() from public;
@@ -45,8 +46,8 @@ create table if not exists public.bbtrs_trainees (
   website text,
   country text not null,
   languages text[] not null default '{}',
-  cohort_month smallint not null,
-  cohort_year smallint not null,
+  cohort_month smallint,
+  cohort_year smallint,
   cohort_label text not null,
   email text,
   whatsapp text,

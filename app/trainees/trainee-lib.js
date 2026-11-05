@@ -7,7 +7,7 @@
 })(function () {
   const MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
   const MONTH_LABELS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const ADMIN_EMAIL = "nisarga8@gmail.com";
+  const ADMIN_USER_ID = "fea03ec6-5408-494d-8848-228c34f357de";
   const LANGS = ["Arabic", "Chinese", "Czech", "Danish", "Dutch", "English", "Estonian", "Finnish", "French", "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Indonesian", "Italian", "Japanese", "Korean", "Latvian", "Lithuanian", "Norwegian", "Polish", "Portuguese", "Romanian", "Russian", "Spanish", "Swedish", "Thai", "Turkish", "Ukrainian"];
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   const PUBLIC_COLS = "id,user_id,is_test,name,bio,photo,website,country,languages,cohort_month,cohort_year,cohort_label,published,created_at,has_email,has_whatsapp";
@@ -16,8 +16,8 @@
   function esc(s) {
     return String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
   }
-  function isAdminEmail(email) {
-    return String(email || "").trim().toLowerCase() === ADMIN_EMAIL;
+  function isAdminUser(userId) {
+    return String(userId || "").toLowerCase() === ADMIN_USER_ID;
   }
   function parseUuid(v) {
     const s = String(v || "").trim();
@@ -157,8 +157,8 @@
   const COHORT_HELP = "Type the month and year your cohort started.";
 
   return {
-    MONTH_LABELS, ADMIN_EMAIL, LANGS, PUBLIC_COLS, MEMBER_COLS, OFFER, ROLE, COHORT_HELP,
-    esc, isAdminEmail, parseUuid, parseCohort, cohortKeyOf, cohortText, cleanLanguages,
+    MONTH_LABELS, ADMIN_USER_ID, LANGS, PUBLIC_COLS, MEMBER_COLS, OFFER, ROLE, COHORT_HELP,
+    esc, isAdminUser, parseUuid, parseCohort, cohortKeyOf, cohortText, cleanLanguages,
     safeWeb, safeMail, waLink, safePhoto, selectColumns, redact, sortTrainees, filterTrainees,
     letterOf, groupAZ, initials
   };

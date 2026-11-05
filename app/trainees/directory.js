@@ -73,7 +73,7 @@
       <p class="trBio">${TR.esc(p.bio)}</p>
       ${contactBlock(p)}
       ${mine ? `<p><a href="join.html?list=1">Edit my listing</a></p>` : ""}
-      ${me && TR.isAdminEmail(me.email) && !p._preview ? adminButtons(p) : ""}
+      ${me && TR.isAdminUser(me.user_id) && !p._preview ? adminButtons(p) : ""}
     </article>`;
   }
   function adminButtons(p) {
@@ -93,7 +93,7 @@
     const langs = [...new Set(langRows.flatMap(r => r.languages || []))].sort((a, b) => a.localeCompare(b, "en"));
     const groups = TR.groupAZ(shown);
     const cards = groups.map(g => `<h2 class="trLetter">${TR.esc(g.letter)}</h2>` + g.rows.map(p => `<button type="button" class="trCard" data-id="${TR.esc(p.id)}">${photoHTML(p, "av")}<span><b>${TR.esc(p.name)}</b><small>${TR.esc(TR.ROLE)}${p.is_test ? ` <i class="trTest">TEST</i>` : ""}</small><small>${TR.esc(p.country || "")}${p.country ? " · " : ""}${TR.esc(TR.cohortText(p))}</small><small>${TR.esc((p.languages || []).join(", "))}</small></span></button>`).join("")).join("");
-    const admin = me && TR.isAdminEmail(me.email) && !previewNote ? adminList() : "";
+    const admin = me && TR.isAdminUser(me.user_id) && !previewNote ? adminList() : "";
     return `${previewNote ? `<p class="trHint">${TR.esc(previewNote)}</p>` : ""}<div class="trFilters">
       <select id="fCountry" aria-label="Country">${opts(countries.map(c => ({value: c, label: c})), q.country, "All countries")}</select>
       <select id="fCohort" aria-label="Cohort month and year">${opts(cohorts, q.cohort, "All cohort months")}</select>
@@ -166,7 +166,7 @@
     const pub = e.target.closest("[data-pub]");
     const rev = e.target.closest("[data-rev]");
     if (!pub && !rev) return;
-    if (!me || !TR.isAdminEmail(me.email)) return;
+    if (!me || !TR.isAdminUser(me.user_id)) return;
     const id = (pub || rev).dataset.pub || (pub || rev).dataset.rev;
     try {
       const patch = pub ? {published: pub.dataset.on === "1"} : {reviewed_at: new Date().toISOString()};
