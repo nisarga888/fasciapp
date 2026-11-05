@@ -37,7 +37,7 @@
     $("#resetForm").hidden = true;
     $("#tabUp").classList.toggle("on", signUpMode);
     $("#tabIn").classList.toggle("on", !signUpMode);
-    $("#authBtn").textContent = signUpMode ? "Create account" : "Sign in";
+    $("#authBtn").textContent = signUpMode ? "Create account" : "Log in";
     $("#agreeL").hidden = !signUpMode;
     $("#forgotWrap").hidden = signUpMode;
     $("#pw").autocomplete = signUpMode ? "new-password" : "current-password";
@@ -171,7 +171,13 @@
       if (signUpMode) {
         const redirect = location.origin + "/app/trainees/join.html" + (location.search || "?list=1");
         const su = await client().auth.signUp({email: em, password: pw, options: {captchaToken: token, emailRedirectTo: redirect, data: {signup_source: "bbtrs_trainee", news_optin: false}}});
-        if (su.error && /already registered|already exists|rate limit|too many/i.test(su.error.message || "")) {
+        if (su.error && /already registered|already exists/i.test(su.error.message || "")) {
+          showAuth(false);
+          $("#email").value = em;
+          m.textContent = "You already have a FasciApp account. Log in to continue. This does not create a second account.";
+          return;
+        }
+        if (su.error && /rate limit|too many/i.test(su.error.message || "")) {
           const r = await client().auth.signInWithPassword({email: em, password: pw, options: {captchaToken: await capTok("auth")}});
           if (r.error) throw r.error;
           m.textContent = "";
@@ -219,7 +225,8 @@
   };
   $("#profForm").onsubmit = async e => {
     e.preventDefault();
-    if (busy || !me) return;
+    if (!me) { showAuth(false); $("#authMsg").textContent = "Log in or create an account before adding your profile."; return; }
+    if (busy) return;
     const f = e.target, m = $("#profMsg");
     const cohort = TR.parseCohort(f.cohort.value);
     if (!f.name.value.trim() || f.name.value.trim().length < 2) { m.textContent = "Add your full name."; return; }
@@ -280,7 +287,7 @@
   };
   $("#signOut").onclick = async () => { try { await client().auth.signOut(); } catch (e) {} me = null; existing = null; showAuth(false); };
 
-  showAuth(params.get("mode") !== "in");
+  showAuth(false);
   fillCountries("");
   paintLangs();
   client().auth.onAuthStateChange((event, session) => {

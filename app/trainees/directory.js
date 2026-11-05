@@ -14,11 +14,12 @@
   function query() {
     const q = new URLSearchParams(location.search);
     const rawId = q.get("id") || "";
-    return {rawId, id: TR.parseUuid(rawId), country: q.get("country") || "", cohort: q.get("cohort") || "", lang: q.get("lang") || ""};
+    return {rawId, id: TR.parseUuid(rawId), cohort: q.get("cohort") || "", lang: q.get("lang") || ""};
   }
   function writeQuery(next, mode) {
     const u = new URL(location.href);
-    ["id", "country", "cohort", "lang"].forEach(k => { if (next[k]) u.searchParams.set(k, next[k]); else u.searchParams.delete(k); });
+    ["id", "cohort", "lang"].forEach(k => { if (next[k]) u.searchParams.set(k, next[k]); else u.searchParams.delete(k); });
+    u.searchParams.delete("country");
     const url = u.pathname + u.search;
     if (mode === "push") history.pushState({}, "", url); else history.replaceState({}, "", url);
   }
@@ -59,13 +60,12 @@
     return `<button type="button" class="back" id="trBack">← Directory</button>
     <article class="card trHero">
       ${photoHTML(p, "trPh")}
-      <span class="trBadge">${TR.esc(TR.ROLE)}</span>${p.is_test ? ` <i class="trTest">TEST</i>` : ""}
+      <span class="trIn">IN TRAINING</span>${p.is_test ? ` <i class="trTest">TEST</i>` : ""}
       <h2>${TR.esc(p.name)}</h2>
       <p class="trOffer">${TR.esc(TR.OFFER)}</p>
       ${p.published === false ? `<p class="trHidden">Hidden from the public directory</p>` : ""}
-      ${p.is_test ? `<p class="trHint">TEST profile. Placeholder only. Not a real person, biography, location, language, cohort date, or credential.</p>` : ""}
+      ${p.is_test ? `<p class="trHint">TEST listing. Not an account.</p>` : ""}
       <ul class="trFacts">
-        <li><b>Country</b> · ${TR.esc(p.country || "—")}</li>
         <li><b>Cohort started</b> · ${TR.esc(TR.cohortText(p) || "—")}</li>
         <li><b>Languages</b> · ${langs || "—"}</li>
         ${p.website ? `<li><b>Website</b> · <a href="${TR.esc(p.website)}" target="_blank" rel="noopener">${TR.esc(p.website.replace(/^https?:\/\//, ""))}</a></li>` : ""}
@@ -81,26 +81,27 @@
     const reviewed = p.reviewed_at ? "Reviewed" : "Not reviewed yet";
     return `<div class="trRow"><button type="button" class="ghost sm" data-pub="${TR.esc(p.id)}" data-on="${live ? "0" : "1"}">${live ? "Hide listing" : "Publish listing"}</button><button type="button" class="ghost sm" data-rev="${TR.esc(p.id)}">Mark reviewed</button><small class="muted">${reviewed}</small></div>`;
   }
+  function gridCard(p) {
+    const pic = p.photo ? `<img src="${TR.esc(p.photo)}" alt="">` : `<span class="ptFb">${TR.esc(TR.initials(p.name))}</span>`;
+    return `<button type="button" class="ptT" data-id="${TR.esc(p.id)}" aria-label="${TR.esc(p.name)}, in training">${pic}<span class="trIn">IN TRAINING</span>${p.is_test ? `<span class="trTestMark">TEST</span>` : ""}<span class="ptOv"><b>${TR.esc(p.name)}</b></span></button>`;
+  }
   function listView(q) {
-    const shown = TR.filterTrainees(raw, q);
-    const countries = [...new Set(shown.concat(TR.filterTrainees(raw, {cohort: q.cohort, lang: q.lang})).map(r => r.country).filter(Boolean))].sort((a, b) => a.localeCompare(b, "en"));
-    const cohortRows = TR.filterTrainees(raw, {country: q.country, lang: q.lang});
+    const shown = TR.sortTrainees(TR.filterTrainees(raw, {cohort: q.cohort, lang: q.lang}));
+    const cohortRows = TR.filterTrainees(raw, {lang: q.lang});
     const cohorts = [];
     const seenC = new Set();
     cohortRows.forEach(r => { const k = TR.cohortKeyOf(r); if (!k || seenC.has(k)) return; seenC.add(k); cohorts.push({value: k, label: TR.cohortText(r)}); });
     cohorts.sort((a, b) => b.value.localeCompare(a.value));
-    const langRows = TR.filterTrainees(raw, {country: q.country, cohort: q.cohort});
+    const langRows = TR.filterTrainees(raw, {cohort: q.cohort});
     const langs = [...new Set(langRows.flatMap(r => r.languages || []))].sort((a, b) => a.localeCompare(b, "en"));
-    const groups = TR.groupAZ(shown);
-    const cards = groups.map(g => `<h2 class="trLetter">${TR.esc(g.letter)}</h2>` + g.rows.map(p => `<button type="button" class="trCard" data-id="${TR.esc(p.id)}">${photoHTML(p, "av")}<span><b>${TR.esc(p.name)}</b><small>${TR.esc(TR.ROLE)}${p.is_test ? ` <i class="trTest">TEST</i>` : ""}</small><small>${TR.esc(p.country || "")}${p.country ? " · " : ""}${TR.esc(TR.cohortText(p))}</small><small>${TR.esc((p.languages || []).join(", "))}</small></span></button>`).join("")).join("");
     const admin = me && TR.isAdminUser(me.user_id) && !previewNote ? adminList() : "";
-    return `${previewNote ? `<p class="trHint">${TR.esc(previewNote)}</p>` : ""}<div class="trFilters">
-      <select id="fCountry" aria-label="Country">${opts(countries.map(c => ({value: c, label: c})), q.country, "All countries")}</select>
-      <select id="fCohort" aria-label="Cohort month and year">${opts(cohorts, q.cohort, "All cohort months")}</select>
-      <select id="fLang" aria-label="Spoken language">${opts(langs.map(c => ({value: c, label: c})), q.lang, "All spoken languages")}</select>
+    return `${previewNote ? `<p class="trHint">${TR.esc(previewNote)}</p>` : ""}<div class="trFilters trFilters2">
+      <select id="fCohort" aria-label="Cohort">${opts(cohorts, q.cohort, "All cohorts")}</select>
+      <select id="fLang" aria-label="Language spoken">${opts(langs.map(c => ({value: c, label: c})), q.lang, "All languages")}</select>
     </div>
     <p class="trCount muted">${shown.length ? `${shown.length} practitioner${shown.length === 1 ? "" : "s"} in training` : "No practitioners in training match these filters."}</p>
-    ${cards || (raw.length ? "" : `<p class="muted">No one is listed yet. <a href="join.html?list=1">Be the first</a>.</p>`)}
+    <div class="ptGrid trGrid">${shown.map(gridCard).join("")}</div>
+    ${shown.length ? "" : `<p class="muted">No one is listed yet. <a href="join.html?list=1">Join the directory</a>.</p>`}
     <p><a class="gold big1" href="join.html?list=1">Join as a practitioner in training</a></p>
     ${admin}`;
   }
@@ -118,9 +119,6 @@
     }
     app.innerHTML = listView(q);
   }
-  function placeholders() {
-    return (window.FA_TR_TEST || []).map(r => Object.assign(TR.redact(r, !!me), {_preview: true, is_test: true}));
-  }
   async function load() {
     me = null;
     previewNote = "";
@@ -134,19 +132,16 @@
       const res = await client().from("bbtrs_trainees").select(TR.selectColumns(!!me)).order("name").limit(1000);
       if (res.error) err = res.error; else rows = res.data || [];
     } catch (e) { err = e; }
-    if (rows && rows.length) {
-      raw = rows.map(r => TR.redact(r, !!me));
+    if (err) {
+      raw = [];
+      previewNote = setupNote(err);
       return;
     }
-    raw = placeholders();
-    previewNote = err
-      ? "These four profiles are TEST placeholders for layout only. They are not saved and they are not real people. Apply the table migration, then the test seed SQL, to store them."
-      : "These four profiles are TEST placeholders. No listings are stored yet. Apply the test seed SQL after the table migration to keep them in the directory. They are not real people.";
+    raw = (rows || []).map(r => TR.redact(r, !!me));
   }
   app.addEventListener("change", e => {
     const q = query();
-    if (e.target.id === "fCountry") q.country = e.target.value;
-    else if (e.target.id === "fCohort") q.cohort = e.target.value;
+    if (e.target.id === "fCohort") q.cohort = e.target.value;
     else if (e.target.id === "fLang") q.lang = e.target.value;
     else return;
     delete q.rawId; q.id = "";
@@ -176,5 +171,5 @@
     } catch (err) { alert(setupNote(err)); }
   });
   window.addEventListener("popstate", render);
-  load().then(render).catch(err => { raw = placeholders(); previewNote = setupNote(err); render(); });
+  load().then(render).catch(err => { raw = []; previewNote = setupNote(err); render(); });
 })();

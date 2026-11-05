@@ -725,6 +725,9 @@ body.peOpen{overflow:hidden}
 .newsCard.nb:not(:has(.nbIm,.nbTile)){padding-left:16px}
 .forgotSent{margin:6px 0 8px}.forgotSent p{margin:0 0 8px;font-size:13px}#forgotResend[disabled]{opacity:.55}
 /* v0.23.106 Lab tiles */
+.labBanner{display:block;margin:0 0 14px;padding:14px 16px;border:2px solid #C99E67;border-radius:18px;background:#0a2a30;text-decoration:none;text-align:center}
+.labBanner b{display:block;color:#C99E67;font-size:17px;margin-bottom:4px}
+.labBanner span{display:block;color:#F3EDE4;font-size:14.5px;line-height:1.35}
 .labTiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 8px}
 .ltile{position:relative;aspect-ratio:1/0.82;border:0;border-radius:18px;background:var(--tb);color:#fff;text-align:left;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-shadow:0 4px 14px #0004;cursor:pointer;transition:transform .12s}
 .ltile:active{transform:scale(.97)}

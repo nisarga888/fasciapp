@@ -14,14 +14,15 @@
 <p class="trOffer" id="joinLead">This registration is only for the BBTRS training directory. It is separate from <a href="../?join=1">practitioner map registration</a>. New listings are published as soon as you save. There is nothing to pay and no booking button: people contact you by WhatsApp or email.</p>
 
 <div id="authBox">
-  <div class="seg"><button id="tabUp" class="on" type="button">Create account</button><button id="tabIn" type="button">Sign in</button></div>
+  <p class="trLogin"><b>Already have a FasciApp account? Log in.</b> Your trainee profile is saved on that account so you can edit it later. Logging in does not create a second account.</p>
+  <div class="seg"><button id="tabIn" class="on" type="button">Log in</button><button id="tabUp" type="button">Create account</button></div>
   <form id="authForm" class="card" method="post" action="#">
     <label class="lbl">Email<input id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false" required></label>
     <label class="lbl" id="pwL">Password<input id="pw" name="password" type="password" autocomplete="new-password" required minlength="6" placeholder="at least 6 characters"></label>
     <p id="forgotWrap" class="muted" hidden><a href="#" id="forgotLink">Forgot password?</a></p>
     <label class="consent" id="agreeL"><input type="checkbox" id="agree"> I'm 18+ and accept the <a href="../../terms.html" target="_blank" rel="noopener">Terms</a> and <a href="../../privacy.html" target="_blank" rel="noopener">Privacy Policy</a></label>
     <div id="tsAuth" class="tsBox" aria-label="Security check"></div>
-    <button id="authBtn" class="gold big1">Create account</button>
+    <button id="authBtn" class="gold big1">Log in</button>
     <p id="authMsg" class="msg" role="status"></p>
   </form>
   <form id="forgotForm" class="card" hidden>
@@ -42,6 +43,7 @@
 </div>
 
 <form id="profForm" class="card" hidden>
+  <p class="trHint">You are signed in. This profile is stored on your account. Contact details are saved in the database and shown only to signed-in visitors.</p>
   <p id="who" class="muted"></p>
   <div class="ph"><img id="phPrev" class="av big" alt="" hidden><label class="phbtn">Add profile photo<input id="photo" type="file" accept="image/*" hidden></label></div>
   <label class="lbl">Full name<input name="name" required maxlength="80" autocomplete="name" placeholder="First and last name"></label>
