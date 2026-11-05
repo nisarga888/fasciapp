@@ -7,6 +7,13 @@ body.tr{max-width:480px;padding:16px 16px 32px}
 body.tr h1{font-weight:400;font-size:28px;color:var(--gold);margin:8px 0 8px;line-height:1.2}
 .trOffer{margin:0 0 14px;line-height:1.45;color:#d7e2e1}
 .trFilters{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
+.trFilters2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.trGrid{margin:0 0 14px}
+.trGrid .ptT{border:2px solid #C99E67;border-radius:18px}
+.trIn{position:absolute;z-index:2;top:8px;left:8px;background:#C99E67;color:#02191E;font-size:10px;font-weight:800;letter-spacing:.04em;border-radius:999px;padding:4px 7px}
+.trTestMark{position:absolute;z-index:2;top:8px;right:8px;background:#02191Eee;color:#5FC9C3;border:1px solid #5FC9C3;font-size:10px;font-weight:800;letter-spacing:.04em;border-radius:999px;padding:3px 7px}
+.trLogin{margin:0 0 12px;padding:12px 14px;border:1px solid #C99E67;border-radius:16px;background:#0a2a30}
+.trLogin b{display:block;color:#C99E67;margin-bottom:4px}
 .trFilters select{width:100%}
 .trCount{margin:0 0 8px}
 .trLetter{margin:16px 0 8px;font-size:13px;letter-spacing:1.4px;color:var(--gold)}

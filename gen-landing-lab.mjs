@@ -13,25 +13,14 @@ if (!items.length) throw new Error("app/learn.js did not load FASCIAPP_LEARN");
 let html = fs.readFileSync("index.html", "utf8");
 const before = html;
 
-html = html.replace('href="app/assessment.html"', 'href="app/trainees/"');
-html = html.replace(
-  "<b>Body assessment</b><p>Body reading and fascial patterns to help plan each session.</p>",
-  "<b>Practitioners in training</b><p>BBTRS trainees offering a free one-hour online practice session.</p>"
-);
-
-const labLink = '<p style="text-align:center;margin-top:22px"><a class="btn line" href="app/trainees/">BBTRS practitioners in training</a></p>\n ';
-const openLab = '<p style="text-align:center;margin-top:22px"><a class="btn gold" href="app/?tab=learn">Open Fascia Lab →</a></p>';
-const openAnchor = '<a class="btn gold" href="app/?tab=learn">Open Fascia Lab →</a>';
-const labStart = html.indexOf("<!--LAB:START");
-const labEnd = html.indexOf("<!--LAB:END-->");
-if (labStart < 0 || labEnd < labStart) throw new Error("Fascia Lab markers not found in index.html");
-let lab = html.slice(labStart, labEnd);
-if (!lab.includes(openAnchor)) throw new Error("Fascia Lab footer not found in index.html");
-if (!lab.includes('href="app/trainees/"')) {
-  if (!lab.includes(openLab)) throw new Error("Fascia Lab footer not found in index.html");
-  lab = lab.replace(openLab, labLink + openLab.replace("margin-top:22px", "margin-top:12px"));
+html = html.replace(/<a class="f fl" href="app\/assessment\.html">[\s\S]*?<\/a>\n/, "");
+html = html.replace('<p style="text-align:center;margin-top:22px"><a class="btn line" href="app/trainees/">BBTRS practitioners in training</a></p>\n ', "");
+const banner = '<a class="labBanner" href="app/trainees/"><b>BBTRS practitioners in training</b><span>Book a free one-hour online session with our practitioners in training.</span></a>\n ';
+if (!html.includes("Book a free one-hour online session with our practitioners in training.")) {
+  const heading = '<h2 id="labH">Fascia Lab</h2>';
+  if (!html.includes(heading)) throw new Error("Fascia Lab heading not found");
+  html = html.replace(heading, banner + heading);
 }
-html = html.slice(0, labStart) + lab + html.slice(labEnd);
 
 if (/Body assessment|app\/assessment\.html/i.test(html)) {
   throw new Error("index.html still links to Body assessment");

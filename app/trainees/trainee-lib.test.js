@@ -67,10 +67,17 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
     assert.equal(/stripe|payment/i.test(html), false);
   }
   assert.match(dir, /href="join\.html\?list=1"/);
-  assert.match(app, /href="trainees\/"/);
+  const appHtml = fs.readFileSync(path.join(__dirname, "../index.html"), "utf8");
+  assert.match(appHtml, /href="trainees\/"/);
+  assert.match(appHtml, /Book a free one-hour online session with our practitioners in training\./);
   const tile = app.slice(app.indexOf("function labTiles"), app.indexOf("function labView"));
-  assert.match(tile, /trainees\//);
   assert.equal(/assessment/i.test(tile), false);
+  assert.equal(tile.includes("trainees/"), false);
+  const page = fs.readFileSync(path.join(__dirname, "index.html"), "utf8");
+  assert.match(page, /<h1>BBTRS online practitioners in training<\/h1>/);
+  assert.equal(fs.readFileSync(path.join(__dirname, "directory.js"), "utf8").includes("fCountry"), false);
+  assert.match(join, /id="profForm" class="card" hidden/);
+  assert.match(join, /Already have a FasciApp account\? Log in\./);
   const sql = fs.readFileSync(path.join(__dirname, "../../supabase/migrations/20261105163000_bbtrs_trainees.sql"), "utf8");
   assert.match(sql, /published := true/);
   const grant = sql.match(/grant select \(([\s\S]*?)\) on table public\.bbtrs_trainees to anon/i);
@@ -106,8 +113,16 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   const lab = landing.match(/<!--LAB:START[\s\S]*?<!--LAB:END-->/);
   assert.ok(lab, "landing Lab block");
   assert.match(lab[0], /href="app\/trainees\/"/);
+  assert.match(lab[0], /Book a free one-hour online session with our practitioners in training\./);
   assert.equal(/Body assessment|app\/assessment\.html/i.test(landing), false);
-  assert.match(landing, /Practitioners in training/);
+  assert.match(landing, /BBTRS practitioners in training/);
+  const copy = fs.readFileSync(path.join(__dirname, "../../supabase/migrations/20261105180000_bbtrs_trainees_test_from_practitioners.sql"), "utf8");
+  assert.match(copy, /from public\.practitioners/);
+  assert.match(copy, /January 2026/);
+  assert.match(copy, /array\['English'\]/);
+  assert.equal(copy.includes("@"), false);
+  assert.equal(/\+\d{6,}/.test(copy), false);
+  assert.match(copy, /user_id = null/);
   const repair = fs.readFileSync(path.join(__dirname, "../../supabase/migrations/20261105164000_bbtrs_trainees_cohort_admin_fix.sql"), "utf8");
   assert.match(repair, /alter column cohort_month drop not null/);
   assert.match(repair, /alter column cohort_year drop not null/);
