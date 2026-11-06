@@ -135,10 +135,14 @@
     if (!existing) { box.hidden = true; box.innerHTML = ""; return; }
     const pub = existing.published !== false;
     box.hidden = false;
-    box.innerHTML = `<b>Your listing</b><p>${TR.esc(existing.name || "Your profile")}</p><p class="muted">${pub ? "Visible in the public directory." : "Hidden from the public directory. Your details are kept."}</p><div class="trActs"><button type="button" class="gold" id="mineEdit">Edit</button><button type="button" class="ghost" id="mineHide">${pub ? "Hide" : "Publish"}</button><button type="button" class="ghost" id="mineDelete">Delete</button></div>`;
+    box.innerHTML = `<b>Your listing</b><p>${TR.esc(existing.name || "Your profile")}</p><p class="muted">${pub ? "Visible in the public directory." : "Hidden from the public directory. Your details are kept."}</p><div class="trActs"><button type="button" class="gold" id="mineEdit">Edit</button><button type="button" class="ghost" id="mineHide">${pub ? "Hide" : "Publish"}</button><button type="button" class="ghost" id="mineDelete">Delete</button><button type="button" class="gold trMove" id="mineMove">Certified? Move to the main directory</button></div>`;
     $("#mineEdit").onclick = () => { const f = $("#profForm"); f.hidden = false; f.scrollIntoView({block: "start"}); };
     $("#mineHide").onclick = () => $("#hideBtn").click();
     $("#mineDelete").onclick = () => $("#delBtn").click();
+    $("#mineMove").onclick = () => {
+      if (window.parent && window.parent !== window) { window.parent.postMessage({fa: "bbtrs-move"}, location.origin); return; }
+      location.href = "../?move=1";
+    };
   }
   function goDirectory(id) {
     const embed = new URLSearchParams(location.search).get("embed") === "1";

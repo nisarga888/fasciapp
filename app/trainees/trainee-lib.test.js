@@ -73,6 +73,11 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   assert.match(appHtml, /href="\?trainees=1"/);
   assert.match(appHtml, /id="bbtrs"/);
   assert.match(appHtml, /My BBTRS online profile/);
+  assert.match(appHtml, /id="qCountry"/);
+  assert.match(appHtml, /id="qCity"/);
+  assert.match(appHtml, /Certified\? Move to the main directory/);
+  assert.equal(appHtml.includes("Search by name"), false);
+  assert.match(appHtml, /id="listFilter"/);
   assert.match(appHtml, /Practitioner in training \(not yet certified\)/);
   assert.match(appHtml, /Book a free one-hour online session with our practitioners in training\./);
   const tile = app.slice(app.indexOf("function labTiles"), app.indexOf("function labView"));
@@ -164,4 +169,33 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
     assert.equal(TR.safePhoto(r.photo).startsWith("data:image/png;base64,"), true);
     assert.equal(TR.redact(r, false).email, "");
   });
+});
+
+test("trainee profile hub, list place pickers, and certified move stay on the normal save path", () => {
+  const app = fs.readFileSync(path.join(__dirname, "../app.js"), "utf8");
+  const cal = fs.readFileSync(path.join(__dirname, "../cal.js"), "utf8");
+  const sw = fs.readFileSync(path.join(__dirname, "../sw.js"), "utf8");
+  const join = fs.readFileSync(path.join(__dirname, "join.js"), "utf8");
+  const dir = fs.readFileSync(path.join(__dirname, "directory.js"), "utf8");
+  assert.match(app, /if\(!has&&!profEdit\)\{profViewB\(\{/);
+  assert.match(app, /if\(has&&!profEdit\)\{profViewB\(p,v,f\);return\}/);
+  assert.match(app, /function fillGeo\(/);
+  assert.match(app, /function geoOk\(/);
+  assert.match(app, /data-clr="country"/);
+  assert.match(app, /data-clr="city"/);
+  assert.match(app, /sheetGeo=geoPick\(\)/);
+  assert.match(app, /Hide the BBTRS listing/);
+  assert.match(app, /Keep it in the trainee directory/);
+  assert.match(app, /update\(\{published:false\}\)/);
+  const ask = app.slice(app.indexOf("function faAskTraineeListing"), app.indexOf("async function faStartMove"));
+  assert.equal(ask.includes(".delete("), false);
+  assert.match(join, /Certified\? Move to the main directory/);
+  assert.match(join, /bbtrs-move/);
+  assert.match(dir, /Certified\? Move to the main directory/);
+  assert.match(dir, /kind === "move"/);
+  const build = cal.match(/const BUILD="([^"]+)"/);
+  const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
+  assert.equal(build[1], ver[1]);
+  assert.match(cal, /Update available: tap to refresh/);
+  assert.match(cal, /location\.reload\(\)/);
 });

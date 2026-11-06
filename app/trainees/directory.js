@@ -88,7 +88,7 @@
   }
   function mineActs(p) {
     const hidden = p.published === false;
-    return `<div class="trMine"><b>Your listing</b><p class="muted">${hidden ? "Hidden from the public directory. Your details are kept." : "Visible in the public directory."}</p><div class="trActs"><button type="button" class="gold" data-own="edit">Edit</button><button type="button" class="ghost" data-own="hide">${hidden ? "Publish" : "Hide"}</button><button type="button" class="ghost" data-own="del">Delete</button></div></div>`;
+    return `<div class="trMine"><b>Your listing</b><p class="muted">${hidden ? "Hidden from the public directory. Your details are kept." : "Visible in the public directory."}</p><div class="trActs"><button type="button" class="gold" data-own="edit">Edit</button><button type="button" class="ghost" data-own="hide">${hidden ? "Publish" : "Hide"}</button><button type="button" class="ghost" data-own="del">Delete</button><button type="button" class="gold trMove" data-own="move">Certified? Move to the main directory</button></div></div>`;
   }
   function adminButtons(p) {
     const live = p.published !== false;
@@ -261,6 +261,7 @@
     if (!me) return;
     try {
       if (kind === "edit") { goMine({list: 1}); return; }
+      if (kind === "move") { closeSheet("replace"); if (window.faStartMove) window.faStartMove(); return; }
       if (kind === "hide") {
         const p = raw.find(r => r.user_id === me.user_id);
         if (!p) return;

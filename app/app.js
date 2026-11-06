@@ -35,7 +35,7 @@ const mods=modCounts();const opts=`<option value="">All practices</option>`+mods
  const lf=$("#listFilter");if(lf){const v=lf.value;lf.innerHTML=opts;lf.value=[...lf.options].some(o=>o.value===v)?v:""}
  const cf=$("#filter");if(cf){const v=cf.value;cf.innerHTML=`<option value="">All locations</option>`+placeOptions().countries.map(c=>`<option value="${esc(c.country)}">${esc(c.country)} (${c.n})</option>`).join("");cf.value=[...cf.options].some(o=>o.value===v)?v:""}}
 function syncModFilter(){try{fillPlaces()}catch(e){}renderMarkers();renderList()}
-const mpins=p=>{const c=fold(mapCountry());return c?pins(p).filter(l=>fold(String(l.country||"").trim())===c):pins(p)};
+const mpins=p=>{const c=fold(mapCountry());let ls=c?pins(p).filter(l=>fold(String(l.country||"").trim())===c):pins(p);const g=geoPick();if(g.co||g.ci)ls=ls.filter(l=>(!g.co||fold(locCountry(l))===fold(g.co))&&(!g.ci||fold(locCity(l))===fold(g.ci)));return ls};
 const mapCountry=()=>($("#filter")&&$("#filter").value)||"";
 function mapPeople(){const c=fold(mapCountry());const ps=filtered();if(!c)return ps;return ps.filter(p=>((p.locations&&p.locations.length)?p.locations:[p]).some(l=>fold(String(l.country||"").trim())===c))}
 // Location filter: native <select> (iOS picker). Values: "co:<country>", "ci:<city>|<country>", "free:<text>" (deep links)
@@ -59,6 +59,29 @@ function openTraineeScreen(kind, extra, mode){const u=new URL(location.href);u.s
 window.faOpenBbtrs=function(kind, extra){openTraineeScreen(kind==="mine"||kind==="bbtrsMe"?"bbtrsMe":"bbtrs",extra||{},"push")};
 function traineeFrame(){const f=$("#bbtrsFrame");if(!f)return;const sp=new URLSearchParams(location.search);const q=new URLSearchParams();q.set("embed","1");if(sp.get("next"))q.set("next",sp.get("next"));if(sp.get("list"))q.set("list",sp.get("list"));const src="trainees/join.html?"+q.toString();if(f.getAttribute("src")!==src)f.src=src}
 window.addEventListener("message",e=>{if(e.origin!==location.origin||!e.data||typeof e.data.faTraineeH!=="number")return;const f=$("#bbtrsFrame");if(f&&f.contentWindow===e.source)f.style.height=Math.max(520,e.data.faTraineeH)+"px"});
+let faMovePending=false,faMoveRow=null;
+function faTraineeClient(){const c=window.FASCIAPP_CONFIG||{};if(!window.supabase||!c.SUPABASE_URL)return null;return window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}
+async function faTraineeRow(){const sb=faTraineeClient();if(!sb)return null;const {data:sess}=await sb.auth.getSession();const uid=sess&&sess.session&&sess.session.user&&sess.session.user.id;if(!uid)return null;const cols=window.FA_TR&&FA_TR.selectColumns?FA_TR.selectColumns(true):"*";const {data,error}=await sb.from("bbtrs_trainees").select(cols).eq("user_id",uid).maybeSingle();if(error)throw error;return data}
+window.faTraineeRow=faTraineeRow;
+function faApplyTrainee(row){const f=$("#profForm");if(!f||!row)return;const co=window.canonCountry?canonCountry(row.country||""):(row.country||"");if(f.country&&[...f.country.options].some(o=>o.value===co))f.country.value=co;f.name.value=row.name||"";
+ let bio=String(row.bio||"").trim();const langs=(Array.isArray(row.languages)?row.languages:[]).map(x=>String(x||"").trim()).filter(Boolean);if(langs.length&&!/languages\s*:/i.test(bio))bio=(bio?bio+"\n\n":"")+"Languages: "+langs.join(", ");if(bio.length>1800)bio=bio.slice(0,1800);if(f.bio)f.bio.value=bio;
+ const web=String(row.website||"").trim(),ig=igHandle(web),webIsIg=!!(ig&&!faWebOk(web));if(f.website)f.website.value=webIsIg?"":web;if(f.instagram)f.instagram.value=webIsIg?"@"+ig:"";if(f.email)f.email.value=row.email||(me&&me.email)||"";
+ const wa=String(row.whatsapp||"").replace(/[^\d+]/g,"");if(wa){splitPhone(wa,f.country.value||co);if(f.whatsapp)f.whatsapp.checked=true;waTouched=true}else if(f.whatsapp)f.whatsapp.checked=false;
+ myMods=["BBTRS"];renderTags();photoData=row.photo||null;const img=$("#phPrev");if(img){img.hidden=!photoData;if(photoData)img.src=photoData}}
+async function faHideTraineeListing(){const sb=faTraineeClient();if(!sb||!me)throw new Error("Not signed in");const {error}=await sb.from("bbtrs_trainees").update({published:false}).eq("user_id",me.user_id);if(error)throw error}
+function faAskTraineeListing(){let d=$("#faMoveAsk");if(!d){d=document.createElement("div");d.id="faMoveAsk";d.className="gate";d.innerHTML=`<div class="gateBox" role="dialog" aria-modal="true" aria-labelledby="faMoveH"><h3 id="faMoveH">You're in the main directory</h3><p>Hide your BBTRS online listing, or keep it public? Hiding keeps the details. Nothing is deleted.</p><button type="button" class="gold big1" id="faMoveHide">Hide the BBTRS listing</button><button type="button" class="ghost" id="faMoveKeep">Keep it in the trainee directory</button></div>`;document.body.appendChild(d);
+ d.querySelector("#faMoveHide").onclick=async()=>{d.hidden=true;try{await faHideTraineeListing();showToast("BBTRS listing hidden")}catch(e){showToast("Could not hide the listing")}};
+ d.querySelector("#faMoveKeep").onclick=()=>{d.hidden=true;showToast("BBTRS listing stays public")}}
+ d.hidden=false;const b=d.querySelector("#faMoveHide");if(b)b.focus()}
+async function faStartMove(){if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){try{sessionStorage.setItem("fa_after","move")}catch(e){}fillLastEmail();setMode(false);show("auth");return}
+ let row=null;try{row=await window.faTraineeRow()}catch(e){row=null}
+ const p=await DB.mine().catch(()=>null);const has=!!(p&&(p.name||p.address||p.city));
+ if(has){faMovePending=false;faMoveRow=null;wantForm=true;show("profile");return}
+ if(!row){showToast("Publish a BBTRS online listing first");show("bbtrsMe");return}
+ faMovePending=true;faMoveRow=row;wantForm=true;show("profile")}
+window.faStartMove=faStartMove;
+window.addEventListener("message",e=>{if(e.origin!==location.origin||!e.data||e.data.fa!=="bbtrs-move")return;faStartMove()});
+const bbtrsMoveBtn=$("#bbtrsMove");if(bbtrsMoveBtn)bbtrsMoveBtn.onclick=e=>{e.preventDefault();faStartMove()};
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("a[href]");if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target==="_blank")return;let u;try{u=new URL(a.getAttribute("href"),location.href)}catch(err){return}if(u.origin!==location.origin)return;const kind=u.searchParams.get("trainees");if(kind!=="1"&&kind!=="mine"&&kind!=="dir"&&kind!=="join")return;const path=u.pathname.replace(/\/index\.html$/,"/"),here=location.pathname.replace(/\/index\.html$/,"/");if(path!==here&&!/\/app\/?$/.test(path))return;e.preventDefault();history.pushState({},"",u.pathname+u.search+u.hash);show(kind==="mine"||kind==="join"?"bbtrsMe":"bbtrs")});
 window.addEventListener("popstate",()=>{const tk=traineeKind();if(tk)show(tk)});
 function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
@@ -66,7 +89,8 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  const tr=sp.get("trainees");if(tr==="1"||tr==="dir"){show("bbtrs");return true}if(tr==="mine"||tr==="join"){show("bbtrsMe");return true}
  const tab=(sp.get("tab")||"").toLowerCase();if(tab==="learn"||tab==="lab"){show("learn");return true}
  if(sp.get("join")==="1"){wantForm=true;if(me){show("profile");return true}setMode(true);show("auth");return true}
- if(sp.get("search")==="1"){show("list");const q=$("#qPlace");if(q)requestAnimationFrame(()=>{try{q.focus();q.showPicker&&q.showPicker()}catch(e){}});return true}
+ if(sp.get("move")==="1"){try{const u=new URL(location.href);u.searchParams.delete("move");history.replaceState({},"",u.pathname+u.search+u.hash)}catch(e){}faStartMove();return true}
+ if(sp.get("search")==="1"){show("list");const q=$("#qCountry")||$("#qPlace");if(q)requestAnimationFrame(()=>{try{q.focus()}catch(e){}});return true}
  const practice=(sp.get("practice")||sp.get("mod")||"").trim();const place=(sp.get("place")||sp.get("city")||"").trim();
  if(!practice&&!place)return false;fillFilter();let hit=false;
  if(practice){const want=fold(practice);["listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;const opt=[...el.options].find(o=>o.value&&(fold(o.value)===want||fold(o.value).includes(want)||want.includes(fold(o.value))));if(opt){el.value=opt.value;hit=true}})}
@@ -133,7 +157,7 @@ $("#resetForm").onsubmit=async e=>{e.preventDefault();const a=$("#newPw").value,
   try{const u=new URL(location.href);u.searchParams.delete("reset");history.replaceState({},"",u.pathname+u.search+u.hash.replace(/access_token=[^&]+/g,""))}catch(e){}
   hdr();await refresh();msgInit();setTimeout(()=>show("profile"),600)}catch(err){m.textContent=err.message||"Could not update password."}};
 $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please confirm you are 18+ and accept the Terms and Privacy Policy.";return}m.textContent="…";
- try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);try{if(window.PasswordCredential&&navigator.credentials)navigator.credentials.store(new PasswordCredential({id:em,password:pw,name:em})).catch(()=>{})}catch(x){}m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath,nw=pendingWa,wv=pendingWatch;pendingChat=null;pendingBreath=null;pendingWa=null;pendingWatch=null;if(nw){backToPract(nw)}else if(wv&&me){show("learn");setTimeout(()=>{try{labView("watch");openVideo(wv.id,wv.title)}catch(x){}},250)}else if(nb){show("learn");if(nb!=="lab")setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
+ try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);try{if(window.PasswordCredential&&navigator.credentials)navigator.credentials.store(new PasswordCredential({id:em,password:pw,name:em})).catch(()=>{})}catch(x){}m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath,nw=pendingWa,wv=pendingWatch;pendingChat=null;pendingBreath=null;pendingWa=null;pendingWatch=null;if(nw){backToPract(nw)}else if(wv&&me){show("learn");setTimeout(()=>{try{labView("watch");openVideo(wv.id,wv.title)}catch(x){}},250)}else if(nb){show("learn");if(nb!=="lab")setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else if((()=>{try{return sessionStorage.getItem("fa_after")==="move"}catch(e){return false}})()){try{sessionStorage.removeItem("fa_after")}catch(e){}faStartMove()}else show("profile")}catch(err){m.textContent=err.message}};
 
 // helpers
 function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(p.lng-from[1]);const a=Math.sin(dl/2)**2+Math.cos(r(from[0]))*Math.cos(r(p.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
@@ -156,8 +180,25 @@ function placeHit(p,q){if(!q)return true;{const cq=fold(window.canonCountry?cano
  if(exactCo)return locs.some(l=>fold(l.country)===fold(exactCo.country));
  return locs.some(l=>fold([l.city,l.country,l.address].filter(Boolean).join(" ")).includes(q))}
 function placeQ(){const el=$("#qPlace");return fold(el?el.value.trim():"")}
+function clearGeo(){const a=$("#qCountry"),b=$("#qCity");if(a)a.value="";if(b){b.value="";b.disabled=true}}
+function geoPick(){const co=($("#qCountry")&&$("#qCountry").value)||"",ci=($("#qCity")&&$("#qCity").value)||"";return{co,ci:co?ci:""}}
+function locCountry(l){const c=typeof countryOfLoc==="function"?countryOfLoc(l):String(l&&l.country||"").trim();return !c||c==="Other"?"":c}
+function locCity(l){if(!l||isOnline(l))return"";return faCity(l.city)}
+function geoOk(p){const g=geoPick();if(!g.co&&!g.ci)return true;const locs=(p.locations&&p.locations.length)?p.locations:[p];return locs.some(l=>(!g.co||fold(locCountry(l))===fold(g.co))&&(!g.ci||fold(locCity(l))===fold(g.ci)))}
+function fillGeo(){const coEl=$("#qCountry"),ciEl=$("#qCity");if(!coEl||!ciEl)return;const f=($("#listFilter")&&$("#listFilter").value)||"";
+ const ps=all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f))&&(!nearScope||nearScope.ok(p)));
+ const countries=new Map(),cities=new Map();
+ ps.forEach(p=>{const seenCo=new Set(),seenCi=new Set();const locs=(p.locations&&p.locations.length)?p.locations:[p];locs.forEach(l=>{const country=locCountry(l),city=locCity(l);
+  if(country){const k=fold(country);if(!seenCo.has(k)){seenCo.add(k);const o=countries.get(k)||{name:country,n:0};o.n++;countries.set(k,o)}}
+  if(city&&country){const k=fold(city)+"|"+fold(country);if(!seenCi.has(k)){seenCi.add(k);const o=cities.get(k)||{city,country,n:0};o.n++;cities.set(k,o)}}})});
+ const coVal=coEl.value;const coList=[...countries.values()].sort((a,b)=>a.name.localeCompare(b.name,"en",{sensitivity:"base"}));
+ coEl.innerHTML=`<option value="">Country</option>`+coList.map(c=>`<option value="${esc(c.name)}">${esc(c.name)} (${c.n})</option>`).join("");
+ coEl.value=coList.some(c=>c.name===coVal)?coVal:"";
+ const chosen=coEl.value;const ciList=[...cities.values()].filter(c=>chosen&&fold(c.country)===fold(chosen)).sort((a,b)=>a.city.localeCompare(b.city,"en",{sensitivity:"base"}));
+ const ciVal=ciEl.value;ciEl.disabled=!chosen;ciEl.innerHTML=`<option value="">City</option>`+ciList.map(c=>`<option value="${esc(c.city)}">${esc(c.city)} (${c.n})</option>`).join("");
+ ciEl.value=chosen&&ciList.some(c=>c.city===ciVal)?ciVal:""}
 function filtered(){const f=($("#listFilter")&&$("#listFilter").value)||"";const q=placeQ();
- const nf=s=>fold(s).replace(/ł/g,"l").replace(/ø/g,"o").replace(/ß/g,"ss").replace(/đ/g,"d"),nq=nf((($("#qName")||{}).value||"").trim());return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f))&&placeOk(p)&&(!nq||nf((p.name||"")+" "+(p.practice_name||"")).includes(nq)))}
+ const nf=s=>fold(s).replace(/ł/g,"l").replace(/ø/g,"o").replace(/ß/g,"ss").replace(/đ/g,"d"),nq=nf((($("#qName")||{}).value||"").trim());return all().filter(p=>pins(p).length&&(!f||(p.mods||[]).includes(f))&&placeOk(p)&&geoOk(p)&&(!nq||nf((p.name||"")+" "+(p.practice_name||"")).includes(nq)))}
 function initials(n){return String(n||"?").split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase()}
 function av(p,cls=""){return p.photo?`<img class="av ${cls}" src="${esc(p.photo)}" alt="">`:`<span class="av ${cls}">${esc(initials(p.name))}</span>`}
 function azKey(p){const c=x=>String(x||"").replace(/^[^\p{L}]+/u,"").trim();return c(p.name)||c(p.practice_name)||"\uFFFF"}
@@ -269,14 +310,16 @@ function guessCountry(lat,lng){if(lat==null||lng==null)return"";
 function countriesOf(p){const set=new Set();const locs=(p.locations&&p.locations.length)?p.locations:[{country:p.country,city:p.city,lat:p.lat,lng:p.lng}];
  locs.forEach(l=>{let c=normCountry(l.country);if(!c)c=normCountry(CITY_CC[(l.city||"").trim().toLowerCase()]);
   if(!c)c=guessCountry(l.lat!=null?+l.lat:null,l.lng!=null?+l.lng:null);if(c)set.add(c)});return set}
-function count(){faLiveCount();if(!faFresh){$("#count").innerHTML="&nbsp;";return}const mc=mapCountry();if(mc){const n=mapPeople().length;$("#count").innerHTML=`<b>${n}</b> practitioner${n===1?"":"s"} in <b>${esc(mc)}</b>`;return}const a=all().filter(p=>pins(p).length),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
+function count(){faLiveCount();if(!faFresh){$("#count").innerHTML="&nbsp;";return}const mc=mapCountry();if(mc){const n=mapPeople().length;$("#count").innerHTML=`<b>${n}</b> practitioner${n===1?"":"s"} in <b>${esc(mc)}</b>`;return}
+ const g=geoPick(),mod=($("#listFilter")&&$("#listFilter").value)||"";if(mod||g.co||g.ci||nearScope){const n=mapPeople().length;const where=g.ci&&g.co?g.ci+", "+g.co:(g.co||"");$("#count").innerHTML=`<b>${n}</b> practitioner${n===1?"":"s"}`+(mod?` · ${esc(faModLabel(mod))}`:"")+(where?` in <b>${esc(where)}</b>`:"")+(nearScope?` ${esc(nearScope.label)}`:"");return}
+ const a=all().filter(p=>pins(p).length),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
  $("#count").innerHTML=a.length?`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"} joined the network`+(()=>{const k=a.reduce((t,p)=>t+pins(p).length,0);return k>a.length?`<br><small>${k} map pins · some practitioners work in several places</small>`:""})():"Be the first practitioner on the map ✨"}
 // Europe-wide default on first open / All locations (no densest-cluster zoom, no geolocation).
 const EUROPE=[[35,-11],[62,32]];
 function fitEurope(){if(!map)return;try{map.fitBounds(EUROPE,{padding:[28,28],animate:false,maxZoom:5})}catch(e){map.setView([50,10],4,{animate:false})}}
 function fitPins(force){if(!map)return;const pts=[];mapPeople().forEach(p=>mpins(p).forEach(l=>{if(l.lat!=null&&l.lng!=null)pts.push([+l.lat,+l.lng])}));
  if(!force&&didFit)return;
- try{if(!mapCountry()){fitEurope()}
+ try{const g=geoPick();if(!mapCountry()&&!(g.co||g.ci)){fitEurope()}
  else if(!pts.length){fitEurope()}
  else if(pts.length===1)map.setView(pts[0],10,{animate:false});
  else map.fitBounds(L.latLngBounds(pts),{padding:[56,56],maxZoom:10,animate:false});
@@ -303,7 +346,9 @@ $("#qPlace")&&($("#qPlace").onchange=()=>{renderList();renderMarkers()});$("#qNa
  n.addEventListener("blur",()=>{t=setTimeout(()=>B.classList.remove("kbd"),120)});
  const fit=()=>{if(vv)B.style.setProperty("--kbd-h",Math.round(vv.height)+"px")};if(vv)vv.addEventListener("resize",()=>{if(document.activeElement===n){B.classList.add("kbd");fit()}else if(vv.height>innerHeight*.9)B.classList.remove("kbd")})})();
 document.addEventListener("click",e=>{const c=$("#placeCombo");if(c&&!c.contains(e.target))closePlaceMenu()});
-$("#listClear")&&($("#listClear").onclick=()=>{if(nearScope){nearScope=null;const nb=$("#nearAll");if(nb)nb.hidden=true}const q=$("#qPlace");if(q)q.value="";{const nm=$("#qName");if(nm)nm.value=""};{const el=$("#listFilter");if(el)el.value=""};closePlaceMenu();renderMarkers();renderList()});
+$("#listClear")&&($("#listClear").onclick=()=>{if(nearScope){nearScope=null;const nb=$("#nearAll");if(nb)nb.hidden=true}const q=$("#qPlace");if(q)q.value="";{const nm=$("#qName");if(nm)nm.value=""};{const el=$("#listFilter");if(el)el.value=""};clearGeo();closePlaceMenu();renderMarkers();renderList()});
+$("#qCountry")&&($("#qCountry").onchange=()=>{const ci=$("#qCity");if(ci)ci.value="";renderList();renderMarkers()});
+$("#qCity")&&($("#qCity").onchange=()=>{renderList();renderMarkers()});
 $("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show("map");didFit=false;setTimeout(()=>{fitPins(true);map&&map.invalidateSize()},100)});
 let geoErr=0;function geoOnce(){return new Promise(resolve=>{geoErr=0;if(!navigator.geolocation||!window.isSecureContext)return resolve(null);
   navigator.geolocation.getCurrentPosition(pos=>resolve([pos.coords.latitude,pos.coords.longitude,pos.coords.accuracy]),e=>{geoErr=(e&&e.code)||2;resolve(null)},{enableHighAccuracy:true,timeout:15000,maximumAge:60000})})}
@@ -361,11 +406,10 @@ function renderList(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nea
 // profile
 let profEdit=false,wantForm=false;
 async function loadProf(){await fillProf();if(!me)return;const p=await DB.mine().catch(()=>null);const has=!!(p&&(p.name||p.address||p.city));const v=$("#profView"),f=$("#profForm");$("#pCancel").hidden=false;if(has)logCard();else $("#logCard").hidden=true;{const h=document.querySelector("#profile h2");if(h)h.textContent=(!has&&!profEdit)?"My profile":"My practitioner profile"}
- if(!has&&!profEdit){v.innerHTML=`<div class="card acct"><b>My account</b><p class="muted">Signed in as ${esc(me.email||"")}</p><label class="consent"><input type="checkbox" id="acctNews"${me.news_optin?" checked":""}> Send me occasional FasciApp news: new breathing practices, free live sessions and videos. Unsubscribe anytime.</label><p id="acctMsg" class="msg"></p></div><button type="button" class="gold big1" id="pListMe">List me as a practitioner</button><button type="button" class="ghost" id="pOut3">Log out</button>`;v.hidden=false;f.hidden=true;
-  $("#acctNews").onchange=async e=>{const on=e.target.checked,m=$("#acctMsg");m.textContent="Saving…";try{await DB.setNews(on);me.news_optin=on;m.textContent=on?"Subscribed ✓":"Unsubscribed ✓"}catch(err){e.target.checked=!on;m.textContent="Could not save: "+err.message}};
-  $("#pListMe").onclick=()=>{profEdit=true;v.hidden=true;f.hidden=false;document.querySelector("#profile h2").textContent="My practitioner profile";window.scrollTo(0,0)};$("#pOut3").onclick=()=>logout();return}
+ v.dataset.listed=has?"1":"0";
+ if(!has&&!profEdit){profViewB({name:"",practice_name:"",city:"",country:"",address:"",bio:"",phone:"",email:"",website:"",website2:"",instagram:"",mods:[],locations:[],photo:null,consent:false,whatsapp:false,news_optin:!!(me&&me.news_optin)},v,f);return}
  if(has&&!profEdit){profViewB(p,v,f);return}
- else{v.hidden=true;f.hidden=false}}
+ else{v.hidden=true;f.hidden=false;if(faMoveRow){const row=faMoveRow;faMoveRow=null;faApplyTrainee(row);const st=$("#status");if(st)st.textContent="We filled in your BBTRS online listing. Add the address for your map pin, then save."}}}
 async function fillProf(){waTouched=false;$("#needLogin").hidden=!!me;$("#profForm").hidden=!me;if(!me)return;myMods=[];renderTags();setExtra([]);$("#who").textContent="Signed in as "+me.email;
  const p=await DB.mine().catch(()=>null);const f=$("#profForm");if(!p){if(f.news_optin)f.news_optin.checked=!!me.news_optin;return}["name","practice_name","address","city","country","email","website","website2","bio"].forEach(k=>{if(f[k])f[k].value=p[k]||""});if(f.instagram)f.instagram.value=igHandle(p.instagram)?"@"+igHandle(p.instagram):"";splitPhone(p.phone,p.country);f.whatsapp.checked=!!p.whatsapp;waTouched=true;
  f.label.value=(p.locations?.[0]?.label)||"";setExtra((p.locations||[]).slice(1));f.consent.checked=true;if(f.news_optin)f.news_optin.checked=!!p.news_optin;myMods=(p.mods||[]).slice();renderTags();if(p.photo){$("#phPrev").src=p.photo;$("#phPrev").hidden=false}}
@@ -401,6 +445,7 @@ st.textContent="Locating your address…";
   showToast("Saved ✓");
   didFit=true;
   profEdit=false;if(window.faPeDone)faPeDone();await loadProf();try{$("#profile").scrollIntoView({block:"start"})}catch(x){}
+  if(faMovePending){faMovePending=false;faAskTraineeListing()}
  }catch(err){st.textContent="Could not save: "+err.message}};
 $("#photo").onchange=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas"),s=256,m=Math.min(im.width,im.height);c.width=c.height=s;
  c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,s,s);photoData=c.toDataURL("image/jpeg",.85);$("#phPrev").src=photoData;$("#phPrev").hidden=false};im.src=r.result};r.readAsDataURL(file)};
@@ -665,7 +710,7 @@ document.addEventListener("click",e=>{const n=window.FASCIAPP_NEWS;if(!n)return;
  const g=e.target.closest(".newsGo");if(g){show(g.dataset.tab);try{const m=document.querySelector("main");if(m)m.scrollTop=0}catch(x){}if(n.breath&&g.dataset.tab==="learn")setTimeout(()=>{try{window.FasciBreath&&FasciBreath.openIntro(n.breath)}catch(x){}},150)}});
 renderNews();
 
-$("#pCancel").onclick=()=>{profEdit=false;$("#status").textContent="";loadProf()};
+$("#pCancel").onclick=()=>{profEdit=false;faMovePending=false;faMoveRow=null;$("#status").textContent="";loadProf()};
 
 // ===== Anonymous analytics hooks (track.js) =====
 (function(){const ev=(e,o)=>{try{window.FA_ev&&FA_ev(e,o)}catch(x){}};
@@ -801,7 +846,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   return `<p class="brTot">${tot.size} practitioners in ${nc} countries</p><div class="brRegs">${REGS.filter(r=>by.has(r)).map((r,i)=>{const o=by.get(r),ps=[...o.ids.values()].sort((a,b)=>(!!b.photo)-(!!a.photo)),sh=Math.min(6,ps.filter(p=>p.photo).length);
    return `<button type="button" class="brReg r${i}" data-reg="${esc(r)}"><span class="brRegT"><b>${esc(r)}</b><small>${r==="Online & other"?"":`${o.n} countr${o.n===1?"y":"ies"} · `}${ps.length} practitioner${ps.length===1?"":"s"}</small></span>${bub(ps,6,ps.length-sh)}<em>›</em></button>`}).join("")}</div>`}
  function goPlace(v,co){const m=document.querySelector("main");fillPlaces();if(![...qp().options].some(x=>x.value===v))return false;BR=regionOf(co);savedTop=m?m.scrollTop:0;seeAll=true;hpush("seeall");setPlaceV(v);if(m)m.scrollTop=0;return true}
- window.faListHome=()=>{BR=null;seeAll=false;const nb=$("#qName");if(nb)nb.value="";const lf=$("#listFilter");if(lf)lf.value="";const el=qp();if(el)el.value="";const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}while(HS.length&&HS[HS.length-1]!=="sheet"&&HS[HS.length-1]!=="pe")HS.pop();try{fillPlaces()}catch(e){}renderMarkers();renderList();const m=document.querySelector("main");if(m)m.scrollTop=0};
+ window.faListHome=()=>{BR=null;seeAll=false;const nb=$("#qName");if(nb)nb.value="";const lf=$("#listFilter");if(lf)lf.value="";const el=qp();if(el)el.value="";clearGeo();const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}while(HS.length&&HS[HS.length-1]!=="sheet"&&HS[HS.length-1]!=="pe")HS.pop();try{fillPlaces()}catch(e){}renderMarkers();renderList();const m=document.querySelector("main");if(m)m.scrollTop=0};
  (function(){const w=$("#qWhere"),sg=$("#qSug");if(!w||!sg)return;let hits=[];
   const modListRank=name=>{const s=fold(String(name||"").replace(/®/g,"")).trim();return s==="bbtrs"?0:s==="mer"?1:2};
   const modOrd=(a,b)=>modListRank(a.name)-modListRank(b.name)||a.name.localeCompare(b.name,"en",{sensitivity:"base"});
@@ -813,7 +858,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   const fitH=()=>{const vv=window.visualViewport,vh=vv?vv.height+vv.offsetTop:innerHeight,top=sg.getBoundingClientRect().top;sg.style.maxHeight=Math.max(180,Math.min(vh*0.6,vh-top-12))+"px"};
   const paint=()=>{const q=w.value.trim();const list=build(q);hits=list;sg.hidden=false;sg.innerHTML=(q?"":`<p class="sgHd">Modalities</p>`)+(list.length?list.map(row).join(""):`<p class="sgNo">No modality found</p>`);sg.scrollTop=0;requestAnimationFrame(fitH)};
   function leavePlace(){const el=qp();if(el&&el.value)el.value="";if(seeAll){seeAll=false;if(HS.length&&HS[HS.length-1]==="seeall")HS.pop()}BR=null;while(HS.length&&(HS[HS.length-1]==="region"||HS[HS.length-1]==="city"))HS.pop()}
-  window.faSetModality=function(name){const lf=$("#listFilter");if(!lf)return;name=String(name||"");if(name&&![...lf.options].some(o=>o.value===name)){const o=document.createElement("option");o.value=o.textContent=name;lf.appendChild(o)}if(name)leavePlace();lf.value=name;if(document.activeElement!==w)w.value=name?faModLabel(name):"";sg.hidden=true;faHLPaint();syncModFilter("listFilter");const m=document.querySelector("main");if(m)m.scrollTop=0};
+  window.faSetModality=function(name){const lf=$("#listFilter");if(!lf)return;name=String(name||"");if(!name)clearGeo();if(name&&![...lf.options].some(o=>o.value===name)){const o=document.createElement("option");o.value=o.textContent=name;lf.appendChild(o)}if(name)leavePlace();lf.value=name;if(document.activeElement!==w)w.value=name?faModLabel(name):"";sg.hidden=true;faHLPaint();syncModFilter("listFilter");const m=document.querySelector("main");if(m)m.scrollTop=0};
   if(window.visualViewport)visualViewport.addEventListener("resize",()=>{if(!sg.hidden)fitH()});
   sg.addEventListener("touchstart",()=>{if(document.activeElement===w)w.blur()},{passive:true});
   w.addEventListener("input",()=>{paint();if(!w.value.trim()&&$("#listFilter")&&$("#listFilter").value)window.faSetModality("")});
@@ -833,14 +878,15 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   box.innerHTML=`<button type="button" class="ptBack brBack" data-nav="back"><b>←</b> ${BR&&BR!=="Online & other"?"Back to "+esc(BR):"Back to regions"}</button><span class="ptCrumb">${pp.ci?`<button type="button" data-nav="co">${flagOf(pp.co)} ${esc(pp.co)}</button><em>›</em><b>${esc(pp.ci)}</b>`:`<b>${flagOf(pp.co)} ${esc(pp.co)}</b>`}</span>`}
  function setPlaceV(v){const el=qp();if(!el)return;fillPlaces();if(v&&![...el.options].some(o=>o.value===v))return;el.value=v;el.dispatchEvent(new Event("change"))}
  function leaveSeeAll(){const top=savedTop,was=seeAll;seeAll=false;if(BR){const lf=$("#listFilter");if(lf)lf.value=""}const el=qp();if(el&&el.value){el.value="";el.dispatchEvent(new Event("change"))}else renderList();if(was)requestAnimationFrame(()=>{const m=document.querySelector("main");if(m)m.scrollTop=top})}
- renderList=function(){renderNewJ();faHLPaint();faLiveCount();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));
-  const _pe=qp(),n=ps.length,q=placeV(),mod=($("#listFilter")&&$("#listFilter").value)||"",nameQ=(($("#qName")||{}).value||"").trim();
-  const active=!!(nearScope||q||mod||nameQ);
+ renderList=function(){try{fillGeo()}catch(e){}renderNewJ();faHLPaint();faLiveCount();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));
+  const _pe=qp(),n=ps.length,q=placeV(),mod=($("#listFilter")&&$("#listFilter").value)||"",nameQ=(($("#qName")||{}).value||"").trim(),geo=geoPick();
+  const active=!!(nearScope||q||mod||nameQ||geo.co||geo.ci);
   // MER & BBTRS always first, then the usual order
   if(here&&active)ps.sort((a,b)=>faHLCmp(a.p,b.p)||a.d-b.d);else ps.sort((a,b)=>faHLCmp(a.p,b.p)||azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
   const pp=placeParts();
   const lstEl=$("#list");if(lstEl)lstEl.dataset.modon=mod?"1":"";const qw=$("#qWhere");if(qw&&document.activeElement!==qw)qw.value=mod?faModLabel(mod):"";
-  const lc=$("#listCount");if(lc)lc.textContent=!faFresh?"":(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:pp?` in ${pp.ci||pp.co}`:"");
+  const where=pp?(pp.ci||pp.co):(geo.ci&&geo.co?geo.ci+", "+geo.co:geo.co||"");
+  const lc=$("#listCount");if(lc)lc.textContent=!faFresh?"":(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:where?` in ${where}`:"");
   const clr=$("#listClear");if(clr){clr.hidden=!active;clr.textContent=nearScope?"Show all":"Clear"}
   $("#from").textContent=here&&active?"Sorted by distance from you":"";
   if(seeAll&&!pp){seeAll=false;hpop("seeall")}
@@ -850,6 +896,8 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   if(active){const fc=[];
    if(pp)fc.push(`<button type="button" class="fChip" data-clr="place">📍 ${esc(pp.ci?pp.ci+", "+pp.co:pp.co)} <i>✕</i></button>`);
    if(mod)fc.push(`<button type="button" class="fChip" data-clr="mod">${esc(faModLabel(mod))} <i>✕</i></button>`);
+   if(geo.co)fc.push(`<button type="button" class="fChip" data-clr="country">${esc(geo.co)} <i>✕</i></button>`);
+   if(geo.ci)fc.push(`<button type="button" class="fChip" data-clr="city">${esc(geo.ci)} <i>✕</i></button>`);
    if(nameQ)fc.push(`<button type="button" class="fChip" data-clr="name">“${esc(nameQ)}” <i>✕</i></button>`);
    if(nearScope)fc.push(`<button type="button" class="fChip" data-clr="near">📍 Near me <i>✕</i></button>`);
    top=`<div class="fChips">${fc.join("")}</div>`;$("#list").dataset.br=pp?"co":"res";
@@ -886,10 +934,10 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const sh=document.createElement("div");sh.id="ptSheet";sh.className="ptSheet";sh.hidden=true;
  sh.innerHTML=`<div class="ptDim"></div><div class="ptBox" role="dialog" aria-modal="true" aria-label="Practitioner"><div class="ptTop"><button type="button" class="ptBk ptBackRes" hidden><b>←</b> <span>Back to results</span></button><button type="button" class="ptBk ptBackCo" hidden><b>‹</b> <span></span></button><button type="button" class="ptX" aria-label="Close">✕</button></div><div class="ptScroll"></div></div>`;
  document.body.appendChild(sh);
- const scr=sh.querySelector(".ptScroll");let cur={list:[],i:0,label:"",kind:""};let sheetScroll=0;
+ const scr=sh.querySelector(".ptScroll");let cur={list:[],i:0,label:"",kind:""};let sheetScroll=0,sheetGeo=null;
  function listScroller(){return document.querySelector("main")}
- function saveListScroll(){const m=listScroller();sheetScroll=m?m.scrollTop:0}
- function restoreListScroll(){const m=listScroller(),y=sheetScroll;if(!m)return;requestAnimationFrame(()=>{m.scrollTop=y})}
+ function saveListScroll(){const m=listScroller();sheetScroll=m?m.scrollTop:0;sheetGeo=geoPick()}
+ function restoreListScroll(){const co=$("#qCountry"),ci=$("#qCity");if(sheetGeo){if(co)co.value=sheetGeo.co||"";if(ci){ci.disabled=!sheetGeo.co;ci.value=sheetGeo.co?(sheetGeo.ci||""):""}}renderList();renderMarkers();const m=listScroller(),y=sheetScroll;if(!m)return;requestAnimationFrame(()=>{m.scrollTop=y})}
  function contacts(p){if(!p.consent)return `<p class="muted"><i>Not public yet</i></p>`;
   const t=document.createElement("div");t.innerHTML=card(p);const cbs=t.querySelector(".cbs"),tel=t.querySelector("a.tel");const ig=faIg(p);
   const web=me?((p.website&&faWebOk(p.website)?`<div class="ptWeb">🌐 ${link(p.website)}</div>`:"")+(p.website2&&faWebOk(p.website2)?`<div class="ptWeb">🌐 ${link(p.website2)}</div>`:"")):"";
@@ -931,7 +979,9 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   const nb=t.closest("[data-nav]");if(nb){if(nb.dataset.nav==="back"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}else{const pp=placeParts();if(pp)setPlaceV("co:"+pp.co)}return}
   const fc=t.closest("[data-clr]");if(fc){const k=fc.dataset.clr;
    if(k==="place"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}
-   else if(k==="mod"){const el=$("#listFilter");if(el){el.value="";syncModFilter("listFilter")}}
+   else if(k==="mod"){const el=$("#listFilter");if(el){el.value="";clearGeo();syncModFilter("listFilter")}}
+   else if(k==="country"){clearGeo();renderList();renderMarkers()}
+   else if(k==="city"){const el=$("#qCity");if(el)el.value="";renderList();renderMarkers()}
    else if(k==="name"){const el=$("#qName");if(el){el.value="";renderList();renderMarkers()}}
    else if(k==="near")clearNear();return}
   const md=t.closest("button[data-mod]");if(md){const el=$("#listFilter");if(el){if(md.dataset.mod&&![...el.options].some(o=>o.value===md.dataset.mod)){const o=document.createElement("option");o.value=o.textContent=md.dataset.mod;el.appendChild(o)}el.value=md.dataset.mod;syncModFilter("listFilter")}return}
@@ -1028,6 +1078,7 @@ bSet.addEventListener("click",e=>{if(e.target.closest(".peX")||e.target.closest(
 document.addEventListener("keydown",e=>{if(!bSet.hidden&&e.key==="Escape")bSetClose()});
 bSet.addEventListener("change",async e=>{const c=e.target.closest("[data-tgl]");if(!c||peBusy)return;const k=c.dataset.tgl,on=c.checked,fm=$("#profForm"),bm=bSet.querySelector(".bSetMsg");
  if(!fm[k])return;fm[k].checked=on;bSet.querySelectorAll("[data-tgl]").forEach(x=>x.disabled=true);bm.textContent="Saving…";
+ if(k==="news_optin"&&($("#profView")||{}).dataset.listed!=="1"){try{await DB.setNews(on);if(me)me.news_optin=on;bm.textContent="";showToast(on?"Subscribed ✓":"Unsubscribed ✓")}catch(err){fm[k].checked=!on;c.checked=!on;bm.textContent="Could not save."}bSet.querySelectorAll("[data-tgl]").forEach(x=>x.disabled=false);return}
  const ok=await peRun();
  if(ok){if(k==="news_optin"&&me)me.news_optin=on;bm.textContent="";showToast(k==="consent"?(on?"You are public ✓":"Hidden from the map ✓"):(on?"Subscribed ✓":"Unsubscribed ✓"))}
  else{fm[k].checked=!on;c.checked=!on;bm.textContent=$("#status").textContent||"Could not save."}
@@ -1103,7 +1154,7 @@ function scanLanding(hash){const S=$("#scan");if(!S)return;S.classList.add("scLa
 function faPaidBanner(){const S=$("#scan");if(!S||$("#scPaid"))return;const d=document.createElement("div");d.id="scPaid";d.className="scPaid";d.innerHTML='Thank you! Your payment is received and your scans are now active.<span>If your scan doesn\u2019t unlock within a minute (for example if you paid with a different email than your FasciApp account), write to <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a>.</span>';const h=S.querySelector(".scH");(h||S.firstChild).before(d)}
 function scanHub(){const S=$("#scan");if(S)S.classList.remove("scLand")}
 function scanTrial(){if(!me){try{sessionStorage.setItem("fa_after","scan")}catch(e){}try{fillLastEmail()}catch(e){}show("auth");return}scanHub();show("scan")}
-function scanAfterLogin(){let a=null;try{a=sessionStorage.getItem("fa_after");sessionStorage.removeItem("fa_after")}catch(e){}if(a==="scan")setTimeout(()=>show("scan"),900);if(a&&a.startsWith("buy:")){const k=a.slice(4);if(faBuyUrl(k))setTimeout(()=>faCheckout(k),600)}}
+function scanAfterLogin(){let a=null;try{a=sessionStorage.getItem("fa_after");sessionStorage.removeItem("fa_after")}catch(e){}if(a==="move"){faStartMove();return}if(a==="scan")setTimeout(()=>show("scan"),900);if(a&&a.startsWith("buy:")){const k=a.slice(4);if(faBuyUrl(k))setTimeout(()=>faCheckout(k),600)}}
 window.addEventListener("message",e=>{if(e.origin!==location.origin||!e.data)return;if(e.data.fa==="scan-trial")scanTrial();if(e.data.fa==="scan-buy")scanBuy(e.data.plan)});
 /* v0.23.198 checkout via edge function scan-checkout (Stripe Checkout Session, EUR only, auto activation by webhook scan-paid); Payment Link = fallback */
 async function faCheckout(k){const u=faBuyUrl(k);try{const c=window.FASCIAPP_CONFIG||{};let t="";try{const j=JSON.parse(localStorage.getItem("fasciapp-auth")||"null");t=(j&&j.access_token)||""}catch(e){}
