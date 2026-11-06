@@ -144,7 +144,7 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   assert.match(lab[0], /href="app\/\?trainees=1"/);
   assert.match(lab[0], /Book a free one-hour online session with our practitioners in training\./);
   assert.equal(/Body assessment|app\/assessment\.html/i.test(landing), false);
-  assert.match(landing, /BBTRS practitioners in training/);
+  assert.match(landing, /Biodynamic Breathwork practitioners in training/);
   const copy = fs.readFileSync(path.join(__dirname, "../../supabase/migrations/20261105180000_bbtrs_trainees_test_from_practitioners.sql"), "utf8");
   assert.match(copy, /from public\.practitioners/);
   assert.match(copy, /January 2026/);
