@@ -12,11 +12,11 @@ let me=null,people=[],here=null,map,layer,threads,photoData=null,signUpMode=true
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const all=()=>DEMO.concat(people);
 const SUG=['MER', 'BBTRS', 'BBTRS online', 'Breathwork', 'Massage', 'Craniosacral', 'Somatic therapy', 'Trauma therapy', 'Yoga'];let myMods=[];
-function renderTags(){const set=[...new Set(SUG.concat(myMods))];$("#modBox").innerHTML=set.map(m=>`<button type="button" class="tag${myMods.includes(m)?" on":""}" data-m="${esc(m)}">${esc(m)}</button>`).join("");$$("#modBox .tag").forEach(b=>b.onclick=()=>{const m=b.dataset.m;myMods=myMods.includes(m)?myMods.filter(x=>x!==m):myMods.concat(m);renderTags()})}
+function renderTags(){const set=[...new Set(SUG.concat(myMods))];$("#modBox").innerHTML=set.map(m=>`<button type="button" class="tag${myMods.includes(m)?" on":""}" data-m="${esc(m)}">${esc(faModLabel(m))}</button>`).join("");$$("#modBox .tag").forEach(b=>b.onclick=()=>{const m=b.dataset.m;myMods=myMods.includes(m)?myMods.filter(x=>x!==m):myMods.concat(m);renderTags()})}
 function addTag(){const v=$("#modNew").value.trim().replace(/\s+/g," ");if(v&&!myMods.some(x=>x.toLowerCase()===v.toLowerCase()))myMods.push(v);$("#modNew").value="";renderTags()}
 $("#modAdd").onclick=addTag;$("#modNew").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addTag()}};
 function mappedPeople(){return all().filter(p=>pins(p).length)}
-function faModLabel(m){const s=fold(String(m||"").replace(/®/g,"")).trim();if(s==="bbtrs")return "BBTRS Breathwork";if(s==="mer")return "MER Bodywork";return String(m||"")}
+function faModLabel(m){const s=fold(String(m||"").replace(/®/g,"")).trim();if(s==="bbtrs")return "BBTRS in-person";if(s==="mer")return "MER Bodywork";return String(m||"")}
 function modPinRank(m){const s=fold(String(m||"").replace(/®/g,"")).trim();
  if(s==="bbtrs"||s.startsWith("bbtrs "))return 0;
  if(s==="mer"||s==="myofascial energetic release"||s.startsWith("mer ")||s.startsWith("myofascial energetic release"))return 1;
@@ -31,7 +31,7 @@ function placeOptions(mod){const cityMap=new Map(),countryMap=new Map();
  return{cities:[...cityMap.values()].sort((a,b)=>{const c=a.city.localeCompare(b.city,"en",{sensitivity:"base"});return c||a.country.localeCompare(b.country,"en",{sensitivity:"base"})}),
   countries:[...countryMap.values()].sort((a,b)=>a.country.localeCompare(b.country,"en",{sensitivity:"base"}))}}
 function fillFilter(){try{fillPlaces()}catch(e){}
-const mods=modCounts();const opts=`<option value="">All practices</option>`+mods.map(([m,n])=>`<option value="${esc(m)}">${esc(m)} (${n})</option>`).join("");
+const mods=modCounts();const opts=`<option value="">All practices</option>`+mods.map(([m,n])=>`<option value="${esc(m)}">${esc(faModLabel(m))} (${n})</option>`).join("");
  const lf=$("#listFilter");if(lf){const v=lf.value;lf.innerHTML=opts;lf.value=[...lf.options].some(o=>o.value===v)?v:""}
  const cf=$("#filter");if(cf){const v=cf.value;cf.innerHTML=`<option value="">All locations</option>`+placeOptions().countries.map(c=>`<option value="${esc(c.country)}">${esc(c.country)} (${c.n})</option>`).join("");cf.value=[...cf.options].some(o=>o.value===v)?v:""}}
 function syncModFilter(){try{fillPlaces()}catch(e){}renderMarkers();renderList()}
@@ -209,7 +209,7 @@ function igHandle(v){v=String(v||"").trim();if(!v)return"";v=v.replace(/^https?:
 function igUrl(v){const h=igHandle(v);return h?"https://instagram.com/"+h:""}
 function faWebNorm(u){u=String(u||"").trim();if(!u)return"";const h=/^https?:\/\//i.test(u)?u:"https://"+u;try{const x=new URL(h);if(x.protocol!=="http:"&&x.protocol!=="https:")return u;if(!x.hostname||x.username||x.password)return u;return x.href}catch(e){return u}}
 function link(u){if(!u)return"";const h=faWebNorm(u);const href=/^https?:\/\//i.test(h)?h:"https://"+h;return `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(String(u).trim().replace(/^https?:\/\//i,""))}</a>`}
-function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</span>`).join("");
+function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill${faHLChip(m)?" hlCh":""}">${esc(faModLabel(m))}</span>`).join("");
  const dg=String(p.phone||"").replace(/\D/g,"");
  const msgIc=`<span class="msgIc" aria-hidden="true"><svg class="msgRing" viewBox="0 0 24 24" width="16" height="16"><circle cx="20" cy="12" r="1.1" fill="currentColor"/><circle cx="17.7" cy="17.7" r="1.1" fill="currentColor"/><circle cx="12" cy="20" r="1.1" fill="currentColor"/><circle cx="6.3" cy="17.7" r="1.1" fill="currentColor"/><circle cx="4" cy="12" r="1.1" fill="currentColor"/><circle cx="6.3" cy="6.3" r="1.1" fill="currentColor"/><circle cx="12" cy="4" r="1.1" fill="currentColor"/><circle cx="17.7" cy="6.3" r="1.1" fill="currentColor"/></svg><svg class="msgBub" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h11a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3H12l-3.2 2.8V17H4.5a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3z"/></svg></span>`;
  const canMsg=me?MSG_ON&&MSG_OK&&!!(p.user_id&&p.user_id!==me.user_id):MSG_ON&&!!p.user_id;
@@ -228,7 +228,7 @@ function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</
   return `<div class="row"${p.id?` data-pid="${esc(p.id)}"`:""}>${av(p)}<div>${cardHead(p)}<br>${pills}<br><span class="locs">${locLine(p)}</span>${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
 function pinModsHtml(p){const mods=(p.mods||[]).map(m=>String(m||"").trim()).filter(Boolean);if(!mods.length)return"";
  const show=mods.slice(0,2),extra=mods.length-2;
- const chips=show.map(m=>`<i>${esc(m)}</i>`).join('<span class="dot">·</span>');
+ const chips=show.map(m=>`<i>${esc(faModLabel(m))}</i>`).join('<span class="dot">·</span>');
  const more=extra>0?`<span class="dot">·</span><i class="more">+${extra}</i>`:"";
  return `<span class="pinmods">${chips}${more}</span>`}
 function spiderfy(entries){const TH=0.0009,used=new Set(),placed=entries.map(e=>({p:e.p,l:e.l,lat:e.l.lat,lng:e.l.lng,side:"right"}));
@@ -816,7 +816,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const placeLoc=p=>{const pp=placeParts();if(!pp)return null;const c=fold(pp.co),ci=fold(pp.ci);return L0(p).find(l=>fold(l.country||"")===c&&(!ci||fold(faCity(l.city))===ci))};
  const src=()=>nearScope?"near-me":(((($("#qName")||{}).value||"").trim()||placeV())?"search":"list");
  let srcOv="";const view=p=>{try{const s=srcOv||src();window.FA_ev&&FA_ev("pract_view",{pid:p.id,source:s,once:"v"+p.id+s})}catch(e){}};
- const chips=(p,n)=>{const m=(p.mods||[]).filter(Boolean);return m.slice(0,n).map(x=>`<span class="ch${faHLChip(x)?" hlCh":""}">${esc(x)}</span>`).join("")+(m.length>n?`<span class="ch more">+${m.length-n}</span>`:"")};
+ const chips=(p,n)=>{const m=(p.mods||[]).filter(Boolean);return m.slice(0,n).map(x=>`<span class="ch${faHLChip(x)?" hlCh":""}">${esc(faModLabel(x))}</span>`).join("")+(m.length>n?`<span class="ch more">+${m.length-n}</span>`:"")};
  const pic=p=>p.photo?`<img src="${esc(p.photo)}" alt="" loading="lazy" decoding="async">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`;
  const nm=p=>String(p.name||"").trim()||practiceTitle(p);
  const flagC=c=>c===OTHER?"🌐":flagOf(c);
@@ -848,7 +848,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  function goPlace(v,co){const m=document.querySelector("main");fillPlaces();if(![...qp().options].some(x=>x.value===v))return false;BR=regionOf(co);savedTop=m?m.scrollTop:0;seeAll=true;hpush("seeall");setPlaceV(v);if(m)m.scrollTop=0;return true}
  window.faListHome=()=>{BR=null;seeAll=false;const nb=$("#qName");if(nb)nb.value="";const lf=$("#listFilter");if(lf)lf.value="";const el=qp();if(el)el.value="";clearGeo();const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}while(HS.length&&HS[HS.length-1]!=="sheet"&&HS[HS.length-1]!=="pe")HS.pop();try{fillPlaces()}catch(e){}renderMarkers();renderList();const m=document.querySelector("main");if(m)m.scrollTop=0};
  (function(){const w=$("#qWhere"),sg=$("#qSug");if(!w||!sg)return;let hits=[];
-  const modListRank=name=>{const s=fold(String(name||"").replace(/®/g,"")).trim();return s==="bbtrs"?0:s==="mer"?1:s==="bbtrs online"?2:3};
+  const modListRank=name=>{const s=fold(String(name||"").replace(/®/g,"")).trim();return s==="bbtrs"?0:s==="bbtrs online"?1:s==="mer"?2:3};
   const modOrd=(a,b)=>modListRank(a.name)-modListRank(b.name)||a.name.localeCompare(b.name,"en",{sensitivity:"base"});
   const mods=()=>{const m=new Map();all().filter(p=>p.consent!==false&&pins(p).length).forEach(p=>(p.mods||[]).forEach(name=>{const t=String(name||"").trim();if(!t)return;const o=m.get(t)||{name:t,n:0};o.n++;m.set(t,o)}));if(!m.has("BBTRS online"))m.set("BBTRS online",{name:"BBTRS online",n:0});return [...m.values()].sort(modOrd)};
   const scoreOne=(s,q)=>{if(!q)return 0;if(s===q)return 0;if(s.startsWith(q))return 1;if(s.split(/[\s&,()\/-]+/).some(x=>x.startsWith(q)))return 2;return s.includes(q)?3:9};
@@ -904,7 +904,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
    if(nearScope)fc.push(`<button type="button" class="fChip" data-clr="near">📍 Near me <i>✕</i></button>`);
    top=`<div class="fChips">${fc.join("")}</div>`;$("#list").dataset.br=pp?"co":"res";
    if(pp){const allIn=filteredNoPlace().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co)));const mc=new Map();(mod?all().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co))&&p.consent!==false):allIn).forEach(p=>(p.mods||[]).filter(Boolean).forEach(m=>mc.set(m,(mc.get(m)||0)+1)));const ms=[...mc.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
-    if(ms.length)top+=`<div class="brMods"><button type="button" class="cChip${mod?"":" on"}" data-mod="">All</button>${ms.map(([m,c])=>`<button type="button" class="cChip${mod===m?" on":""}" data-mod="${esc(m)}">${esc(m)} <i>${c}</i></button>`).join("")}</div>`}
+    if(ms.length)top+=`<div class="brMods"><button type="button" class="cChip${mod?"":" on"}" data-mod="">All</button>${ms.map(([m,c])=>`<button type="button" class="cChip${mod===m?" on":""}" data-mod="${esc(m)}">${esc(faModLabel(m))} <i>${c}</i></button>`).join("")}</div>`}
    if(pp){const allIn=filteredNoPlace().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co)));const cs=cityList(pp.co,allIn.map(p=>({p})));
     if(cs.length>1)top+=`<div class="ptCities">${`<button type="button" class="cChip${pp.ci?"":" on"}" data-pl="co:${esc(pp.co)}">All ${esc(pp.co)} <i>${allIn.length}</i></button>`}${cs.map(c=>`<button type="button" class="cChip${pp.ci&&fold(pp.ci)===c.k?" on":""}" data-pl="ci:${esc(c.n)}|${esc(pp.co)}">${esc(c.n)} <i>${c.c}</i></button>`).join("")}</div>`}}
   if(!n){if(!active)$("#list").dataset.br="home";model={groups:[],grid:[],gridLabel:""};box.innerHTML=top+"<p class=muted>No practitioners match your search.</p>";return}
@@ -952,7 +952,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   const hl=faIsHL(p);
   scr.innerHTML=`<div class="ptHero">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`}${hl?`<span class="shSeal">${faSeal(60)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}${many?`<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i+1} of ${cur.list.length}${cur.label?" · "+esc(cur.label):""}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>`:""}</div>
   <div class="ptBody" data-pid="${esc(p.id||"")}"><h3>${esc(practiceTitle(p))}</h3>${hl?`<div class="shHl">${faLaurel(24)} ${faHLLine(p)}</div>`:""}${String(p.practice_name||"").trim()&&p.name?`<div class="ptWho">${esc(p.name)}</div>`:""}
-  <div class="ptLocs">${locLine(p)}</div><div class="chs ptMods">${(p.mods||[]).filter(Boolean).map(x=>`<span class="ch${faHLChip(x)?" hlCh":""}">${esc(x)}</span>`).join("")}</div>
+  <div class="ptLocs">${locLine(p)}</div><div class="chs ptMods">${(p.mods||[]).filter(Boolean).map(x=>`<span class="ch${faHLChip(x)?" hlCh":""}">${esc(faModLabel(x))}</span>`).join("")}</div>
   ${p.bio?`<div class="ptBio">${esc(p.bio)}</div><button type="button" class="ptMore">Read more</button>`:""}
   ${contacts(p)}<button type="button" class="ptMap">📍 Show on map</button></div>`;
   scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});if(srcOv!=="self_preview")view(p)}
@@ -1051,14 +1051,14 @@ function profViewB(p,v,f){const h2=document.querySelector("#profile h2");if(h2)h
  v.innerHTML=`<div class="bHead"><div class="bCover"></div><span class="bPub" data-bact="settings" role="button" tabindex="0" aria-label="Privacy settings"><i></i>${p.consent?"Public":"Hidden"}</span>
  <button type="button" class="bAv" data-pe="photo" data-pick="1" aria-label="Change photo">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="bFb">${esc(initials(nm))}</span>`}<span class="bCam">📷</span>${faIsHL(p)?`<span class="bHlSeal">${faSeal(40)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}</button>
  <h3>${esc(nm)}</h3>${pn?`<div class="bPn">${esc(pn)}</div>`:""}${where?`<div class="bWhere">📍 ${isOnline(l0)?"🌐 ":co0?flagOf(co0)+" ":""}${esc(where)}</div>`:""}
- ${mods.length?`<div class="bChs">${mods.map(m=>`<span${faHLChip(m)?` class="hlCh"`:""}>${esc(m)}</span>`).join("")}</div>`:""}
+ ${mods.length?`<div class="bChs">${mods.map(m=>`<span${faHLChip(m)?` class="hlCh"`:""}>${esc(faModLabel(m))}</span>`).join("")}</div>`:""}
  <div class="bBtns"><button type="button" class="ghost" data-bact="preview">👁 Preview</button><button type="button" class="gold" data-pe="photo">✏️ Photo & name</button></div></div>
  <p id="bMsg" class="msg"></p>
  <button type="button" class="bMeter"${nx?` data-pe="${nx[3]}"`:""}><span class="mt"><b>Profile ${pct}% complete</b>${nx?`<em>${nx[2]} ›</em>`:`<em class="ok">✓ All set</em>`}</span><span class="bar"><i style="width:${pct}%"></i></span></button>
  <div id="jrCard" class="jrCard">${faJourneyHTML()}</div>
  ${card("about","✍️","About you",S(p.bio)?`<p>${esc(p.bio)}</p>`:`<p>Tell visitors how you work.</p>`,!S(p.bio))}
  ${card("contacts","💬","Contacts & links",`<span class="cRow">${chip(!!ph,"📞 Phone")}${chip(!!(ph&&p.whatsapp),"💬 WhatsApp")}${chip(!!em,"✉️ Email")}${chip(web,"🌐 Website")}${chip(ig,"📸 Instagram")}</span>`,!(ph||em))}
- ${card("mods","🌿","Practices",mods.length?`<span class="cRow">${mods.map(m=>`<span>${esc(m)}</span>`).join("")}</span>`:`<p>Pick what you practise.</p>`,!mods.length)}
+ ${card("mods","🌿","Practices",mods.length?`<span class="cRow">${mods.map(m=>`<span>${esc(faModLabel(m))}</span>`).join("")}</span>`:`<p>Pick what you practise.</p>`,!mods.length)}
  ${card("locs","📍","Locations",`<p>${L.slice(0,3).map(lt).join("<br>")}</p><small>${L.length} of 3 places</small>`,!co0)}
  <button type="button" class="bSet" data-bact="settings">⚙ Settings</button>
  <div class="bOut"><button type="button" class="ghost" id="pOut2">Log out</button></div>`;
