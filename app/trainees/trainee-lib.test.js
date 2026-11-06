@@ -72,7 +72,9 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   const appHtml = fs.readFileSync(path.join(__dirname, "../index.html"), "utf8");
   assert.match(appHtml, /href="\?trainees=1"/);
   assert.match(appHtml, /id="bbtrs"/);
+  assert.match(appHtml, /class="bbtrsEntry" hidden/);
   assert.match(appHtml, /My BBTRS online profile/);
+  assert.match(app, /function faBbtrsCard/);
   assert.match(appHtml, /id="qCountry"/);
   assert.match(appHtml, /id="qCity"/);
   assert.match(appHtml, /Certified\? Move to the main directory/);
@@ -180,8 +182,9 @@ test("trainee profile hub, list place pickers, and certified move stay on the no
   const sw = fs.readFileSync(path.join(__dirname, "../sw.js"), "utf8");
   const join = fs.readFileSync(path.join(__dirname, "join.js"), "utf8");
   const dir = fs.readFileSync(path.join(__dirname, "directory.js"), "utf8");
-  assert.match(app, /if\(!has&&!profEdit\)\{let own=null/);
-  assert.match(app, /dataset\.traineeHub/);
+  assert.match(app, /function faOwnTrainee/);
+  assert.match(app, /faBbtrsCard\(!!own\)/);
+  assert.match(app, /dataset\.traineeHub=own&&!has\?"1":""/);
   assert.match(app, /String\(row\.user_id\|\|""\)===String\(me\.user_id\)/);
   assert.match(app, /if\(has&&!profEdit\)\{profViewB\(p,v,f\);return\}/);
   assert.match(app, /function fillGeo\(/);
