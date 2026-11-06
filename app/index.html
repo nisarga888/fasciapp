@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 
-<link rel="stylesheet" href="styles.css?v=0.23.217"><link rel="stylesheet" href="trainees/trainees.css?v=0.23.211"></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="faG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE7B5"/><stop offset=".45" stop-color="#D9B06F"/><stop offset=".7" stop-color="#C99E67"/><stop offset="1" stop-color="#8A6537"/></linearGradient><linearGradient id="faG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9B7440"/><stop offset="1" stop-color="#F6DFA9"/></linearGradient><radialGradient id="faC" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#0E4A50"/><stop offset="1" stop-color="#02191E"/></radialGradient></defs></svg>
+<link rel="stylesheet" href="styles.css?v=0.23.218"><link rel="stylesheet" href="trainees/trainees.css?v=0.23.218"></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="faG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE7B5"/><stop offset=".45" stop-color="#D9B06F"/><stop offset=".7" stop-color="#C99E67"/><stop offset="1" stop-color="#8A6537"/></linearGradient><linearGradient id="faG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9B7440"/><stop offset="1" stop-color="#F6DFA9"/></linearGradient><radialGradient id="faC" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#0E4A50"/><stop offset="1" stop-color="#02191E"/></radialGradient></defs></svg>
 <div id="demoBanner" class="banner" hidden>Demo mode: saved on this device</div>
 <section id="splash" class="screen active">
  <svg class="biglogo logoMark" width="150" height="150" aria-hidden="true" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -102,9 +102,10 @@
 </section>
 <section id="list" class="screen"><div id="listNav" class="listNav" hidden></div><div class="brSearch"><span class="brSI" aria-hidden="true"></span><input type="search" id="qWhere" placeholder="Search by modality" aria-label="Search by modality" autocomplete="off" enterkeyhint="search"><div id="qSug" class="qSug" hidden></div></div><div id="hlChips" class="hlChipRow"><button type="button" class="hlChip" data-hl="BBTRS" aria-pressed="false">BBTRS</button><button type="button" class="hlChip" data-hl="MER" aria-pressed="false">MER</button></div><h2 class="listH listSlogan"><small>Worldwide community</small><span>Fascia &amp; breath connect us all</span></h2><p class="count liveCount listCountTop" hidden></p><div id="newJ" class="newJ" hidden></div>
  <div id="listSearch" class="listSearch">
-  <input type="search" id="qName" placeholder="Search by name" aria-label="Search by name" autocomplete="off" enterkeyhint="search">
-  <select id="qPlace" aria-label="Location"><option value="">All locations</option></select>
-  <select id="listFilter" aria-label="Practice modality"><option value="">All practices</option></select>
+  <select id="qCountry" aria-label="Country"><option value="">Country</option></select>
+  <select id="qCity" aria-label="City" disabled><option value="">City</option></select>
+  <select id="qPlace" aria-label="Location" hidden><option value="">All locations</option></select>
+  <select id="listFilter" aria-label="Practice modality" hidden><option value="">All practices</option></select>
   <div class="listSearchMeta">
    <span id="listCount" class="muted">0 practitioners</span>
    <span class="listSearchActs">
@@ -115,7 +116,7 @@
  </div>
  <p id="from" class="muted"></p><div id="items"></div></section>
 <section id="profile" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><h2>My practitioner profile</h2>
- <a class="bbtrsEntry" href="?trainees=mine"><b>My BBTRS online profile</b><small>Edit, hide or delete your in-training listing</small></a>
+ <div class="bbtrsEntry"><a href="?trainees=mine"><b>My BBTRS online profile</b><small>Edit, hide or delete your in-training listing</small></a><button type="button" class="gold trMove" id="bbtrsMove">Certified? Move to the main directory</button></div>
  <button type="button" id="logCard" class="card logCard" data-go="log" hidden><span class="lcTop"><b>Session log</b><span class="lcOpen">Open ›</span></span><span class="lcRow"><b id="lcNum">0 / 70</b><small id="lcSub" class="muted"></small></span><span class="pbar"><span id="lcFill"></span></span></button>
  <div id="needLogin" class="card center" hidden><p>Sign in or create an account to add yourself to the map.</p><button class="gold big1" data-go="auth">Sign in / Create account</button></div>
  <div id="profView" hidden></div>
@@ -241,7 +242,7 @@
 
 <script src="config.js?v=0.23.100"></script><script src="track.js?v=0.23.124"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script><script>window.supabase||document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"><\/script>')</script>
-<script src="learn.js?v=0.23.211"></script><script src="news.js?v=0.23.194"></script><script src="quotes.js?v=0.23.71"></script><script src="captcha.js?v=0.23.193"></script><script src="data.js?v=0.23.193"></script><script src="breath.js?v=0.23.113"></script><script src="app.js?v=0.23.217"></script><script src="trainees/trainee-lib.js?v=0.23.211"></script><script src="trainees/directory.js?v=0.23.217"></script><script src="cal.js?v=0.23.198"></script><script src="admin.js?v=0.23.186"></script>
+<script src="learn.js?v=0.23.211"></script><script src="news.js?v=0.23.194"></script><script src="quotes.js?v=0.23.71"></script><script src="captcha.js?v=0.23.193"></script><script src="data.js?v=0.23.193"></script><script src="breath.js?v=0.23.113"></script><script src="app.js?v=0.23.218"></script><script src="trainees/trainee-lib.js?v=0.23.211"></script><script src="trainees/directory.js?v=0.23.218"></script><script src="cal.js?v=0.23.218"></script><script src="admin.js?v=0.23.186"></script>
 <script>
 if("serviceWorker" in navigator&&navigator.serviceWorker){
   // Never reload while the user is using the app: apply a new version only when the app is in the background or on next open.
