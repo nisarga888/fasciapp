@@ -177,7 +177,9 @@ test("trainee profile hub, list place pickers, and certified move stay on the no
   const sw = fs.readFileSync(path.join(__dirname, "../sw.js"), "utf8");
   const join = fs.readFileSync(path.join(__dirname, "join.js"), "utf8");
   const dir = fs.readFileSync(path.join(__dirname, "directory.js"), "utf8");
-  assert.match(app, /if\(!has&&!profEdit\)\{profViewB\(\{/);
+  assert.match(app, /if\(!has&&!profEdit\)\{let own=null/);
+  assert.match(app, /dataset\.traineeHub/);
+  assert.match(app, /String\(row\.user_id\|\|""\)===String\(me\.user_id\)/);
   assert.match(app, /if\(has&&!profEdit\)\{profViewB\(p,v,f\);return\}/);
   assert.match(app, /function fillGeo\(/);
   assert.match(app, /function geoOk\(/);
@@ -196,6 +198,8 @@ test("trainee profile hub, list place pickers, and certified move stay on the no
   assert.match(join, /bbtrs-move/);
   assert.match(dir, /Certified\? Move to the main directory/);
   assert.match(dir, /kind === "move"/);
+  assert.match(cal, /traineeHub==="1"/);
+  assert.match(cal, /faOpenBbtrs/);
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);

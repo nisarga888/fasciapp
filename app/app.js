@@ -406,8 +406,8 @@ function renderList(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nea
 // profile
 let profEdit=false,wantForm=false;
 async function loadProf(){await fillProf();if(!me)return;const p=await DB.mine().catch(()=>null);const has=!!(p&&(p.name||p.address||p.city));const v=$("#profView"),f=$("#profForm");$("#pCancel").hidden=false;if(has)logCard();else $("#logCard").hidden=true;{const h=document.querySelector("#profile h2");if(h)h.textContent=(!has&&!profEdit)?"My profile":"My practitioner profile"}
- v.dataset.listed=has?"1":"0";
- if(!has&&!profEdit){profViewB({name:"",practice_name:"",city:"",country:"",address:"",bio:"",phone:"",email:"",website:"",website2:"",instagram:"",mods:[],locations:[],photo:null,consent:false,whatsapp:false,news_optin:!!(me&&me.news_optin)},v,f);return}
+ v.dataset.listed=has?"1":"0";v.dataset.traineeHub="";
+ if(!has&&!profEdit){let own=null;try{const row=await (window.faTraineeRow?faTraineeRow():null);own=row&&me&&String(row.user_id||"")===String(me.user_id)&&!row.is_test?row:null}catch(e){own=null}const photo=own&&window.FA_TR&&FA_TR.safePhoto?FA_TR.safePhoto(own.photo):"";if(own)v.dataset.traineeHub="1";profViewB({name:own?String(own.name||"").trim():"",practice_name:"",city:"",country:"",address:"",bio:"",phone:"",email:"",website:"",website2:"",instagram:"",mods:[],locations:[],photo:photo||null,consent:false,whatsapp:false,news_optin:!!(me&&me.news_optin)},v,f);return}
  if(has&&!profEdit){profViewB(p,v,f);return}
  else{v.hidden=true;f.hidden=false;if(faMoveRow){const row=faMoveRow;faMoveRow=null;faApplyTrainee(row);const st=$("#status");if(st)st.textContent="We filled in your BBTRS online listing. Add the address for your map pin, then save."}}}
 async function fillProf(){waTouched=false;$("#needLogin").hidden=!!me;$("#profForm").hidden=!me;if(!me)return;myMods=[];renderTags();setExtra([]);$("#who").textContent="Signed in as "+me.email;
