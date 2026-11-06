@@ -1,6 +1,6 @@
 /* v0.23.149 Profile panels + session calendar (planned_sessions, in-app reminders only, Europe/Warsaw) */
 (function(){
-const TZ="Europe/Warsaw";const BUILD="0.23.219";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const TZ="Europe/Warsaw";const BUILD="0.23.220";const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d){const o={};new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o}
@@ -45,7 +45,7 @@ window.faPanels=async function(){const v=q("#profView");if(!v)return;const head=
  draw(P.dataset.a||"",P.dataset.b||"",P.dataset.c||"");
  if(!v.dataset.mode)v.dataset.mode="clean";v.classList.toggle("faClean",v.dataset.mode==="clean");v.classList.toggle("faEdit",v.dataset.mode==="edit");
  let BK=q("#faBack");if(!BK||!v.contains(BK)){BK=document.createElement("button");BK.type="button";BK.id="faBack";BK.className="faBack";BK.textContent="← My profile";BK.onclick=()=>{v.dataset.mode="clean";v.classList.add("faClean");v.classList.remove("faEdit");window.scrollTo(0,0);try{q("#profile").scrollTop=0;q("#profile").scrollIntoView({block:"start"})}catch(x){}};v.prepend(BK)}
- P.onclick=e=>{const k=(e.target.closest("[data-fap]")||{}).dataset;if(!k)return;const f=k.fap;if(f==="photo"){e.stopPropagation();const ph=q("#photo");v.dataset.mode="edit";v.classList.remove("faClean");v.classList.add("faEdit");if(ph){ph.click();if(!ph._faH){ph._faH=1;ph.addEventListener("change",()=>setTimeout(()=>{const pv=q("#phPrev");if(pv)pv.scrollIntoView({block:"center"})},400))}}return}
+ P.onclick=e=>{const k=(e.target.closest("[data-fap]")||{}).dataset;if(!k)return;const f=k.fap;if((f==="edit"||f==="photo")&&v.dataset.traineeHub==="1"){e.stopPropagation();if(window.faOpenBbtrs)window.faOpenBbtrs("mine");return}if(f==="photo"){e.stopPropagation();const ph=q("#photo");v.dataset.mode="edit";v.classList.remove("faClean");v.classList.add("faEdit");if(ph){ph.click();if(!ph._faH){ph._faH=1;ph.addEventListener("change",()=>setTimeout(()=>{const pv=q("#phPrev");if(pv)pv.scrollIntoView({block:"center"})},400))}}return}
   if(f==="log"){window.faHub("log");setTimeout(()=>window.faReview&&window.faReview(),50)}else if(f==="cal"||f==="clients"||f==="scan")window.faHub(f);else{v.dataset.mode="edit";v.classList.remove("faClean");v.classList.add("faEdit");window.scrollTo(0,0);try{q("#profile").scrollTop=0;q("#faBack").scrollIntoView({block:"start"})}catch(x){}}};
  const sp=q("#scPlans");if(sp)sp.style.display="none";
  try{await load(true)}catch(e){}let n=null;try{n=nextS()}catch(e){}const a=n?"Next: "+E(nice(n.t))+" · "+E(n.client_name):"No sessions planned yet";
