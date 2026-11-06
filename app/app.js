@@ -346,7 +346,7 @@ $("#qPlace")&&($("#qPlace").onchange=()=>{renderList();renderMarkers()});$("#qNa
  n.addEventListener("blur",()=>{t=setTimeout(()=>B.classList.remove("kbd"),120)});
  const fit=()=>{if(vv)B.style.setProperty("--kbd-h",Math.round(vv.height)+"px")};if(vv)vv.addEventListener("resize",()=>{if(document.activeElement===n){B.classList.add("kbd");fit()}else if(vv.height>innerHeight*.9)B.classList.remove("kbd")})})();
 document.addEventListener("click",e=>{const c=$("#placeCombo");if(c&&!c.contains(e.target))closePlaceMenu()});
-$("#listClear")&&($("#listClear").onclick=()=>{if(nearScope){nearScope=null;const nb=$("#nearAll");if(nb)nb.hidden=true}const q=$("#qPlace");if(q)q.value="";{const nm=$("#qName");if(nm)nm.value=""};{const el=$("#listFilter");if(el)el.value=""};clearGeo();closePlaceMenu();renderMarkers();renderList()});
+$("#listClear")&&($("#listClear").onclick=()=>{if(nearScope){nearScope=null;const nb=$("#nearAll");if(nb)nb.hidden=true}const q=$("#qPlace");if(q)q.value="";{const nm=$("#qName");if(nm)nm.value=""};const had=($("#listFilter")&&$("#listFilter").value)||"";if(had&&window.faSetModality){window.faSetModality("");closePlaceMenu();return}{const el=$("#listFilter");if(el)el.value=""}clearGeo();closePlaceMenu();renderMarkers();renderList()});
 $("#qCountry")&&($("#qCountry").onchange=()=>{const ci=$("#qCity");if(ci)ci.value="";renderList();renderMarkers()});
 $("#qCity")&&($("#qCity").onchange=()=>{renderList();renderMarkers()});
 $("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show("map");didFit=false;setTimeout(()=>{fitPins(true);map&&map.invalidateSize()},100)});
@@ -822,10 +822,10 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const flagC=c=>c===OTHER?"🌐":flagOf(c);
  const IG='<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>';
  // ---- history: back closes the city list / sheet, then leaves See all, then default
- const HS=[];let skip=0;
+ const HS=[];let skip=0,modFromPop=false;
  const hpush=k=>{try{history.pushState({fa:k},"")}catch(e){}HS.push(k)};
  const hpop=k=>{if(HS.length&&HS[HS.length-1]===k){HS.pop();skip++;try{history.back()}catch(e){skip--}}};
- window.addEventListener("popstate",()=>{if(skip){skip--;return}const k=HS.pop();if(k==="sheet")hideSheet();else if(k==="city")hideCity();else if(k==="seeall")leaveSeeAll();else if(k==="region"){BR=null;renderList()}else if(k==="pe"&&window.faPeBack)faPeBack();else if(k==="log"){if($("#log").classList.contains("active"))show("profile")}});
+ window.addEventListener("popstate",()=>{if(skip){skip--;return}const k=HS.pop();if(k==="sheet")hideSheet();else if(k==="city")hideCity();else if(k==="seeall")leaveSeeAll();else if(k==="region"){BR=null;renderList()}else if(k==="mod"){modFromPop=true;try{window.faSetModality&&faSetModality("")}finally{modFromPop=false}}else if(k==="pe"&&window.faPeBack)faPeBack();else if(k==="log"){if($("#log").classList.contains("active"))show("profile")}});
  window.faH={push:hpush,pop:hpop};
  // ---- model
  let model={groups:[],grid:[],gridLabel:""};const sel={};let seeAll=false,savedTop=0;let BR=null;
@@ -858,7 +858,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   const fitH=()=>{const vv=window.visualViewport,vh=vv?vv.height+vv.offsetTop:innerHeight,top=sg.getBoundingClientRect().top;sg.style.maxHeight=Math.max(180,Math.min(vh*0.6,vh-top-12))+"px"};
   const paint=()=>{const q=w.value.trim();const list=build(q);hits=list;sg.hidden=false;sg.innerHTML=(q?"":`<p class="sgHd">Modalities</p>`)+(list.length?list.map(row).join(""):`<p class="sgNo">No modality found</p>`);sg.scrollTop=0;requestAnimationFrame(fitH)};
   function leavePlace(){const el=qp();if(el&&el.value)el.value="";if(seeAll){seeAll=false;if(HS.length&&HS[HS.length-1]==="seeall")HS.pop()}BR=null;while(HS.length&&(HS[HS.length-1]==="region"||HS[HS.length-1]==="city"))HS.pop()}
-  window.faSetModality=function(name){const lf=$("#listFilter");if(!lf)return;name=String(name||"");if(!name)clearGeo();if(name&&![...lf.options].some(o=>o.value===name)){const o=document.createElement("option");o.value=o.textContent=name;lf.appendChild(o)}if(name)leavePlace();lf.value=name;if(document.activeElement!==w)w.value=name?faModLabel(name):"";sg.hidden=true;faHLPaint();syncModFilter("listFilter");const m=document.querySelector("main");if(m)m.scrollTop=0};
+  window.faSetModality=function(name){const lf=$("#listFilter");if(!lf)return;name=String(name||"");const prev=lf.value;if(!name)clearGeo();if(name&&![...lf.options].some(o=>o.value===name)){const o=document.createElement("option");o.value=o.textContent=name;lf.appendChild(o)}if(name)leavePlace();lf.value=name;if(document.activeElement!==w)w.value=name?faModLabel(name):"";sg.hidden=true;faHLPaint();syncModFilter("listFilter");const m=document.querySelector("main");if(m)m.scrollTop=0;if(name&&!prev&&HS[HS.length-1]!=="mod")hpush("mod");if(!name&&prev&&!modFromPop&&HS[HS.length-1]==="mod")hpop("mod")};
   if(window.visualViewport)visualViewport.addEventListener("resize",()=>{if(!sg.hidden)fitH()});
   sg.addEventListener("touchstart",()=>{if(document.activeElement===w)w.blur()},{passive:true});
   w.addEventListener("input",()=>{paint();if(!w.value.trim()&&$("#listFilter")&&$("#listFilter").value)window.faSetModality("")});
@@ -874,8 +874,10 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   return `<button type="button" class="ptT${hl?" hlA":""}" data-tid="${esc(p.id||"")}" data-g="${g}" data-i="${i}" aria-label="${esc(practiceTitle(p))}${city?", "+esc(city):""}">${pic(p)}${d!=null?`<span class="ptKm">${Math.round(d)} km</span>`:""}<span class="ptOv"><b>${esc(nm(p))}</b><small>📍 ${fl?fl+" ":""}${esc(city)}</small><span class="chs">${chips(p,nCh)}</span></span>${hl?`<span class="aSeal">${faSeal(32)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}</button>`}
  function rowHtml(gi){const g=model.groups[gi];const list=inCity(g,sel[g.c]);return list.map(({p,l},i)=>tile(p,l,gi,i,1,null)).join("")}
  function chipLabel(g){const k=sel[g.c];if(!k)return"All cities";const o=g.cities.find(x=>x.k===k);return o?o.n:"All cities"}
- function nav(){const box=$("#listNav"),pp=placeParts(),lst=$("#list");const on=!!pp;if(lst)lst.classList.toggle("ptPlace",on);if(!box)return;box.hidden=!on;if(!on){box.innerHTML="";return}
-  box.innerHTML=`<button type="button" class="ptBack brBack" data-nav="back"><b>←</b> ${BR&&BR!=="Online & other"?"Back to "+esc(BR):"Back to regions"}</button><span class="ptCrumb">${pp.ci?`<button type="button" data-nav="co">${flagOf(pp.co)} ${esc(pp.co)}</button><em>›</em><b>${esc(pp.ci)}</b>`:`<b>${flagOf(pp.co)} ${esc(pp.co)}</b>`}</span>`}
+ function nav(){const box=$("#listNav"),pp=placeParts(),lst=$("#list");const on=!!pp;const mod=($("#listFilter")&&$("#listFilter").value)||"";if(lst)lst.classList.toggle("ptPlace",on);if(!box)return;
+  if(on){box.hidden=false;box.innerHTML=`<button type="button" class="ptBack brBack" data-nav="back"><b>←</b> ${BR&&BR!=="Online & other"?"Back to "+esc(BR):"Back to regions"}</button><span class="ptCrumb">${pp.ci?`<button type="button" data-nav="co">${flagOf(pp.co)} ${esc(pp.co)}</button><em>›</em><b>${esc(pp.ci)}</b>`:`<b>${flagOf(pp.co)} ${esc(pp.co)}</b>`}</span>`;return}
+  if(mod){box.hidden=false;box.innerHTML=`<button type="button" class="brBack allMod" data-nav="allmod"><b>←</b> All modalities</button>`;return}
+  box.hidden=true;box.innerHTML=""}
  function setPlaceV(v){const el=qp();if(!el)return;fillPlaces();if(v&&![...el.options].some(o=>o.value===v))return;el.value=v;el.dispatchEvent(new Event("change"))}
  function leaveSeeAll(){const top=savedTop,was=seeAll;seeAll=false;if(BR){const lf=$("#listFilter");if(lf)lf.value=""}const el=qp();if(el&&el.value){el.value="";el.dispatchEvent(new Event("change"))}else renderList();if(was)requestAnimationFrame(()=>{const m=document.querySelector("main");if(m)m.scrollTop=top})}
  renderList=function(){try{fillGeo()}catch(e){}renderNewJ();faHLPaint();faLiveCount();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));
@@ -976,10 +978,10 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  document.addEventListener("keydown",e=>{if(!cp.hidden&&e.key==="Escape"){hideCity();hpop("city");return}if(sh.hidden)return;if(e.key==="Escape")close();else if(e.key==="ArrowRight")step(1);else if(e.key==="ArrowLeft")step(-1)});
  // ---- list clicks
  const lst=$("#list");if(lst)lst.addEventListener("click",e=>{const t=e.target;
-  const nb=t.closest("[data-nav]");if(nb){if(nb.dataset.nav==="back"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}else{const pp=placeParts();if(pp)setPlaceV("co:"+pp.co)}return}
+  const nb=t.closest("[data-nav]");if(nb){if(nb.dataset.nav==="allmod"){window.faSetModality("");return}if(nb.dataset.nav==="back"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}else{const pp=placeParts();if(pp)setPlaceV("co:"+pp.co)}return}
   const fc=t.closest("[data-clr]");if(fc){const k=fc.dataset.clr;
    if(k==="place"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}
-   else if(k==="mod"){const el=$("#listFilter");if(el){el.value="";clearGeo();syncModFilter("listFilter")}}
+   else if(k==="mod"){window.faSetModality("")}
    else if(k==="country"){clearGeo();renderList();renderMarkers()}
    else if(k==="city"){const el=$("#qCity");if(el)el.value="";renderList();renderMarkers()}
    else if(k==="name"){const el=$("#qName");if(el){el.value="";renderList();renderMarkers()}}

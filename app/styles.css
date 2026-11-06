@@ -796,6 +796,8 @@ body.peOpen{overflow:hidden}
 .brReg em,.brCo em{position:absolute;right:18px;top:16px;font-style:normal;font-size:30px;font-weight:700;opacity:.85}
 .brBack,#list .ptBack.brBack{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;width:100%;height:54px;margin:0 0 12px;padding:0 20px;border-radius:27px;border:2px solid #C99E67;background:#2a2820;color:#F3D9A8;font:800 18px var(--font);box-shadow:0 6px 16px #0007}
 .brBack b{font-size:22px;color:#F3D9A8;font-family:system-ui,sans-serif}
+.brBack.allMod{background:#0a2a30;border-color:#5FC9C3;color:#F3EDE4;box-shadow:0 0 0 1px #5FC9C344,0 0 16px #5FC9C355}
+.brBack.allMod b{color:#5FC9C3}
 #list .listNav{position:sticky;top:0;z-index:20;display:block}#list .listNav .ptCrumb{display:none}
 .brRegH{margin:0 0 10px;display:flex;flex-direction:column}.brRegH small{font-size:20px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#C99E67}.brRegH span{font-size:13px;color:var(--mut)}
 .brCos{display:flex;flex-direction:column;gap:8px}
