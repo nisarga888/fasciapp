@@ -884,16 +884,21 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   const pk=sec.querySelector(".cPick");if(pk){pk.textContent=chipLabel(g)+" ▾";pk.classList.toggle("on",!!sel[g.c])}});
  // ---- practitioner sheet
  const sh=document.createElement("div");sh.id="ptSheet";sh.className="ptSheet";sh.hidden=true;
- sh.innerHTML=`<div class="ptDim"></div><div class="ptBox" role="dialog" aria-modal="true" aria-label="Practitioner"><div class="ptTop"><button type="button" class="ptBk"><b>‹</b> <span></span></button><button type="button" class="ptX" aria-label="Close">✕</button></div><div class="ptScroll"></div></div>`;
+ sh.innerHTML=`<div class="ptDim"></div><div class="ptBox" role="dialog" aria-modal="true" aria-label="Practitioner"><div class="ptTop"><button type="button" class="ptBk ptBackRes" hidden><b>←</b> <span>Back to results</span></button><button type="button" class="ptBk ptBackCo" hidden><b>‹</b> <span></span></button><button type="button" class="ptX" aria-label="Close">✕</button></div><div class="ptScroll"></div></div>`;
  document.body.appendChild(sh);
- const scr=sh.querySelector(".ptScroll");let cur={list:[],i:0,label:""};
+ const scr=sh.querySelector(".ptScroll");let cur={list:[],i:0,label:"",kind:""};let sheetScroll=0;
+ function listScroller(){return document.querySelector("main")}
+ function saveListScroll(){const m=listScroller();sheetScroll=m?m.scrollTop:0}
+ function restoreListScroll(){const m=listScroller(),y=sheetScroll;if(!m)return;requestAnimationFrame(()=>{m.scrollTop=y})}
  function contacts(p){if(!p.consent)return `<p class="muted"><i>Not public yet</i></p>`;
   const t=document.createElement("div");t.innerHTML=card(p);const cbs=t.querySelector(".cbs"),tel=t.querySelector("a.tel");const ig=faIg(p);
   const web=me?((p.website&&faWebOk(p.website)?`<div class="ptWeb">🌐 ${link(p.website)}</div>`:"")+(p.website2&&faWebOk(p.website2)?`<div class="ptWeb">🌐 ${link(p.website2)}</div>`:"")):"";
   if(me)return web+(tel?`<div class="ptWeb">📞 ${tel.outerHTML}</div>`:"")+(ig?`<div class="ptWeb"><a class="igl" href="https://instagram.com/${esc(ig)}" target="_blank" rel="noopener">${IG} @${esc(ig)}</a></div>`:"")+(cbs?cbs.outerHTML:"");
   return `<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to message, WhatsApp, email, website${ig?" or Instagram":""}.</p>${cbs?cbs.outerHTML:""}<button type="button" class="gold ptLogin">Log in to contact</button></div>`}
  function paint(){const p=cur.list[cur.i];if(!p)return;const many=cur.list.length>1;
-  sh.querySelector(".ptBk span").textContent=cur.label||"Back";
+  const backRes=sh.querySelector(".ptBackRes"),backCo=sh.querySelector(".ptBackCo");
+  if(backRes)backRes.hidden=cur.kind==="country";
+  if(backCo){backCo.hidden=cur.kind!=="country";const sp=backCo.querySelector("span");if(sp)sp.textContent=cur.label||"Back"}
   const hl=faIsHL(p);
   scr.innerHTML=`<div class="ptHero">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`}${hl?`<span class="shSeal">${faSeal(60)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}${many?`<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i+1} of ${cur.list.length}${cur.label?" · "+esc(cur.label):""}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>`:""}</div>
   <div class="ptBody" data-pid="${esc(p.id||"")}"><h3>${esc(practiceTitle(p))}</h3>${hl?`<div class="shHl">${faLaurel(24)} ${faHLLine(p)}</div>`:""}${String(p.practice_name||"").trim()&&p.name?`<div class="ptWho">${esc(p.name)}</div>`:""}
@@ -901,8 +906,8 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   ${p.bio?`<div class="ptBio">${esc(p.bio)}</div><button type="button" class="ptMore">Read more</button>`:""}
   ${contacts(p)}<button type="button" class="ptMap">📍 Show on map</button></div>`;
   scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});if(srcOv!=="self_preview")view(p)}
- function open(list,i,label,so){srcOv=so||"";cur={list,i,label:label||""};const was=!sh.hidden;sh.hidden=false;document.body.classList.add("ptOpen");paint();if(!was)hpush("sheet")}
- function hideSheet(){sh.hidden=true;sh.classList.remove("selfPrev");document.body.classList.remove("ptOpen")}
+ function open(list,i,label,so,kind){srcOv=so||"";const was=!sh.hidden;if(was){}else saveListScroll();cur={list,i,label:label||"",kind:kind||""};sh.hidden=false;document.body.classList.add("ptOpen");paint();if(!was)hpush("sheet")}
+ function hideSheet(){const was=!sh.hidden;sh.hidden=true;sh.classList.remove("selfPrev");document.body.classList.remove("ptOpen");if(was)restoreListScroll()}
  function close(){if(sh.hidden)return;hideSheet();hpop("sheet")}
  const step=k=>{if(cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
  window.faSheetClose=()=>{close();if(!cp.hidden){hideCity();hpop("city")}};
@@ -939,7 +944,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
    const m=document.querySelector("main");const top0=m?m.scrollTop:0;const v=o?`ci:${o.n}|${g.c}`:`co:${g.c}`;fillPlaces();
    if(![...qp().options].some(x=>x.value===v))return;savedTop=top0;seeAll=true;hpush("seeall");setPlaceV(v);if(m)m.scrollTop=0;return}
   const tt=t.closest(".ptT");if(!tt)return;const g=+tt.dataset.g,i=+tt.dataset.i;
-  if(g<0)open(model.grid,i,model.gridLabel);else{const G=model.groups[g];if(!G)return;const k=sel[G.c];open(inCity(G,k).map(x=>x.p),i,k?chipLabel(G):(G.c===OTHER?"Online & other":G.c))}});
+  if(g<0)open(model.grid,i,model.gridLabel,"","results");else{const G=model.groups[g];if(!G)return;const k=sel[G.c];open(inCity(G,k).map(x=>x.p),i,k?chipLabel(G):(G.c===OTHER?"Online & other":G.c),"","country")}});
  backToPract=function(pid){show("list");let n=0;const go=()=>{const p=all().find(x=>x.id===pid);n++;if(p&&(p.email||p.phone||!(p.has_email||p.whatsapp)||n>=30)){window.faOpenPract(pid);return}if(n>=30)return;setTimeout(go,200)};setTimeout(go,300)};
  try{fillPlaces();renderList()}catch(e){}
 })();

@@ -566,6 +566,9 @@ body.ptOpen{overflow:hidden}
 .ptTop{position:absolute;top:0;left:0;right:0;z-index:4;display:flex;justify-content:space-between;align-items:center;padding:12px 12px 0;pointer-events:none}
 .ptTop button{pointer-events:auto}
 .ptBk{display:inline-flex;align-items:center;gap:4px;height:36px;max-width:60%;padding:0 14px 0 10px;border-radius:18px;border:0;background:#02191Ecc;color:#F3EDE4;font:600 14px/1 var(--font)}
+.ptBk.ptBackRes{height:40px;max-width:78%;padding:0 16px 0 12px;border:1.5px solid #C99E67;background:#0a2a30f2;font-weight:800;box-shadow:0 0 0 1px #5FC9C344,0 0 16px #C99E6755}
+.ptBk.ptBackRes b{color:#5FC9C3;font-size:18px}
+.ptBk[hidden]{display:none}
 .ptBk span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ptTop .ptX{position:static}
 .ptBody .cb.ig{flex:1}
