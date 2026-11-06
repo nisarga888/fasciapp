@@ -799,7 +799,7 @@ body.peOpen{overflow:hidden}
 #hlChips.hlChipRow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 14px}
 #hlChips .hlChip{justify-content:center;font-size:14px;font-weight:800;padding:11px 8px;border-radius:16px;border-width:2px;text-align:center;line-height:1.15;white-space:normal}
 #hlChips .hlChip .bSeal{width:22px;height:22px}
-#list[data-mod="1"] .listSlogan,#list[data-mod="1"] .listCountTop,#list[data-mod="1"] #newJ{display:none!important}
+#list[data-modon="1"] .listSlogan,#list[data-modon="1"] .listCountTop,#list[data-modon="1"] #newJ{display:none!important}
 #list[data-br=home] .listSlogan,#list[data-br=home] .listCountTop,#list[data-br=home] #listSearch,#list[data-br=home] #from,
 #list[data-br=reg] .listSlogan,#list[data-br=reg] .listCountTop,#list[data-br=reg] #newJ,#list[data-br=reg] #listSearch,#list[data-br=reg] #from{display:none!important}
 #list[data-br=co] #listFilter,#list[data-br=co] .fChip[data-clr=place],#list[data-br=co] .listCountTop{display:none!important}
