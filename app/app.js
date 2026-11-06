@@ -7,7 +7,7 @@ function rememberEmail(em){try{if(em)localStorage.setItem(LAST_EMAIL_KEY,em)}cat
 function lastEmail(){try{return localStorage.getItem(LAST_EMAIL_KEY)||""}catch(e){return""}}
 function fillLastEmail(){const el=$("#email");if(el&&!el.value)el.value=lastEmail()}
 const CFG=window.FASCIAPP_CONFIG||{};const MSG_ON=!!(CFG.FEATURES&&CFG.FEATURES.messaging);
-var pendingBreath=null,MSG_OK=false,msgs=[],chatWith=null,pollT=null,unsub=null,pendingChat=null;
+var pendingBreath=null,pendingWatch=null,MSG_OK=false,msgs=[],chatWith=null,pollT=null,unsub=null,pendingChat=null;
 let me=null,people=[],here=null,map,layer,threads,photoData=null,signUpMode=true,didFit=false,labelZoom=8,lastLabels=null;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const all=()=>DEMO.concat(people);
@@ -53,7 +53,16 @@ function placeOk(p){const v=($("#qPlace")&&$("#qPlace").value)||"";if(!v)return 
  if(v.startsWith("co:")){const c=fold(v.slice(3));return locs.some(l=>fold(l.country||"")===c)}
  if(v.startsWith("ci:")){const [ci,co]=v.slice(3).split("|").map(fold);return locs.some(l=>fold(faCity(l.city))===ci&&fold(l.country||"")===co)}
  return placeHit(p,fold(v.replace(/^free:/,"")))}
+function traineeKind(){try{const t=new URLSearchParams(location.search).get("trainees");if(t==="1"||t==="dir")return"bbtrs";if(t==="mine"||t==="join")return"bbtrsMe"}catch(e){}return""}
+function openTraineeScreen(kind, extra, mode){const u=new URL(location.href);u.searchParams.set("trainees",kind==="bbtrsMe"?"mine":"1");["next","list","id","cohort","lang"].forEach(k=>u.searchParams.delete(k));if(extra)Object.keys(extra).forEach(k=>{if(extra[k])u.searchParams.set(k,extra[k]);else u.searchParams.delete(k)});const url=u.pathname+u.search+u.hash;if(mode==="replace")history.replaceState({},"",url);else history.pushState({},"",url);show(kind==="bbtrsMe"?"bbtrsMe":"bbtrs")}
+window.faOpenBbtrs=function(kind, extra){openTraineeScreen(kind==="mine"||kind==="bbtrsMe"?"bbtrsMe":"bbtrs",extra||{},"push")};
+function traineeFrame(){const f=$("#bbtrsFrame");if(!f)return;const sp=new URLSearchParams(location.search);const q=new URLSearchParams();q.set("embed","1");if(sp.get("next"))q.set("next",sp.get("next"));if(sp.get("list"))q.set("list",sp.get("list"));const src="trainees/join.html?"+q.toString();if(f.getAttribute("src")!==src)f.src=src}
+window.addEventListener("message",e=>{if(e.origin!==location.origin||!e.data||typeof e.data.faTraineeH!=="number")return;const f=$("#bbtrsFrame");if(f&&f.contentWindow===e.source)f.style.height=Math.max(520,e.data.faTraineeH)+"px"});
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("a[href]");if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target==="_blank")return;let u;try{u=new URL(a.getAttribute("href"),location.href)}catch(err){return}if(u.origin!==location.origin)return;const kind=u.searchParams.get("trainees");if(kind!=="1"&&kind!=="mine"&&kind!=="dir"&&kind!=="join")return;const path=u.pathname.replace(/\/index\.html$/,"/"),here=location.pathname.replace(/\/index\.html$/,"/");if(path!==here&&!/\/app\/?$/.test(path))return;e.preventDefault();history.pushState({},"",u.pathname+u.search+u.hash);show(kind==="mine"||kind==="join"?"bbtrsMe":"bbtrs")});
+window.addEventListener("popstate",()=>{const tk=traineeKind();if(tk)show(tk)});
 function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
+ if(sp.get("reset")==="1")return false;
+ const tr=sp.get("trainees");if(tr==="1"||tr==="dir"){show("bbtrs");return true}if(tr==="mine"||tr==="join"){show("bbtrsMe");return true}
  const tab=(sp.get("tab")||"").toLowerCase();if(tab==="learn"||tab==="lab"){show("learn");return true}
  if(sp.get("join")==="1"){wantForm=true;if(me){show("profile");return true}setMode(true);show("auth");return true}
  if(sp.get("search")==="1"){show("list");const q=$("#qPlace");if(q)requestAnimationFrame(()=>{try{q.focus();q.showPicker&&q.showPicker()}catch(e){}});return true}
@@ -62,11 +71,11 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(practice){const want=fold(practice);["listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;const opt=[...el.options].find(o=>o.value&&(fold(o.value)===want||fold(o.value).includes(want)||want.includes(fold(o.value))));if(opt){el.value=opt.value;hit=true}})}
  if(place){setPlace(place);hit=true}
  if(hit){renderMarkers();renderList();show("list");return true}return false}catch(e){return false}}
-window.show=show;function show(t){if(window.faSheetClose)faSheetClose();if((t==="map"||t==="list")&&window.faJoinUpd)faJoinUpd();$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
- $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||((t==="log"||t==="cal"||t==="clients")&&b.dataset.t==="profile")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
+window.show=show;function show(t){if(window.faSheetClose)faSheetClose();try{const u=new URL(location.href);if(u.searchParams.has("trainees")&&t!=="bbtrs"&&t!=="bbtrsMe"&&u.searchParams.get("reset")!=="1"){["trainees","next","list","id","cohort","lang"].forEach(k=>u.searchParams.delete(k));history.replaceState({},"",u.pathname+u.search+u.hash)}}catch(e){}if((t==="map"||t==="list")&&window.faJoinUpd)faJoinUpd();$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
+ $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||((t==="log"||t==="cal"||t==="clients"||t==="bbtrsMe")&&b.dataset.t==="profile")||(t==="bbtrs"&&b.dataset.t==="learn")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
 let showT=null;function afterShow(t){try{if(t==="scan")scanLoad();if(t==="profile"){setTimeout(scanPlansCard,300);setTimeout(()=>window.faProfShown&&faProfShown(),400)}if(t==="cal"&&window.faCalLoad)faCalLoad();if(window.faRemCheck)setTimeout(faRemCheck,500);if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
- if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox()}catch(e){console.warn(e)}}
+ if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox();if(t==="bbtrs"&&window.faTraineeRefresh)window.faTraineeRefresh();if(t==="bbtrsMe")traineeFrame()}catch(e){console.warn(e)}}
 function hdr(){document.body.classList.toggle("authed",!!me);if(window.faJoinUpd)faJoinUpd();{const lb=$("#labBtn");if(lb)lb.hidden=!!me}$("#tabInbox").hidden=!MSG_ON;{let ad=false;try{ad=isAdmin()}catch(e){}const ts=$("#tabScan");if(ts)ts.hidden=false;const pl=document.querySelector('#tabs [data-t="profile"] span');if(pl)pl.textContent=ad?"Profile":"My profile";}$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 // v0.23.100: the people cache lives in IndexedDB. The old localStorage snapshot (fa_people_v1) outgrew Safari's ~5 MB quota
 // (photos are data URLs), so its updates failed silently and an old list (e.g. 82 people) was painted on every start.
@@ -123,7 +132,7 @@ $("#resetForm").onsubmit=async e=>{e.preventDefault();const a=$("#newPw").value,
   try{const u=new URL(location.href);u.searchParams.delete("reset");history.replaceState({},"",u.pathname+u.search+u.hash.replace(/access_token=[^&]+/g,""))}catch(e){}
   hdr();await refresh();msgInit();setTimeout(()=>show("profile"),600)}catch(err){m.textContent=err.message||"Could not update password."}};
 $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please confirm you are 18+ and accept the Terms and Privacy Policy.";return}m.textContent="…";
- try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);try{if(window.PasswordCredential&&navigator.credentials)navigator.credentials.store(new PasswordCredential({id:em,password:pw,name:em})).catch(()=>{})}catch(x){}m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath,nw=pendingWa;pendingChat=null;pendingBreath=null;pendingWa=null;if(nw){backToPract(nw)}else if(nb){show("learn");if(nb!=="lab")setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
+ try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);try{if(window.PasswordCredential&&navigator.credentials)navigator.credentials.store(new PasswordCredential({id:em,password:pw,name:em})).catch(()=>{})}catch(x){}m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath,nw=pendingWa,wv=pendingWatch;pendingChat=null;pendingBreath=null;pendingWa=null;pendingWatch=null;if(nw){backToPract(nw)}else if(wv&&me){show("learn");setTimeout(()=>{try{labView("watch");openVideo(wv.id,wv.title)}catch(x){}},250)}else if(nb){show("learn");if(nb!=="lab")setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else show("profile")}catch(err){m.textContent=err.message}};
 
 // helpers
 function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(p.lng-from[1]);const a=Math.sin(dl/2)**2+Math.cos(r(from[0]))*Math.cos(r(p.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
@@ -577,8 +586,8 @@ function renderLearn(){const box=$("#learnList");if(!box)return;const items=(win
   const isBook=/\bbook\b/i.test(x.line||"")&&!/ebook/i.test(x.line||"");
   const badge=s.k==="Listen"?"":`<span class="ltag t">${breath?"Breath":x.type==="youtube"?"Video":blog?"Blog":lk?"Live":isBook?"Book":"PDF"}</span>`;
   const state=(!x.public?(s.k==="Listen"?`<span class="ltag lk">${locked?LOCK+" ":""}Members</span>`:`<span class="ltag lk">${LOCK} ${locked?"Locked":"Members"}</span>`):'<span class="ltag free">Free</span>')+(!ready?'<span class="ltag soon">Coming soon</span>':"");
-  const act=!ready?"":locked?'data-unlock="1"':breath?'data-breath="menu"':x.type==="youtube"?`data-yt="${esc(id)}"`:`data-pdf="${esc(x.url)}"`;
-  const foot=!ready?"Coming soon":locked?"Sign in to unlock":breath?"Open practices →":x.type==="youtube"?"Play video":lk?`<span class="lcta">${esc(x.cta||"Open")} ↗</span>`:"Open PDF ↗";
+  const act=!ready?"":locked?(x.type==="youtube"?`data-unlock="watch" data-watch="${esc(id)}"`:'data-unlock="1"'):breath?'data-breath="menu"':x.type==="youtube"?`data-yt="${esc(id)}"`:`data-pdf="${esc(x.url)}"`;
+  const foot=!ready?"Coming soon":locked?(x.type==="youtube"?"Log in to watch":"Sign in to unlock"):breath?"Open practices →":x.type==="youtube"?"Play video":lk?`<span class="lcta">${esc(x.cta||"Open")} ↗</span>`:"Open PDF ↗";
   return `<button type="button" class="lcard${ready?"":" lph"}${locked?" locked":""}" ${act} ${ready?"":"disabled"} aria-label="${esc(x.title)}: ${lk?esc(x.cta||"Open"):foot}">
    ${window.FA_isNew&&FA_isNew(x.title,x.newUntil)?FA_NEW_TAG:""}<div class="lthumb">${labCover(x,id)}${locked?`<span class="lockov">${LOCK}</span>`:""}</div>
    <div class="lbody"><div class="lbadges">${badge}${state}</div><b>${esc(x.title)}</b>${x.by?`<small class="lby">${esc(x.by)}</small>`:""}${x.line?`<small class="muted">${esc(x.line)}</small>`:""}<span class="lfoot">${foot}</span></div></button>`}).join("")}</div>`}).join("");if(window.FasciBreath&&FasciBreath.mountLab)try{FasciBreath.mountLab()}catch(e){}labTiles()}
@@ -622,7 +631,11 @@ document.addEventListener("click",e=>{const y=e.target.closest(".lcard[data-yt]"
  if(e.target.closest("[data-vclose]")){closeVideo();return}
  const br=e.target.closest(".lcard[data-breath]");if(br&&window.FasciBreath){window.FasciBreath.openMenu();return}
  const pd=e.target.closest(".lcard[data-pdf]");if(pd){window.open(pd.dataset.pdf,"_blank","noopener");return}
- if(e.target.closest("[data-unlock]")){if(window.FasciBreath&&FasciBreath.showUnlock)FasciBreath.showUnlock("");else{fillLastEmail();setMode(false);show("auth")}}});
+ const un=e.target.closest("[data-unlock]");if(un){if(un.dataset.unlock==="watch"){showWatchGate(un.dataset.watch,(un.querySelector(".lbody b")||{}).textContent||"Video");return}if(window.FasciBreath&&FasciBreath.showUnlock)FasciBreath.showUnlock("");else{fillLastEmail();setMode(false);show("auth")}}});
+function showWatchGate(id,title){closeVideo();const d=document.createElement("div");d.id="vModal";d.className="vmodal";d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");d.setAttribute("aria-label","Log in to watch");
+ d.innerHTML=`<div class="breathUnlock"><button type="button" class="breathX" data-vclose="1" aria-label="Close">✕</button><span class="breathUnlockIc">${LOCK}</span><b>Log in to watch</b><p class="muted">This video is for signed-in members. A free FasciApp account plays it inside the Lab.</p><div class="breathUnlockBtns"><button type="button" class="gold" data-watch-auth="in">Log in</button><button type="button" class="ghost" data-watch-auth="up">Create account</button></div></div>`;
+ d.addEventListener("click",e=>{if(e.target===d||e.target.closest("[data-vclose]")){closeVideo();return}const a=e.target.closest("[data-watch-auth]");if(!a)return;pendingWatch={id,title};closeVideo();setMode(a.dataset.watchAuth==="up");show("auth")});
+ document.body.appendChild(d)}
 
 // Full-screen-style video viewer: iframe created on open, destroyed on close
 function openVideo(id,title){closeVideo();const d=document.createElement("div");d.id="vModal";d.className="vmodal";d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");d.setAttribute("aria-label",title);
@@ -786,25 +799,20 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  function goPlace(v,co){const m=document.querySelector("main");fillPlaces();if(![...qp().options].some(x=>x.value===v))return false;BR=regionOf(co);savedTop=m?m.scrollTop:0;seeAll=true;hpush("seeall");setPlaceV(v);if(m)m.scrollTop=0;return true}
  window.faListHome=()=>{BR=null;seeAll=false;const nb=$("#qName");if(nb)nb.value="";const lf=$("#listFilter");if(lf)lf.value="";const el=qp();if(el)el.value="";const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}while(HS.length&&HS[HS.length-1]!=="sheet"&&HS[HS.length-1]!=="pe")HS.pop();try{fillPlaces()}catch(e){}renderMarkers();renderList();const m=document.querySelector("main");if(m)m.scrollTop=0};
  (function(){const w=$("#qWhere"),sg=$("#qSug");if(!w||!sg)return;let hits=[];
-  const ctx=()=>{const v=((qp()||{}).value)||"";if(seeAll&&v){const co=v.startsWith("co:")?v.slice(3):v.startsWith("ci:")?(v.split("|")[1]||""):"";if(co)return{t:"co",co}}return BR?{t:"reg",r:BR}:{t:"top"}};
-  const inCtx=(x,c)=>c.t==="top"?true:c.t==="reg"?regionOf(x.co)===c.r:x.co===c.co;
-  const AZ=(a,b)=>fold(a.t==="ci"?a.c:a.co).localeCompare(fold(b.t==="ci"?b.c:b.co));
-  const build=q=>{q=fold(q.trim());const c=ctx();const cs=new Map(),ci=new Map();all().filter(p=>p.consent!==false).forEach(p=>L0(p).forEach(l=>{const co=coOf(l);if(!co)return;const a=cs.get(co)||{t:"co",co,n:new Set()};a.n.add(p.id);cs.set(co,a);const cc=isOnline(l)?"":faCity(l.city);if(!cc)return;const k=fold(cc)+"|"+co;const b=ci.get(k)||{t:"ci",c:cc,co,n:new Set(),ps:[]};if(!b.n.has(p.id)){b.n.add(p.id);b.ps.push(p)}ci.set(k,b)}));
-   if(!q){const pool=c.t==="co"?[...ci.values()].filter(x=>x.co===c.co):[...cs.values()].filter(x=>inCtx(x,c));
-    return{head:c.t==="co"?`Cities in ${c.co} · A–Z`:c.t==="reg"?`Countries in ${c.r} · A–Z`:"All countries · A–Z",main:pool.sort(AZ),other:[]}}
-   const sc=x=>{const s=fold(x.t==="ci"?x.c:x.co);return s.startsWith(q)?0:s.split(/[\s&,()/-]+/).some(w=>w.startsWith(q))?1:s.includes(q)?2:9};
-   const m=[...ci.values(),...cs.values()].map(x=>({x,s:sc(x)})).filter(o=>o.s<9).sort((a,b)=>a.s-b.s||b.x.n.size-a.x.n.size||AZ(a.x,b.x)).map(o=>o.x);
-   return{head:"",main:m.filter(x=>inCtx(x,c)).slice(0,80),other:c.t==="top"?[]:m.filter(x=>!inCtx(x,c)).slice(0,40)}};
-  const row=(h,i)=>{const ps=h.t==="ci"?h.ps:all().filter(p=>h.n.has(p.id));const n=h.n.size;return `<button type="button" data-sg="${i}"><span class="sgI">${h.t==="ci"?"📍":flagOf(h.co)}</span><span class="sgT"><b>${esc(h.t==="ci"?h.c+", "+h.co:h.co)}</b><small>${h.t==="ci"?"City":"Country"} · ${n} practitioner${n===1?"":"s"}</small></span>${bub(ps,3,0)}</button>`};
+  const mods=()=>{const m=new Map();all().filter(p=>p.consent!==false&&pins(p).length).forEach(p=>(p.mods||[]).forEach(name=>{const t=String(name||"").trim();if(!t)return;const o=m.get(t)||{name:t,n:0};o.n++;m.set(t,o)}));return [...m.values()].sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name,"en",{sensitivity:"base"}))};
+  const score=(name,q)=>{const s=fold(name);if(!q)return 0;if(s===q)return 0;if(s.startsWith(q))return 1;if(s.split(/[\s&,()\/-]+/).some(x=>x.startsWith(q)))return 2;return s.includes(q)?3:9};
+  const build=q=>{q=fold(String(q||"").trim());const allm=mods();if(!q)return allm.slice(0,40);return allm.map(x=>({x,s:score(x.name,q)})).filter(o=>o.s<9).sort((a,b)=>a.s-b.s||b.x.n-a.x.n||a.x.name.localeCompare(b.x.name,"en",{sensitivity:"base"})).map(o=>o.x).slice(0,40)};
+  const row=(h,i)=>`<button type="button" data-sg="${i}"><span class="sgT"><b>${esc(h.name)}</b><small>${h.n} practitioner${h.n===1?"":"s"}</small></span></button>`;
   const fitH=()=>{const vv=window.visualViewport,vh=vv?vv.height+vv.offsetTop:innerHeight,top=sg.getBoundingClientRect().top;sg.style.maxHeight=Math.max(180,Math.min(vh*0.6,vh-top-12))+"px"};
-  const paint=()=>{const r=build(w.value);hits=[...r.main,...r.other];sg.hidden=false;
-   sg.innerHTML=(r.head?`<p class="sgHd">${esc(r.head)}</p>`:"")+(hits.length?r.main.map((h,i)=>row(h,i)).join("")+(r.other.length?`<p class="sgHd sgOther">Other places</p>`+r.other.map((h,i)=>row(h,r.main.length+i)).join(""):""):`<p class="sgNo">No city or country found</p>`);sg.scrollTop=0;requestAnimationFrame(fitH)};
+  const paint=()=>{const q=w.value.trim();const list=build(q);hits=list;sg.hidden=false;sg.innerHTML=(q?"":`<p class="sgHd">Modalities</p>`)+(list.length?list.map(row).join(""):`<p class="sgNo">No modality found</p>`);sg.scrollTop=0;requestAnimationFrame(fitH)};
+  function leavePlace(){const el=qp();if(el&&el.value)el.value="";if(seeAll){seeAll=false;if(HS.length&&HS[HS.length-1]==="seeall")HS.pop()}BR=null;while(HS.length&&(HS[HS.length-1]==="region"||HS[HS.length-1]==="city"))HS.pop()}
+  window.faSetModality=function(name){const lf=$("#listFilter");if(!lf)return;name=String(name||"");if(name&&![...lf.options].some(o=>o.value===name)){const o=document.createElement("option");o.value=o.textContent=name;lf.appendChild(o)}if(name)leavePlace();lf.value=name;if(document.activeElement!==w)w.value=name;sg.hidden=true;faHLPaint();syncModFilter("listFilter");const m=document.querySelector("main");if(m)m.scrollTop=0};
   if(window.visualViewport)visualViewport.addEventListener("resize",()=>{if(!sg.hidden)fitH()});
-  // touching the list closes the keyboard so the whole panel is visible and scrolls natively
   sg.addEventListener("touchstart",()=>{if(document.activeElement===w)w.blur()},{passive:true});
-  w.addEventListener("input",paint);w.addEventListener("focus",paint);
+  w.addEventListener("input",()=>{paint();if(!w.value.trim()&&$("#listFilter")&&$("#listFilter").value)window.faSetModality("")});
+  w.addEventListener("focus",paint);
   w.addEventListener("keydown",e=>{if(e.key==="Enter"&&hits[0]){e.preventDefault();pick(0)}if(e.key==="Escape"){sg.hidden=true;w.blur()}});
-  const pick=i=>{const h=hits[i];if(!h)return;sg.hidden=true;w.value="";w.blur();const v=h.t==="ci"?`ci:${h.c}|${h.co}`:`co:${h.co}`;if(!goPlace(v,h.co)&&h.t==="ci")goPlace(`co:${h.co}`,h.co)};
+  const pick=i=>{const h=hits[i];if(!h)return;w.blur();window.faSetModality(h.name)};
   sg.addEventListener("click",e=>{const b=e.target.closest("[data-sg]");if(b)pick(+b.dataset.sg)});
   document.addEventListener("click",e=>{if(!e.target.closest(".brSearch"))sg.hidden=true})})();
  const cityList=(c,list)=>{const m=new Map();list.forEach(({p})=>{const seen=new Set();L0(p).filter(l=>(coOf(l)||OTHER)===c).forEach(l=>{const n=cityOf(l);if(!n)return;const k=fold(n);if(seen.has(k))return;seen.add(k);const o=m.get(k)||{k,n,c:0};o.c++;m.set(k,o)})});return[...m.values()].sort((a,b)=>b.c-a.c||a.n.localeCompare(b.n,"en",{sensitivity:"base"}))};
@@ -824,6 +832,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   // MER & BBTRS always first, then the usual order
   if(here&&active)ps.sort((a,b)=>faHLCmp(a.p,b.p)||a.d-b.d);else ps.sort((a,b)=>faHLCmp(a.p,b.p)||azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
   const pp=placeParts();
+  const lstEl=$("#list");if(lstEl)lstEl.dataset.mod=mod?"1":"";const qw=$("#qWhere");if(qw&&document.activeElement!==qw)qw.value=mod||"";
   const lc=$("#listCount");if(lc)lc.textContent=!faFresh?"":(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:pp?` in ${pp.ci||pp.co}`:"");
   const clr=$("#listClear");if(clr){clr.hidden=!active;clr.textContent=nearScope?"Show all":"Clear"}
   $("#from").textContent=here&&active?"Sorted by distance from you":"";
@@ -1029,8 +1038,8 @@ function faLaurel(s){let L="";const lf=(x,y,a)=>`<ellipse cx="${x}" cy="${y}" rx
 // filter chips: "MER & BBTRS only" (list hides others, map dims them) + MER / BBTRS shortcuts for the practice filter
 function faHLPaint(){const lf=$("#listFilter");document.querySelectorAll("[data-hl]").forEach(b=>{const k=b.dataset.hl,on=k==="only"?faHLOnly:!!(lf&&lf.value===k);b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false")})}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-hl]");if(!b)return;const k=b.dataset.hl;
- if(k==="only")faHLOnly=!faHLOnly;else{const lf=$("#listFilter");if(!lf)return;lf.value=lf.value===k?"":([...lf.options].some(o=>o.value===k)?k:"")}
- faHLPaint();syncModFilter()});
+ if(k==="only"){faHLOnly=!faHLOnly;faHLPaint();syncModFilter();return}
+ const lf=$("#listFilter");const next=lf&&lf.value===k?"":k;if(window.faSetModality)window.faSetModality(next);else{if(lf)lf.value=next;faHLPaint();syncModFilter()}});
 
 document.querySelectorAll('#hlChips .hlChip[data-hl]').forEach(b=>{b.innerHTML=faSeal(16)+" "+b.dataset.hl});
 // v0.23.100: live network count on the welcome screen + list header (same source as the map count); hidden until data is loaded

@@ -1,4 +1,6 @@
 body.tr{max-width:480px;padding:16px 16px 32px}
+body.embed .trTop,body.embed .trFoot{display:none}
+body.embed{background:transparent;padding-top:4px}
 .trTop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
 .trTop .brand{color:var(--gold);font-weight:700;text-decoration:none;font-size:18px}
 .trTop .brand span{color:#5FC9C3}

@@ -70,7 +70,10 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   }
   assert.match(dir, /href="join\.html\?list=1"/);
   const appHtml = fs.readFileSync(path.join(__dirname, "../index.html"), "utf8");
-  assert.match(appHtml, /href="trainees\/"/);
+  assert.match(appHtml, /href="\?trainees=1"/);
+  assert.match(appHtml, /id="bbtrs"/);
+  assert.match(appHtml, /My BBTRS online profile/);
+  assert.match(appHtml, /Practitioner in training \(not yet certified\)/);
   assert.match(appHtml, /Book a free one-hour online session with our practitioners in training\./);
   const tile = app.slice(app.indexOf("function labTiles"), app.indexOf("function labView"));
   assert.equal(/assessment/i.test(tile), false);
@@ -110,6 +113,18 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   assert.equal(/jwt\(\) ->> 'email'/.test(sql), false);
   assert.equal(TR.isAdminUser("fea03ec6-5408-494d-8848-228c34f357de"), true);
   assert.equal(TR.isAdminUser("00000000-0000-4000-8000-000000000000"), false);
+  assert.equal(TR.OFFER, "Practitioner in training (not yet certified) · Free one-hour online practice session");
+  const learn = fs.readFileSync(path.join(__dirname, "../learn.js"), "utf8");
+  for (const id of ["VlmuwJ4YY2E", "eqYR06lr_Ds", "eMPur7v8kGI", "-MOH7AELIQQ", "GGTT3Bpyjjk"]) assert.match(learn, new RegExp(id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.match(learn, /with Jennifer McKeever/);
+  assert.match(learn, /with Ulla Thordal/);
+  assert.match(fs.readFileSync(path.join(__dirname, "../app.js"), "utf8"), /youtube-nocookie\.com\/embed/);
+  assert.match(fs.readFileSync(path.join(__dirname, "../app.js"), "utf8"), /Log in to watch/);
+  const jen = fs.readFileSync(path.join(__dirname, "../../supabase/migrations/20261106120000_bbtrs_trainees_jennifer_test.sql"), "utf8");
+  assert.match(jen, /11111111-1111-4111-8111-111111111101/);
+  assert.match(jen, /11111111-1111-4111-8111-111111111104/);
+  assert.match(jen, /83cfd085-c177-4117-9c70-71eefde14d1a/);
+  assert.equal(jen.includes("@"), false);
   const seed = fs.readFileSync(path.join(__dirname, "../../supabase/migrations/20261105163100_bbtrs_trainees_test_seed.sql"), "utf8");
   const samples = fs.readFileSync(path.join(__dirname, "test-profiles.js"), "utf8");
   for (const name of ["Nisarga", "Giten", "Aisha", "Prema"]) {
@@ -126,7 +141,7 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   const landing = fs.readFileSync(path.join(__dirname, "../../index.html"), "utf8");
   const lab = landing.match(/<!--LAB:START[\s\S]*?<!--LAB:END-->/);
   assert.ok(lab, "landing Lab block");
-  assert.match(lab[0], /href="app\/trainees\/"/);
+  assert.match(lab[0], /href="app\/\?trainees=1"/);
   assert.match(lab[0], /Book a free one-hour online session with our practitioners in training\./);
   assert.equal(/Body assessment|app\/assessment\.html/i.test(landing), false);
   assert.match(landing, /BBTRS practitioners in training/);

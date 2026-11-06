@@ -690,6 +690,14 @@ body.peOpen{overflow:hidden}
 .ptHero .shSeal{position:absolute;right:14px;bottom:58px;z-index:4;display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .ptHero .shSeal .hlTag{margin-top:-8px}
 .shHl{display:flex;align-items:center;gap:7px;margin:4px 0 6px;font-size:13.5px;font-weight:700;color:#E7C78F}
+.ptBody .trOfferLine{display:block;margin:6px 0 8px;font-size:15px;line-height:1.35;font-weight:700;color:#F3EDE4}
+.ptHero .trOnlineBadge{position:absolute;right:14px;bottom:58px;z-index:4;max-width:46%;background:#02191Eee;color:#F3EDE4;border:1px solid #C99E67;font-size:11px;font-weight:800;letter-spacing:.02em;border-radius:999px;padding:5px 8px;line-height:1.2;text-align:center}
+.bbtrsEntry{display:block;margin:0 0 12px;padding:14px 16px;border-radius:16px;border:1px solid #C99E67;background:#0a2a30;text-decoration:none}
+.bbtrsEntry b{display:block;color:#C99E67;font-size:16px}.bbtrsEntry small{display:block;color:#d7e2e1;margin-top:3px;font-size:13px;line-height:1.35}
+.bbtrsFrame{display:block;width:100%;min-height:72dvh;border:0;background:transparent}
+#bbtrs .trOffer b{display:block;color:#E7C78F;font-size:15px;line-height:1.35}
+.trMine{margin:8px 0 12px;padding:12px 14px;border:1px solid #C99E67;border-radius:16px;background:#0a2a30}
+.trMine>b{display:block;color:#C99E67;margin-bottom:4px}
 /* v0.23.95: MER/BBTRS seal on My profile header */
 .bAv .bHlSeal{position:absolute;left:-12px;bottom:12px;z-index:3;display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .bAv .bHlSeal .hlTag{margin-top:-7px;font-size:9px;line-height:1.35;padding:1px 6px;position:relative;z-index:1}
@@ -788,9 +796,13 @@ body.peOpen{overflow:hidden}
 .brCo .brFaces img{width:36px;height:36px;margin-left:-11px;border-width:2px}.brCo .brFaces img:first-child{margin-left:0}.brCo em{top:50%;transform:translateY(-50%);font-size:22px;right:14px}
 .brMods{display:flex;gap:8px;overflow-x:auto;margin:0 0 12px;padding-bottom:4px;scrollbar-width:none}.brMods::-webkit-scrollbar{display:none}.brMods .cChip{flex:none}
 #qPlace{display:none!important}
-#list[data-br=home] .listSlogan,#list[data-br=home] .listCountTop,#list[data-br=home] #listSearch,#list[data-br=home] #hlChips,#list[data-br=home] #from,
-#list[data-br=reg] .listSlogan,#list[data-br=reg] .listCountTop,#list[data-br=reg] #newJ,#list[data-br=reg] #listSearch,#list[data-br=reg] #hlChips,#list[data-br=reg] #from{display:none!important}
-#list[data-br=co] #hlChips,#list[data-br=co] #listFilter,#list[data-br=co] .fChip[data-clr=place],#list[data-br=co] .listCountTop{display:none!important}
+#hlChips.hlChipRow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 14px}
+#hlChips .hlChip{justify-content:center;font-size:16px;font-weight:800;padding:12px 10px;border-radius:16px;border-width:2px}
+#hlChips .hlChip .bSeal{width:22px;height:22px}
+#list[data-mod="1"] .listSlogan,#list[data-mod="1"] .listCountTop,#list[data-mod="1"] #newJ{display:none!important}
+#list[data-br=home] .listSlogan,#list[data-br=home] .listCountTop,#list[data-br=home] #listSearch,#list[data-br=home] #from,
+#list[data-br=reg] .listSlogan,#list[data-br=reg] .listCountTop,#list[data-br=reg] #newJ,#list[data-br=reg] #listSearch,#list[data-br=reg] #from{display:none!important}
+#list[data-br=co] #listFilter,#list[data-br=co] .fChip[data-clr=place],#list[data-br=co] .listCountTop{display:none!important}
 
 .sgHd{margin:0;padding:10px 14px 6px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut)}
 .sgOther{border-top:1px solid #c99e6744;margin-top:2px}
