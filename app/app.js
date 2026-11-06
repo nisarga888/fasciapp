@@ -178,9 +178,12 @@ function card(p){const pills=(p.mods||[]).map(m=>`<span class="pill">${esc(m)}</
  const mail=!me?(p.has_email||p.email?`<button type="button" class="cb mail" data-gate="mail">✉️ Email</button>`:""):p.email?`<a class="cb mail" href="mailto:${esc(p.email)}">✉️ Email</a>`:"";
  const phone=me&&p.phone?`<br><a class="tel" href="tel:${esc(p.phone)}">${esc(p.phone)}</a>`:"";
  const igH=faIg(p),igB=!me&&igH?`<button type="button" class="cb ig" data-gate="ig"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Instagram</button>`:"";
- const cbs=(msgBtn||wa||mail||igB)?`<div class="cbs cbsRow">${msgBtn}${wa}${mail}${igB}</div>`:"";
+ const hasWeb=(p.website&&faWebOk(p.website))||(p.website2&&faWebOk(p.website2));
+ const webB=!me&&hasWeb?`<button type="button" class="cb" data-gate="web">🌐 Website</button>`:"";
+ const cbs=(msgBtn||wa||mail||webB||igB)?`<div class="cbs cbsRow">${msgBtn}${wa}${mail}${webB}${igB}</div>`:"";
  const scanB=p.id&&!(me&&p.user_id&&p.user_id===me.user_id)?`<a class="scanTry" href="assessment.html?p=${encodeURIComponent(p.id)}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="4.5" r="2"/><path d="M12 7v7M12 14l-3 6.5M12 14l3 6.5M6.5 10l5.5-1.5 5.5 1.5"/></svg> Try a Body scan before your session</a>`:"";
- const c=p.consent?phone+(p.website&&faWebOk(p.website)?`<br>🌐 ${link(p.website)}`:"")+(p.website2&&faWebOk(p.website2)?`<br>🌐 ${link(p.website2)}`:"")+(me&&faIg(p)?`<br><a class="igl" href="https://instagram.com/${esc(faIg(p))}" target="_blank" rel="noopener" aria-label="Instagram @${esc(faIg(p))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @${esc(faIg(p))}</a>`:"")+cbs+scanB:"<br><i>Not public yet</i>";
+ const webLinks=me?((p.website&&faWebOk(p.website)?`<br>🌐 ${link(p.website)}`:"")+(p.website2&&faWebOk(p.website2)?`<br>🌐 ${link(p.website2)}`:"")):"";
+ const c=p.consent?phone+webLinks+(me&&faIg(p)?`<br><a class="igl" href="https://instagram.com/${esc(faIg(p))}" target="_blank" rel="noopener" aria-label="Instagram @${esc(faIg(p))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @${esc(faIg(p))}</a>`:"")+cbs+scanB:"<br><i>Not public yet</i>";
   return `<div class="row"${p.id?` data-pid="${esc(p.id)}"`:""}>${av(p)}<div>${cardHead(p)}<br>${pills}<br><span class="locs">${locLine(p)}</span>${c}${p.bio?`<br><small>${esc(p.bio)}</small>`:""}</div></div>`}
 function pinModsHtml(p){const mods=(p.mods||[]).map(m=>String(m||"").trim()).filter(Boolean);if(!mods.length)return"";
  const show=mods.slice(0,2),extra=mods.length-2;
@@ -719,7 +722,7 @@ function showGate(kind,id){const g=$("#gate");if(!g)return;let nm="";
  else{pendingWa=id;pendingChat=null;const p=people.find(x=>String(x.id)===String(id));nm=p?(p.name||practiceTitle(p)):""}
  pendingBreath=null;const first=String(nm).trim().split(/\s+/)[0]||"";
  $("#gateH").textContent=first?`Log in to contact ${first}`:"Log in to contact";
- $("#gateP").textContent=(kind==="wa"?"WhatsApp contact is":kind==="mail"?"Email contact is":kind==="ig"?"Instagram is":"Messages are")+" for FasciApp members. Create a free account or log in, and we’ll bring you right back"+(first?` to ${first}.`:".");
+ $("#gateP").textContent=(kind==="wa"?"WhatsApp contact is":kind==="mail"?"Email contact is":kind==="ig"?"Instagram is":kind==="web"?"The website link is":"Messages are")+" for FasciApp members. Create a free account or log in, and we’ll bring you right back"+(first?` to ${first}.`:".");
  g.hidden=false;try{ev("contact_gate",{props:{item:kind==="wa"?"whatsapp":kind==="mail"?"email":kind==="ig"?"instagram":"message"},source:"app"})}catch(e){}}
 function hideGate(clear){$("#gate").hidden=true;if(clear){pendingChat=null;pendingWa=null}}
 $("#gateUp").onclick=()=>{hideGate();setMode(true);show("auth")};
@@ -806,7 +809,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   const scoreOne=(s,q)=>{if(!q)return 0;if(s===q)return 0;if(s.startsWith(q))return 1;if(s.split(/[\s&,()\/-]+/).some(x=>x.startsWith(q)))return 2;return s.includes(q)?3:9};
   const score=(name,q)=>{const a=scoreOne(fold(name),q),b=scoreOne(fold(faModLabel(name)),q);return a<b?a:b};
   const build=q=>{q=fold(String(q||"").trim());const allm=mods();if(!q)return allm;return allm.map(x=>({x,s:score(x.name,q)})).filter(o=>o.s<9).sort((a,b)=>a.s-b.s||modOrd(a.x,b.x)).map(o=>o.x)};
-  const row=(h,i)=>`<button type="button" data-sg="${i}"><span class="sgT"><b>${esc(faModLabel(h.name))}</b><small>${h.n} practitioner${h.n===1?"":"s"}</small></span></button>`;
+  const row=(h)=>`<button type="button" data-pickmod="${esc(h.name)}"><span class="sgT"><b>${esc(faModLabel(h.name))}</b><small>${h.n} practitioner${h.n===1?"":"s"}</small></span></button>`;
   const fitH=()=>{const vv=window.visualViewport,vh=vv?vv.height+vv.offsetTop:innerHeight,top=sg.getBoundingClientRect().top;sg.style.maxHeight=Math.max(180,Math.min(vh*0.6,vh-top-12))+"px"};
   const paint=()=>{const q=w.value.trim();const list=build(q);hits=list;sg.hidden=false;sg.innerHTML=(q?"":`<p class="sgHd">Modalities</p>`)+(list.length?list.map(row).join(""):`<p class="sgNo">No modality found</p>`);sg.scrollTop=0;requestAnimationFrame(fitH)};
   function leavePlace(){const el=qp();if(el&&el.value)el.value="";if(seeAll){seeAll=false;if(HS.length&&HS[HS.length-1]==="seeall")HS.pop()}BR=null;while(HS.length&&(HS[HS.length-1]==="region"||HS[HS.length-1]==="city"))HS.pop()}
@@ -815,9 +818,9 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   sg.addEventListener("touchstart",()=>{if(document.activeElement===w)w.blur()},{passive:true});
   w.addEventListener("input",()=>{paint();if(!w.value.trim()&&$("#listFilter")&&$("#listFilter").value)window.faSetModality("")});
   w.addEventListener("focus",paint);
-  w.addEventListener("keydown",e=>{if(e.key==="Enter"&&hits[0]){e.preventDefault();pick(0)}if(e.key==="Escape"){sg.hidden=true;w.blur()}});
-  const pick=i=>{const h=hits[i];if(!h)return;w.blur();window.faSetModality(h.name)};
-  sg.addEventListener("click",e=>{const b=e.target.closest("[data-sg]");if(b)pick(+b.dataset.sg)});
+  const pickName=name=>{if(!name)return;w.blur();window.faSetModality(name)};
+  w.addEventListener("keydown",e=>{if(e.key==="Enter"&&hits[0]){e.preventDefault();pickName(hits[0].name)}if(e.key==="Escape"){sg.hidden=true;w.blur()}});
+  sg.addEventListener("click",e=>{const b=e.target.closest("[data-pickmod]");if(!b)return;e.preventDefault();e.stopPropagation();pickName(b.getAttribute("data-pickmod")||"")});
   document.addEventListener("click",e=>{if(!e.target.closest(".brSearch"))sg.hidden=true})})();
  const cityList=(c,list)=>{const m=new Map();list.forEach(({p})=>{const seen=new Set();L0(p).filter(l=>(coOf(l)||OTHER)===c).forEach(l=>{const n=cityOf(l);if(!n)return;const k=fold(n);if(seen.has(k))return;seen.add(k);const o=m.get(k)||{k,n,c:0};o.c++;m.set(k,o)})});return[...m.values()].sort((a,b)=>b.c-a.c||a.n.localeCompare(b.n,"en",{sensitivity:"base"}))};
  const inCity=(g,k)=>!k?g.list:g.list.map(({p})=>{const l=L0(p).find(l=>(coOf(l)||OTHER)===g.c&&fold(cityOf(l))===k);return l?{p,l}:null}).filter(Boolean);
@@ -836,7 +839,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   // MER & BBTRS always first, then the usual order
   if(here&&active)ps.sort((a,b)=>faHLCmp(a.p,b.p)||a.d-b.d);else ps.sort((a,b)=>faHLCmp(a.p,b.p)||azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
   const pp=placeParts();
-  const lstEl=$("#list");if(lstEl)lstEl.dataset.mod=mod?"1":"";const qw=$("#qWhere");if(qw&&document.activeElement!==qw)qw.value=mod?faModLabel(mod):"";
+  const lstEl=$("#list");if(lstEl)lstEl.dataset.modon=mod?"1":"";const qw=$("#qWhere");if(qw&&document.activeElement!==qw)qw.value=mod?faModLabel(mod):"";
   const lc=$("#listCount");if(lc)lc.textContent=!faFresh?"":(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:pp?` in ${pp.ci||pp.co}`:"");
   const clr=$("#listClear");if(clr){clr.hidden=!active;clr.textContent=nearScope?"Show all":"Clear"}
   $("#from").textContent=here&&active?"Sorted by distance from you":"";
@@ -886,9 +889,9 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const scr=sh.querySelector(".ptScroll");let cur={list:[],i:0,label:""};
  function contacts(p){if(!p.consent)return `<p class="muted"><i>Not public yet</i></p>`;
   const t=document.createElement("div");t.innerHTML=card(p);const cbs=t.querySelector(".cbs"),tel=t.querySelector("a.tel");const ig=faIg(p);
-  const web=(p.website&&faWebOk(p.website)?`<div class="ptWeb">🌐 ${link(p.website)}</div>`:"")+(p.website2&&faWebOk(p.website2)?`<div class="ptWeb">🌐 ${link(p.website2)}</div>`:"");
+  const web=me?((p.website&&faWebOk(p.website)?`<div class="ptWeb">🌐 ${link(p.website)}</div>`:"")+(p.website2&&faWebOk(p.website2)?`<div class="ptWeb">🌐 ${link(p.website2)}</div>`:"")):"";
   if(me)return web+(tel?`<div class="ptWeb">📞 ${tel.outerHTML}</div>`:"")+(ig?`<div class="ptWeb"><a class="igl" href="https://instagram.com/${esc(ig)}" target="_blank" rel="noopener">${IG} @${esc(ig)}</a></div>`:"")+(cbs?cbs.outerHTML:"");
-  return web+`<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to message, WhatsApp, email${ig?" or see Instagram":""}.</p>${cbs?cbs.outerHTML:""}<button type="button" class="gold ptLogin">Log in to contact</button></div>`}
+  return `<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to message, WhatsApp, email, website${ig?" or Instagram":""}.</p>${cbs?cbs.outerHTML:""}<button type="button" class="gold ptLogin">Log in to contact</button></div>`}
  function paint(){const p=cur.list[cur.i];if(!p)return;const many=cur.list.length>1;
   sh.querySelector(".ptBk span").textContent=cur.label||"Back";
   const hl=faIsHL(p);
@@ -926,7 +929,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
    else if(k==="mod"){const el=$("#listFilter");if(el){el.value="";syncModFilter("listFilter")}}
    else if(k==="name"){const el=$("#qName");if(el){el.value="";renderList();renderMarkers()}}
    else if(k==="near")clearNear();return}
-  const md=t.closest("[data-mod]");if(md){const el=$("#listFilter");if(el){if(md.dataset.mod&&![...el.options].some(o=>o.value===md.dataset.mod)){const o=document.createElement("option");o.value=o.textContent=md.dataset.mod;el.appendChild(o)}el.value=md.dataset.mod;syncModFilter("listFilter")}return}
+  const md=t.closest("button[data-mod]");if(md){const el=$("#listFilter");if(el){if(md.dataset.mod&&![...el.options].some(o=>o.value===md.dataset.mod)){const o=document.createElement("option");o.value=o.textContent=md.dataset.mod;el.appendChild(o)}el.value=md.dataset.mod;syncModFilter("listFilter")}return}
   const rg=t.closest("[data-reg]");if(rg){BR=rg.dataset.reg;hpush("region");renderList();const m=document.querySelector("main");if(m)m.scrollTop=0;return}
   if(t.closest('[data-br="home"]')){BR=null;hpop("region");renderList();const m=document.querySelector("main");if(m)m.scrollTop=0;return}
   const cb=t.closest("[data-co]");if(cb){const r=BR;if(!goPlace("co:"+cb.dataset.co,cb.dataset.co))return;BR=r;nav();return}

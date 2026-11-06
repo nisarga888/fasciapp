@@ -60,14 +60,17 @@
     return TR.sortTrainees(TR.filterTrainees(raw, {cohort: q.cohort, lang: q.lang}));
   }
   function contactBlock(p) {
+    const web = p.website && TR.safeWeb(p.website);
     if (!me) {
       const bits = [];
+      if (web) bits.push(`<button type="button" class="cb" data-gate="1">🌐 Website</button>`);
       if (p.has_whatsapp) bits.push(`<button type="button" class="cb wa" data-gate="1">WhatsApp</button>`);
       if (p.has_email) bits.push(`<button type="button" class="cb mail" data-gate="1">✉️ Email</button>`);
       const row = bits.length ? `<div class="cbs cbsRow">${bits.join("")}</div>` : "";
-      return `<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to see WhatsApp and email, then arrange the session directly.</p>${row}<button type="button" class="gold ptLogin">Log in to contact</button></div>`;
+      return `<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to see the website, WhatsApp and email, then arrange the session directly.</p>${row}<button type="button" class="gold ptLogin">Log in to contact</button></div>`;
     }
     const bits = [];
+    if (web) bits.push(`<a class="cb" href="${TR.esc(web)}" target="_blank" rel="noopener">🌐 ${TR.esc(String(p.website).replace(/^https?:\/\//i, ""))}</a>`);
     const wa = TR.waLink(p.whatsapp);
     if (wa) bits.push(`<a class="cb wa" href="${TR.esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>`);
     if (p.email) bits.push(`<a class="cb mail" href="mailto:${TR.esc(p.email)}">✉️ Email</a>`);
@@ -148,7 +151,6 @@
     const tags = [];
     if (cohort) tags.push("Cohort: " + cohort);
     langs.forEach(l => tags.push(l));
-    const web = p.website && TR.safeWeb(p.website);
     const where = [p.country].filter(Boolean).join(", ");
     const mine = me && p.user_id && p.user_id === me.user_id;
     const count = many ? `<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i + 1} of ${cur.list.length}${where ? " · " + TR.esc(where) : ""}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>` : "";
@@ -159,7 +161,6 @@
       ${tags.length ? `<div class="chs ptMods">${tags.map(t => `<span class="ch">${TR.esc(t)}</span>`).join("")}</div>` : ""}
       ${p.published === false ? `<p class="trHidden">Hidden from the public directory</p>` : ""}
       ${p.bio ? `<div class="ptBio">${TR.esc(p.bio)}</div><button type="button" class="ptMore">Read more</button>` : ""}
-      ${web ? `<div class="ptWeb">🌐 <a href="${TR.esc(web)}" target="_blank" rel="noopener">${TR.esc(String(p.website).replace(/^https?:\/\//i, ""))}</a></div>` : ""}
       ${contactBlock(p)}
       ${mine ? mineActs(p) : ""}
       ${me && TR.isAdminUser(me.user_id) ? adminButtons(p) : ""}
