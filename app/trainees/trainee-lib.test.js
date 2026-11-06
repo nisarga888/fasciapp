@@ -183,6 +183,9 @@ test("trainee profile hub, list place pickers, and certified move stay on the no
   assert.match(app, /function geoOk\(/);
   assert.match(app, /data-clr="country"/);
   assert.match(app, /data-clr="city"/);
+  assert.match(app, /All modalities/);
+  assert.match(app, /data-nav="allmod"/);
+  assert.match(app, /k==="mod"/);
   assert.match(app, /sheetGeo=geoPick\(\)/);
   assert.match(app, /Hide the BBTRS listing/);
   assert.match(app, /Keep it in the trainee directory/);
