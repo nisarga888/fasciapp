@@ -41,7 +41,7 @@
     $("#agreeL").hidden = !signUpMode;
     $("#forgotWrap").hidden = signUpMode;
     $("#pw").autocomplete = signUpMode ? "new-password" : "current-password";
-    $("#joinH").textContent = signUpMode ? "Create your free account" : "Welcome back";
+    $("#joinH").textContent = "BBTRS online directory – students in training";
     try { FaCaptcha.mount("auth"); } catch (e) {}
   }
   function showForgot() {
@@ -240,8 +240,8 @@
     if (f.email.value.trim() && !email) { m.textContent = "That email doesn't look right."; return; }
     if (whatsapp && !TR.waLink(whatsapp)) { m.textContent = "Enter a WhatsApp number with the country code, for example +372 5555 1234."; return; }
     if (!email && !whatsapp) { m.textContent = "Add an email or a WhatsApp number."; return; }
-    const website = f.website.value.trim() ? TR.safeWeb(f.website.value) : "";
-    if (f.website.value.trim() && !website) { m.textContent = "That website address doesn't look right."; return; }
+    const websiteTyped = f.website.value.trim();
+    const website = websiteTyped ? (TR.safeWeb(websiteTyped) || websiteTyped) : "";
     const country = window.canonCountry ? canonCountry(f.country.value) : f.country.value.trim();
     const row = {
       user_id: me.user_id,
