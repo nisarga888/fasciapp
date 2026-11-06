@@ -190,7 +190,9 @@ test("trainee profile hub, list place pickers, and certified move stay on the no
   assert.match(app, /data-clr="city"/);
   assert.match(app, /All modalities/);
   assert.match(app, /BBTRS online/);
-  assert.match(app, /s==="bbtrs online"\?2/);
+  assert.match(app, /BBTRS in-person/);
+  assert.match(app, /s==="bbtrs online"\?1/);
+  assert.equal(app.includes("BBTRS Breathwork"), false);
   assert.match(app, /data-nav="allmod"/);
   assert.match(app, /k==="mod"/);
   assert.match(app, /sheetGeo=geoPick\(\)/);
