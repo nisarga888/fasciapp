@@ -16,6 +16,7 @@ function renderTags(){const set=[...new Set(SUG.concat(myMods))];$("#modBox").in
 function addTag(){const v=$("#modNew").value.trim().replace(/\s+/g," ");if(v&&!myMods.some(x=>x.toLowerCase()===v.toLowerCase()))myMods.push(v);$("#modNew").value="";renderTags()}
 $("#modAdd").onclick=addTag;$("#modNew").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addTag()}};
 function mappedPeople(){return all().filter(p=>pins(p).length)}
+function faModLabel(m){const s=fold(String(m||"").replace(/®/g,"")).trim();if(s==="bbtrs")return "BBTRS Breathwork";if(s==="mer")return "MER Bodywork";return String(m||"")}
 function modPinRank(m){const s=fold(String(m||"").replace(/®/g,"")).trim();
  if(s==="bbtrs"||s.startsWith("bbtrs "))return 0;
  if(s==="mer"||s==="myofascial energetic release"||s.startsWith("mer ")||s.startsWith("myofascial energetic release"))return 1;
@@ -802,13 +803,14 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   const modListRank=name=>{const s=fold(String(name||"").replace(/®/g,"")).trim();return s==="bbtrs"?0:s==="mer"?1:2};
   const modOrd=(a,b)=>modListRank(a.name)-modListRank(b.name)||a.name.localeCompare(b.name,"en",{sensitivity:"base"});
   const mods=()=>{const m=new Map();all().filter(p=>p.consent!==false&&pins(p).length).forEach(p=>(p.mods||[]).forEach(name=>{const t=String(name||"").trim();if(!t)return;const o=m.get(t)||{name:t,n:0};o.n++;m.set(t,o)}));return [...m.values()].sort(modOrd)};
-  const score=(name,q)=>{const s=fold(name);if(!q)return 0;if(s===q)return 0;if(s.startsWith(q))return 1;if(s.split(/[\s&,()\/-]+/).some(x=>x.startsWith(q)))return 2;return s.includes(q)?3:9};
+  const scoreOne=(s,q)=>{if(!q)return 0;if(s===q)return 0;if(s.startsWith(q))return 1;if(s.split(/[\s&,()\/-]+/).some(x=>x.startsWith(q)))return 2;return s.includes(q)?3:9};
+  const score=(name,q)=>{const a=scoreOne(fold(name),q),b=scoreOne(fold(faModLabel(name)),q);return a<b?a:b};
   const build=q=>{q=fold(String(q||"").trim());const allm=mods();if(!q)return allm;return allm.map(x=>({x,s:score(x.name,q)})).filter(o=>o.s<9).sort((a,b)=>a.s-b.s||modOrd(a.x,b.x)).map(o=>o.x)};
-  const row=(h,i)=>`<button type="button" data-sg="${i}"><span class="sgT"><b>${esc(h.name)}</b><small>${h.n} practitioner${h.n===1?"":"s"}</small></span></button>`;
+  const row=(h,i)=>`<button type="button" data-sg="${i}"><span class="sgT"><b>${esc(faModLabel(h.name))}</b><small>${h.n} practitioner${h.n===1?"":"s"}</small></span></button>`;
   const fitH=()=>{const vv=window.visualViewport,vh=vv?vv.height+vv.offsetTop:innerHeight,top=sg.getBoundingClientRect().top;sg.style.maxHeight=Math.max(180,Math.min(vh*0.6,vh-top-12))+"px"};
   const paint=()=>{const q=w.value.trim();const list=build(q);hits=list;sg.hidden=false;sg.innerHTML=(q?"":`<p class="sgHd">Modalities</p>`)+(list.length?list.map(row).join(""):`<p class="sgNo">No modality found</p>`);sg.scrollTop=0;requestAnimationFrame(fitH)};
   function leavePlace(){const el=qp();if(el&&el.value)el.value="";if(seeAll){seeAll=false;if(HS.length&&HS[HS.length-1]==="seeall")HS.pop()}BR=null;while(HS.length&&(HS[HS.length-1]==="region"||HS[HS.length-1]==="city"))HS.pop()}
-  window.faSetModality=function(name){const lf=$("#listFilter");if(!lf)return;name=String(name||"");if(name&&![...lf.options].some(o=>o.value===name)){const o=document.createElement("option");o.value=o.textContent=name;lf.appendChild(o)}if(name)leavePlace();lf.value=name;if(document.activeElement!==w)w.value=name;sg.hidden=true;faHLPaint();syncModFilter("listFilter");const m=document.querySelector("main");if(m)m.scrollTop=0};
+  window.faSetModality=function(name){const lf=$("#listFilter");if(!lf)return;name=String(name||"");if(name&&![...lf.options].some(o=>o.value===name)){const o=document.createElement("option");o.value=o.textContent=name;lf.appendChild(o)}if(name)leavePlace();lf.value=name;if(document.activeElement!==w)w.value=name?faModLabel(name):"";sg.hidden=true;faHLPaint();syncModFilter("listFilter");const m=document.querySelector("main");if(m)m.scrollTop=0};
   if(window.visualViewport)visualViewport.addEventListener("resize",()=>{if(!sg.hidden)fitH()});
   sg.addEventListener("touchstart",()=>{if(document.activeElement===w)w.blur()},{passive:true});
   w.addEventListener("input",()=>{paint();if(!w.value.trim()&&$("#listFilter")&&$("#listFilter").value)window.faSetModality("")});
@@ -834,7 +836,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   // MER & BBTRS always first, then the usual order
   if(here&&active)ps.sort((a,b)=>faHLCmp(a.p,b.p)||a.d-b.d);else ps.sort((a,b)=>faHLCmp(a.p,b.p)||azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
   const pp=placeParts();
-  const lstEl=$("#list");if(lstEl)lstEl.dataset.mod=mod?"1":"";const qw=$("#qWhere");if(qw&&document.activeElement!==qw)qw.value=mod||"";
+  const lstEl=$("#list");if(lstEl)lstEl.dataset.mod=mod?"1":"";const qw=$("#qWhere");if(qw&&document.activeElement!==qw)qw.value=mod?faModLabel(mod):"";
   const lc=$("#listCount");if(lc)lc.textContent=!faFresh?"":(n?`${n} practitioner${n===1?"":"s"}`:"No practitioners")+(nearScope?` ${nearScope.label}`:pp?` in ${pp.ci||pp.co}`:"");
   const clr=$("#listClear");if(clr){clr.hidden=!active;clr.textContent=nearScope?"Show all":"Clear"}
   $("#from").textContent=here&&active?"Sorted by distance from you":"";
@@ -844,7 +846,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   let top="";
   if(active){const fc=[];
    if(pp)fc.push(`<button type="button" class="fChip" data-clr="place">📍 ${esc(pp.ci?pp.ci+", "+pp.co:pp.co)} <i>✕</i></button>`);
-   if(mod)fc.push(`<button type="button" class="fChip" data-clr="mod">${esc(mod)} <i>✕</i></button>`);
+   if(mod)fc.push(`<button type="button" class="fChip" data-clr="mod">${esc(faModLabel(mod))} <i>✕</i></button>`);
    if(nameQ)fc.push(`<button type="button" class="fChip" data-clr="name">“${esc(nameQ)}” <i>✕</i></button>`);
    if(nearScope)fc.push(`<button type="button" class="fChip" data-clr="near">📍 Near me <i>✕</i></button>`);
    top=`<div class="fChips">${fc.join("")}</div>`;$("#list").dataset.br=pp?"co":"res";
@@ -1043,7 +1045,7 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
  if(k==="only"){faHLOnly=!faHLOnly;faHLPaint();syncModFilter();return}
  const lf=$("#listFilter");const next=lf&&lf.value===k?"":k;if(window.faSetModality)window.faSetModality(next);else{if(lf)lf.value=next;faHLPaint();syncModFilter()}});
 
-document.querySelectorAll('#hlChips .hlChip[data-hl]').forEach(b=>{b.innerHTML=faSeal(16)+" "+b.dataset.hl});
+document.querySelectorAll('#hlChips .hlChip[data-hl]').forEach(b=>{b.innerHTML=faSeal(16)+" "+esc(faModLabel(b.dataset.hl))});
 // v0.23.100: live network count on the welcome screen + list header (same source as the map count); hidden until data is loaded
 function faLiveCount(){const a=all().filter(p=>pins(p).length),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
  document.querySelectorAll(".liveCount").forEach(el=>{if(!a.length||!faFresh){el.hidden=true;return}el.innerHTML=`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"}`;el.hidden=false})}
