@@ -11,7 +11,7 @@ var pendingBreath=null,pendingWatch=null,MSG_OK=false,msgs=[],chatWith=null,poll
 let me=null,people=[],here=null,map,layer,threads,photoData=null,signUpMode=true,didFit=false,labelZoom=8,lastLabels=null;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const all=()=>DEMO.concat(people);
-const SUG=['MER', 'BBTRS', 'Breathwork', 'Massage', 'Craniosacral', 'Somatic therapy', 'Trauma therapy', 'Yoga'];let myMods=[];
+const SUG=['MER', 'BBTRS', 'BBTRS online', 'Breathwork', 'Massage', 'Craniosacral', 'Somatic therapy', 'Trauma therapy', 'Yoga'];let myMods=[];
 function renderTags(){const set=[...new Set(SUG.concat(myMods))];$("#modBox").innerHTML=set.map(m=>`<button type="button" class="tag${myMods.includes(m)?" on":""}" data-m="${esc(m)}">${esc(m)}</button>`).join("");$$("#modBox .tag").forEach(b=>b.onclick=()=>{const m=b.dataset.m;myMods=myMods.includes(m)?myMods.filter(x=>x!==m):myMods.concat(m);renderTags()})}
 function addTag(){const v=$("#modNew").value.trim().replace(/\s+/g," ");if(v&&!myMods.some(x=>x.toLowerCase()===v.toLowerCase()))myMods.push(v);$("#modNew").value="";renderTags()}
 $("#modAdd").onclick=addTag;$("#modNew").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addTag()}};
@@ -848,9 +848,9 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  function goPlace(v,co){const m=document.querySelector("main");fillPlaces();if(![...qp().options].some(x=>x.value===v))return false;BR=regionOf(co);savedTop=m?m.scrollTop:0;seeAll=true;hpush("seeall");setPlaceV(v);if(m)m.scrollTop=0;return true}
  window.faListHome=()=>{BR=null;seeAll=false;const nb=$("#qName");if(nb)nb.value="";const lf=$("#listFilter");if(lf)lf.value="";const el=qp();if(el)el.value="";clearGeo();const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}while(HS.length&&HS[HS.length-1]!=="sheet"&&HS[HS.length-1]!=="pe")HS.pop();try{fillPlaces()}catch(e){}renderMarkers();renderList();const m=document.querySelector("main");if(m)m.scrollTop=0};
  (function(){const w=$("#qWhere"),sg=$("#qSug");if(!w||!sg)return;let hits=[];
-  const modListRank=name=>{const s=fold(String(name||"").replace(/®/g,"")).trim();return s==="bbtrs"?0:s==="mer"?1:2};
+  const modListRank=name=>{const s=fold(String(name||"").replace(/®/g,"")).trim();return s==="bbtrs"?0:s==="mer"?1:s==="bbtrs online"?2:3};
   const modOrd=(a,b)=>modListRank(a.name)-modListRank(b.name)||a.name.localeCompare(b.name,"en",{sensitivity:"base"});
-  const mods=()=>{const m=new Map();all().filter(p=>p.consent!==false&&pins(p).length).forEach(p=>(p.mods||[]).forEach(name=>{const t=String(name||"").trim();if(!t)return;const o=m.get(t)||{name:t,n:0};o.n++;m.set(t,o)}));return [...m.values()].sort(modOrd)};
+  const mods=()=>{const m=new Map();all().filter(p=>p.consent!==false&&pins(p).length).forEach(p=>(p.mods||[]).forEach(name=>{const t=String(name||"").trim();if(!t)return;const o=m.get(t)||{name:t,n:0};o.n++;m.set(t,o)}));if(!m.has("BBTRS online"))m.set("BBTRS online",{name:"BBTRS online",n:0});return [...m.values()].sort(modOrd)};
   const scoreOne=(s,q)=>{if(!q)return 0;if(s===q)return 0;if(s.startsWith(q))return 1;if(s.split(/[\s&,()\/-]+/).some(x=>x.startsWith(q)))return 2;return s.includes(q)?3:9};
   const score=(name,q)=>{const a=scoreOne(fold(name),q),b=scoreOne(fold(faModLabel(name)),q);return a<b?a:b};
   const build=q=>{q=fold(String(q||"").trim());const allm=mods();if(!q)return allm;return allm.map(x=>({x,s:score(x.name,q)})).filter(o=>o.s<9).sort((a,b)=>a.s-b.s||modOrd(a.x,b.x)).map(o=>o.x)};
