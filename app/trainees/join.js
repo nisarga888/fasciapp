@@ -42,6 +42,7 @@
     $("#forgotWrap").hidden = signUpMode;
     $("#pw").autocomplete = signUpMode ? "new-password" : "current-password";
     $("#joinH").textContent = "BBTRS online directory – students in training";
+    const mine = $("#mineCard"); if (mine) { mine.hidden = true; mine.innerHTML = ""; }
     try { FaCaptcha.mount("auth"); } catch (e) {}
   }
   function showForgot() {
@@ -126,6 +127,26 @@
       : "Your listing goes into the public directory as soon as you save it. You can hide it later. People contact you directly. There is no booking step.";
     $("#joinH").textContent = p ? "Edit your listing" : "Your training profile";
     $("#joinLead").hidden = !!p;
+    paintMine();
+  }
+  function paintMine() {
+    const box = $("#mineCard");
+    if (!box) return;
+    if (!existing) { box.hidden = true; box.innerHTML = ""; return; }
+    const pub = existing.published !== false;
+    box.hidden = false;
+    box.innerHTML = `<b>Your listing</b><p>${TR.esc(existing.name || "Your profile")}</p><p class="muted">${pub ? "Visible in the public directory." : "Hidden from the public directory. Your details are kept."}</p><div class="trActs"><button type="button" class="gold" id="mineEdit">Edit</button><button type="button" class="ghost" id="mineHide">${pub ? "Hide" : "Publish"}</button><button type="button" class="ghost" id="mineDelete">Delete</button></div>`;
+    $("#mineEdit").onclick = () => { const f = $("#profForm"); f.hidden = false; f.scrollIntoView({block: "start"}); };
+    $("#mineHide").onclick = () => $("#hideBtn").click();
+    $("#mineDelete").onclick = () => $("#delBtn").click();
+  }
+  function goDirectory(id) {
+    const embed = new URLSearchParams(location.search).get("embed") === "1";
+    if (embed && window.parent && window.parent !== window) {
+      window.parent.location.replace("../?trainees=1" + (id ? "&id=" + encodeURIComponent(id) : ""));
+      return;
+    }
+    location.replace(id ? "./?id=" + encodeURIComponent(id) : "./");
   }
   async function enterApp(session) {
     if (nav) return;
@@ -134,7 +155,7 @@
     me = {user_id: u.id, email: u.email || ""};
     if (nextId && params.get("list") !== "1") {
       nav = true;
-      location.replace("./?id=" + encodeURIComponent(nextId));
+      goDirectory(nextId);
       return;
     }
     try { await loadMine(); }
@@ -262,7 +283,7 @@
       const {data, error} = await client().from("bbtrs_trainees").upsert(row, {onConflict: "user_id"}).select("id,published").single();
       if (error) throw error;
       m.textContent = "";
-      location.replace("./?id=" + encodeURIComponent(data.id));
+      goDirectory(data.id);
     } catch (err) { m.textContent = friendly(err); $("#saveBtn").disabled = false; busy = false; }
   };
   $("#hideBtn").onclick = async () => {
@@ -277,16 +298,23 @@
     finally { busy = false; }
   };
   $("#delBtn").onclick = async () => {
-    if (!existing || busy || !confirm("Delete your listing from the directory? Your account stays.")) return;
+    if (!existing || busy || !confirm("Delete your BBTRS online listing? Your FasciApp account stays, and your in-person practitioner listing is not affected.")) return;
     busy = true;
     try {
       const {error} = await client().from("bbtrs_trainees").delete().eq("user_id", me.user_id);
       if (error) throw error;
-      location.replace("./");
+      goDirectory("");
     } catch (err) { $("#profMsg").textContent = friendly(err); busy = false; }
   };
   $("#signOut").onclick = async () => { try { await client().auth.signOut(); } catch (e) {} me = null; existing = null; showAuth(false); };
 
+  if (new URLSearchParams(location.search).get("embed") === "1") {
+    document.body.classList.add("embed");
+    const send = () => { try { parent.postMessage({faTraineeH: Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)}, location.origin); } catch (e) {} };
+    if (window.ResizeObserver) new ResizeObserver(send).observe(document.body);
+    window.addEventListener("load", send);
+    setTimeout(send, 400);
+  }
   showAuth(false);
   fillCountries("");
   paintLangs();

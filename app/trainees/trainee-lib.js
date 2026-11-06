@@ -152,12 +152,13 @@
   function initials(name) {
     return String(name || "?").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase() || "?";
   }
-  const OFFER = "Offering a free one-hour online practice session to gain experience.";
+  const OFFER = "Practitioner in training (not yet certified) · Free one-hour online practice session";
+  const DIRECTORY_INTRO = "These are free practice sessions with BBTRS students in training. They are not yet certified practitioners.";
   const ROLE = "Practitioner in training";
   const COHORT_HELP = "Type the month and year your cohort started.";
 
   return {
-    MONTH_LABELS, ADMIN_USER_ID, LANGS, PUBLIC_COLS, MEMBER_COLS, OFFER, ROLE, COHORT_HELP,
+    MONTH_LABELS, ADMIN_USER_ID, LANGS, PUBLIC_COLS, MEMBER_COLS, OFFER, DIRECTORY_INTRO, ROLE, COHORT_HELP,
     esc, isAdminUser, parseUuid, parseCohort, cohortKeyOf, cohortText, cleanLanguages,
     safeWeb, safeMail, waLink, safePhoto, selectColumns, redact, sortTrainees, filterTrainees,
     letterOf, groupAZ, initials

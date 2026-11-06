@@ -15,7 +15,7 @@ const before = html;
 
 html = html.replace(/<a class="f fl" href="app\/assessment\.html">[\s\S]*?<\/a>\n/, "");
 html = html.replace('<p style="text-align:center;margin-top:22px"><a class="btn line" href="app/trainees/">BBTRS practitioners in training</a></p>\n ', "");
-const banner = '<a class="labBanner" href="app/trainees/"><b>BBTRS practitioners in training</b><span>Book a free one-hour online session with our practitioners in training.</span></a>\n ';
+const banner = '<a class="labBanner" href="app/?trainees=1"><b>BBTRS practitioners in training</b><span>Book a free one-hour online session with our practitioners in training.</span></a>\n ';
 if (!html.includes("Book a free one-hour online session with our practitioners in training.")) {
   const heading = '<h2 id="labH">Fascia Lab</h2>';
   if (!html.includes(heading)) throw new Error("Fascia Lab heading not found");
@@ -26,7 +26,7 @@ if (/Body assessment|app\/assessment\.html/i.test(html)) {
   throw new Error("index.html still links to Body assessment");
 }
 const labBlock = html.match(/<!--LAB:START[\s\S]*?<!--LAB:END-->/);
-if (!labBlock || !labBlock[0].includes('href="app/trainees/"')) {
+if (!labBlock || !labBlock[0].includes('href="app/?trainees=1"')) {
   throw new Error("Generated Lab block is missing the trainee directory link");
 }
 

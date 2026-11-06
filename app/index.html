@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 
-<link rel="stylesheet" href="styles.css?v=0.23.210"></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="faG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE7B5"/><stop offset=".45" stop-color="#D9B06F"/><stop offset=".7" stop-color="#C99E67"/><stop offset="1" stop-color="#8A6537"/></linearGradient><linearGradient id="faG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9B7440"/><stop offset="1" stop-color="#F6DFA9"/></linearGradient><radialGradient id="faC" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#0E4A50"/><stop offset="1" stop-color="#02191E"/></radialGradient></defs></svg>
+<link rel="stylesheet" href="styles.css?v=0.23.211"><link rel="stylesheet" href="trainees/trainees.css?v=0.23.211"></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="faG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE7B5"/><stop offset=".45" stop-color="#D9B06F"/><stop offset=".7" stop-color="#C99E67"/><stop offset="1" stop-color="#8A6537"/></linearGradient><linearGradient id="faG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9B7440"/><stop offset="1" stop-color="#F6DFA9"/></linearGradient><radialGradient id="faC" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#0E4A50"/><stop offset="1" stop-color="#02191E"/></radialGradient></defs></svg>
 <div id="demoBanner" class="banner" hidden>Demo mode: saved on this device</div>
 <section id="splash" class="screen active">
  <svg class="biglogo logoMark" width="150" height="150" aria-hidden="true" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -100,7 +100,7 @@
  <div id="count" class="count"></div><div id="leaf"></div>
  <button type="button" id="labBtn" hidden><span class="sp">✦</span>News in the Lab<span class="dot"></span></button>
 </section>
-<section id="list" class="screen"><div id="listNav" class="listNav" hidden></div><div class="brSearch"><span class="brSI" aria-hidden="true"></span><input type="search" id="qWhere" placeholder="Search country or city" aria-label="Search country or city" autocomplete="off" enterkeyhint="search"><div id="qSug" class="qSug" hidden></div></div><h2 class="listH listSlogan"><small>Worldwide community</small><span>Fascia &amp; breath connect us all</span></h2><p class="count liveCount listCountTop" hidden></p><div id="newJ" class="newJ" hidden></div>
+<section id="list" class="screen"><div id="listNav" class="listNav" hidden></div><div class="brSearch"><span class="brSI" aria-hidden="true"></span><input type="search" id="qWhere" placeholder="Search by modality" aria-label="Search by modality" autocomplete="off" enterkeyhint="search"><div id="qSug" class="qSug" hidden></div></div><div id="hlChips" class="hlChipRow"><button type="button" class="hlChip" data-hl="MER" aria-pressed="false">MER</button><button type="button" class="hlChip" data-hl="BBTRS" aria-pressed="false">BBTRS</button></div><h2 class="listH listSlogan"><small>Worldwide community</small><span>Fascia &amp; breath connect us all</span></h2><p class="count liveCount listCountTop" hidden></p><div id="newJ" class="newJ" hidden></div>
  <div id="listSearch" class="listSearch">
   <input type="search" id="qName" placeholder="Search by name" aria-label="Search by name" autocomplete="off" enterkeyhint="search">
   <select id="qPlace" aria-label="Location"><option value="">All locations</option></select>
@@ -113,8 +113,9 @@
    </span>
   </div>
  </div>
- <p id="from" class="muted"></p><div id="hlChips" class="hlChipRow"><button type="button" class="hlChip" data-hl="MER">MER</button><button type="button" class="hlChip" data-hl="BBTRS">BBTRS</button></div><div id="items"></div></section>
+ <p id="from" class="muted"></p><div id="items"></div></section>
 <section id="profile" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><h2>My practitioner profile</h2>
+ <a class="bbtrsEntry" href="?trainees=mine"><b>My BBTRS online profile</b><small>Edit, hide or delete your in-training listing</small></a>
  <button type="button" id="logCard" class="card logCard" data-go="log" hidden><span class="lcTop"><b>Session log</b><span class="lcOpen">Open ›</span></span><span class="lcRow"><b id="lcNum">0 / 70</b><small id="lcSub" class="muted"></small></span><span class="pbar"><span id="lcFill"></span></span></button>
  <div id="needLogin" class="card center" hidden><p>Sign in or create an account to add yourself to the map.</p><button class="gold big1" data-go="auth">Sign in / Create account</button></div>
  <div id="profView" hidden></div>
@@ -137,7 +138,9 @@
   <button type="button" id="pOut" class="ghost">Log out</button>
  </form>
 </section>
-<section id="learn" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><div class="quoteSlot"></div><a class="labBanner" href="trainees/"><b>BBTRS practitioners in training</b><span>Book a free one-hour online session with our practitioners in training.</span></a><h2 id="learnH">Fascia Lab</h2><p class="muted">Your free space to explore: guided breathing practices, videos, books, live sessions, meditations and more.</p><div id="learnList"></div></section>
+<section id="learn" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><div class="quoteSlot"></div><a class="labBanner" href="?trainees=1"><b>BBTRS practitioners in training</b><span>Book a free one-hour online session with our practitioners in training.</span></a><h2 id="learnH">Fascia Lab</h2><p class="muted">Your free space to explore: guided breathing practices, videos, books, live sessions, meditations and more.</p><div id="learnList"></div></section>
+<section id="bbtrs" class="screen"><button type="button" class="back mapBack" data-go="learn">← Lab</button><h2 id="bbtrsH">BBTRS online practitioners in training</h2><p class="trOffer"><b>Practitioner in training (not yet certified) · Free one-hour online practice session</b></p><p class="muted">These are free practice sessions with BBTRS students in training. They are not yet certified practitioners. People contact them directly by WhatsApp or email.</p><div id="trApp"><p class="muted">Loading…</p></div></section>
+<section id="bbtrsMe" class="screen"><button type="button" class="back mapBack" data-go="profile">← My profile</button><iframe id="bbtrsFrame" class="bbtrsFrame" title="My BBTRS online profile"></iframe></section>
 <section id="inbox" class="screen"><button type="button" class="back mapBack" data-go="map">← Map</button><h2>Messages</h2><div id="convs"></div></section>
 <div id="chat" class="chat" hidden><div class="chatH"><div class="chatT"><b id="chatName"></b><small class="chatSub">Message in FasciApp · replies arrive in your Inbox</small></div><button type="button" id="chatX" class="ghost sm" aria-label="Close">✕</button></div>
  <div id="chatLog" class="chatLog"></div><form id="chatForm" class="chatF"><textarea id="chatTxt" rows="1" maxlength="1000" placeholder="Message…" enterkeyhint="send" autocomplete="off"></textarea><button class="gold chatSend" aria-label="Send message"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button></form><p id="chatErr" class="msg"></p></div>
@@ -238,7 +241,7 @@
 
 <script src="config.js?v=0.23.100"></script><script src="track.js?v=0.23.124"></script>
 <script src="vendor/supabase-js-2.118.0.min.js"></script><script>window.supabase||document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"><\/script>')</script>
-<script src="learn.js?v=0.23.192"></script><script src="news.js?v=0.23.194"></script><script src="quotes.js?v=0.23.71"></script><script src="captcha.js?v=0.23.193"></script><script src="data.js?v=0.23.193"></script><script src="breath.js?v=0.23.113"></script><script src="app.js?v=0.23.210"></script><script src="cal.js?v=0.23.198"></script><script src="admin.js?v=0.23.186"></script>
+<script src="learn.js?v=0.23.211"></script><script src="news.js?v=0.23.194"></script><script src="quotes.js?v=0.23.71"></script><script src="captcha.js?v=0.23.193"></script><script src="data.js?v=0.23.193"></script><script src="breath.js?v=0.23.113"></script><script src="app.js?v=0.23.211"></script><script src="trainees/trainee-lib.js?v=0.23.211"></script><script src="trainees/directory.js?v=0.23.211"></script><script src="cal.js?v=0.23.198"></script><script src="admin.js?v=0.23.186"></script>
 <script>
 if("serviceWorker" in navigator&&navigator.serviceWorker){
   // Never reload while the user is using the app: apply a new version only when the app is in the background or on next open.
