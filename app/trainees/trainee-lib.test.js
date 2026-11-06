@@ -191,7 +191,8 @@ test("trainee profile hub, list place pickers, and certified move stay on the no
   assert.match(app, /All modalities/);
   assert.match(app, /BBTRS online/);
   assert.match(app, /BBTRS in-person/);
-  assert.match(app, /s==="bbtrs online"\?1/);
+  assert.match(app, /s==="bbtrs online"\?1:s==="mer"\?2/);
+  assert.match(app, /function faModSort/);
   assert.equal(app.includes("BBTRS Breathwork"), false);
   assert.match(app, /data-nav="allmod"/);
   assert.match(app, /k==="mod"/);
