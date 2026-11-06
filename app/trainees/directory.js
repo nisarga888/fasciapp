@@ -60,11 +60,10 @@
     return `<button type="button" class="back" id="trBack">← Directory</button>
     <article class="card trHero">
       ${photoHTML(p, "trPh")}
-      <span class="trIn">IN TRAINING</span>${p.is_test ? ` <i class="trTest">TEST</i>` : ""}
+      <span class="trIn">IN TRAINING</span>
       <h2>${TR.esc(p.name)}</h2>
       <p class="trOffer">${TR.esc(TR.OFFER)}</p>
       ${p.published === false ? `<p class="trHidden">Hidden from the public directory</p>` : ""}
-      ${p.is_test ? `<p class="trHint">TEST listing. Not an account.</p>` : ""}
       <ul class="trFacts">
         <li><b>Cohort started</b> · ${TR.esc(TR.cohortText(p) || "—")}</li>
         <li><b>Languages</b> · ${langs || "—"}</li>
@@ -83,7 +82,9 @@
   }
   function gridCard(p) {
     const pic = p.photo ? `<img src="${TR.esc(p.photo)}" alt="">` : `<span class="ptFb">${TR.esc(TR.initials(p.name))}</span>`;
-    return `<button type="button" class="ptT" data-id="${TR.esc(p.id)}" aria-label="${TR.esc(p.name)}, in training">${pic}<span class="trIn">IN TRAINING</span>${p.is_test ? `<span class="trTestMark">TEST</span>` : ""}<span class="ptOv"><b>${TR.esc(p.name)}</b></span></button>`;
+    const cohort = TR.cohortText(p);
+    const langs = (p.languages || []).filter(Boolean).join(", ");
+    return `<button type="button" class="ptT" data-id="${TR.esc(p.id)}" aria-label="${TR.esc(p.name)}, in training">${pic}<span class="trIn">IN TRAINING</span><span class="trOnline">BBTRS online</span><span class="ptOv"><b>${TR.esc(p.name)}</b>${cohort ? `<small>Cohort: ${TR.esc(cohort)}</small>` : ""}${langs ? `<small>${TR.esc(langs)}</small>` : ""}</span></button>`;
   }
   function listView(q) {
     const shown = TR.sortTrainees(TR.filterTrainees(raw, {cohort: q.cohort, lang: q.lang}));
@@ -96,8 +97,8 @@
     const langs = [...new Set(langRows.flatMap(r => r.languages || []))].sort((a, b) => a.localeCompare(b, "en"));
     const admin = me && TR.isAdminUser(me.user_id) && !previewNote ? adminList() : "";
     return `${previewNote ? `<p class="trHint">${TR.esc(previewNote)}</p>` : ""}<div class="trFilters trFilters2">
-      <select id="fCohort" aria-label="Cohort">${opts(cohorts, q.cohort, "All cohorts")}</select>
-      <select id="fLang" aria-label="Language spoken">${opts(langs.map(c => ({value: c, label: c})), q.lang, "All languages")}</select>
+      <select id="fCohort" aria-label="Cohort">${opts(cohorts, q.cohort, "Cohort")}</select>
+      <select id="fLang" aria-label="Language">${opts(langs.map(c => ({value: c, label: c})), q.lang, "Language")}</select>
     </div>
     <p class="trCount muted">${shown.length ? `${shown.length} practitioner${shown.length === 1 ? "" : "s"} in training` : "No practitioners in training match these filters."}</p>
     <div class="ptGrid trGrid">${shown.map(gridCard).join("")}</div>
@@ -107,7 +108,7 @@
   }
   function adminList() {
     const rows = raw.slice().sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")));
-    return `<section class="trAdmin"><b>Review</b><p class="muted">Only you see this. New listings are already public.</p>${rows.map(p => `<div class="trCard"><span><b>${TR.esc(p.name)}</b><small>${p.published === false ? "Hidden" : "Public"} · ${p.reviewed_at ? "Reviewed" : "Not reviewed"} · ${TR.esc(p.country || "")}</small>${adminButtons(p)}</span></div>`).join("") || `<p class="muted">No listings.</p>`}</section>`;
+    return `<section class="trAdmin"><b>Review</b><p class="muted">Only you see this. New listings are already public.</p>${rows.map(p => `<div class="trCard"><span><b>${TR.esc(p.name)}</b><small>${p.published === false ? "Hidden" : "Public"}${p.is_test ? " · TEST" : ""} · ${p.reviewed_at ? "Reviewed" : "Not reviewed"}</small>${adminButtons(p)}</span></div>`).join("") || `<p class="muted">No listings.</p>`}</section>`;
   }
   function render() {
     const q = query();

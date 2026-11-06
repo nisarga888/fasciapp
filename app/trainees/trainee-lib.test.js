@@ -52,6 +52,8 @@ test("logged-out visitors do not receive direct contact details", () => {
   assert.equal(mem.email, "ana@example.com");
   assert.equal(TR.waLink(mem.whatsapp), "https://wa.me/46701234567");
   assert.equal(TR.safeWeb("https://example.com/a"), "https://example.com/a");
+  assert.equal(TR.safeWeb("www.nisarga8.com"), "https://www.nisarga8.com/");
+  assert.equal(TR.safeWeb("nisarga8.com"), "https://nisarga8.com/");
   assert.equal(TR.safeWeb("javascript:alert(1)"), "");
 });
 
@@ -75,9 +77,21 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   assert.equal(tile.includes("trainees/"), false);
   const page = fs.readFileSync(path.join(__dirname, "index.html"), "utf8");
   assert.match(page, /<h1>BBTRS online practitioners in training<\/h1>/);
-  assert.equal(fs.readFileSync(path.join(__dirname, "directory.js"), "utf8").includes("fCountry"), false);
+  assert.match(join, /name="website" type="text" inputmode="url"/);
+  assert.equal(join.includes('type="url"'), false);
+  assert.match(fs.readFileSync(path.join(__dirname, "../index.html"), "utf8"), /name="website" type="text" inputmode="url"/);
+  const cards = fs.readFileSync(path.join(__dirname, "directory.js"), "utf8");
+  assert.equal(cards.includes("fCountry"), false);
+  assert.match(cards, /"Cohort"/);
+  assert.match(cards, /"Language"/);
+  assert.match(cards, /BBTRS online/);
+  assert.match(cards, /Cohort: /);
+  assert.equal(cards.includes("trTestMark"), false);
   assert.match(join, /id="profForm" class="card" hidden/);
-  assert.match(join, /Already have a FasciApp account\? Log in\./);
+  assert.match(join, /BBTRS online directory – students in training/);
+  assert.match(join, /in-person practitioner directory/);
+  assert.match(join, /Already have a FasciApp account\? Just log in/);
+  assert.equal(join.includes("trLogin"), false);
   const sql = fs.readFileSync(path.join(__dirname, "../../supabase/migrations/20261105163000_bbtrs_trainees.sql"), "utf8");
   assert.match(sql, /published := true/);
   const grant = sql.match(/grant select \(([\s\S]*?)\) on table public\.bbtrs_trainees to anon/i);
