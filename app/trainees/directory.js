@@ -3,7 +3,17 @@
   const app = document.getElementById("trApp");
   if (!app || !TR) return;
   let raw = [], me = null, sb = null, previewNote = "";
-  let cur = {list: [], i: 0};
+  let cur = {list: [], i: 0}, sheetPushed = false, listScroll = 0;
+  function saveListScroll() {
+    const m = document.querySelector("main");
+    listScroll = m ? m.scrollTop : 0;
+  }
+  function restoreListScroll() {
+    const m = document.querySelector("main");
+    const y = listScroll;
+    if (!m) return;
+    requestAnimationFrame(() => { m.scrollTop = y; });
+  }
 
   function shell() { return !!document.getElementById("tabs"); }
   function client() {
@@ -127,7 +137,7 @@
     sh.id = "trSheet";
     sh.className = "ptSheet";
     sh.hidden = true;
-    sh.innerHTML = `<div class="ptDim"></div><div class="ptBox" role="dialog" aria-modal="true" aria-label="Practitioner in training"><div class="ptTop"><button type="button" class="ptBk"><b>‹</b> <span>Directory</span></button><button type="button" class="ptX" aria-label="Close">✕</button></div><div class="ptScroll"></div></div>`;
+    sh.innerHTML = `<div class="ptDim"></div><div class="ptBox" role="dialog" aria-modal="true" aria-label="Practitioner in training"><div class="ptTop"><button type="button" class="ptBk ptBackRes"><b>←</b> <span>Back to results</span></button><button type="button" class="ptX" aria-label="Close">✕</button></div><div class="ptScroll"></div></div>`;
     document.body.appendChild(sh);
     sh.addEventListener("click", onSheetClick);
     const box = sh.querySelector(".ptBox");
@@ -181,7 +191,11 @@
       list = [p];
       i = 0;
     }
+    const sh0 = document.getElementById("trSheet");
+    if (!sh0 || sh0.hidden) saveListScroll();
     cur = {list, i};
+    if (mode === "push") sheetPushed = true;
+    if (mode === "replace") sheetPushed = false;
     if (mode) {
       q.id = id;
       q.rawId = id;
@@ -192,6 +206,8 @@
   }
   function closeSheet(mode) {
     const sh = document.getElementById("trSheet");
+    const wasOpen = sh && !sh.hidden;
+    sheetPushed = false;
     if (sh) sh.hidden = true;
     const pt = document.getElementById("ptSheet");
     if (!pt || pt.hidden) document.body.classList.remove("ptOpen");
@@ -201,6 +217,15 @@
       q.rawId = "";
       writeQuery(q, mode);
     }
+    if (wasOpen) restoreListScroll();
+  }
+  function requestClose() {
+    if (sheetPushed) {
+      sheetPushed = false;
+      history.back();
+      return;
+    }
+    closeSheet(query().id ? "replace" : false);
   }
   function step(k) {
     if (cur.list.length < 2) return;
@@ -219,7 +244,7 @@
   }
   async function onSheetClick(e) {
     const t = e.target;
-    if (t.closest(".ptX") || t.closest(".ptBk") || t.classList.contains("ptDim")) { closeSheet("push"); return; }
+    if (t.closest(".ptX") || t.closest(".ptBk") || t.classList.contains("ptDim")) { requestClose(); return; }
     if (t.closest(".ptPrev")) { step(-1); return; }
     if (t.closest(".ptNext")) { step(1); return; }
     if (t.closest(".ptMore")) { const b = t.closest(".ptSheet").querySelector(".ptBio"); if (b) b.classList.add("open"); t.closest(".ptMore").hidden = true; return; }
