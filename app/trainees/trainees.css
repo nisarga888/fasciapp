@@ -43,6 +43,9 @@ a.gold.big1,button.gold.big1{display:block;width:100%;text-align:center;text-dec
 .trAdd{display:flex;gap:8px}
 .trAdd input{flex:1;min-width:0}
 .trHint{margin:0;color:var(--mut);font-size:13px}
+.trSwitch{text-align:center;margin:2px 0 10px}
+.trSwitch button{border:0;background:none;color:#5FC9C3;font:inherit;font-size:15px;text-decoration:underline;padding:8px;cursor:pointer}
+.trNotYou{border:0;background:none;color:#5FC9C3;font:inherit;font-size:13px;text-decoration:underline;padding:0 0 0 8px;cursor:pointer}
 .trAdmin{margin-top:22px;padding-top:12px;border-top:1px solid #c99e6733}
 .trAdmin .trCard{cursor:default}
 .trRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}

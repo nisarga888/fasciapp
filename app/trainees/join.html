@@ -7,22 +7,23 @@
 <meta name="theme-color" content="#02191E">
 <link rel="icon" href="../favicon-32-v4.png" type="image/png" sizes="32x32">
 <link rel="stylesheet" href="../styles.css?v=0.23.211">
-<link rel="stylesheet" href="trainees.css?v=0.23.218">
+<link rel="stylesheet" href="trainees.css?v=0.23.221">
 <script>if(!/[?&]embed=1(?:&|$)/.test(location.search)){var q=location.search.replace(/^\?/,"");location.replace("../?trainees=mine"+(q?"&"+q:"")+location.hash)}</script>
 </head><body class="tr">
 <div class="trTop"><a class="brand" href="./">Fasci<span>App</span></a><nav><a href="./">Directory</a><a href="../?join=1">Practitioner map</a></nav></div>
-<h1 id="joinH">BBTRS online directory – students in training</h1>
-<p class="trOffer" id="joinLead">This is the BBTRS online directory for practitioners in training. It is separate from the <a href="../?search=1">in-person practitioner directory</a>. Already have a FasciApp account? Just log in – your BBTRS online in-training profile is saved on that same account, so you can edit it anytime. New here? Create an account first. Listings publish as soon as you save; people contact you by WhatsApp or email.</p>
+<h1 id="joinH">Create your FasciApp account</h1>
+<p class="trOffer" id="joinLead">BBTRS online directory – students in training. Create an account, then add your listing. This is separate from the <a href="../?search=1">in-person practitioner directory</a>. Your listing publishes as soon as you save.</p>
 <div id="mineCard" class="trMine" hidden></div>
 <div id="authBox">
-  <div class="seg"><button id="tabIn" class="on" type="button">Log in</button><button id="tabUp" type="button">Create account</button></div>
+  <div class="seg"><button id="tabUp" class="on" type="button">Create account</button><button id="tabIn" type="button">Log in</button></div>
+  <p class="trSwitch"><button type="button" id="switchAuth">Already have an account? Log in</button></p>
   <form id="authForm" class="card" method="post" action="#">
     <label class="lbl">Email<input id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false" required></label>
     <label class="lbl" id="pwL">Password<input id="pw" name="password" type="password" autocomplete="new-password" required minlength="6" placeholder="at least 6 characters"></label>
     <p id="forgotWrap" class="muted" hidden><a href="#" id="forgotLink">Forgot password?</a></p>
     <label class="consent" id="agreeL"><input type="checkbox" id="agree"> I'm 18+ and accept the <a href="../../terms.html" target="_blank" rel="noopener">Terms</a> and <a href="../../privacy.html" target="_blank" rel="noopener">Privacy Policy</a></label>
     <div id="tsAuth" class="tsBox" aria-label="Security check"></div>
-    <button id="authBtn" class="gold big1">Log in</button>
+    <button id="authBtn" class="gold big1">Create your FasciApp account</button>
     <p id="authMsg" class="msg" role="status"></p>
   </form>
   <form id="forgotForm" class="card" hidden>
@@ -44,7 +45,7 @@
 
 <form id="profForm" class="card" hidden>
   <p class="trHint">You are signed in. This profile is stored on your account. Contact details are saved in the database and shown only to signed-in visitors.</p>
-  <p id="who" class="muted"></p>
+  <p id="whoLine" class="muted"><span id="who"></span> <button type="button" id="notYou" class="trNotYou">Not you? Sign out</button></p>
   <div class="ph"><img id="phPrev" class="av big" alt="" hidden><label class="phbtn">Add profile photo<input id="photo" type="file" accept="image/*" hidden></label></div>
   <label class="lbl">Full name<input name="name" required maxlength="80" autocomplete="name" placeholder="First and last name"></label>
   <label class="lbl">Country<select name="country" id="country" required><option value="">Country</option></select></label>
@@ -71,5 +72,5 @@
 <script src="../captcha.js?v=0.23.193"></script>
 <script src="../data.js?v=0.23.193"></script>
 <script src="trainee-lib.js?v=0.23.211"></script>
-<script src="join.js?v=0.23.218"></script>
+<script src="join.js?v=0.23.221"></script>
 </body></html>
