@@ -97,7 +97,7 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
 window.show=show;function show(t){if(window.faSheetClose)faSheetClose();try{const u=new URL(location.href);if(u.searchParams.has("trainees")&&t!=="bbtrs"&&t!=="bbtrsMe"&&u.searchParams.get("reset")!=="1"){["trainees","next","list","id","cohort","lang"].forEach(k=>u.searchParams.delete(k));history.replaceState({},"",u.pathname+u.search+u.hash)}}catch(e){}if((t==="map"||t==="list")&&window.faJoinUpd)faJoinUpd();$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||((t==="log"||t==="cal"||t==="clients"||t==="bbtrsMe")&&b.dataset.t==="profile")||(t==="bbtrs"&&b.dataset.t==="learn")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
 let showT=null;function afterShow(t){try{if(t==="scan")scanLoad();if(t==="profile"){setTimeout(scanPlansCard,300);setTimeout(()=>window.faProfShown&&faProfShown(),400)}if(t==="cal"&&window.faCalLoad)faCalLoad();if(window.faRemCheck)setTimeout(faRemCheck,500);if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
- if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
+ if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){faBbtrsCard(false);$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox();if(t==="bbtrs"&&window.faTraineeRefresh)window.faTraineeRefresh();if(t==="bbtrsMe")traineeFrame()}catch(e){console.warn(e)}}
 function hdr(){document.body.classList.toggle("authed",!!me);if(window.faJoinUpd)faJoinUpd();{const lb=$("#labBtn");if(lb)lb.hidden=!!me}$("#tabInbox").hidden=!MSG_ON;{let ad=false;try{ad=isAdmin()}catch(e){}const ts=$("#tabScan");if(ts)ts.hidden=false;const pl=document.querySelector('#tabs [data-t="profile"] span');if(pl)pl.textContent=ad?"Profile":"My profile";}$("#hEdit").hidden=!me;$("#hOut").hidden=!me;$("#hIn").hidden=!!me}
 // v0.23.100: the people cache lives in IndexedDB. The old localStorage snapshot (fa_people_v1) outgrew Safari's ~5 MB quota
@@ -122,7 +122,7 @@ const logoHome=$("#logoHome");if(logoHome)logoHome.onclick=()=>show("splash");
 $$("nav button").forEach(b=>b.onclick=()=>{if(b.dataset.t==="list"&&$("#list").classList.contains("active")&&window.faListHome){faListHome();return}show(b.dataset.t)});
 $("#hIn").onclick=()=>{fillLastEmail();show("auth")};
 $("#hEdit").onclick=async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(me)show("profile");else{fillLastEmail();show("auth")}};
-async function logout(){closeChat();if(unsub){unsub();unsub=null}msgUid=null;me=null;msgs=[];sess=[];sessLoaded=false;photoData=null;hdr();show("splash");$("#unread").hidden=true;DB.signOut().catch(()=>{}).then(()=>refresh())}
+async function logout(){closeChat();if(unsub){unsub();unsub=null}msgUid=null;me=null;msgs=[];sess=[];sessLoaded=false;photoData=null;faBbtrsCard(false);hdr();show("splash");$("#unread").hidden=true;DB.signOut().catch(()=>{}).then(()=>refresh())}
 $("#hOut").onclick=logout;$("#pOut").onclick=logout;
 
 // auth
@@ -403,9 +403,11 @@ function renderList(){renderNewJ();const ps=filtered().filter(p=>!nearScope||nea
 
 // profile
 let profEdit=false,wantForm=false;
-async function loadProf(){await fillProf();if(!me)return;const p=await DB.mine().catch(()=>null);const has=!!(p&&(p.name||p.address||p.city));const v=$("#profView"),f=$("#profForm");$("#pCancel").hidden=false;if(has)logCard();else $("#logCard").hidden=true;{const h=document.querySelector("#profile h2");if(h)h.textContent=(!has&&!profEdit)?"My profile":"My practitioner profile"}
- v.dataset.listed=has?"1":"0";v.dataset.traineeHub="";
- if(!has&&!profEdit){let own=null;try{const row=await (window.faTraineeRow?faTraineeRow():null);own=row&&me&&String(row.user_id||"")===String(me.user_id)&&!row.is_test?row:null}catch(e){own=null}const photo=own&&window.FA_TR&&FA_TR.safePhoto?FA_TR.safePhoto(own.photo):"";if(own)v.dataset.traineeHub="1";profViewB({name:own?String(own.name||"").trim():"",practice_name:"",city:"",country:"",address:"",bio:"",phone:"",email:"",website:"",website2:"",instagram:"",mods:[],locations:[],photo:photo||null,consent:false,whatsapp:false,news_optin:!!(me&&me.news_optin)},v,f);return}
+function faBbtrsCard(on){const el=document.querySelector(".bbtrsEntry");if(el)el.hidden=!on}
+async function faOwnTrainee(){let row=null;try{row=await (window.faTraineeRow?faTraineeRow():null)}catch(e){row=null}return row&&me&&String(row.user_id||"")===String(me.user_id)&&!row.is_test?row:null}
+async function loadProf(){await fillProf();if(!me){faBbtrsCard(false);return}const p=await DB.mine().catch(()=>null);const has=!!(p&&(p.name||p.address||p.city));const own=await faOwnTrainee();faBbtrsCard(!!own);const v=$("#profView"),f=$("#profForm");$("#pCancel").hidden=false;if(has)logCard();else $("#logCard").hidden=true;{const h=document.querySelector("#profile h2");if(h)h.textContent=(!has&&!profEdit)?"My profile":"My practitioner profile"}
+ v.dataset.listed=has?"1":"0";v.dataset.traineeHub=own&&!has?"1":"";
+ if(!has&&!profEdit){const photo=own&&window.FA_TR&&FA_TR.safePhoto?FA_TR.safePhoto(own.photo):"";profViewB({name:own?String(own.name||"").trim():"",practice_name:"",city:"",country:"",address:"",bio:"",phone:"",email:"",website:"",website2:"",instagram:"",mods:[],locations:[],photo:photo||null,consent:false,whatsapp:false,news_optin:!!(me&&me.news_optin)},v,f);return}
  if(has&&!profEdit){profViewB(p,v,f);return}
  else{v.hidden=true;f.hidden=false;if(faMoveRow){const row=faMoveRow;faMoveRow=null;faApplyTrainee(row);const st=$("#status");if(st)st.textContent="We filled in your BBTRS online listing. Add the address for your map pin, then save."}}}
 async function fillProf(){waTouched=false;$("#needLogin").hidden=!!me;$("#profForm").hidden=!me;if(!me)return;myMods=[];renderTags();setExtra([]);$("#who").textContent="Signed in as "+me.email;
