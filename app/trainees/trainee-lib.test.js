@@ -98,7 +98,10 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   assert.match(join, /id="profForm" class="card" hidden/);
   assert.match(join, /BBTRS online directory – students in training/);
   assert.match(join, /in-person practitioner directory/);
-  assert.match(join, /Already have a FasciApp account\? Just log in/);
+  assert.match(join, /Create your FasciApp account/);
+  assert.match(join, /Already have an account\? Log in/);
+  assert.match(join, /Not you\? Sign out/);
+  assert.match(join, /id="profForm" class="card" hidden/);
   assert.equal(join.includes("trLogin"), false);
   const sql = fs.readFileSync(path.join(__dirname, "../../supabase/migrations/20261105163000_bbtrs_trainees.sql"), "utf8");
   assert.match(sql, /published := true/);

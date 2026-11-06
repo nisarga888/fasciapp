@@ -37,11 +37,13 @@
     $("#resetForm").hidden = true;
     $("#tabUp").classList.toggle("on", signUpMode);
     $("#tabIn").classList.toggle("on", !signUpMode);
-    $("#authBtn").textContent = signUpMode ? "Create account" : "Log in";
+    $("#authBtn").textContent = signUpMode ? "Create your FasciApp account" : "Log in";
+    const sw = $("#switchAuth"); if (sw) sw.textContent = signUpMode ? "Already have an account? Log in" : "New here? Create an account";
+    $("#joinH").textContent = signUpMode ? "Create your FasciApp account" : "Log in";
     $("#agreeL").hidden = !signUpMode;
     $("#forgotWrap").hidden = signUpMode;
     $("#pw").autocomplete = signUpMode ? "new-password" : "current-password";
-    $("#joinH").textContent = "BBTRS online directory – students in training";
+    const lead = $("#joinLead"); if (lead) lead.hidden = false;
     const mine = $("#mineCard"); if (mine) { mine.hidden = true; mine.innerHTML = ""; }
     try { FaCaptcha.mount("auth"); } catch (e) {}
   }
@@ -126,7 +128,7 @@
       ? "Your listing is hidden. Save changes, then publish it when you want it in the directory."
       : "Your listing goes into the public directory as soon as you save it. You can hide it later. People contact you directly. There is no booking step.";
     $("#joinH").textContent = p ? "Edit your listing" : "Your training profile";
-    $("#joinLead").hidden = !!p;
+    if ($("#joinLead")) $("#joinLead").hidden = true;
     paintMine();
   }
   function paintMine() {
@@ -171,6 +173,7 @@
 
   $("#tabUp").onclick = () => showAuth(true);
   $("#tabIn").onclick = () => showAuth(false);
+  const switchAuth = $("#switchAuth"); if (switchAuth) switchAuth.onclick = () => showAuth(!signUpMode);
   $("#forgotLink").onclick = e => { e.preventDefault(); showForgot(); };
   $("#forgotBack").onclick = () => showAuth(false);
   $("#langBox").onclick = e => { const b = e.target.closest("[data-lang]"); if (b) toggleLang(b.dataset.lang); };
@@ -194,7 +197,7 @@
     try {
       const token = await capTok("auth");
       if (signUpMode) {
-        const redirect = location.origin + "/app/trainees/join.html" + (location.search || "?list=1");
+        const redirect = location.origin + "/app/trainees/join.html?list=1";
         const su = await client().auth.signUp({email: em, password: pw, options: {captchaToken: token, emailRedirectTo: redirect, data: {signup_source: "bbtrs_trainee", news_optin: false}}});
         if (su.error && /already registered|already exists/i.test(su.error.message || "")) {
           showAuth(false);
@@ -210,7 +213,7 @@
           return;
         }
         if (su.error) throw su.error;
-        if (!su.data.session) { m.textContent = "Almost done. We sent a confirmation link to " + em + ". Open it to activate your account (check spam too), then sign in."; return; }
+        if (!su.data.session) { m.textContent = "Almost done. We sent a confirmation link to " + em + ". Open it (check spam too). It brings you back here, and then you can add your listing."; return; }
         await enterApp(su.data.session);
       } else {
         const r = await client().auth.signInWithPassword({email: em, password: pw, options: {captchaToken: token}});
@@ -310,7 +313,9 @@
       goDirectory("");
     } catch (err) { $("#profMsg").textContent = friendly(err); busy = false; }
   };
-  $("#signOut").onclick = async () => { try { await client().auth.signOut(); } catch (e) {} me = null; existing = null; showAuth(false); };
+  async function signOutNow() { try { await client().auth.signOut(); } catch (e) {} me = null; existing = null; photoData = null; showAuth(true); }
+  $("#signOut").onclick = signOutNow;
+  const notYou = $("#notYou"); if (notYou) notYou.onclick = signOutNow;
 
   if (new URLSearchParams(location.search).get("embed") === "1") {
     document.body.classList.add("embed");
@@ -319,7 +324,7 @@
     window.addEventListener("load", send);
     setTimeout(send, 400);
   }
-  showAuth(false);
+  showAuth(true);
   fillCountries("");
   paintLangs();
   client().auth.onAuthStateChange((event, session) => {
