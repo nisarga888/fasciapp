@@ -81,7 +81,7 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   assert.equal(appHtml.includes("Search by name"), false);
   assert.match(appHtml, /id="listFilter"/);
   assert.match(appHtml, /Practitioner in training \(not yet certified\)/);
-  assert.match(appHtml, /Book a free one-hour online session with our practitioners in training\./);
+  assert.match(appHtml, /Book a free or highly discounted one-hour online session with our practitioners in training\./);
   const tile = app.slice(app.indexOf("function labTiles"), app.indexOf("function labView"));
   assert.equal(/assessment/i.test(tile), false);
   assert.equal(tile.includes("trainees/"), false);
@@ -123,7 +123,7 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   assert.equal(/jwt\(\) ->> 'email'/.test(sql), false);
   assert.equal(TR.isAdminUser("fea03ec6-5408-494d-8848-228c34f357de"), true);
   assert.equal(TR.isAdminUser("00000000-0000-4000-8000-000000000000"), false);
-  assert.equal(TR.OFFER, "Practitioner in training (not yet certified) · Free one-hour online practice session");
+  assert.equal(TR.OFFER, "Practitioner in training (not yet certified) · Free or highly discounted one-hour online practice session");
   const learn = fs.readFileSync(path.join(__dirname, "../learn.js"), "utf8");
   for (const id of ["VlmuwJ4YY2E", "eqYR06lr_Ds", "eMPur7v8kGI", "-MOH7AELIQQ", "GGTT3Bpyjjk"]) assert.match(learn, new RegExp(id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(learn, /with Jennifer McKeever/);
@@ -152,7 +152,7 @@ test("pages use the dedicated trainee route and do not add a booking flow", () =
   const lab = landing.match(/<!--LAB:START[\s\S]*?<!--LAB:END-->/);
   assert.ok(lab, "landing Lab block");
   assert.match(lab[0], /href="app\/\?trainees=1"/);
-  assert.match(lab[0], /Book a free one-hour online session with our practitioners in training\./);
+  assert.match(lab[0], /Book a free or highly discounted one-hour online session with our practitioners in training\./);
   assert.equal(/Body assessment|app\/assessment\.html/i.test(landing), false);
   assert.match(landing, /Biodynamic Breathwork practitioners in training/);
   const copy = fs.readFileSync(path.join(__dirname, "../../supabase/migrations/20261105180000_bbtrs_trainees_test_from_practitioners.sql"), "utf8");
