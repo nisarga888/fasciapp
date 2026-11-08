@@ -253,7 +253,12 @@ test("list modality buttons explain BBTRS and MER and do not filter search", () 
   assert.match(strip, /@fasciapp\.app · Reels &amp; updates/);
   assert.match(strip, />Visit </);
   assert.equal(/facebook|instagram\.com\/embed|iframe/i.test(strip), false);
-  assert.ok(html.indexOf('class="igInvite"') > html.indexOf('id="hlChips"'));
-  assert.ok(html.indexOf('class="igInvite"') < html.indexOf('id="items"'));
+  const listTop = html.slice(html.indexOf('id="list"'), html.indexOf('id="items"'));
+  const order = ["id=\"listNav\"", "id=\"hlChips\"", "class=\"igInvite\"", "id=\"qWhere\""];
+  order.reduce((at, key) => {
+    const n = listTop.indexOf(key);
+    assert.ok(n > at, key + " stays in list order");
+    return n;
+  }, -1);
   assert.equal(html.slice(0, html.indexOf("<main>")).includes('class="igInvite"'), false);
 });
