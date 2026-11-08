@@ -1099,13 +1099,26 @@ function faSeal(s){return `<svg class="bSeal" width="${s}" height="${s}" viewBox
 function faLaurel(s){let L="";const lf=(x,y,a)=>`<ellipse cx="${x}" cy="${y}" rx="4.2" ry="1.9" transform="rotate(${a} ${x} ${y})" fill="url(#faG2)"/>`;
  for(let i=0;i<7;i++){const deg=105+i*(140/6),t=deg*Math.PI/180,x=24+18*Math.cos(t),y=24+18*Math.sin(t),rot=deg+115;L+=lf(x.toFixed(1),y.toFixed(1),rot.toFixed(0))+lf((48-x).toFixed(1),y.toFixed(1),(180-rot).toFixed(0))}
  return `<svg class="bLaurel" width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true">${L}<path d="M20 43 Q24 40 28 43" stroke="url(#faG2)" stroke-width="1.6" fill="none"/><path d="${faPoly(24,24,11,4.7,5)}" fill="url(#faG)" stroke="#FBE7B5" stroke-width=".5"/></svg>`}
-// filter chips: "MER & BBTRS only" (list hides others, map dims them) + MER / BBTRS shortcuts for the practice filter
-function faHLPaint(){const lf=$("#listFilter");document.querySelectorAll("[data-hl]").forEach(b=>{const k=b.dataset.hl,on=k==="only"?faHLOnly:!!(lf&&lf.value===k);b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false")})}
-document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-hl]");if(!b)return;const k=b.dataset.hl;
+// "MER & BBTRS only" still filters. The two list buttons under search are modality info, not a filter.
+function faHLPaint(){const lf=$("#listFilter");document.querySelectorAll("[data-hl]").forEach(b=>{if(b.closest("#hlChips"))return;const k=b.dataset.hl,on=k==="only"?faHLOnly:!!(lf&&lf.value===k);b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false")})}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-hl]");if(!b||b.closest("#hlChips"))return;const k=b.dataset.hl;
  if(k==="only"){faHLOnly=!faHLOnly;faHLPaint();syncModFilter();return}
  const lf=$("#listFilter");const next=lf&&lf.value===k?"":k;if(window.faSetModality)window.faSetModality(next);else{if(lf)lf.value=next;faHLPaint();syncModFilter()}});
-
-document.querySelectorAll('#hlChips .hlChip[data-hl]').forEach(b=>{b.innerHTML=faSeal(16)+" "+esc(faModLabel(b.dataset.hl))});
+(function(){const root=$("#modInfo");if(!root)return;const card=root.querySelector(".modInfoCard"),scroll=root.querySelector(".modInfoScroll");
+ const panes={bbtrs:root.querySelector('[data-modpane="bbtrs"]'),mer:root.querySelector('[data-modpane="mer"]')};
+ let opener=null,locked=[];
+ const focusables=()=>[...card.querySelectorAll('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(el=>!el.closest("[hidden]")&&el.getClientRects().length);
+ function lock(on){if(on){locked=[...document.body.children].filter(el=>el!==root&&!el.hasAttribute("inert"));locked.forEach(el=>el.setAttribute("inert",""));document.body.classList.add("modInfoOpen")}
+  else{locked.forEach(el=>el.removeAttribute("inert"));locked=[];document.body.classList.remove("modInfoOpen")}}
+ function open(key,btn){const pane=panes[key];if(!pane)return;Object.entries(panes).forEach(([k,p])=>{if(p)p.hidden=k!==key});
+  const h=pane.querySelector("h2");if(h)card.setAttribute("aria-labelledby",h.id);root.hidden=false;if(scroll)scroll.scrollTop=0;
+  document.querySelectorAll("[data-modinfo]").forEach(b=>b.setAttribute("aria-expanded",b===btn?"true":"false"));
+  opener=btn||document.activeElement;lock(true);const x=card.querySelector(".modInfoX");(x||card).focus()}
+ function close(){if(root.hidden)return;root.hidden=true;document.querySelectorAll("[data-modinfo]").forEach(b=>b.setAttribute("aria-expanded","false"));lock(false);const back=opener;opener=null;if(back&&back.focus&&document.contains(back))back.focus()}
+ root.addEventListener("click",e=>{if(e.target.closest("[data-modinfo-close]")||e.target===root)close()});
+ document.addEventListener("keydown",e=>{if(root.hidden)return;if(e.key==="Escape"){e.preventDefault();e.stopPropagation();close();return}if(e.key!=="Tab")return;const f=focusables();if(!f.length){e.preventDefault();card.focus();return}const i=f.indexOf(document.activeElement);
+  if(e.shiftKey){if(i<=0){e.preventDefault();f[f.length-1].focus()}}else if(i<0||i===f.length-1){e.preventDefault();f[0].focus()}},true);
+ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-modinfo]");if(!b||root.contains(b))return;e.preventDefault();open(b.dataset.modinfo,b)})})();
 // v0.23.100: live network count on the welcome screen + list header (same source as the map count); hidden until data is loaded
 function faLiveCount(){const a=all().filter(p=>pins(p).length),c=new Set();a.forEach(p=>countriesOf(p).forEach(x=>c.add(x)));
  document.querySelectorAll(".liveCount").forEach(el=>{if(!a.length||!faFresh){el.hidden=true;return}el.innerHTML=`<b>${a.length}</b> practitioner${a.length>1?"s":""} in <b>${c.size}</b> countr${c.size>1?"ies":"y"}`;el.hidden=false})}
