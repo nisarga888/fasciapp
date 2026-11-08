@@ -152,8 +152,8 @@
   function initials(name) {
     return String(name || "?").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase() || "?";
   }
-  const OFFER = "Practitioner in training (not yet certified) · Free one-hour online practice session";
-  const DIRECTORY_INTRO = "These are free practice sessions with BBTRS students in training. They are not yet certified practitioners.";
+  const OFFER = "Practitioner in training (not yet certified) · Free or highly discounted one-hour online practice session";
+  const DIRECTORY_INTRO = "These are free or highly discounted practice sessions with BBTRS students in training. They are not yet certified practitioners.";
   const ROLE = "Practitioner in training";
   const COHORT_HELP = "Type the month and year your cohort started.";
 
