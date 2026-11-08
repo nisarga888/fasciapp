@@ -809,6 +809,8 @@ body.peOpen{overflow:hidden}
 #hlChips.hlChipRow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 8px;overflow:visible;align-items:stretch}
 #hlChips .hlChip{justify-content:center;font-size:14px;font-weight:800;padding:11px 8px;border-radius:16px;border-width:2px;text-align:center;line-height:1.15;white-space:normal}
 #hlChips .hlChip .bSeal{width:22px;height:22px}
+#hlChips .modSeal{position:absolute;top:5px;left:6px;z-index:1;line-height:0;pointer-events:none}
+#hlChips .modSeal .bSeal{width:16px;height:16px;filter:drop-shadow(0 0 2px #C99E6788)}
 /* v0.23.226 list modality buttons explain the practice; they do not filter search */
 #hlChips .modInfoBtn{position:relative;overflow:visible;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:100%;min-height:84px;height:100%;margin:0;padding:16px 20px 12px;border:2px solid #C99E67;border-radius:16px;background:#0a2a30;color:#fff;box-shadow:none;-webkit-tap-highlight-color:transparent}
 #hlChips .modInfoBtn:focus-visible{outline:2px solid #FBE7B5;outline-offset:3px}

@@ -242,6 +242,7 @@ test("list modality buttons explain BBTRS and MER and do not filter search", () 
   assert.match(app, /data-modinfo/);
   assert.match(app, /closest\("#hlChips"\)\)return/);
   assert.equal(app.includes("querySelectorAll('#hlChips .hlChip[data-hl]')"), false);
+  assert.match(app, /#hlChips \.modInfoBtn[\s\S]*faSeal\(16\)/);
   const info = app.slice(app.indexOf('const root=$("#modInfo")'), app.indexOf("v0.23.100: live network count"));
   assert.equal(info.includes("faSetModality"), false);
   const strip = html.slice(html.indexOf('class="igInvite"'), html.indexOf('class="igInvite"') + 900);
