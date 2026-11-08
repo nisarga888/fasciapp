@@ -1099,6 +1099,8 @@ function faSeal(s){return `<svg class="bSeal" width="${s}" height="${s}" viewBox
 function faLaurel(s){let L="";const lf=(x,y,a)=>`<ellipse cx="${x}" cy="${y}" rx="4.2" ry="1.9" transform="rotate(${a} ${x} ${y})" fill="url(#faG2)"/>`;
  for(let i=0;i<7;i++){const deg=105+i*(140/6),t=deg*Math.PI/180,x=24+18*Math.cos(t),y=24+18*Math.sin(t),rot=deg+115;L+=lf(x.toFixed(1),y.toFixed(1),rot.toFixed(0))+lf((48-x).toFixed(1),y.toFixed(1),(180-rot).toFixed(0))}
  return `<svg class="bLaurel" width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true">${L}<path d="M20 43 Q24 40 28 43" stroke="url(#faG2)" stroke-width="1.6" fill="none"/><path d="${faPoly(24,24,11,4.7,5)}" fill="url(#faG)" stroke="#FBE7B5" stroke-width=".5"/></svg>`}
+// Same gold seal as on MER and BBTRS practitioner cards, tucked in the button corner.
+document.querySelectorAll("#hlChips .modInfoBtn").forEach(b=>{if(b.querySelector(".modSeal"))return;b.insertAdjacentHTML("afterbegin",`<span class="modSeal" aria-hidden="true">${faSeal(16)}</span>`)});
 // "MER & BBTRS only" still filters. The two list buttons under search are modality info, not a filter.
 function faHLPaint(){const lf=$("#listFilter");document.querySelectorAll("[data-hl]").forEach(b=>{if(b.closest("#hlChips"))return;const k=b.dataset.hl,on=k==="only"?faHLOnly:!!(lf&&lf.value===k);b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false")})}
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-hl]");if(!b||b.closest("#hlChips"))return;const k=b.dataset.hl;
