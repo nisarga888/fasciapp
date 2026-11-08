@@ -777,7 +777,7 @@ body.peOpen{overflow:hidden}
   radial-gradient(circle at 50% 55%,#C99E6733 0 36%,transparent 37%),
   radial-gradient(circle at 40% 35%,#1d2a4a,#02191E 70%)}
 /* v0.23.115 List browse: search + regions + countries */
-.brSearch{position:relative;margin:0 0 12px}
+.brSearch{position:relative;margin:2px 0 12px}
 .brSearch input{width:100%;box-sizing:border-box;height:50px;border-radius:25px;border:1.5px solid #c99e6755;background:#0d3238;color:#F3EDE4;font:500 16px var(--font);padding:0 18px 0 46px;margin:0}
 .brSearch input:focus{outline:none;border-color:#C99E67}
 .brSI{position:absolute;left:18px;top:16px;width:13px;height:13px;border:2.2px solid #9fb3b0;border-radius:50%;pointer-events:none}.brSI:after{content:"";position:absolute;width:2.4px;height:8px;background:#9fb3b0;right:-4px;bottom:-7px;transform:rotate(-45deg);border-radius:2px}
@@ -831,7 +831,7 @@ body.peOpen{overflow:hidden}
 .modInfoMore{display:inline-flex;align-items:center;gap:6px;margin-top:2px;color:#E7C78F;font-weight:700;font-size:15px;text-decoration:none}
 .modInfoMore:hover{text-decoration:underline;text-underline-offset:3px}
 body.modInfoOpen>main{overflow:hidden}
-.igInvite{display:flex;align-items:center;gap:10px;margin:0 0 8px;padding:8px 10px;border:1.5px solid #C99E67;border-radius:14px;background:#0a2a30;color:#fff;text-decoration:none;min-width:0;max-width:100%}
+.igInvite{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:8px 10px;border:1.5px solid #C99E67;border-radius:14px;background:#0a2a30;color:#fff;text-decoration:none;min-width:0;max-width:100%}
 .igInvite:focus-visible{outline:2px solid #FBE7B5;outline-offset:3px}
 .igInviteIc{flex:none;width:26px;height:26px;display:block}
 .igInviteTx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}

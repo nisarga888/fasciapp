@@ -254,7 +254,7 @@ test("list modality buttons explain BBTRS and MER and do not filter search", () 
   assert.match(strip, />Visit </);
   assert.equal(/facebook|instagram\.com\/embed|iframe/i.test(strip), false);
   const listTop = html.slice(html.indexOf('id="list"'), html.indexOf('id="items"'));
-  const order = ["id=\"listNav\"", "id=\"hlChips\"", "class=\"igInvite\"", "id=\"qWhere\""];
+  const order = ["id=\"listNav\"", "id=\"qWhere\"", "id=\"hlChips\"", "class=\"igInvite\""];
   order.reduce((at, key) => {
     const n = listTop.indexOf(key);
     assert.ok(n > at, key + " stays in list order");
