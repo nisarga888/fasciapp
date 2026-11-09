@@ -1,0 +1,370 @@
+{
+  "schema_version": "2.0-proposed",
+  "title_source": "https://www.myofascialtrainings.com/training",
+  "mapping_authority": "Belt associations: Nisarga direct instruction pt3378u; not a clinical diagnostic map.",
+  "modules": [
+    {
+      "id": "MER1",
+      "name": "MER Self-Empowerment Training",
+      "focus": "Back, Neck, Pelvis & Breath",
+      "belts": [
+        "cervical",
+        "thoracic",
+        "ocular"
+      ],
+      "role": "back-neck-foundation",
+      "vocabulary": "Self-empowerment, pro-active participation and the major hinges of the spine: lumbar / sacral, diaphragm, heart, thoracic inlet, atlas / occiput and pelvis.",
+      "vocabulary_source": {
+        "manual": "MER1_Self_empowerment_print.pdf",
+        "pdf_pages": [
+          4
+        ]
+      },
+      "areas": "Back, posterior neck, skull base and upper shoulders; connect with the pelvis and comfortable breath.",
+      "muscles": [
+        "thoracic erectors",
+        "back fascia",
+        "splenius capitis / cervicis",
+        "suboccipitals",
+        "upper trapezius"
+      ],
+      "stroke_ids": [
+        "MER1-001",
+        "MER1-004",
+        "MER1-010",
+        "MER1-011",
+        "MER1-015"
+      ],
+      "conditional_stroke_ids": [
+        "MER1-001",
+        "MER1-004"
+      ],
+      "mer7_segment_ids": [
+        "lower_back",
+        "upper_back",
+        "neck",
+        "load_movement"
+      ],
+      "question": "Where are you working hard to hold yourself up?",
+      "question_pdf_pages": [
+        8,
+        9,
+        11,
+        14
+      ],
+      "watch_for": "Do not turn deep-pressure preference into a pressure target. No end-range neck movement or default deep anterior-neck work.",
+      "mapping_note": "The ocular association is Nisarga’s cross-reference through neck / skull-base support, not an instruction to perform eye work from MER1.",
+      "status": "manual-sourced choices; adapt to assessment",
+      "official_title": "MER Self-Empowerment Training: Back, Neck, Pelvis & Breath",
+      "name_source": {
+        "url": "https://www.myofascialtrainings.com/training",
+        "checked_date": "2026-11-09",
+        "timezone": "Europe/Bucharest"
+      }
+    },
+    {
+      "id": "MER2",
+      "name": "MER Grounding Training",
+      "focus": "Feet, Legs & Hips",
+      "belts": [
+        "pelvic"
+      ],
+      "role": "lower-body-support",
+      "vocabulary": "Grounding: contact through the feet, legs and hips; connect lower-body support with the whole person.",
+      "vocabulary_source": {
+        "manual": "MER2_Grounding_print.pdf",
+        "pdf_pages": [
+          1,
+          4
+        ]
+      },
+      "areas": "Plantar foot, calf, posterior thigh and quadriceps; hips as assessment indicates.",
+      "muscles": [
+        "plantar fascia",
+        "gastrocnemius",
+        "hamstrings",
+        "quadriceps"
+      ],
+      "stroke_ids": [
+        "MER2-001",
+        "MER2-003",
+        "MER2-006",
+        "MER2-022"
+      ],
+      "conditional_stroke_ids": [
+        "MER2-001",
+        "MER2-003",
+        "MER2-006",
+        "MER2-022"
+      ],
+      "mer7_segment_ids": [
+        "feet",
+        "ankles",
+        "knees_legs"
+      ],
+      "question": "Can the legs feel both supported and able to move?",
+      "question_pdf_pages": [
+        5,
+        6
+      ],
+      "watch_for": "Screen burning knee symptoms before deeper or loaded leg work. No direct pressure into a painful knee or forced stretch.",
+      "mapping_note": "Strong pelvic / legs level invites a check, not a conclusion that grounding is deficient.",
+      "status": "manual-sourced choices; lower-limb symptom screen required",
+      "official_title": "MER Grounding Training: Feet, Legs & Hips",
+      "name_source": {
+        "url": "https://www.myofascialtrainings.com/training",
+        "checked_date": "2026-11-09",
+        "timezone": "Europe/Bucharest"
+      }
+    },
+    {
+      "id": "MER3",
+      "name": "MER Centering Training",
+      "focus": "Pelvis & Core Integration",
+      "belts": [
+        "pelvic"
+      ],
+      "role": "pelvis-core",
+      "vocabulary": "Centering ability, pelvic balance, pelvis–heart connection and the felt sense of whole-body breathing.",
+      "vocabulary_source": {
+        "manual": "MER3_Centering_print.pdf",
+        "pdf_pages": [
+          4
+        ]
+      },
+      "areas": "Sacrum, gluteal attachments and sacral / gluteal fascia; connect the pelvis and spine.",
+      "muscles": [
+        "sacral fascia",
+        "gluteus medius",
+        "gluteus maximus"
+      ],
+      "stroke_ids": [
+        "MER3-004",
+        "MER3-005",
+        "MER3-010"
+      ],
+      "conditional_stroke_ids": [],
+      "mer7_segment_ids": [
+        "pelvis",
+        "pelvic_floor",
+        "lower_back"
+      ],
+      "question": "When stress rises, what support would make it easier not to brace?",
+      "question_pdf_pages": [
+        6,
+        7
+      ],
+      "watch_for": "Reported holding does not prove a pelvic tilt. Respect consent and boundaries; no automatic psoas or intimate pelvic-floor techniques.",
+      "mapping_note": "Work peripherally first; ask about felt holding rather than infer an emotional or sexual history.",
+      "status": "manual-sourced choices; adapt to assessment",
+      "official_title": "MER Centering Training: Pelvis & Core Integration",
+      "name_source": {
+        "url": "https://www.myofascialtrainings.com/training",
+        "checked_date": "2026-11-09",
+        "timezone": "Europe/Bucharest"
+      }
+    },
+    {
+      "id": "MER4",
+      "name": "MER Original Face Training",
+      "focus": "Face, Cranium, Neck, Arms & Vagus nerve",
+      "belts": [
+        "ocular",
+        "oral",
+        "cervical"
+      ],
+      "role": "face-neck-arms",
+      "vocabulary": "Original Face: releasing and balancing the face, cranium, neck, breath and arms; natural movement in scalp, forehead and jaw.",
+      "vocabulary_source": {
+        "manual": "MER4_Original_face_print.pdf",
+        "pdf_pages": [
+          1,
+          4
+        ]
+      },
+      "areas": "Posterior neck and skull base; forehead, external jaw and scalp only where a relevant need is confirmed. The manual also includes upper-back / shoulder work.",
+      "muscles": [
+        "splenius capitis / cervicis",
+        "suboccipitals",
+        "frontalis",
+        "masseter",
+        "scalp fascia"
+      ],
+      "stroke_ids": [
+        "MER4-001",
+        "MER4-004",
+        "MER4-016",
+        "MER4-021",
+        "MER4-026"
+      ],
+      "conditional_stroke_ids": [
+        "MER4-001",
+        "MER4-004",
+        "MER4-016",
+        "MER4-021",
+        "MER4-026"
+      ],
+      "mer7_segment_ids": [
+        "neck",
+        "face_jaw",
+        "eyes",
+        "forehead",
+        "arms_hands"
+      ],
+      "question": "Can your head feel supported without having to hold it?",
+      "question_pdf_pages": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "watch_for": "No orbital or intraoral work by default. Do not infer emotion from the face, gaze or build. No vagus stimulation / reset promise.",
+      "mapping_note": "The official training title includes Vagus nerve. The available manual does not provide a separate validated vagus-nerve technique for this report.",
+      "status": "manual-sourced choices; face / jaw / neck work conditional",
+      "official_title": "MER Original Face Training: Face, Cranium, Neck, Arms & Vagus nerve",
+      "name_source": {
+        "url": "https://www.myofascialtrainings.com/training",
+        "checked_date": "2026-11-09",
+        "timezone": "Europe/Bucharest"
+      }
+    },
+    {
+      "id": "MER5",
+      "name": "MER Inspiration Training",
+      "focus": "Opening the Breath, Thorax and Diaphragm",
+      "belts": [
+        "thoracic",
+        "diaphragmatic"
+      ],
+      "role": "thorax-breath",
+      "vocabulary": "Inspiration: opening the breath through thorax, shoulders and diaphragm; chest–rib–arm relationships with pro-active participation.",
+      "vocabulary_source": {
+        "manual": "MER_5_Inspiration_screen.pdf",
+        "pdf_pages": [
+          1,
+          4
+        ]
+      },
+      "areas": "Pectoral region, lateral ribs, shoulder / arm relationship; diaphragm only after a relevant restriction is confirmed.",
+      "muscles": [
+        "pectoralis major",
+        "serratus anterior",
+        "external obliques"
+      ],
+      "stroke_ids": [
+        "MER5-001",
+        "MER5-002",
+        "MER5-007",
+        "MER5-010"
+      ],
+      "conditional_stroke_ids": [
+        "MER5-001",
+        "MER5-002",
+        "MER5-007",
+        "MER5-010"
+      ],
+      "mer7_segment_ids": [
+        "diaphragm",
+        "chest_thorax",
+        "shoulders",
+        "arms_hands"
+      ],
+      "question": "Does your breath feel free, or is there an area you would like more space?",
+      "question_pdf_pages": [
+        8,
+        9
+      ],
+      "watch_for": "A saved diaphragm watch level does not override a report of free breath. No forced inhalation or automatic subcostal work.",
+      "mapping_note": "Diaphragm work MER5-013, PDF p.11, is not a default. Chest / shoulder integration can be considered without calling the breath restricted.",
+      "status": "manual-sourced choices; breath restriction requires confirmation",
+      "official_title": "MER Inspiration Training: Opening the Breath, Thorax and Diaphragm",
+      "name_source": {
+        "url": "https://www.myofascialtrainings.com/training",
+        "checked_date": "2026-11-09",
+        "timezone": "Europe/Bucharest"
+      }
+    },
+    {
+      "id": "MER6",
+      "name": "MER Fluid Body Training",
+      "focus": "Joint Release & Joint Mobilization",
+      "belts": [
+        "abdominal"
+      ],
+      "role": "modality-only",
+      "vocabulary": "Fluid Body: joint release and joint mobilization, approached as a whole-body modality.",
+      "vocabulary_source": {
+        "url": "https://www.myofascialtrainings.com/training",
+        "section": "The MER modules & how to become a fully certified practitioner"
+      },
+      "areas": "Whole-body joint / movement context; abdominal region is Nisarga’s routing association, not a sourced abdominal technique.",
+      "muscles": [],
+      "stroke_ids": [],
+      "conditional_stroke_ids": [],
+      "mer7_segment_ids": [
+        "abdomen",
+        "load_movement"
+      ],
+      "question": "What do you notice in your belly as you breathe comfortably?",
+      "question_pdf_pages": [
+        7,
+        8,
+        14
+      ],
+      "watch_for": "No Fluid Body manual is in the database. No specific joint maneuver, target muscle, timing or hands-on abdominal prescription is assigned.",
+      "mapping_note": "Modality-level signpost only; request the manual before adding technique-level content.",
+      "status": "modality-only; no manual or stroke database",
+      "official_title": "MER Fluid Body Training: Joint Release & Joint Mobilization",
+      "name_source": {
+        "url": "https://www.myofascialtrainings.com/training",
+        "checked_date": "2026-11-09",
+        "timezone": "Europe/Bucharest"
+      }
+    },
+    {
+      "id": "MER7",
+      "name": "MER Trauma Release Training",
+      "focus": "Breath, Fascia & Emotional Release",
+      "belts": [
+        "ocular",
+        "oral",
+        "cervical",
+        "thoracic",
+        "diaphragmatic",
+        "abdominal",
+        "pelvic"
+      ],
+      "role": "cross-cutting-emotional-layer",
+      "vocabulary": "Non-judgmental body reading, positive qualities, open curiosity, load and movement; posture as possibility, not a fixed story.",
+      "vocabulary_source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "pdf_pages": [
+          3,
+          14
+        ]
+      },
+      "areas": "Felt experience across all selected regions. Muscles come from the linked MER1–5 strokes, not from emotional assumptions.",
+      "muscles": [],
+      "stroke_ids": [],
+      "conditional_stroke_ids": [],
+      "mer7_segment_ids": [
+        "whole_body_splits",
+        "load_movement"
+      ],
+      "question": "Where does your body need support today?",
+      "question_pdf_pages": [
+        3,
+        14
+      ],
+      "watch_for": "Stay with permission and the client’s meaning. No trauma diagnosis, catharsis target or appearance-based emotional labels.",
+      "mapping_note": "A layer across every module and session, not a requirement to add a separate trauma session.",
+      "status": "cross-cutting questions and approach; no new stroke prescriptions",
+      "official_title": "MER Trauma Release Training: Breath, Fascia & Emotional Release",
+      "name_source": {
+        "url": "https://www.myofascialtrainings.com/training",
+        "checked_date": "2026-11-09",
+        "timezone": "Europe/Bucharest"
+      }
+    }
+  ]
+}

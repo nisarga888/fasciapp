@@ -1,6 +1,6 @@
 // FasciApp service worker. Bump VERSION on every release.
 // App JS/CSS: network-first so Safari/PWA picks up updates. Other shell: cache-first.
-const VERSION="fasciapp-v0.23.231";
+const VERSION="fasciapp-v0.23.232";
 const SHELL=["./","index.html","styles.css","app.js","cal.js","admin.js","data.js","captcha.js","config.js","track.js","learn.js","news.js","quotes.js","inbox.js","vendor/supabase-js-2.118.0.min.js","logo.svg","manifest.json","icon-192-v4.png","icon-512-v4.png","apple-touch-icon-v4.png","favicon-32-v4.png","favicon-16-v4.png","icon-512-maskable-v4.png",
  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css","https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"];
 const LAZY=["https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js","https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"];
@@ -11,7 +11,7 @@ self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET")return;c
  const same=u.origin===location.origin;
  if(same&&/\/lab\/.*\.pdf$/i.test(u.pathname))return; // big PDFs: straight from network, never cached
  const shell=same||SHELL.includes(r.url)||LAZY.includes(r.url);if(!shell)return;
- const live=same&&/\.(js|css)$/i.test(u.pathname);
+ const live=same&&(/\.(js|css)$/i.test(u.pathname)||/\/data\/mer\/.+\.json$/i.test(u.pathname));
  if(live||r.mode==="navigate"){
   // network-first (3 s timeout) so a new release reaches everyone on the next open; cache only when offline/slow
   e.respondWith(caches.open(VERSION).then(c=>{const net=fetch(r,{cache:"no-cache"}).then(res=>{if(res&&res.ok)c.put(r,res.clone());return res});
