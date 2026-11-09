@@ -1,0 +1,105 @@
+[
+  {
+    "id": "back",
+    "name": "Superficial back line",
+    "orientation": "Sole, calf, hamstrings, sacrum, spinal tissues and skull base.",
+    "typical_issue_context": "Posterior stiffness or an upper-back complaint may make these regions worth checking; the line does not identify a cause.",
+    "stroke_links": [
+      "MER2-001",
+      "MER2-003",
+      "MER2-006",
+      "MER4-027",
+      "MER4-004"
+    ],
+    "diagram_policy": "Original schematic made for this report; not tracing or reproducing the supplied design.",
+    "evidence_status": "Conceptual orientation from supplied images; no diagnostic or causal claim."
+  },
+  {
+    "id": "front",
+    "name": "Superficial front line",
+    "orientation": "Toe extensors, front of shin, quadriceps, rectus abdominis, sternal and neck tissues.",
+    "typical_issue_context": "Anterior leg or trunk tension may invite a regional check, not a diagnosis.",
+    "stroke_links": [
+      "MER2-013",
+      "MER2-016",
+      "MER2-022",
+      "MER3-017",
+      "MER1-007"
+    ],
+    "diagram_policy": "Original schematic made for this report; not tracing or reproducing the supplied design.",
+    "evidence_status": "Conceptual orientation from supplied images; no diagnostic or causal claim."
+  },
+  {
+    "id": "lateral",
+    "name": "Lateral line",
+    "orientation": "Outer leg, lateral hip, side-body tissues, ribs and lateral neck.",
+    "typical_issue_context": "Side-to-side tension or side-bending concerns may invite a comfortable movement check.",
+    "stroke_links": [
+      "MER2-014",
+      "MER5-037",
+      "MER5-038",
+      "MER5-007"
+    ],
+    "diagram_policy": "Original schematic made for this report; not tracing or reproducing the supplied design.",
+    "evidence_status": "Conceptual orientation from supplied images; no diagnostic or causal claim."
+  },
+  {
+    "id": "spiral",
+    "name": "Spiral line",
+    "orientation": "Cross-body shoulder, ribs and oblique tissues; lateral hip, lower leg and posterior leg connections.",
+    "typical_issue_context": "Rotational complaints or asymmetrical movement may invite comparison of comfortable rotation.",
+    "stroke_links": [
+      "MER5-007",
+      "MER3-019",
+      "MER5-037",
+      "MER2-014",
+      "MER3-013"
+    ],
+    "diagram_policy": "Original schematic made for this report; not tracing or reproducing the supplied design.",
+    "evidence_status": "Conceptual orientation from supplied images; no diagnostic or causal claim."
+  },
+  {
+    "id": "arms",
+    "name": "Arm lines",
+    "orientation": "Chest and scapular tissues continue through the upper arms, forearms and hands.",
+    "typical_issue_context": "Shoulder or reaching/pushing/pulling concerns may guide a regional assessment.",
+    "stroke_links": [
+      "MER4-029",
+      "MER5-002",
+      "MER5-004",
+      "MER5-006",
+      "MER5-009",
+      "MER5-011"
+    ],
+    "diagram_policy": "Original schematic made for this report; not tracing or reproducing the supplied design.",
+    "evidence_status": "Conceptual orientation from supplied images; no diagnostic or causal claim."
+  },
+  {
+    "id": "functional",
+    "name": "Functional lines",
+    "orientation": "Diagonal relationships between upper arm, chest or latissimus, trunk fascia, pelvis and opposite thigh.",
+    "typical_issue_context": "Cross-body work and rotational activities may invite a whole-body movement check.",
+    "stroke_links": [
+      "MER4-028",
+      "MER5-002",
+      "MER3-005",
+      "MER3-034"
+    ],
+    "diagram_policy": "Original schematic made for this report; not tracing or reproducing the supplied design.",
+    "evidence_status": "Conceptual orientation from supplied images; no diagnostic or causal claim."
+  },
+  {
+    "id": "deep",
+    "name": "Deep front line",
+    "orientation": "Inner leg and adductors, pelvis, psoas, diaphragm and deep neck regions.",
+    "typical_issue_context": "Pelvic holding or a reported breath restriction can invite a cautious regional assessment.",
+    "stroke_links": [
+      "MER3-034",
+      "MER3-024",
+      "MER5-013",
+      "MER4-009"
+    ],
+    "diagram_policy": "Original schematic made for this report; not tracing or reproducing the supplied design.",
+    "evidence_status": "Conceptual orientation from supplied images; no diagnostic or causal claim."
+  }
+]

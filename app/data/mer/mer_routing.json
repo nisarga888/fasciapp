@@ -1,0 +1,82 @@
+{
+  "schema_version": "2.0-proposed",
+  "status": "editorial routing; implement and test in cloud agent",
+  "authority": "Regional module associations requested by Nisarga; not manual-authored clinical scoring.",
+  "belt_level_scale": {
+    "0": "Balanced",
+    "1": "Mild · to watch",
+    "2": "To watch",
+    "3": "Strong · over-charged"
+  },
+  "unknown_level": null,
+  "default_module_tie_order": [
+    "MER1",
+    "MER3",
+    "MER2",
+    "MER5",
+    "MER4",
+    "MER6"
+  ],
+  "mer7_always_cross_cutting": true,
+  "module_belts": {
+    "MER1": [
+      "cervical",
+      "thoracic",
+      "ocular"
+    ],
+    "MER2": [
+      "pelvic"
+    ],
+    "MER3": [
+      "pelvic"
+    ],
+    "MER4": [
+      "ocular",
+      "oral",
+      "cervical"
+    ],
+    "MER5": [
+      "thoracic",
+      "diaphragmatic"
+    ],
+    "MER6": [
+      "abdominal"
+    ],
+    "MER7": [
+      "ocular",
+      "oral",
+      "cervical",
+      "thoracic",
+      "diaphragmatic",
+      "abdominal",
+      "pelvic"
+    ]
+  },
+  "evidence_tiers": [
+    "reported_or_practitioner_confirmed_focus",
+    "symptom_screened_adjacent_region",
+    "strong_belt_context_only",
+    "watch_belt_context_only",
+    "modality_information_only"
+  ],
+  "explicit_free_breath_overrides_diaph_restriction_assumption": true,
+  "grounding_resource_does_not_mean_deficit": true,
+  "missing_data_is_unknown_not_balanced": true,
+  "sensitive_techniques_default": "not automatically selected",
+  "teacher_review_required_default": "exclude from automatic plan; retain in practitioner source catalogue",
+  "homework_total_daily_minutes": [
+    5,
+    20
+  ],
+  "flow_contract": {
+    "opening": "MER1-009, then updated consent / inquiry and comfortable movement baseline",
+    "main": "Selected module-local blocks, sorted by manual_order within each block; do not flatten by page across manuals",
+    "closing_options": [
+      "MER1-023",
+      "MER1-024",
+      "MER1-025"
+    ],
+    "integration": "Source-led pauses and reassessment; no invented per-stroke timings"
+  },
+  "sequence_note": "Modules can be studied in any order per official website. The app orders clinical focus by assessment, not a certification prerequisite."
+}

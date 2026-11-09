@@ -9,7 +9,8 @@ const SEG={
  abd:{t:"Abdominal (explicit consent)",lines:"SFL, DFL, SL",tis:"Rectus abdominis, obliques, transversus, linea alba, iliacus and psoas (anterior), visceral fascia, scar tissue",watch:"Pregnancy, hernia, aneurysm, IBD flare, recent surgery, unexplained pain or masses (refer). Not after a meal",retest:"Belly softness, breathing, comfort",home:"Warm hand on the belly with slow breathing"},
  pelv:{t:"Pelvic and hip",lines:"SBL (sacrotuberous), DFL (psoas, adductors), SL, LL",tis:"Psoas and iliacus, rectus femoris, TFL, glutes, piriformis and deep six, adductors, quadratus lumborum, sacrotuberous ligament",watch:"SI instability, sciatica, hip replacement, pregnancy, sexual trauma history. Internal pelvic floor work is outside MER scope",retest:"Pelvic position, hip rotation, low back comfort",home:"Hip flexor stretch, glute ball release, relaxed-pelvis walking"}};
 /* Guide Part 1 "From findings to a first session" + Part 2 photo findings. Each rule: test -> segment, weight, evidence */
-function analyse(R,D,flags){const t=(D.complaint||"")+" "+(D.pain_areas||[]).join(" ")+" "+(D.tension_areas||[]).join(" ")+" "+(D.body_experience||"")+" "+(D.breath||[]).join(" ");
+const asA=v=>Array.isArray(v)?v:(v==null||v===""?[]:[String(v)]);
+function analyse(R,D,flags){const t=(D.complaint||"")+" "+asA(D.pain_areas).join(" ")+" "+asA(D.tension_areas).join(" ")+" "+(D.body_experience||"")+" "+asA(D.breath).join(" ");
  const iss=((R.body_map||{}).issues||[]).map(i=>i.region),B=(R.body_map||{}).belts||{},sc={},ev={};const add=(k,w,e)=>{sc[k]=(sc[k]||0)+w;(ev[k]=ev[k]||[]).push(e)};
  if(/shoulder|arm|hand/i.test(t))add("shou",3,"Main complaint: shoulders");if(iss.includes("shoulders"))add("shou",1,"Photos: shoulders lifted");
  if(iss.includes("neck_front")||iss.includes("neck_back"))add("cerv",2,"Photos: head forward of shoulder");if(/neck|jaw|head/i.test(t))add("cerv",2,"Client: neck/jaw");if(B.cervical>=3)add("cerv",1,"Cervical belt over-charged");
@@ -17,8 +18,8 @@ function analyse(R,D,flags){const t=(D.complaint||"")+" "+(D.pain_areas||[]).joi
  if(/anx|panic|stress/i.test(t)||iss.includes("diaphragm"))add("diaph",2,"Anxiety / held breath");if(/shallow|hold|chest/i.test(t))add("diaph",2,"Breath: shallow or held");if(B.diaphragmatic>=2)add("diaph",1,"Diaphragm belt to watch");
  if(/back|pelvi|hip|sciat/i.test(t))add("pelv",3,"Low back / pelvis");if(B.pelvic>=2)add("pelv",1,"Pelvic belt charged");
  if(/scar|c-section|digest|belly/i.test(t+" "+(D.injuries||"")))add("abd",2,"Scars / belly");
- const ungr=/anx|dissoc|spacey|numb|scatter|cold feet/i.test(t)&&!(D.energetics||[]).includes("Well grounded");if(ungr)add("legs",3,"Anxious / ungrounded");
- const rank=Object.keys(sc).sort((a,b)=>sc[b]-sc[a]);return {rank,sc,ev,grounded:(D.energetics||[]).includes("Well grounded"),rf:(flags||[]).length>0}}
+ const ungr=/anx|dissoc|spacey|numb|scatter|cold feet/i.test(t)&&!asA(D.energetics).includes("Well grounded");if(ungr)add("legs",3,"Anxious / ungrounded");
+ const rank=Object.keys(sc).sort((a,b)=>sc[b]-sc[a]);return {rank,sc,ev,grounded:asA(D.energetics).includes("Well grounded"),rf:asA(flags).length>0}}
 const PLAN=[["Intake, scan and baseline","Photos, history, red-flag screen, gentle global work, feet, breath baseline"],["Legs and feet","Ground the system, posterior chain"],["Pelvis and hips","Psoas, iliacus, rotators, sacrum"],["Lumbar and TLF","QL, erectors, low back"],["Abdomen and diaphragm","Breath restriction, scars"],["Thoracic and ribcage","Chest opening, intercostals, interscapular"],["Shoulders and arm lines","Scapula, pecs, lats, arm lines"],["Neck, cranial base, jaw","Suboccipitals, SCM, scalenes, hyoid, TMJ"],["Spiral and lateral integration","Link along the dominant line"],["Re-scan and self-care plan","New photos, before/after, home practice"]];
 const MAP={legs:1,pelv:2,abd:4,diaph:4,thor:5,shou:6,cerv:7};
 /* Order sessions 2-9: grounding first, then priority segments, then remaining guide order */

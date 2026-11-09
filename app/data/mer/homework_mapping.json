@@ -1,0 +1,77 @@
+[
+  {
+    "id": "grounding",
+    "focus": "Grounding",
+    "practices": [
+      "Kundalini meditation",
+      "Shaking"
+    ],
+    "related_modules": [
+      2
+    ],
+    "frequency": "Daily",
+    "duration_minutes": [
+      5,
+      20
+    ],
+    "source": "Nisarga’s direct homework instruction, 9 Nov 2026, Europe/Bucharest; supersedes earlier editorial picks.",
+    "source_type": "user_authorized_teaching",
+    "safety": "Gentle and optional; choose a comfortable familiar version with the practitioner. Do not force movement, breath or shaking, or work through knee pain. Pause if uncomfortable."
+  },
+  {
+    "id": "pelvis-spine",
+    "focus": "Pelvis alignment and spine",
+    "practices": [
+      "Myofascial unwinding"
+    ],
+    "related_modules": [
+      1,
+      3
+    ],
+    "frequency": "Daily",
+    "duration_minutes": [
+      5,
+      20
+    ],
+    "source": "Nisarga’s direct homework instruction, 9 Nov 2026, Europe/Bucharest; supersedes earlier editorial picks.",
+    "source_type": "user_authorized_teaching",
+    "safety": "Gentle and optional; choose a comfortable familiar version with the practitioner. Do not force movement, breath or shaking, or work through knee pain. Pause if uncomfortable."
+  },
+  {
+    "id": "neck-shoulders-cranium",
+    "focus": "Neck, shoulders and cranium",
+    "practices": [
+      "Qigong",
+      "Myofascial unwinding"
+    ],
+    "related_modules": [
+      4
+    ],
+    "frequency": "Daily",
+    "duration_minutes": [
+      5,
+      20
+    ],
+    "source": "Nisarga’s direct homework instruction, 9 Nov 2026, Europe/Bucharest; supersedes earlier editorial picks.",
+    "source_type": "user_authorized_teaching",
+    "safety": "Gentle and optional; choose a comfortable familiar version with the practitioner. Do not force movement, breath or shaking, or work through knee pain. Pause if uncomfortable."
+  },
+  {
+    "id": "core-presence",
+    "focus": "Core presence",
+    "practices": [
+      "Vipassana meditation"
+    ],
+    "related_modules": [
+      3
+    ],
+    "frequency": "Daily",
+    "duration_minutes": [
+      5,
+      20
+    ],
+    "source": "Nisarga’s direct homework instruction, 9 Nov 2026, Europe/Bucharest; supersedes earlier editorial picks.",
+    "source_type": "user_authorized_teaching",
+    "safety": "Gentle and optional; choose a comfortable familiar version with the practitioner. Do not force movement, breath or shaking, or work through knee pain. Pause if uncomfortable."
+  }
+]

@@ -1,0 +1,805 @@
+{
+  "schema_version": "2.0-proposed",
+  "source": {
+    "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+    "pdf_pages": [
+      3,
+      14
+    ],
+    "printed_pages": [
+      1,
+      12
+    ]
+  },
+  "segments": [
+    {
+      "id": "whole_body_splits",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          4
+        ],
+        "printed_pages": [
+          2
+        ]
+      },
+      "how_to_read": "Compare front/back, left/right, upper/lower body, head/body and torso/limbs without assigning meaning from appearance.",
+      "emotional_theme_for_optional_exploration": "The manual explores public/private experience, support, expression, thought/feeling and doing/being. These are metaphors, not validated appearance-to-personality tests.",
+      "client_led_question": "What do you notice when you compare these areas?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [],
+      "targets_from_mer1_5": [],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "feet",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          5
+        ],
+        "printed_pages": [
+          3
+        ]
+      },
+      "how_to_read": "Notice orientation, arches, toe grip and weight distribution; ask about support and comfort.",
+      "emotional_theme_for_optional_exploration": "Grounding, felt support, safety and holding on.",
+      "client_led_question": "Where do your feet feel supported?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER2-001",
+        "MER2-010"
+      ],
+      "targets_from_mer1_5": [
+        "foot muscles",
+        "plantar fascia"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "ankles",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          6
+        ],
+        "printed_pages": [
+          4
+        ]
+      },
+      "how_to_read": "Observe available support and movement; confirm any discomfort with the client.",
+      "emotional_theme_for_optional_exploration": "Support and ease in taking a step.",
+      "client_led_question": "How supported do you feel when you stand or step?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER2-002",
+        "MER2-012"
+      ],
+      "targets_from_mer1_5": [
+        "Achilles tendon",
+        "medial and lateral malleolar region"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "knees_legs",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          6
+        ],
+        "printed_pages": [
+          4
+        ]
+      },
+      "how_to_read": "Notice knee locking, stance and movement; use function and client report, not body-size labels.",
+      "emotional_theme_for_optional_exploration": "Flexibility, stability and the experience of standing one’s ground.",
+      "client_led_question": "Can the legs feel both supported and able to move?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER2-003",
+        "MER2-006",
+        "MER2-022"
+      ],
+      "targets_from_mer1_5": [
+        "gastrocnemius",
+        "hamstrings",
+        "rectus femoris",
+        "vastus intermedius",
+        "vastus lateralis",
+        "vastus medialis"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "pelvis",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          6,
+          7
+        ],
+        "printed_pages": [
+          4,
+          5
+        ]
+      },
+      "how_to_read": "Observe pelvic position and ask whether holding changes with stress; do not diagnose alignment from a questionnaire.",
+      "emotional_theme_for_optional_exploration": "Holding on, security, yielding and personal boundaries. Sexual-history claims are not inferred.",
+      "client_led_question": "When stress rises, what support would make it easier not to brace?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER3-004",
+        "MER3-005",
+        "MER3-010"
+      ],
+      "targets_from_mer1_5": [
+        "gluteal fascia",
+        "gluteus maximus",
+        "gluteus medius",
+        "sacral fascia"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "pelvic_floor",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          7
+        ],
+        "printed_pages": [
+          5
+        ]
+      },
+      "how_to_read": "Ask about the person’s own felt contraction; any intimate assessment needs separate informed consent and competent scope.",
+      "emotional_theme_for_optional_exploration": "Holding/releasing and feeling secure; do not infer trauma or sexuality.",
+      "client_led_question": "Is there a comfortable way to soften, or would you prefer not to explore this today?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": [
+        "pelvic floor muscles",
+        "hamstrings"
+      ],
+      "related_mer1_5_stroke_ids": [
+        "MER3-014"
+      ],
+      "targets_from_mer1_5": [
+        "coccygeus",
+        "iliococcygeus",
+        "levator ani",
+        "pubococcygeus",
+        "puborectalis"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "abdomen",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          7,
+          8
+        ],
+        "printed_pages": [
+          5,
+          6
+        ]
+      },
+      "how_to_read": "Notice comfortable abdominal movement with breathing; ask, rather than interpret belly shape.",
+      "emotional_theme_for_optional_exploration": "Felt sense, vulnerability and permission for spontaneity.",
+      "client_led_question": "What do you notice in your belly as you breathe comfortably?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER3-017",
+        "MER5-015"
+      ],
+      "targets_from_mer1_5": [
+        "rectus abdominis"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "lower_back",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          8
+        ],
+        "printed_pages": [
+          6
+        ]
+      },
+      "how_to_read": "Ask about stiffness, pain and load; observe the abdomen–back relationship without claiming a cause.",
+      "emotional_theme_for_optional_exploration": "Support, competing demands and effort/control.",
+      "client_led_question": "Where are you working hard to hold yourself up?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER1-018",
+        "MER3-001"
+      ],
+      "targets_from_mer1_5": [
+        "iliocostalis thoracis",
+        "latissimus dorsi",
+        "longissimus thoracis",
+        "spinalis thoracis"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "diaphragm",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          8
+        ],
+        "printed_pages": [
+          6
+        ]
+      },
+      "how_to_read": "Observe breathing movement with client permission and confirm whether the breath actually feels limited.",
+      "emotional_theme_for_optional_exploration": "Breath, feeling and ease; the source’s emotional model is exploratory, not diagnostic.",
+      "client_led_question": "Does your breath feel free, or is there an area you would like more space?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": [
+        "diaphragm"
+      ],
+      "related_mer1_5_stroke_ids": [
+        "MER5-013",
+        "MER5-014"
+      ],
+      "targets_from_mer1_5": [
+        "diaphragm",
+        "respiratory diaphragm region"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "chest_thorax",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          8,
+          9
+        ],
+        "printed_pages": [
+          6,
+          7
+        ]
+      },
+      "how_to_read": "Observe chest movement across inhale and exhale, without judging chest size or posture.",
+      "emotional_theme_for_optional_exploration": "Protection, receiving and allowing softness.",
+      "client_led_question": "What feels comfortable about opening, resting or receiving support?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": [
+        "pectorals"
+      ],
+      "related_mer1_5_stroke_ids": [
+        "MER5-001",
+        "MER5-002",
+        "MER5-010"
+      ],
+      "targets_from_mer1_5": [
+        "anterior deltoid region",
+        "obliques",
+        "pectoralis major",
+        "serratus anterior"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "upper_back",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          9
+        ],
+        "printed_pages": [
+          7
+        ]
+      },
+      "how_to_read": "Notice stiffness and movement in the upper back; compare with the person’s workload and description.",
+      "emotional_theme_for_optional_exploration": "Vigilance, effort and expression are themes in the manual, not emotions that can be read reliably from posture.",
+      "client_led_question": "What are you noticing as the upper back is supported?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER4-027",
+        "MER4-028"
+      ],
+      "targets_from_mer1_5": [
+        "iliocostalis thoracis",
+        "latissimus dorsi",
+        "longissimus thoracis",
+        "spinalis thoracis",
+        "trapezius"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "shoulders",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          9,
+          10,
+          11
+        ],
+        "printed_pages": [
+          7,
+          8,
+          9
+        ]
+      },
+      "how_to_read": "Notice elevation, retraction or forward curling; check movement and ask what is felt. Never assign gender or personality from asymmetry.",
+      "emotional_theme_for_optional_exploration": "Responsibility, protection, reaching and expressing.",
+      "client_led_question": "Do your shoulders feel as though they can rest today?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER4-029",
+        "MER1-017"
+      ],
+      "targets_from_mer1_5": [
+        "levator scapulae",
+        "trapezius"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "arms_hands",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          11
+        ],
+        "printed_pages": [
+          9
+        ]
+      },
+      "how_to_read": "Observe reaching and withdrawing movements; ask about work, comfort and boundaries, not character from arm size.",
+      "emotional_theme_for_optional_exploration": "Reaching, holding, pushing away and contact.",
+      "client_led_question": "What movement would feel welcome or useful?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER5-006",
+        "MER5-011"
+      ],
+      "targets_from_mer1_5": [
+        "anterior deltoid",
+        "biceps lateral region",
+        "triceps brachii"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "neck",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          11,
+          12
+        ],
+        "printed_pages": [
+          9,
+          10
+        ]
+      },
+      "how_to_read": "Notice head position and available comfortable movement without equating it to guilt, aggression or personality.",
+      "emotional_theme_for_optional_exploration": "Connection between thought, feeling and expression.",
+      "client_led_question": "Can your head feel supported without having to hold it?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER1-001",
+        "MER4-004"
+      ],
+      "targets_from_mer1_5": [
+        "deep intrinsic neck muscles",
+        "erector spinae",
+        "splenius capitis",
+        "splenius cervicis",
+        "suboccipital muscles",
+        "trapezius"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "face_jaw",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          12
+        ],
+        "printed_pages": [
+          10
+        ]
+      },
+      "how_to_read": "Observe facial movement and ask about jaw holding; do not interpret facial structure as personality.",
+      "emotional_theme_for_optional_exploration": "Expression and holding back words or feelings, only if the person recognises the theme.",
+      "client_led_question": "Do you notice jaw holding when you are under pressure?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": [
+        "masseter"
+      ],
+      "related_mer1_5_stroke_ids": [
+        "MER4-021",
+        "MER4-017"
+      ],
+      "targets_from_mer1_5": [
+        "masseter",
+        "mylohyoid"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "throat",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          13
+        ],
+        "printed_pages": [
+          11
+        ]
+      },
+      "how_to_read": "Listen to what the client says about voice and throat comfort; no touch-based inference of emotional history.",
+      "emotional_theme_for_optional_exploration": "Expression and finding one’s voice.",
+      "client_led_question": "Would you like to say anything about what feels held, or stay with sensation?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": [
+        "throat muscles"
+      ],
+      "related_mer1_5_stroke_ids": [
+        "MER4-012"
+      ],
+      "targets_from_mer1_5": [
+        "infrahyoid muscles"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "eyes",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          13
+        ],
+        "printed_pages": [
+          11
+        ]
+      },
+      "how_to_read": "Offer comfortable non-judgmental contact; do not infer personality, trauma or mental health from eyes, gaze or eyesight.",
+      "emotional_theme_for_optional_exploration": "Contact and withdrawal can be discussed if volunteered; eye appearance is not emotional evidence.",
+      "client_led_question": "Would more space or a different point of focus feel better?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER4-022",
+        "MER4-023"
+      ],
+      "targets_from_mer1_5": [
+        "orbicularis oculi",
+        "orbital fascia"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "forehead",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          14
+        ],
+        "printed_pages": [
+          12
+        ]
+      },
+      "how_to_read": "Ask about felt forehead tension; do not interpret brow shape, wrinkles or intelligence.",
+      "emotional_theme_for_optional_exploration": "Worry and mental effort are optional conversation themes, not readings from features.",
+      "client_led_question": "Do you notice effort in your forehead, and would you like support there?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [
+        "MER4-016"
+      ],
+      "targets_from_mer1_5": [
+        "frontalis"
+      ],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    },
+    {
+      "id": "load_movement",
+      "source": {
+        "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+        "chapter": "1. Emotional Aspects of Body-reading",
+        "pdf_pages": [
+          14
+        ],
+        "printed_pages": [
+          12
+        ]
+      },
+      "how_to_read": "Observe stillness and comfortable movement, distribution of effort, missing movement and client feedback.",
+      "emotional_theme_for_optional_exploration": "Where support, activation or rest might be welcome.",
+      "client_led_question": "Where does your body need support today?",
+      "how_to_approach": {
+        "instruction": "Open, curious, non-judgmental attention; discuss perceptions together; begin with three positive qualities; do not treat the outline as a recipe. Observe comfortable movement and ask where support is needed.",
+        "sources": [
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 3
+          },
+          {
+            "manual": "MER7.TRAUMA RELEASE MANUAL.pdf",
+            "pdf_page": 14
+          }
+        ]
+      },
+      "muscles_named_in_mer7": null,
+      "related_mer1_5_stroke_ids": [],
+      "targets_from_mer1_5": [],
+      "clinical_status": "Interpretative teaching framework, not diagnostic evidence. Only use themes with the client’s own confirmation.",
+      "appearance_inference_allowed": false
+    }
+  ]
+}
