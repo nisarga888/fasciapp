@@ -5,9 +5,16 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_MER_V2 = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function(){
-const DATA_VERSION = "0.23.235";
+const DATA_VERSION = "0.23.237";
 const BELT_KEYS = ["ocular","oral","cervical","thoracic","diaphragmatic","abdominal","pelvic"];
 const BELT_LABEL = {ocular:"Ocular",oral:"Oral",cervical:"Cervical",thoracic:"Thoracic",diaphragmatic:"Diaphragmatic",abdominal:"Abdominal",pelvic:"Pelvic and legs"};
+const GROUPS = [
+  {id:"face", label:"Ocular & Oral", line:"MER4 · Original Face (Cranium)", keys:["ocular","oral"]},
+  {id:"cervical", label:"Cervical", line:"MER1 · Self-Empowerment", keys:["cervical"]},
+  {id:"thorax", label:"Thoracic & Diaphragmatic", line:"MER5 · Inspiration", keys:["thoracic","diaphragmatic"]},
+  {id:"abdominal", label:"Abdominal", line:"MER3 · Centering (Pelvis)", keys:["abdominal"]},
+  {id:"pelvic", label:"Pelvic & Legs", line:"MER2 · Grounding", keys:["pelvic"]}
+];
 const LEVEL_LABEL = ["Balanced","Mild · to watch","To watch","Strong · over-charged"];
 const MANUAL_OF = {ocular:"MER4",oral:"MER4",cervical:"MER1",thoracic:"MER5",diaphragmatic:"MER5",abdominal:"MER3",pelvic:"MER2"};
 const RULES = [
@@ -130,8 +137,18 @@ function buildReading(catalog, input){
   };
 }
 
+function groupById(id){return GROUPS.find(g=>g.id===id)||null}
+function groupForKey(key){return GROUPS.find(g=>g.keys.indexOf(key)>=0)||null}
+function resolveSegment(reading, segment){
+  if(!segment) return segment;
+  const g = groupById(segment)||groupForKey(segment);
+  if(!g) return segment;
+  if(reading && g.keys.indexOf(reading.segment)>=0) return reading.segment;
+  const opt = reading && (reading.choice&&reading.choice.options||[]).find(k=>g.keys.indexOf(k)>=0);
+  return opt||g.keys[0];
+}
 function activeManual(reading, segment){
-  const key = segment===undefined ? reading.segment : segment;
+  const key = resolveSegment(reading, segment===undefined ? reading.segment : segment);
   if (!key) return null;
   const table = reading.routing && reading.routing.belt_to_manual;
   const fromData = table && table[key] && table[key].manual;
@@ -257,14 +274,28 @@ function chapterHead(n, title, id){
   return '<div class="chH" id="'+id+'" data-mer-sec="'+esc(title)+'"><b>'+n+'</b><h2>'+esc(title)+'</h2></div>';
 }
 
+function segButtons(activeKey){
+  const on = groupForKey(activeKey);
+  return GROUPS.map(g=>'<button type="button" data-mer-seg="'+g.id+'"'+(on&&on.id===g.id?' class="on"':'')+'><b>'+esc(g.label)+'</b><small>'+esc(g.line)+'</small></button>').join("");
+}
+function groupLevel(reading, g){
+  const rows = g.keys.map(k=>(reading.belts||[]).find(b=>b.key===k)).filter(Boolean);
+  const known = rows.filter(b=>b.level!=null).sort((a,b)=>b.level-a.level);
+  if(!known.length) return "Unknown";
+  return known[0].levelLabel;
+}
+function trainingRows(reading, segment){
+  const on = groupForKey(segment);
+  return GROUPS.map(g=>'<div class="beltRow'+(on&&on.id===g.id?' on':'')+'"><div><b>'+esc(g.label)+'</b><small>'+esc(g.line)+'</small></div><span>'+esc(groupLevel(reading, g))+'</span></div>').join("");
+}
 function renderSessionBody(reading, segment){
+  segment = resolveSegment(reading, segment);
   if (!segment){
-    const opts = reading.choice.options||BELT_KEYS;
-    return '<section class="card mer"><h3 class="gH">Choose one segment</h3><p class="gSub">More than one specific concern is present, or none is clear enough. Pick one. Only that manual is shown, and choosing another replaces this list.</p><div class="segPick">'+opts.map(k=>'<button type="button" data-mer-seg="'+k+'">'+esc(BELT_LABEL[k]||k)+'</button>').join("")+'</div></section>';
+    return '<section class="card mer"><h3 class="gH">Choose one training</h3><p class="gSub">Nothing in the intake matches one training yet. Pick one. Only that manual is shown, and choosing another replaces this list.</p><div class="segPick">'+segButtons("")+'</div></section>';
   }
   const copy = sessionCopy(reading, segment);
   const cards = visibleCards(reading, segment);
-  const picks = BELT_KEYS.map(k=>'<button type="button" data-mer-seg="'+k+'"'+(k===segment?' class="on"':'')+'>'+esc(BELT_LABEL[k])+'</button>').join("");
+  const picks = segButtons(segment);
   const list = cards.length
     ? cards.map((s,i)=>strokeCard(s,i+1)).join("")
     : '<p>No reviewed cards are available for this manual. Nothing is borrowed from another manual.</p>';
@@ -273,14 +304,14 @@ function renderSessionBody(reading, segment){
 
 function renderMer(reading, opts){
   const o = opts||{};
-  const segment = o.segment!=null ? o.segment : reading.segment;
+  const segment = resolveSegment(reading, o.segment!=null ? o.segment : reading.segment);
   const items = focusItems(reading);
   const grid = [["1","Belts of Tension & Key Findings","merC1"],["2","Body Reading and Myofascial Lines","merC2"],["3","MER session plan with strokes","merC3"],["4","Caution and Homework","merC4"]];
   let h = '<section class="card ovw"><div class="gK">How this report is organised</div><h2 class="gH">MER bodywork guidance</h2><p class="gSub">Four chapters · clear guidance</p><div class="chGrid">'+grid.map(g=>'<a data-j="'+g[2]+'"><b>'+g[0]+'</b><span>'+esc(g[1])+'</span></a>').join("")+'</div></section>';
   h += chapterHead(1, "Belts of Tension & Key Findings", "merC1");
   h += o.beltHtml||'<section class="card bmc"><div class="gK">Belts of tension</div><h2 class="gH">Where tension sits</h2><p class="gSub">No belt map is saved. Missing levels stay unknown.</p></section>';
   h += '<section class="card mer"><h2 class="gH">Focus for this reading</h2>'+(items.length?'<ul class="mL">'+items.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul>':'<p>No current symptom is recorded yet.</p>')+'</section>';
-  h += '<section class="card mer"><h2 class="gH">Belts and MER trainings</h2>'+reading.belts.map(b=>'<div class="beltRow'+(b.key===segment?' on':'')+'"><div><b>'+esc(b.label)+'</b><small>'+esc(b.trainingName)+'</small></div><span>'+esc(b.levelLabel)+'</span></div>').join("")+'</section>';
+  h += '<section class="card mer"><h2 class="gH">Belts and MER trainings</h2>'+trainingRows(reading, segment)+'</section>';
   const begin = [];
   if (reading.stressN!=null) begin.push("Stress level: "+reading.stressN+"/10; agree an easy pace and a stop signal.");
   const res = [];
@@ -299,7 +330,7 @@ function renderMer(reading, opts){
   [["Front", reading.obsFront],["Side", reading.obsSide],["Back", reading.obsBack]].forEach(([h2,p])=>{ if(p) intake.push([h2,p]); });
   if (intake.length) h += intake.map(([title, body])=>'<section class="card brd"><div class="gK">From this intake</div><h2 class="gH">'+esc(title)+'</h2><p class="bxp">'+esc(body)+'</p></section>').join("");
   const body = o.bodyItems||[];
-  if (body.length) h += body.map(card=>'<section class="card brd"><div class="gK">Saved picture reading</div><h2 class="gH">'+esc(card.h)+'</h2><p class="bxp">'+esc(card.p)+'</p></section>').join("");
+  if (body.length) h += body.map(card=>'<section class="card brd"><div class="gK">Saved picture reading</div><h2 class="gH'+(card.noteH?" faNote":"")+'"'+(card.pathH?' data-p="'+esc(card.pathH)+'"':'')+'>'+esc(card.h)+'</h2><p class="bxp'+(card.note?" faNote":"")+'"'+(card.path?' data-p="'+esc(card.path)+'"':'')+'>'+esc(card.p)+'</p></section>').join("");
   else if (!intake.length) h += '<section class="card brd"><div class="gK">From this intake</div><h2 class="gH">Picture reading</h2><p class="bxp">No picture-reading notes are saved on this assessment.</p></section>';
   h += lineFigures(activeManual(reading, segment));
 
@@ -312,9 +343,10 @@ function renderSession(reading, segment){
   return renderSessionBody(reading, segment);
 }
 function renderTail(reading, segment){
+  segment = resolveSegment(reading, segment);
   const hw = homeworkRows(reading, segment);
   return '<section class="card mer"><h2 class="gH">Keep the work comfortable</h2><ul class="mL">'+cautionItems(reading, segment).map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul></section><section class="card mer"><h2 class="gH">Homework</h2><p class="gSub">5–20 minutes daily total. Choose a gentle, familiar practice. Do not work through pain.</p>'+(hw.length?hw.map(row=>'<div class="it"><h3>'+esc(row.title)+'</h3><p>'+esc(row.practice)+'</p><p class="mCav">'+esc(row.note)+'</p></div>').join(""):'<p>No home practice is matched until a segment is chosen.</p>')+'</section>';
 }
 
-return {DATA_VERSION, buildReading, renderMer, renderSession, renderTail, visibleCards, activeManual, beltLevel, chooseSegment, BELT_KEYS, MANUAL_OF};
+return {DATA_VERSION, buildReading, renderMer, renderSession, renderTail, visibleCards, activeManual, beltLevel, chooseSegment, resolveSegment, BELT_KEYS, GROUPS, MANUAL_OF};
 });
