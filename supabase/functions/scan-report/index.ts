@@ -1,12 +1,18 @@
 // FasciApp Scan: automatic report generation. Disabled until GEMINI_API_KEY secret is set.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { KB, EXAMPLE } from "./kb.ts";
+import { KB } from "./kb.ts";
 const MODEL = Deno.env.get("SCAN_MODEL") || "gemini-3.5-flash";
+const SHAPE = {
+  sections: [{ key: "body", title: "", items: [{ h: "", p: "" }] }],
+  plan: [{ n: 1, focus: "", bodywork: "", breathwork: "", home: "" }],
+  body_map: { belts: { ocular: 0, oral: 0, cervical: 0, thoracic: 0, diaphragmatic: 0, abdominal: 0, pelvic: 0 }, issues: [{ n: 1, area: "", note: "" }] },
+  summary: "", disclaimer: "", photo_note: "", red_flag: { level: "none", text: "" }, client: "", date: "", version: ""
+};
 const SYS = `You are FasciApp Scan, writing a body-reading assessment for a bodywork practitioner using the MER & BBTRS approach.
 Use ONLY this knowledge base:\n${KB}\n
 Rules: the report is for the therapist, about the client: write every text field in neutral third person ("the client", the client's first name where natural, "they/their"); never address the reader as "you" or "your"; homework and home practice are suggestions for the client; only quoted client beliefs may stay first person. Never write the words "Anatomy Trains" (or Thomas Myers) anywhere in the report: the knowledge base uses it internally only; call them "myofascial lines" or "fascial lines". The disclaimer says the reflection is drawn from Myofascial Energetic Release and Biodynamic Breathwork perspectives. Not a medical diagnosis; non-medical, tentative, kind language ("may", "suggests"); never diagnose or promise cures; if intake shows red flags, set red_flag text recommending a doctor first.
-The example below is a DIFFERENT client: use it only for format, depth and tone; never copy its findings, wording or plan. Base everything on this client's intake and photos.
-Return ONLY JSON with exactly the same keys and shape as this example report (sections, 10-item plan with n/focus/bodywork/breathwork/home, body_map with belts 0-3 and numbered issues, summary, disclaimer, photo_note, red_flag, client, date, version):\n${EXAMPLE}`;
+Write this report only from the intake and photos in the user message. Do not reuse findings, wording, or a plan from any other client. The JSON below is an empty shape, not an example client.
+Return ONLY JSON with this shape. plan has 10 items. Belt values are integers 0-3. Leave a belt out of the story when the intake does not support it:\n${JSON.stringify(SHAPE)}`;
 async function b64(sb: any, p: string | null) {
   if (!p) return null;
   const { data } = await sb.storage.from("assessment-photos").download(p);

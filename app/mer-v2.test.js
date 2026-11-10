@@ -92,20 +92,40 @@ test("other segments follow the belt-to-manual table and do not combine manuals"
   assert.equal(/restricted breath/i.test(html(free)), false);
 });
 
-test("competing specific pain asks for one choice and switching replaces the manual", () => {
+test("the first reported pain area is the main issue, and another area does not add a manual", () => {
   const r = read({pain_areas:["knees","jaw"], pain_intensity:4});
-  assert.equal(r.needsChoice, true);
-  assert.equal(r.segment, null);
-  assert.equal(MER.visibleCards(r).length, 0);
-  const ask = html(r, null);
-  assert.match(ask, /Choose one segment/);
-  assert.equal((ask.match(/class="stCard"/g)||[]).length, 0);
-  const grounded = MER.renderSession(r, "pelvic");
+  assert.equal(r.needsChoice, false);
+  assert.equal(r.segment, "pelvic");
+  assert.equal(MER.activeManual(r), "MER2");
+  assert.equal(MER.visibleCards(r).length, 33);
+  assert.ok(r.choice.options.includes("oral"));
+  const page = html(r);
+  assert.match(page, /pain 4\/10/);
+  assert.match(page, /do not add another manual/i);
+  assert.equal(/images\/strokes\/MER4-/.test(page), false);
   const face = MER.renderSession(r, "oral");
-  assert.equal((grounded.match(/class="stCard"/g)||[]).length, 33);
   assert.equal((face.match(/class="stCard"/g)||[]).length, 29);
   assert.equal(/MER2-/.test(face), false);
-  assert.match(html(r, "pelvic"), /pain 4\/10/);
+  const neck = html(read({complaint:"Neck tension", tension_areas:["neck"], pain_intensity:6}));
+  const breath = html(read({breath:"Breath feels shallow and held", pain_intensity:2}));
+  assert.match(neck, /Self-Empowerment/);
+  assert.match(neck, /pain 6\/10/);
+  assert.equal(/knee pain score/.test(neck), false);
+  assert.equal(/images\/strokes\/MER2-/.test(neck), false);
+  assert.match(breath, /Inspiration/);
+  assert.match(breath, /breath restriction/i);
+  assert.equal(/knee pain score/.test(breath), false);
+  assert.equal(/images\/strokes\/MER1-/.test(breath), false);
+  const held = read({breath:["Hold my breath","Chest breathing"]});
+  assert.equal(held.segment, "diaphragmatic");
+  assert.equal(MER.activeManual(held), "MER5");
+  const freeList = read({breath:["Feels free"], complaint:"General check-in"}, {thoracic:3});
+  assert.equal(freeList.breathFree, true);
+  assert.equal(freeList.segment, "thoracic");
+  assert.equal(/restricted breath/i.test(html(freeList)), false);
+  assert.equal(MER.activeManual(read({pain_areas:["Shoulders"]})), "MER5");
+  assert.equal(MER.activeManual(read({pain_areas:["Jaw","Neck"]})), "MER4");
+  assert.equal(MER.activeManual(read({pain_areas:["Knees"], tension_areas:["Upper back"], breath:["Feels free"]})), "MER2");
 });
 
 test("a strong core is not abdominal pain, and a belt score alone does not invent a second manual", () => {
@@ -114,9 +134,9 @@ test("a strong core is not abdominal pain, and a belt score alone does not inven
   assert.equal(core.needsChoice, true);
   assert.equal(MER.activeManual(core, "abdominal"), "MER3");
   const onlyBelt = read({complaint:"General check-in"}, {thoracic:3, pelvic:3});
-  assert.equal(onlyBelt.needsChoice, true);
-  assert.ok(onlyBelt.choice.options.includes("thoracic"));
-  assert.ok(onlyBelt.choice.options.includes("pelvic"));
+  assert.equal(onlyBelt.segment, "thoracic");
+  assert.equal(MER.activeManual(onlyBelt), "MER5");
+  assert.equal(MER.visibleCards(onlyBelt).some(c=>c.module===2), false);
 });
 
 test("missing belt levels stay unknown and empty intake does not throw", () => {

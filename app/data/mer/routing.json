@@ -5,7 +5,7 @@
     "Match the client's actual presenting problem, especially specific pain, to one segment before considering broader belt scores.",
     "A burning knee problem selects pelvic and legs → MER2 Grounding, even if thoracic tension is also strong. Do not automatically append Inspiration.",
     "Where there is no specific pain, use the stated current problem, confirmed findings and relevant belt levels to choose one segment. A belt score alone must not manufacture a symptom.",
-    "If there are competing specific problems or no clear match, ask the practitioner to choose one active segment. Never concatenate manuals to avoid making the choice.",
+    "The first specific pain area is the main issue and selects the one segment. Other reported regions stay on the map and can be switched to; they do not add a second manual. If nothing matches, ask the practitioner to choose one active segment. Never concatenate manuals.",
     "Resolve exactly one manual through belt_to_manual; show that manual's selected training flow in original manual_order.",
     "default_flow is the complete chosen-manual sequence, including opening, integration and closing work that may reach beyond the local painful area. This matches the approved v7 Grounding preview (all 33 MER2 cards for knee pain). primary_segment identifies the local work that matches the problem; the app may later tighten the visible list to that segment after teacher review.",
     "When a practitioner changes the active segment, replace the old visible list. Only one segment/manual is active at a time."
