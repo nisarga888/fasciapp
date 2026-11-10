@@ -5,7 +5,7 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_MER_V2 = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function(){
-const DATA_VERSION = "0.23.234";
+const DATA_VERSION = "0.23.235";
 const BELT_KEYS = ["ocular","oral","cervical","thoracic","diaphragmatic","abdominal","pelvic"];
 const BELT_LABEL = {ocular:"Ocular",oral:"Oral",cervical:"Cervical",thoracic:"Thoracic",diaphragmatic:"Diaphragmatic",abdominal:"Abdominal",pelvic:"Pelvic and legs"};
 const LEVEL_LABEL = ["Balanced","Mild · to watch","To watch","Strong · over-charged"];
@@ -48,31 +48,27 @@ function numberOrNull(v){
   return Number.isFinite(n) ? n : null;
 }
 
+function breathBlob(D){return text(D.breath)+" "+text(D.breath_experience);}
+function breathIsFree(s){return /feels free|breath(?:ing)? (?:feels |is |seems )?(?:free|easy|unrestricted)|breathe freely|\bfree breath\b/i.test(s||"");}
+function breathIsRestricted(s){return !breathIsFree(s) && /hold(?:ing)? (?:my |the |their )?breath|held breath|shallow|chest breath|restrict|cannot breathe|can't breathe|short of breath/i.test(s||"");}
 function chooseSegment(D, belts){
-  const pain = uniq([].concat(
-    asList(D.pain_areas).flatMap(segmentsIn),
-    painClauses(D.complaint).flatMap(segmentsIn),
-    painClauses(text(D.pain_type)+" "+text(D.pain_areas)).flatMap(segmentsIn)
-  ));
-  if (pain.length===1) return {segment:pain[0], reason:"pain", needsChoice:false, options:pain};
-  if (pain.length>1) return {segment:null, reason:"pain", needsChoice:true, options:pain};
-  const breath = text(D.breath)+" "+text(D.breath_experience);
-  const free = /breath(?:ing)? (?:feels |is |seems )?(?:free|easy|unrestricted)|breathe freely|free breath/i.test(breath);
-  const restricted = !free && /shallow|held breath|holding (?:the )?breath|restrict|cannot breathe|can't breathe|short of breath/i.test(breath);
-  if (restricted) return {segment:"diaphragmatic", reason:"breath", needsChoice:false, options:["diaphragmatic"]};
-  const tension = uniq([].concat(
-    asList(D.tension_areas).flatMap(segmentsIn),
-    String(D.complaint||"").split(/[.;\n]+/).flatMap(segmentsIn),
-    asList(D.body_experience).flatMap(segmentsIn),
-    asList(D.goal).flatMap(segmentsIn)
-  ));
-  if (tension.length===1) return {segment:tension[0], reason:"problem", needsChoice:false, options:tension};
-  if (tension.length>1) return {segment:null, reason:"problem", needsChoice:true, options:tension};
+  const ordered = [];
+  const push = (k)=>{ if(k && ordered.indexOf(k)<0) ordered.push(k); };
+  asList(D.pain_areas).forEach(item => segmentsIn(item).forEach(push));
+  painClauses(D.complaint).forEach(clause => segmentsIn(clause).forEach(push));
+  if (ordered.length) return {segment:ordered[0], reason:"pain", needsChoice:false, options:ordered};
+  const breath = breathBlob(D);
+  if (breathIsRestricted(breath)) return {segment:"diaphragmatic", reason:"breath", needsChoice:false, options:["diaphragmatic"]};
+  const tension = [];
+  const pushT = (k)=>{ if(k && tension.indexOf(k)<0) tension.push(k); };
+  asList(D.tension_areas).forEach(item => segmentsIn(item).forEach(pushT));
+  String(D.complaint||"").split(/[.;\n]+/).forEach(clause => segmentsIn(clause).forEach(pushT));
+  asList(D.body_experience).forEach(item => segmentsIn(item).forEach(pushT));
+  asList(D.goal).forEach(item => segmentsIn(item).forEach(pushT));
+  if (tension.length) return {segment:tension[0], reason:"problem", needsChoice:false, options:tension};
   const ranked = belts.filter(b=>b.level!=null && b.level>=2).sort((a,b)=>b.level-a.level || BELT_KEYS.indexOf(a.key)-BELT_KEYS.indexOf(b.key));
   if (!ranked.length) return {segment:null, reason:"none", needsChoice:true, options:BELT_KEYS.slice()};
-  const top = ranked.filter(b=>b.level===ranked[0].level);
-  if (top.length===1) return {segment:top[0].key, reason:"belt", needsChoice:false, options:[top[0].key]};
-  return {segment:null, reason:"belt", needsChoice:true, options:top.map(b=>b.key)};
+  return {segment:ranked[0].key, reason:"belt", needsChoice:false, options:ranked.map(b=>b.key)};
 }
 
 function buildReading(catalog, input){
@@ -104,8 +100,7 @@ function buildReading(catalog, input){
   const gblob = (text(D.energetics)+" "+text(D.energetics_notes)+" "+text(D.body_experience)).toLowerCase();
   const grounded = /well grounded|solid grounding|strong core/.test(gblob) && !/not well grounded|ungrounded|not grounded/.test(gblob);
   const strongCore = /strong core/.test(gblob);
-  const breathBlob = text(D.breath)+" "+text(D.breath_experience);
-  const breathFree = /breath(?:ing)? (?:feels |is |seems )?(?:free|easy|unrestricted)|breathe freely|free breath/i.test(breathBlob);
+  const breathFree = breathIsFree(breathBlob(D));
   const painN = numberOrNull(D.pain_intensity);
   const stressN = numberOrNull(D.stress);
   const libraryCounts = {};
@@ -115,6 +110,7 @@ function buildReading(catalog, input){
     dataVersion:DATA_VERSION,
     belts, byManual, modById, libraryCounts,
     choice, segment:choice.segment, needsChoice:choice.needsChoice,
+    routing:cat.routing||null,
     redFlag, grounded, strongCore, breathFree,
     painN, stressN,
     complaint:text(D.complaint),
@@ -126,7 +122,9 @@ function buildReading(catalog, input){
     sleep:text(D.sleep),
     energetics:text(D.energetics),
     bodyExperience:text(D.body_experience),
-    touch:text([D.touch, D.touch_notes].filter(Boolean).join(". ")),
+    obsFront:text(D.obs_front),
+    obsSide:text(D.obs_side),
+    obsBack:text(D.obs_back),
     lines:Array.isArray(cat.fascia_lines)?cat.fascia_lines:[],
     totalCards:strokes.length
   };
@@ -135,7 +133,9 @@ function buildReading(catalog, input){
 function activeManual(reading, segment){
   const key = segment===undefined ? reading.segment : segment;
   if (!key) return null;
-  return MANUAL_OF[key]||null;
+  const table = reading.routing && reading.routing.belt_to_manual;
+  const fromData = table && table[key] && table[key].manual;
+  return fromData || MANUAL_OF[key] || null;
 }
 function visibleCards(reading, segment){
   const id = activeManual(reading, segment);
@@ -166,36 +166,37 @@ function focusItems(reading){
     items.push(/^breath/i.test(b)?b:"Breath: "+b);
   }
   if (reading.tensionAreas.length) items.push("Tension: "+reading.tensionAreas.join(", "));
-  return uniq(items).slice(0,5);
+  const extra = (reading.choice.options||[]).slice(1).map(k=>BELT_LABEL[k]).filter(Boolean);
+  if (extra.length) items.push("Other reported regions stay on the map and do not add another manual: "+extra.join(", ")+".");
+  return uniq(items).slice(0,6);
 }
 
 function sessionCopy(reading, segment){
   const manualId = activeManual(reading, segment);
   const mod = (reading.modById&&reading.modById[manualId])||{};
   const belt = (reading.belts||[]).find(b=>b.key===segment);
-  const pain = painLabel(reading);
-  const knee = /\bknee/.test((reading.complaint+" "+reading.painAreas.join(" ")).toLowerCase());
+  const own = (reading.painAreas.join(" ")+" "+reading.complaint).toLowerCase();
+  const knee = /\bknee/.test(own);
+  const place = (belt&&belt.label)||"the selected area";
   const name = mod.name|| (belt&&belt.trainingName)||manualId||"MER training";
+  const pain = painLabel(reading);
   const why = pain
-    ? name+" is chosen for "+pain+", matched to "+((belt&&belt.label)||"the selected segment").toLowerCase()+"."
-    : name+" is chosen from the reported concern in the "+((belt&&belt.label)||"selected").toLowerCase()+" segment.";
+    ? name+" is chosen for this client's reported issue ("+pain+"), matched to "+place.toLowerCase()+"."
+    : name+" is chosen from this client's reported concern in the "+place.toLowerCase()+" segment.";
   const before = reading.redFlag
-    ? "A safety concern is marked. Get the appropriate clearance before hands-on work."
-    : knee
-      ? "Check the burning knee symptoms and agree on pressure before leg work."
-      : segment==="cervical"
-        ? "Agree pressure, and do not take the neck to the end of its range."
-        : segment==="oral"||segment==="ocular"
-          ? "Ask before face, jaw or head contact. Agree what will be left out."
-          : segment==="abdominal"
-            ? "Agree abdominal contact and work only where the client is comfortable."
-            : "Agree pressure and a stop signal before the first stroke.";
-  const work = "Use the "+name.replace(/^MER /,"")+" cards below in manual order. Stay with this manual. Adapt or omit pressure and stretches that worsen symptoms.";
+    ? "A safety concern is marked on this intake. Get the appropriate clearance before hands-on work."
+    : (knee?"Screen this client's knee symptoms and agree on pressure before leg work."
+      : segment==="cervical"?"Agree pressure for this client's neck, and do not take it to the end of its range."
+      : segment==="diaphragmatic"?"This client reported a breath restriction. Agree an easy breath and do not force the inhale."
+      : segment==="oral"||segment==="ocular"?"Ask before face, jaw or head contact for this client. Agree what will be left out."
+      : segment==="abdominal"?"Agree abdominal contact for this client, and work only where they are comfortable."
+      : "Agree pressure and a stop signal before the first stroke for this client.");
+  const work = "Use this client's "+name.replace(/^MER /,"")+" cards below, in this manual's order. Do not add another manual.";
   const after = knee
-    ? "Record the knee pain score and comfort with walking."
+    ? "Record this client's knee pain score"+(reading.painN!=null?" (now pain "+reading.painN+"/10)":"")+" and comfort with walking."
     : reading.painN!=null
-      ? "Record the pain score again and what feels different in the worked area."
-      : "Record what feels different in the worked area, including anything that feels worse.";
+      ? "Record this client's pain score again (now pain "+reading.painN+"/10) and what changed in "+place.toLowerCase()+"."
+      : "Record what changed for this client in "+place.toLowerCase()+".";
   return {manualId, name, focus:mod.focus||"", why, before, work, after, beltLabel:belt?belt.label:""};
 }
 
@@ -291,9 +292,15 @@ function renderMer(reading, opts){
   if (begin.length) h += '<section class="card mer"><h2 class="gH">Before you begin</h2><ul class="mL">'+begin.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul></section>';
 
   h += chapterHead(2, "Body Reading and Myofascial Lines", "merC2");
+  const intake = [];
+  if (reading.energetics || reading.exercise || reading.sleep) intake.push(["Positive qualities", [reading.energetics, reading.exercise && ("Movement: "+reading.exercise), reading.sleep && ("Sleep: "+reading.sleep)].filter(Boolean).join(". ")]);
+  if (reading.complaint || reading.painAreas.length) intake.push(["What this client reported", [reading.complaint, reading.painAreas.length && ("Areas: "+reading.painAreas.join(", ")), reading.painN!=null && ("pain "+reading.painN+"/10"), reading.painType].filter(Boolean).join(". ")]);
+  if (reading.breath) intake.push(["Breath they reported", reading.breath]);
+  [["Front", reading.obsFront],["Side", reading.obsSide],["Back", reading.obsBack]].forEach(([h2,p])=>{ if(p) intake.push([h2,p]); });
+  if (intake.length) h += intake.map(([title, body])=>'<section class="card brd"><div class="gK">From this intake</div><h2 class="gH">'+esc(title)+'</h2><p class="bxp">'+esc(body)+'</p></section>').join("");
   const body = o.bodyItems||[];
-  if (body.length) h += body.map(card=>'<section class="card brd"><div class="gK">Body reading</div><h2 class="gH">'+esc(card.h)+'</h2><p class="bxp">'+esc(card.p)+'</p></section>').join("");
-  else h += '<section class="card brd"><div class="gK">Body reading</div><h2 class="gH">Picture reading</h2><p class="bxp">No picture-reading notes are saved on this assessment.</p></section>';
+  if (body.length) h += body.map(card=>'<section class="card brd"><div class="gK">Saved picture reading</div><h2 class="gH">'+esc(card.h)+'</h2><p class="bxp">'+esc(card.p)+'</p></section>').join("");
+  else if (!intake.length) h += '<section class="card brd"><div class="gK">From this intake</div><h2 class="gH">Picture reading</h2><p class="bxp">No picture-reading notes are saved on this assessment.</p></section>';
   h += lineFigures(activeManual(reading, segment));
 
   h += '<div id="merCh3">'+chapterHead(3, "MER session plan with strokes", "merC3")+'<div id="merCh3Body">'+renderSessionBody(reading, segment)+'</div></div>';

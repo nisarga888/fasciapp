@@ -234,13 +234,13 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="mer.js?v=0.23.232"></script><script src="mer-v2.js?v=0.23.234"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="mer.js?v=0.23.232"></script><script src="mer-v2.js?v=0.23.235"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null,merCatalog;
-async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.234";
+async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.235";
  const names=["mer_modules","mer_strokes","mer_cards","routing","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
  try{const parts=await Promise.all(names.map(n=>fetch("data/mer/"+n+".json?v="+v,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error(n);return res.json()})));
   const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_cards||!cat.mer_cards.cards)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}
@@ -367,7 +367,11 @@ function structCard(D,belts,bread){const F=window.FA_GIFTS,B=window.FA_BBTRS,g=g
  const k2=g.rank[1];
  h+=KC('At a glance','Main and next pattern side by side','','bC')+'<table class="tbl cT"><tr><td></td><td><b>'+E(B.S[k].bbtrs)+'</b></td><td><b>'+E(B.S[k2].bbtrs)+'</b></td></tr>'+B.COMPARE.map(([c,l])=>'<tr><td>'+E(l)+'</td><td>'+E(B.S[k].compare[c])+'</td><td>'+E(B.S[k2].compare[c])+'</td></tr>').join("")+'</table></section>';
  return h}
-function breathCard(D){const F=window.FA_GIFTS,B=window.FA_BBTRS,g=giftsOf(D);if(!g)return"";const k=g.primary,P1=F.G[k],S=B?B.S[k]:null;let h='';
+function breathCard(D){const F=window.FA_GIFTS,B=window.FA_BBTRS,g=giftsOf(D);
+ const one=v=>Array.isArray(v)?v.filter(x=>x!=null&&String(x).trim()!=="").join(", "):(v==null?"":String(v).trim());
+ const bits=[["Breath they reported",one(D.breath)],["Main concern",one(D.complaint)],["Stress level",D.stress!=null&&D.stress!==""?one(D.stress)+" / 10":""]].filter(x=>x[1]);
+ let h=bits.length?KC("This intake","What this client reported","The pattern notes below come from this client’s questionnaire, when one was saved.","brC")+bits.map(([a,b])=>'<div class="it"><h3>'+a+'</h3><p>'+E(b)+'</p></div>').join("")+'</section>':"";
+ if(!g)return h;const k=g.primary,P1=F.G[k],S=B?B.S[k]:null;
  if(S)h+=KC(E(F.nm(k))+' · breath','Breath pattern','How this pattern tends to breathe, and what helps.','brC')+'<div class="brP"><div class="brH">🌬 How the client may breathe now</div><p>'+E(S.breath)+'</p><div class="brH g">What helps</div><p>'+E(S.breathTip)+'</p></div></section>';
  h+=KC('Breathwork suggestions','Breathwork at a glance','','brC')+'<table class="tbl">'+P1.breath.map(([a,b])=>'<tr><td>'+a+'</td><td>'+E(b)+'</td></tr>').join("")+'</table></section>';
  if(B)h+=KC('Other patterns · breath','How the other patterns breathe','Less active for the client, but they may show on some days.','brC')+g.rank.filter(x=>x!=k).map(x=>'<div class="brO"><b>'+E(F.nm(x))+' · '+g.pct[x]+'%</b><p>'+E(B.S[x].breath)+'</p></div>').join("")+'</section>';
