@@ -61,7 +61,9 @@ test("burning knee pain selects Grounding only, even with a strong thoracic belt
   assert.equal(/PDF p\.|https?:|myofascialtrainings/i.test(page), false);
   assert.equal(/Reich|10-session|Check comfortable movement|Read together/i.test(page), false);
   assert.equal((page.match(/class="stCard"/g)||[]).length, 33);
-  assert.match(page, /MER Inspiration Training/);
+  assert.match(page, /MER5 · Inspiration/);
+  assert.match(page, /MER Grounding Training/);
+  assert.match(page, /data-mer-seg="pelvic" class="on"/);
   assert.match(page, /data-mer-src="images\/strokes\/MER2-001.webp"/);
   assert.match(page, /data-mer-src="images\/anatomy\/MER2-001.webp"/);
   assert.match(page, /data\/mer\/lines\/back\.svg/);
@@ -137,6 +139,31 @@ test("a strong core is not abdominal pain, and a belt score alone does not inven
   assert.equal(onlyBelt.segment, "thoracic");
   assert.equal(MER.activeManual(onlyBelt), "MER5");
   assert.equal(MER.visibleCards(onlyBelt).some(c=>c.module===2), false);
+});
+
+test("the belt picker and the training list are the same five rows", () => {
+  const neck = html(read({complaint:"Neck tension", pain_areas:["neck"], pain_intensity:6}, {cervical:3, thoracic:3, diaphragmatic:2, oral:1, ocular:1}));
+  assert.equal((neck.match(/data-mer-seg="/g)||[]).length, 5);
+  assert.equal((neck.match(/class="beltRow/g)||[]).length, 5);
+  assert.match(neck, /data-mer-seg="cervical" class="on"/);
+  assert.match(neck, /Ocular &amp; Oral/);
+  assert.match(neck, /MER4 · Original Face \(Cranium\)/);
+  assert.match(neck, /Thoracic &amp; Diaphragmatic/);
+  assert.match(neck, /MER5 · Inspiration/);
+  assert.match(neck, /MER3 · Centering \(Pelvis\)/);
+  assert.match(neck, /Pelvic &amp; Legs/);
+  assert.match(neck, /beltRow on[\s\S]*Cervical[\s\S]*MER1 · Self-Empowerment[\s\S]*Strong · over-charged/);
+  const list = neck.slice(neck.indexOf("Belts and MER trainings"), neck.indexOf('id="merC2"'));
+  assert.match(list, /Thoracic &amp; Diaphragmatic[\s\S]*MER5 · Inspiration[\s\S]*Strong · over-charged/);
+  assert.equal(/<b>Ocular<\/b>/.test(list), false);
+  assert.equal(/<b>Diaphragmatic<\/b>/.test(list), false);
+  const face = MER.renderSession(read({pain_areas:["Jaw"]}), "face");
+  assert.match(face, /data-mer-seg="face" class="on"/);
+  assert.equal((face.match(/class="stCard"/g)||[]).length, 29);
+  const breath = MER.renderSession(read({breath:["Hold my breath"]}), "thorax");
+  assert.match(breath, /data-mer-seg="thorax" class="on"/);
+  assert.match(breath, /breath restriction/i);
+  assert.match(breath, /Inspiration/);
 });
 
 test("a changed picture-reading paragraph is marked as the practitioner’s note", () => {
