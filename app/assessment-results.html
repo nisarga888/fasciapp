@@ -245,7 +245,7 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="mer.js?v=0.23.232"></script><script src="mer-v2.js?v=0.23.238"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="notes.js?v=0.23.239"></script><script src="mer.js?v=0.23.232"></script><script src="mer-v2.js?v=0.23.238"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
@@ -269,6 +269,8 @@ function clientRec(name){const n=String(name||"").trim(),k=clientKey(n);return k
 function recPill(){const c=clientRec((row&&(row.client_name||(row.report&&row.report.client)))||"");return '<a class="cliRec" href="'+E(c.href)+'">'+E(c.label)+'</a>'}
 function pinClient(){const c=clientRec((row&&(row.client_name||(row.report&&row.report.client)))||"");const a=$("#back");if(a){a.href=c.href;a.textContent=c.label;a.dataset.lock="1"}const s=$("#cliSticky");if(s){s.innerHTML=recPill()}const w=$("#stepWrap");if(w)w.hidden=false;placeSticky();requestAnimationFrame(placeSticky)}
 function placeSticky(){const s=$("#cliSticky"),hero=document.querySelector("#vRes.on .hero .cliRec");if(!s)return;if(!hero){s.hidden=true;return}const b=hero.getBoundingClientRect();s.hidden=b.height<1||b.bottom>=8}
+function readingTraining(){const part=document.querySelector("#vRes .part.on");if(part&&part.id==="pB")return "BBTRS";if(part&&part.id==="pI")return "Intake";try{const seg=window.__faMerReading&&__faMerReading.segment;const g=(window.FA_MER_V2&&FA_MER_V2.GROUPS||[]).find(x=>x.keys.indexOf(seg)>=0);if(g&&g.btn)return g.btn}catch(e){}return "MER"}
+function mountReadNotes(r){const host=document.getElementById("pnRead");if(!host||!window.FA_NOTES)return;const name=r.client_name||(r.report&&r.report.client)||"";if(!name){host.innerHTML="";return}FA_NOTES.mount(host,{clientName:name,place:"reading",title:"Practitioner notes",sync:"Synced with client record & calendar",training:readingTraining,sessionDate:new Date().toISOString().slice(0,10)})}
 addEventListener("scroll",placeSticky,{passive:true});
 function noteOn(path,v,kind){const bag=row&&row.report&&row.report[kind==="d"?"fa_orig_d":"fa_orig"];return !!(bag&&Object.prototype.hasOwnProperty.call(bag,path)&&normNote(bag[path])!==normNote(v))}
 const P=(path,v,tag="p",cls="")=>{const bits=[cls,noteOn(path,v)?"faNote":""].filter(Boolean);return '<'+tag+(bits.length?' class="'+bits.join(" ")+'"':'')+' data-p="'+path+'">'+E(v)+'</'+tag+'>'};
@@ -411,7 +413,7 @@ function seriesCards(D){const F=window.FA_GIFTS,B=window.FA_BBTRS,g=giftsOf(D);i
  return h}
 function renderRes(r){row=r;const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs=R.sections||[],sx=k=>{const i=secs.findIndex(s=>s.key==k);return i<0?null:{s:secs[i],b:"sections."+i}};
  const rf=R.red_flag&&R.red_flag.level!="none";let n=0;const N=()=>String(++n);
- let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(new Date(r.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))+'</p>'+recPill()+'</div>'+tools("res");
+ let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(new Date(r.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))+'</p>'+recPill()+'</div>'+tools("res")+'<div id="pnRead"></div>';
  if(rf)h+='<div class="note rf">⚠️ <b>Please get medical clearance before bodywork and breathwork.</b> '+P("red_flag.text",R.red_flag.text,"span")+'</div>';
  const gh=giftsCard(D);
  /* MER: body type (unchanged content) */
@@ -454,7 +456,7 @@ function renderRes(r){row=r;const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs
  if(!merHtml)merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Physiological and emotional patterns and myofascial restrictions: body type, myofascial lines and the bodywork assessment",0)+'<div class="trN"><b>For practitioners.</b> This assessment is designed for therapist use and is best applied after participating in the Myofascial Energetic Release trainings, which give clarity on how to work with these findings.</div>',mer)+'<section class="card mer"><div class="gK">Manual content</div><h2 class="gH">Manual content unavailable</h2><p class="gSub">The MER training notes could not be loaded. The saved reading below is unchanged, and no new strokes are added.</p></section>'+mcLegacy+(R.plan&&R.plan.length?KEEP(pl.slice(0,pl.indexOf('<section')),pl.slice(pl.indexOf('<section'))):'')+mLink+NV('<button class="sec2" data-tab="B">← Breathwork</button>',PDFB.replace('sec2',''),1)+'<div class="cliEnd">'+recPill()+'</div><button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button></div>';
  h+=merHtml;
  h+='<p class="disc">'+E(F?F.DISC:R.disclaimer)+(R.disclaimer&&F?' '+E(R.disclaimer):'')+'</p>';
- $("#vRes").innerHTML=stag(h);pinClient();
+ $("#vRes").innerHTML=stag(h);pinClient();mountReadNotes(r);
  /* v0.23.200 print flow: long cards may continue on the next page (between items), short cards stay whole */
  $("#vRes").querySelectorAll(".card").forEach(c=>{const g=c.classList.contains("gMain");if(g||c.querySelectorAll("tr,li,.it,.sR,.gBox,.row,.ses2,p").length>4){c.classList.add("flow");const k=c.closest(".keep");if(k&&!g)k.classList.add("flow")/* v0.23.201: part headers may also flow; .segH keeps with the first lines of its card */}});
  /* v0.23.203: clickable index at the top of Breathwork and MER, with "↑ Index" back links */
