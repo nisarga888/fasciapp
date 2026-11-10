@@ -5,7 +5,7 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_MER_V2 = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function(){
-const DATA_VERSION = "0.23.233";
+const DATA_VERSION = "0.23.234";
 const BELT_KEYS = ["ocular","oral","cervical","thoracic","diaphragmatic","abdominal","pelvic"];
 const BELT_LABEL = {ocular:"Ocular",oral:"Oral",cervical:"Cervical",thoracic:"Thoracic",diaphragmatic:"Diaphragmatic",abdominal:"Abdominal",pelvic:"Pelvic and legs"};
 const LEVEL_LABEL = ["Balanced","Mild · to watch","To watch","Strong · over-charged"];
@@ -78,7 +78,8 @@ function chooseSegment(D, belts){
 function buildReading(catalog, input){
   const cat = catalog||{};
   const modules = ((cat.mer_modules&&cat.mer_modules.modules)||[]);
-  const strokes = ((cat.mer_strokes&&cat.mer_strokes.strokes)||[]).slice().sort((a,b)=>(a.manual_order-b.manual_order)||String(a.id).localeCompare(String(b.id)));
+  const cardRows = (cat.mer_cards&&cat.mer_cards.cards)||null;
+  const strokes = (cardRows?cardRows.map(c=>({...c, name:c.title||c.name, targets:c.muscles||c.targets||[], module:Number(String(c.manual||"").replace(/\D/g,""))||c.module||0})):(cat.mer_strokes&&cat.mer_strokes.strokes)||[]).slice().sort((a,b)=>(a.manual_order-b.manual_order)||String(a.id).localeCompare(String(b.id)));
   const modById = {};
   modules.forEach(m=>{modById[m.id]=m});
   const src = input||{};
@@ -226,23 +227,29 @@ function cautionItems(reading, segment){
   return items;
 }
 
-function lineSvg(kind){
-  const body = "M40 16c7 0 11 7 11 14s-4 11-11 11-11-5-11-11 4-14 11-14zM40 41v30M30 52h20M40 71l-8 34M40 71l8 34";
-  const paths = {
-    back:"M34 102 L36 74 L38 46 L40 24",
-    arms:"M16 54 H64 M28 54 L22 78 M52 54 L58 78",
-    front:"M46 102 L44 74 L42 50 L40 28 M28 62 Q40 52 52 62"
-  };
-  const label = kind==="back"?"Back":kind==="arms"?"Arms":"Core / front";
-  return '<figure><svg viewBox="0 0 80 116" role="img" aria-label="'+esc(label)+' line, schematic"><path d="'+body+'" fill="none" stroke="#C99E67" stroke-width="1.2"/><path d="'+(paths[kind]||paths.back)+'" fill="none" stroke="#E7C99A" stroke-width="2" stroke-linecap="round"/></svg><figcaption>'+esc(label)+'</figcaption></figure>';
+const LINE_FIGS = [
+  ["back.svg","Back","feet → calves → hamstrings → spine"],
+  ["arms.svg","Arms","chest and shoulders → arms"],
+  ["core_front.svg","Core / front","pelvis and ribs"]
+];
+function lineFigures(manualId){
+  const note = manualId==="MER2"
+    ? "These areas connect through the Grounding sequence."
+    : "These areas connect through the selected training. They do not choose the manual or diagnose a cause.";
+  return '<section class="card mer"><h2 class="gH">Myofascial lines</h2><div class="lineFigs">'+LINE_FIGS.map(([file,label])=>'<figure><img src="data/mer/lines/'+file+'?v='+DATA_VERSION+'" alt="'+esc(label)+' fascia line"><figcaption>'+esc(label)+'</figcaption></figure>').join("")+'</div><ul class="mL">'+LINE_FIGS.map(([,label,text])=>'<li><b>'+esc(label==="Back"?"Back line":label==="Arms"?"Arm lines":"Core / front")+':</b> '+esc(text)+'</li>').join("")+'</ul><p class="mCav">'+esc(note)+'</p></section>';
 }
-
+function cautionTexts(s){
+  return (s.cautions||[]).map(c=>typeof c==="string"?c:(c&&c.text)||"").filter(Boolean);
+}
 function strokeCard(s, n){
-  const muscles = (s.targets||[]).join(", ");
-  const areas = (s.body_areas||[]).join(", ");
-  const notes = (s.cautions||[]).map(c=>c&&c.text).filter(Boolean);
-  const review = s.teacher_review_required ? '<p class="stNote">This record needs teacher review before use. The name is kept; nothing has been invented to fill a gap.</p>' : "";
-  return '<article class="stCard"><div class="stK">Stroke '+(n<10?"0":"")+n+'</div><h3>'+esc(s.name)+'</h3>'+(muscles?'<p class="stMusc">'+esc(muscles)+'</p>':'')+(areas?'<p class="stArea">'+esc(areas)+'</p>':'')+notes.map(t=>'<p>'+esc(t)+'</p>').join("")+review+'</article>';
+  const title = s.title||s.name||"";
+  const muscles = (s.muscles||s.targets||[]);
+  const muscleText = Array.isArray(muscles)?muscles.join(", "):String(muscles||"");
+  const explanation = s.explanation||"";
+  const pic = (path, cls, alt)=>path?'<img class="'+cls+'" alt="'+esc(alt)+'" data-mer-src="'+esc(path)+'" loading="lazy" decoding="async">':'';
+  const media = (s.photo||s.anatomy)?'<div class="stMedia">'+pic(s.anatomy,"anatomy","Muscle drawing, "+title)+pic(s.photo,"photo",title)+'</div>':'';
+  const review = s.teacher_review_required ? '<p class="stNote">Needs teacher review before use.</p>' : "";
+  return '<article class="stCard"><div class="stK">Stroke '+String(n).padStart(2,"0")+'</div><h3>'+esc(title)+'</h3>'+media+(muscleText?'<p class="stMusc">'+esc(muscleText)+'</p>':'')+(explanation?'<p>'+esc(explanation)+'</p>':'')+cautionTexts(s).map(t=>'<p class="stNote">'+esc(t)+'</p>').join("")+review+'</article>';
 }
 
 function chapterHead(n, title, id){
@@ -287,9 +294,7 @@ function renderMer(reading, opts){
   const body = o.bodyItems||[];
   if (body.length) h += body.map(card=>'<section class="card brd"><div class="gK">Body reading</div><h2 class="gH">'+esc(card.h)+'</h2><p class="bxp">'+esc(card.p)+'</p></section>').join("");
   else h += '<section class="card brd"><div class="gK">Body reading</div><h2 class="gH">Picture reading</h2><p class="bxp">No picture-reading notes are saved on this assessment.</p></section>';
-  const want = ["back","arms","front"];
-  const lines = want.map(id=>(reading.lines||[]).find(l=>l.id===id)).filter(Boolean);
-  h += '<section class="card mer"><h2 class="gH">Myofascial lines</h2><div class="miniLines">'+lineSvg("back")+lineSvg("arms")+lineSvg("front")+'</div><ul class="mL">'+(lines.length?lines.map(l=>'<li><b>'+esc(l.name)+':</b> '+esc(l.orientation)+'</li>').join(""):'<li>Back, arm and front lines are orientation only.</li>')+'</ul><p class="mCav">These drawings orient the selected training. They do not choose the manual or diagnose a cause.</p></section>';
+  h += lineFigures(activeManual(reading, segment));
 
   h += '<div id="merCh3">'+chapterHead(3, "MER session plan with strokes", "merC3")+'<div id="merCh3Body">'+renderSessionBody(reading, segment)+'</div></div>';
   h += '<div id="merCh4">'+chapterHead(4, "Caution and Homework", "merC4")+'<div id="merCh4Body">'+renderTail(reading, segment)+'</div></div>';

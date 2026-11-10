@@ -7,11 +7,12 @@ const MER = require("./mer-v2.js");
 const dir = path.join(__dirname, "data/mer");
 const cat = {
   mer_modules: JSON.parse(fs.readFileSync(path.join(dir, "mer_modules.json"), "utf8")),
-  mer_strokes: JSON.parse(fs.readFileSync(path.join(dir, "mer_strokes.json"), "utf8")),
+  mer_cards: JSON.parse(fs.readFileSync(path.join(dir, "mer_cards.json"), "utf8")),
+  routing: JSON.parse(fs.readFileSync(path.join(dir, "routing.json"), "utf8")),
   fascia_lines: JSON.parse(fs.readFileSync(path.join(dir, "fascia_lines.json"), "utf8")),
   homework_mapping: JSON.parse(fs.readFileSync(path.join(dir, "homework_mapping.json"), "utf8"))
 };
-const strokes = cat.mer_strokes.strokes;
+const strokes = cat.mer_cards.cards;
 
 function read(data, belts){
   return MER.buildReading(cat, {data: data||{}, report: {body_map: {belts: belts||{}}}});
@@ -26,9 +27,9 @@ function ids(reading, segment){
 test("library holds all 166 cards, split by manual", () => {
   assert.equal(strokes.length, 166);
   const n = {};
-  strokes.forEach(s=>{n[s.module]=(n[s.module]||0)+1});
+  strokes.forEach(s=>{const m=Number(String(s.manual).replace(/\D/g,"")); n[m]=(n[m]||0)+1});
   assert.deepEqual(n, {1:25, 2:33, 3:38, 4:29, 5:41});
-  const raw = fs.readdirSync(dir).map(f=>fs.readFileSync(path.join(dir, f), "utf8")).join("\n").toLowerCase();
+  const raw = fs.readdirSync(dir).filter(f=>fs.statSync(path.join(dir, f)).isFile()).map(f=>fs.readFileSync(path.join(dir, f), "utf8")).join("\n").toLowerCase();
   ["asang", "3bc6bf25", "dropbox"].forEach(term=>assert.equal(raw.includes(term), false, term));
 });
 
@@ -61,7 +62,13 @@ test("burning knee pain selects Grounding only, even with a strong thoracic belt
   assert.equal(/Reich|10-session|Check comfortable movement|Read together/i.test(page), false);
   assert.equal((page.match(/class="stCard"/g)||[]).length, 33);
   assert.match(page, /MER Inspiration Training/);
-  assert.equal(/MER5-/.test(page), false);
+  assert.match(page, /data-mer-src="images\/strokes\/MER2-001.webp"/);
+  assert.match(page, /data-mer-src="images\/anatomy\/MER2-001.webp"/);
+  assert.match(page, /data\/mer\/lines\/back\.svg/);
+  assert.equal(/viewBox="0 0 80 116"/.test(page), false);
+  assert.equal(/In this part/.test(page), false);
+  const cardsOnly = page.slice(page.indexOf("Stroke 01"));
+  assert.equal(/MER5-/.test(cardsOnly), false);
   assert.equal(/module":5|MER5-/.test(ids(r).join(",")), false);
 });
 
@@ -76,6 +83,9 @@ test("other segments follow the belt-to-manual table and do not combine manuals"
   assert.equal(MER.activeManual(one({breath:"Breath feels shallow and held"})), "MER5");
   assert.equal(MER.visibleCards(one({breath:"I cannot breathe deeply"})).length, 41);
   assert.equal(MER.activeManual(one({complaint:"Upper back pain"})), "MER5");
+  const insp = html(one({complaint:"Upper back pain"}));
+  assert.match(insp, /data-mer-src="images\/strokes\/MER5-/);
+  assert.equal(/images\/strokes\/MER2-/.test(insp), false);
   const free = one({complaint:"Upper back stiffness", breath:"Breath feels free"}, {thoracic:3, diaphragmatic:2});
   assert.equal(free.segment, "thoracic");
   assert.equal(free.breathFree, true);
