@@ -145,7 +145,11 @@ test("the belt picker and the training list are the same five rows", () => {
   const neck = html(read({complaint:"Neck tension", pain_areas:["neck"], pain_intensity:6}, {cervical:3, thoracic:3, diaphragmatic:2, oral:1, ocular:1}));
   assert.equal((neck.match(/data-mer-seg="/g)||[]).length, 5);
   assert.equal((neck.match(/class="beltRow/g)||[]).length, 5);
-  assert.match(neck, /data-mer-seg="cervical" class="on"/);
+  assert.match(neck, /data-mer-seg="cervical" class="on"><b>Cervical<\/b><small> – MER Self-Empowerment<\/small>/);
+  assert.match(neck, /<b>Ocular &amp; Oral<\/b><small> – MER Original Face<\/small>/);
+  assert.match(neck, /<b>Thoracic &amp; Diaphragmatic<\/b><small> – MER Inspiration<\/small>/);
+  assert.match(neck, /<b>Abdominal<\/b><small> – MER Centering<\/small>/);
+  assert.match(neck, /<b>Pelvic &amp; Legs<\/b><small> – MER Grounding<\/small>/);
   assert.match(neck, /Ocular &amp; Oral/);
   assert.match(neck, /MER4 · Original Face \(Cranium\)/);
   assert.match(neck, /Thoracic &amp; Diaphragmatic/);
