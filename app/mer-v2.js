@@ -5,15 +5,15 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_MER_V2 = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function(){
-const DATA_VERSION = "0.23.237";
+const DATA_VERSION = "0.23.238";
 const BELT_KEYS = ["ocular","oral","cervical","thoracic","diaphragmatic","abdominal","pelvic"];
 const BELT_LABEL = {ocular:"Ocular",oral:"Oral",cervical:"Cervical",thoracic:"Thoracic",diaphragmatic:"Diaphragmatic",abdominal:"Abdominal",pelvic:"Pelvic and legs"};
 const GROUPS = [
-  {id:"face", label:"Ocular & Oral", line:"MER4 · Original Face (Cranium)", keys:["ocular","oral"]},
-  {id:"cervical", label:"Cervical", line:"MER1 · Self-Empowerment", keys:["cervical"]},
-  {id:"thorax", label:"Thoracic & Diaphragmatic", line:"MER5 · Inspiration", keys:["thoracic","diaphragmatic"]},
-  {id:"abdominal", label:"Abdominal", line:"MER3 · Centering (Pelvis)", keys:["abdominal"]},
-  {id:"pelvic", label:"Pelvic & Legs", line:"MER2 · Grounding", keys:["pelvic"]}
+  {id:"face", label:"Ocular & Oral", line:"MER4 · Original Face (Cranium)", btn:"MER Original Face", keys:["ocular","oral"]},
+  {id:"cervical", label:"Cervical", line:"MER1 · Self-Empowerment", btn:"MER Self-Empowerment", keys:["cervical"]},
+  {id:"thorax", label:"Thoracic & Diaphragmatic", line:"MER5 · Inspiration", btn:"MER Inspiration", keys:["thoracic","diaphragmatic"]},
+  {id:"abdominal", label:"Abdominal", line:"MER3 · Centering (Pelvis)", btn:"MER Centering", keys:["abdominal"]},
+  {id:"pelvic", label:"Pelvic & Legs", line:"MER2 · Grounding", btn:"MER Grounding", keys:["pelvic"]}
 ];
 const LEVEL_LABEL = ["Balanced","Mild · to watch","To watch","Strong · over-charged"];
 const MANUAL_OF = {ocular:"MER4",oral:"MER4",cervical:"MER1",thoracic:"MER5",diaphragmatic:"MER5",abdominal:"MER3",pelvic:"MER2"};
@@ -276,7 +276,7 @@ function chapterHead(n, title, id){
 
 function segButtons(activeKey){
   const on = groupForKey(activeKey);
-  return GROUPS.map(g=>'<button type="button" data-mer-seg="'+g.id+'"'+(on&&on.id===g.id?' class="on"':'')+'><b>'+esc(g.label)+'</b><small>'+esc(g.line)+'</small></button>').join("");
+  return GROUPS.map(g=>'<button type="button" data-mer-seg="'+g.id+'"'+(on&&on.id===g.id?' class="on"':'')+'><b>'+esc(g.label)+'</b><small> – '+esc(g.btn)+'</small></button>').join("");
 }
 function groupLevel(reading, g){
   const rows = g.keys.map(k=>(reading.belts||[]).find(b=>b.key===k)).filter(Boolean);
