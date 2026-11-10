@@ -212,7 +212,15 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 .segPick{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .segPick button{width:auto;padding:8px 10px;font-size:12.5px;font-weight:500;border-radius:16px;background:none;border:1px solid var(--ln);color:var(--tx);box-shadow:none}
 .segPick button.on{background:var(--gold);color:#02191E}
-#pM .miniLines{grid-template-columns:repeat(3,minmax(0,1fr))}
+#pM .miniLines,#pM .lineFigs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.lineFigs{display:grid;gap:8px;margin:8px 0 4px}
+.lineFigs figure{margin:0;min-width:0}
+.lineFigs img{width:100%;height:auto;display:block;border-radius:10px;background:#0a2a30}
+.lineFigs figcaption{text-align:center;color:var(--gold);font-size:12px;margin-top:4px}
+.stMedia{display:flex;gap:6px;align-items:center;margin:8px 0;padding:6px;border-radius:12px;background:#f3efe6;overflow:hidden}
+.stMedia img{display:block;object-fit:contain;background:#fff;border-radius:8px;max-height:148px}
+.stMedia .anatomy{width:34%;flex:none}
+.stMedia .photo{width:66%;flex:1;min-width:0}
 #pM .chH h2,#pM .stCard h3{overflow-wrap:break-word}
 @media print{.stCard,.beltRow,.chH{break-inside:avoid}.chH h2,.stCard h3{color:#1d2a2c!important}.stMusc,.chH>b{color:#8a6537!important}}
 </style></head><body><div class="wrap">
@@ -226,16 +234,19 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="mer.js?v=0.23.232"></script><script src="mer-v2.js?v=0.23.233"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="mer.js?v=0.23.232"></script><script src="mer-v2.js?v=0.23.234"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null,merCatalog;
-async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.233";
- const names=["mer_modules","mer_strokes","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
+async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.234";
+ const names=["mer_modules","mer_strokes","mer_cards","routing","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
  try{const parts=await Promise.all(names.map(n=>fetch("data/mer/"+n+".json?v="+v,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error(n);return res.json()})));
-  const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_strokes||!cat.mer_strokes.strokes)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}
+  const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_cards||!cat.mer_cards.cards)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}
+async function fillMerImages(root){const scope=root&&root.querySelectorAll?root:document;const imgs=[...scope.querySelectorAll("img[data-mer-src]")].filter(im=>!im.getAttribute("src"));
+ await Promise.all(imgs.map(async im=>{const path=im.getAttribute("data-mer-src")||"";let url="";try{if(window.FA_MER_ASSET_BASE)url=String(window.FA_MER_ASSET_BASE).replace(/\/$/,"")+"/"+path.replace(/^images\//,"");else{const key=path.replace(/^images\//,"");const {data,error}=await sb.storage.from("mer-manual").createSignedUrl(key,3600);if(!error&&data&&data.signedUrl)url=data.signedUrl}}catch(e){}if(url)im.src=url;else im.remove()}));
+ [...scope.querySelectorAll(".stMedia")].forEach(box=>{if(!box.querySelector("img"))box.remove()})}
 const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),2200)};
 const step=k=>$$("#steps a").forEach(a=>a.classList.toggle("on",a.dataset.s===k));
 const show=(v,top=true)=>{if(cur===v)return;const o=cur;cur=v;o.classList.add("out");setTimeout(()=>{o.classList.remove("on","out");v.classList.add("on");if(top)scrollTo({top:0,behavior:"instant"})},280)};
@@ -425,20 +436,17 @@ function renderRes(r){const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs=R.sec
    list.forEach(o=>{if(!o.el.closest("[data-p]"))o.el.insertAdjacentHTML("beforeend",'<a class="toIdx" data-idx="'+ix+'">↑ Index</a>')})};
   const tx=e=>(e.childNodes[0]&&e.childNodes[0].nodeType==3?e.childNodes[0].textContent:e.textContent).replace(/\s*\(hypothesis\)\s*/i,"").trim();
   mk("pB",[...$$("#pB .subH[id^=pt]")].map(e=>({el:e,n:e.querySelector("b").textContent,t:e.querySelector("h3").textContent})));
-  const secs=[...$$("#pM [data-mer-sec]")];
-  if(secs.length)mk("pM",secs.map(e=>({el:e,tg:e.closest(".card")||e,t:e.getAttribute("data-mer-sec")})));
-  else{const ml=[...$$("#pM .card .sh h2, #pM h3.mH, #pM .subH2")].map(e=>{const c=e.closest(".card"),first=c&&c.querySelector(".sh h2, h3.mH")===e;
-   let t=tx(e);t=t.charAt(0).toUpperCase()+t.slice(1).toLowerCase().replace(/^(\d+)-session/,"$1-session");if(e.matches(".sh h2"))t=tx(e);
-   return {el:e.matches(".sh h2")?e.parentNode:e,tg:e.matches(".subH2")?e:first?c:null,t}});
-  mk("pM",ml)}}
+  const guide=document.querySelector("#pM .ovw");if(guide)guide.id="pMIdx";
+  [...$$("#pM [data-mer-sec]")].forEach((e,i)=>{e.id=e.id||"pMx"+(i+1);if(!e.querySelector(":scope > .toIdx"))e.insertAdjacentHTML("beforeend",'<a class="toIdx" data-idx="pMIdx">↑ Index</a>')})}
  $("#vRes").querySelectorAll("img[data-ph]").forEach(async im=>{const {data}=await sb.storage.from("assessment-photos").createSignedUrl(im.dataset.ph,3600);if(data)im.src=data.signedUrl});
+ fillMerImages(document.getElementById("pM"));
 }
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-go]");if(!b)return;const g=b.dataset.go;
  if(g=="intake")goIntake();else if(g=="plan")goPart("mer");else if(g=="res")goPart("bbtrs");
  else if(g=="pdf"){if($(".editing"))await saveReport();const t=document.title;document.title="Body Assessment - "+(row.client_name||"client")+" - "+new Date(row.created_at).toLocaleDateString("en-GB");window.FA_ph&&FA_ph("assessment_pdf",{});setTimeout(()=>{window.print();document.title=t},50)}
  else if(g=="save"){if(await saveReport("Saved to your records ✓")){$$(".editing").forEach(v=>{v.classList.remove("editing");v.querySelectorAll("[data-p],[data-d]").forEach(x=>x.contentEditable=false);v.querySelectorAll("[data-edit]").forEach(x=>x.textContent="✎ Edit text")});setTimeout(()=>location.href="assessment-results.html",1400)}}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-j],[data-idx]");if(!a)return;e.preventDefault();const t=document.getElementById(a.dataset.j||a.dataset.idx);if(t)t.scrollIntoView({behavior:"smooth",block:"start"})});
-document.addEventListener("click",e=>{const b=e.target.closest("[data-mer-seg]");if(!b||!window.__faMerReading||!window.FA_MER_V2)return;e.preventDefault();const seg=b.getAttribute("data-mer-seg");const body=document.getElementById("merCh3Body"),tail=document.getElementById("merCh4Body");if(body)body.innerHTML=FA_MER_V2.renderSession(window.__faMerReading,seg);if(tail)tail.innerHTML=FA_MER_V2.renderTail(window.__faMerReading,seg)});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-mer-seg]");if(!b||!window.__faMerReading||!window.FA_MER_V2)return;e.preventDefault();const seg=b.getAttribute("data-mer-seg");const body=document.getElementById("merCh3Body"),tail=document.getElementById("merCh4Body");if(body)body.innerHTML=FA_MER_V2.renderSession(window.__faMerReading,seg);if(tail)tail.innerHTML=FA_MER_V2.renderTail(window.__faMerReading,seg);if(body)fillMerImages(body)});
 {const f=document.createElement("button");f.className="idxFab";f.type="button";f.textContent="☰ Index";document.body.appendChild(f);
  const cur=()=>{const p=document.querySelector("#vRes.on .part.on");return p&&document.getElementById(p.id+"Idx")};
  f.onclick=()=>{const n=cur();if(n)n.scrollIntoView({behavior:"smooth",block:"start"})};

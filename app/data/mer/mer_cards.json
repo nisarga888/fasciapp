@@ -1,0 +1,5765 @@
+{
+  "schema_version": "8.0",
+  "counting_rule": "166 stroke cards from MER manuals 1–5. Variants and opening/closing holds are included; these are not 166 unique techniques.",
+  "training_names": {
+    "MER1": "MER1 Self-Empowerment",
+    "MER2": "MER2 Grounding",
+    "MER3": "MER3 Centering",
+    "MER4": "MER4 Original Face",
+    "MER5": "MER5 Inspiration"
+  },
+  "counts": {
+    "MER1": 25,
+    "MER2": 33,
+    "MER3": 38,
+    "MER4": 29,
+    "MER5": 41
+  },
+  "asset_policy": {
+    "photo": "images/strokes/<ID>.webp, about 600px wide, quality 78",
+    "anatomy": "images/anatomy/<ID>.webp, about 300px wide, quality 78",
+    "missing_asset": "null path; do not invent a photograph or drawing"
+  },
+  "cards": [
+    {
+      "id": "MER1-001",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 1,
+      "title": "Posterior neck work (1)",
+      "explanation": "Starting from the 7th Cervical vertabrea, stretching the lateral mass of muscles, the Trapezius, the Erectus Spinae muscles, Splenius Capitis, Splenius Cervicis and the deep intrinsic muscles. Sensing the holding pattern, move deep and slowly stretching up to the base of the Occiput. Spend time there releasing the tension by holding it.",
+      "muscles": [
+        "trapezius",
+        "erector spinae",
+        "splenius capitis",
+        "splenius cervicis",
+        "deep intrinsic neck muscles"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER1-001.webp",
+      "anatomy": "images/anatomy/MER1-001.webp",
+      "photo_size": [
+        600,
+        419
+      ],
+      "anatomy_size": [
+        300,
+        191
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-002",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 2,
+      "title": "Posterior neck work (2)",
+      "explanation": "You can also work the right side of the neck with the left hand and the other way around. Place your hand under the neck and curl your fingers next to the spine. Then find your depth and slowly stretch out with your hand until you come to the base of the Occiput. Spend time there releasing the tension by holding it.",
+      "muscles": [
+        "trapezius",
+        "splenius capitis",
+        "splenius cervicis"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER1-002.webp",
+      "anatomy": "images/anatomy/MER1-002.webp",
+      "photo_size": [
+        600,
+        400
+      ],
+      "anatomy_size": [
+        300,
+        208
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-003",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 3,
+      "title": "Posterior neck work (3)",
+      "explanation": "Place your finger tips at the level the 3th Thoracic Vertabrae on the side of the spine. It is a good option to hold this spot for a while to release the expression that is often locked there. Then find your depth and slowly stretch out with your right hand until you come to the base of the Occiput.",
+      "muscles": [
+        "trapezius",
+        "splenius capitis",
+        "splenius cervicis"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER1-003.webp",
+      "anatomy": "images/anatomy/MER1-003.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        300,
+        247
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-004",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "cervical",
+      "belts": [
+        "cervical",
+        "ocular"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 4,
+      "title": "Cranial/occipital decompression",
+      "explanation": "Pressure is applied upwards at the base of the Occiput. Fingers are curved, with a pressure coming from the tips. The Occiput resting on your palms. Sometimes you have to wait several minutes to feel the softening and the decompression.",
+      "muscles": [
+        "suboccipital muscles"
+      ],
+      "body_areas": [
+        "neck",
+        "cranium"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER1-004.webp",
+      "anatomy": "images/anatomy/MER1-004.webp",
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": [
+        300,
+        311
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-005",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "cervical",
+      "belts": [
+        "cervical",
+        "thoracic"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 5,
+      "title": "Trapezius: soft knuckles",
+      "explanation": "With your two right (soft) knuckles, from the top (working down), hook the top of the Trapezius, and with the other hand stretch the neck in the opposition. Repeat this 4 to 5 times in different spots.",
+      "muscles": [
+        "trapezius"
+      ],
+      "body_areas": [
+        "neck",
+        "shoulders"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER1-005.webp",
+      "anatomy": "images/anatomy/MER1-005.webp",
+      "photo_size": [
+        600,
+        310
+      ],
+      "anatomy_size": [
+        232,
+        484
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-006",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 6,
+      "title": "Suboccipital muscle",
+      "explanation": "Turn the client’s head to the opposite side you are working. With the right thumb stroke below the posterior aspect of the Mastoid Process, sliding down to the Posterior Suboccipital muscle below the middle of the Occiput.",
+      "muscles": [
+        "obliquus capitis"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER1-006.webp",
+      "anatomy": "images/anatomy/MER1-006.webp",
+      "photo_size": [
+        600,
+        310
+      ],
+      "anatomy_size": [
+        241,
+        468
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-007",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 7,
+      "title": "Sternocleidomastoid",
+      "explanation": "With the finger tips or thumbs, with the client having turned the head in the opposite direction slide slowly and deeply on the SCM from the Mastoid Process untill you reach the Clavicle. Keep your hand at a oblique angle. Very important again to work the tendinous insertion on either side.",
+      "muscles": [
+        "sternocleidomastoid"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER1-007.webp",
+      "anatomy": "images/anatomy/MER1-007.webp",
+      "photo_size": [
+        600,
+        310
+      ],
+      "anatomy_size": [
+        249,
+        467
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-008",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 8,
+      "title": "SCM attachments",
+      "explanation": "Work with your finger tips on the insertion at the Clavicle, having the client breath in this area. Very important again to work the tendinous insertion on either side.",
+      "muscles": [
+        "sternocleidomastoid"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER1-008.webp",
+      "anatomy": "images/anatomy/MER1-008.webp",
+      "photo_size": [
+        600,
+        310
+      ],
+      "anatomy_size": [
+        182,
+        358
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-009",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 9,
+      "title": "Make contact with the client",
+      "explanation": "Make contact with the client with conscious touch. Breathe into your heart and out into your hands. Fully concentrate into the meditation.",
+      "muscles": [],
+      "body_areas": [
+        "whole body"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-009.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        204
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-010",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 10,
+      "title": "Erectors: palms",
+      "explanation": "Working with the palm of the hand down the Erectors. Slowly move down using your weight going down through your hand into the fascia of the back. Move slowly with their breathe having them breath deeply into your hands. Slowly move down on one side, then the other, and then let your hands dance down together.",
+      "muscles": [
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis",
+        "back fascia"
+      ],
+      "body_areas": [
+        "upper back",
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-010.webp",
+      "anatomy": "images/anatomy/MER1-010.webp",
+      "photo_size": [
+        600,
+        426
+      ],
+      "anatomy_size": [
+        300,
+        193
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-011",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 11,
+      "title": "Erectors: fingertips",
+      "explanation": "With the finger tips you can be more specific, you can have more sense of what you are sensing. Move slowly down with your finger tips on the different parts of the back. Use their breath and invite unwinding. Use short strokes, and find pain points. Move down the back with one side, and then the other, or alternate, untill you get through the Lower Back into the Sacrum.",
+      "muscles": [
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis"
+      ],
+      "body_areas": [
+        "upper back",
+        "lower back",
+        "sacrum"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-011.webp",
+      "anatomy": "images/anatomy/MER1-011.webp",
+      "photo_size": [
+        600,
+        426
+      ],
+      "anatomy_size": [
+        300,
+        201
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-012",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 12,
+      "title": "Erectors: back of the hand",
+      "explanation": "With the back of the hand, you have another tool which is very powerful and sensitive (and adaptable). Learn to keep your hand ﬁrm and soft at the same time. When you use the back of your hand, find ways that you don’t tighten the lower arm and hand. Keep them resilient so they respond to the holding patterns in the back. Move down the whole back with long or short strokes, or combine them.",
+      "muscles": [
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis"
+      ],
+      "body_areas": [
+        "upper back",
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-012.webp",
+      "anatomy": "images/anatomy/MER1-012.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        300,
+        244
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-013",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 13,
+      "title": "Erectors: transverse strokes",
+      "explanation": "With both hands right on the side of the Spineous Process, have them breath deeply when you sink into the Erectors, easing your way, slide transverse into the lateral sides of the back. Moving slowly with depth and sensitivity using their breathing and asking them to move to unwind around your touch (moving pelvis, legs,...). Allow the movement and the breath to connect to the strokes.",
+      "muscles": [
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis"
+      ],
+      "body_areas": [
+        "upper back",
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-013.webp",
+      "anatomy": "images/anatomy/MER1-013.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        300,
+        243
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-014",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 14,
+      "title": "Erectors: forearm",
+      "explanation": "Work with a broad forearm, along the side of the spine, your left foot forward and your right foot back. Push from your back foot through your right elbow along the side of the spine. Keeping a soft right hand. Slowly slide along the lateral mass next to the spine, as the client breaths into your forearm.",
+      "muscles": [
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis"
+      ],
+      "body_areas": [
+        "upper back",
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-014.webp",
+      "anatomy": "images/anatomy/MER1-014.webp",
+      "photo_size": [
+        600,
+        363
+      ],
+      "anatomy_size": [
+        300,
+        246
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-015",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 15,
+      "title": "Superior trapezius: palm",
+      "explanation": "With the palm of your right hand on their left side of the Upper Trapezius, your left foot forward and the left hand back, fall with your right hand into the trapezius, move from C7 into the Scapula. Have the client breathe into your touch and unwind the body.",
+      "muscles": [
+        "trapezius"
+      ],
+      "body_areas": [
+        "shoulders"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-015.webp",
+      "anatomy": "images/anatomy/MER1-015.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        240,
+        501
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-016",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 16,
+      "title": "Superior trapezius: back of hand",
+      "explanation": "Working the top part of the Trapezius down to where it attaches to the Scapula. Work on the left side with your left hand, your right foot forward (your foot should be behind your hand). The client can stretch the arm down, as it increases the stretch. Stroke down over the top of the Shoulder Girdle, being aware of softening your hand when you are over the bone.",
+      "muscles": [
+        "trapezius"
+      ],
+      "body_areas": [
+        "shoulders"
+      ],
+      "cautions": [
+        "Soften the hand over bone."
+      ],
+      "photo": "images/strokes/MER1-016.webp",
+      "anatomy": "images/anatomy/MER1-016.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        497
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-017",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "cervical"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 17,
+      "title": "Levator scapulae: thumbs",
+      "explanation": "Move your thumb to the Upper Trapezius, circle the neck with your fingers, lightly, and then work with your thumb, deep into the Levator Scapulae. Work for a while into the LS until it releases. Work deep into the Trapezius where it inserts at the Medial and Anterior border of the Scapula. Continue to slide up the Posterior Transverse Process of the Cervical Vertebrae.",
+      "muscles": [
+        "levator scapulae",
+        "trapezius"
+      ],
+      "body_areas": [
+        "shoulders",
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER1-017.webp",
+      "anatomy": "images/anatomy/MER1-017.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        312
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-018",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 18,
+      "title": "Lower back: thumb and breath",
+      "explanation": "Use your thumbs over the Lateral Mass between the Spineous process and the Transverse Process, you can support your thumb with the fingers of the other hand. Feel the places where there is less movement of the breath. Have the client breath into your thumb and stay there for at least 30 sec. working with their breath. As they are breathing, ask them to move their spine around your thumb.",
+      "muscles": [
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis"
+      ],
+      "body_areas": [
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-018.webp",
+      "anatomy": "images/anatomy/MER1-018.webp",
+      "photo_size": [
+        600,
+        363
+      ],
+      "anatomy_size": [
+        300,
+        246
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-019",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs",
+        "abdominal"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 19,
+      "title": "Psoas",
+      "explanation": "Bring the finger tips of your left hand to the Anterior Iliac Spine. Make a line to the navel. Place the finder pads of your left hand at the level of 1/3th of the line from the Anterior Spine to the navel. With the fingers of you right hand on top of your left hand for support. Drop your weight slowly through your fingers, ask your client to raise his leg so you can feel the Psoas contract. Have the client place their foot on the table in neutral position. Stretch the Psoas up with your finger tips to the level of their Umbilicus. Ask your client to rock the Pelvis into full flection and extension, while you stretch the Psoas.",
+      "muscles": [
+        "psoas major",
+        "psoas minor"
+      ],
+      "body_areas": [
+        "pelvis",
+        "abdomen"
+      ],
+      "cautions": [
+        "Wait until the client knows the work after a few sessions; do not overwork; allow integration."
+      ],
+      "photo": "images/strokes/MER1-019.webp",
+      "anatomy": "images/anatomy/MER1-019.webp",
+      "photo_size": [
+        600,
+        638
+      ],
+      "anatomy_size": [
+        300,
+        311
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-020",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 20,
+      "title": "Gluteal attachments on posterior iliac bone",
+      "explanation": "Working with the backs of both hands, slowly slide towards the Greater Trocanter with the right hand and with the left around the Crest of the Ilium.",
+      "muscles": [
+        "gluteal attachments",
+        "iliac crest fascia"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-020.webp",
+      "anatomy": "images/anatomy/MER1-020.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        224,
+        446
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-021",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 21,
+      "title": "Gluteus maximus, medius, minimus: forearm",
+      "explanation": "Bring your forearm across your body, and stretch down the Gluteus Maximus towards the feet right into the insertion on the Upper Femur. Then work the Gluteus Medius moving your elbow laterally on the Crest of the Ilium, stroking slowly down the Greater Trocanter. If possible go still deeper into the Gluteus Minimus. Bring the knee in flexion and move the foot which rotates the hip joint under your touch.",
+      "muscles": [
+        "gluteus maximus",
+        "gluteus medius",
+        "gluteus minimus"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-021.webp",
+      "anatomy": "images/anatomy/MER1-021.webp",
+      "photo_size": [
+        600,
+        366
+      ],
+      "anatomy_size": [
+        300,
+        233
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-022",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 22,
+      "title": "Gluteal insertion",
+      "explanation": "Working the insertion into the Greater Trocanter of all three gluteals with your finger tips. Work slowly stay deep and sensitive.",
+      "muscles": [
+        "gluteal insertions at greater trochanter"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-022.webp",
+      "anatomy": "images/anatomy/MER1-022.webp",
+      "photo_size": [
+        600,
+        313
+      ],
+      "anatomy_size": [
+        242,
+        462
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-023",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "closing",
+      "segment_name": "Closing holds",
+      "segment_chapter": "Closing the MER session",
+      "manual_order": 23,
+      "title": "Thoracic inlet hold",
+      "explanation": "Place the right hand on the Clavicle on top of the Sternum, and the left hand between the shoulder blades and the upper thoracic. Hold for one minute.",
+      "muscles": [
+        "thoracic inlet"
+      ],
+      "body_areas": [
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-023.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        294
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-024",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "diaphragmatic"
+      ],
+      "segment": "closing",
+      "segment_name": "Closing holds",
+      "segment_chapter": "Closing the MER session",
+      "manual_order": 24,
+      "title": "Respiratory diaphragm hold",
+      "explanation": "Place the finger tips on top of the Xiphoid process, as you rest your hand down the middle of the Diaphragmatic Segment. The left hand slides under the middle back, as the client rests the arm above the head (use pillow if needed).",
+      "muscles": [
+        "respiratory diaphragm region"
+      ],
+      "body_areas": [
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-024.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        294
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER1-025",
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs",
+        "diaphragmatic"
+      ],
+      "segment": "closing",
+      "segment_name": "Closing holds",
+      "segment_chapter": "Closing the MER session",
+      "manual_order": 25,
+      "title": "Pelvic diaphragm hold",
+      "explanation": "Place your left hand on top of the belly with the edge touching the Pubic bone. Place your right hand on the Sacrum underneath the left hand.",
+      "muscles": [
+        "pelvic diaphragm region"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER1-025.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        294
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-001",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 1,
+      "title": "Plantar fascia: back of hand",
+      "explanation": "The client lies on the belly with a pillow under the lower legs. With the back of your hand below the Calcaneus in the mid line of the foot, working down slowly through the ball of the foot. Repeat the stroke on the Lateral Arch. (Postural cue: Right hand on right foot, left foot in front)",
+      "muscles": [
+        "plantar fascia"
+      ],
+      "body_areas": [
+        "feet"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-001.webp",
+      "anatomy": "images/anatomy/MER2-001.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        425
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-002",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 2,
+      "title": "Malleoli and Achilles sides: fingertips",
+      "explanation": "With the client lying on his stomach, work with the finger tips, all around the Lateral Malleoli and along the side of the Achilles tendon. Repeat the stroke on the Medial Malleolis and up the side of the Achilles tendon with the left hand.",
+      "muscles": [
+        "Achilles tendon",
+        "medial and lateral malleolar region"
+      ],
+      "body_areas": [
+        "feet",
+        "ankles"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-002.webp",
+      "anatomy": "images/anatomy/MER2-002.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        255
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-003",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 3,
+      "title": "Gastrocnemius: back of hand",
+      "explanation": "With the back of the loose right hand, starting from the Calcaneus, slowly stroke up the Gastrocnemius, finishing with a soft pressure at the back of the knee.",
+      "muscles": [
+        "gastrocnemius"
+      ],
+      "body_areas": [
+        "lower legs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-003.webp",
+      "anatomy": "images/anatomy/MER2-003.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        274,
+        502
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-004",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 4,
+      "title": "Gastrocnemius: fingertips",
+      "explanation": "With the finger tips of both hands, seperate the two bellies of the Gastrocnemicus working up the knee.",
+      "muscles": [
+        "gastrocnemius medial and lateral heads"
+      ],
+      "body_areas": [
+        "lower legs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-004.webp",
+      "anatomy": "images/anatomy/MER2-004.webp",
+      "photo_size": [
+        600,
+        361
+      ],
+      "anatomy_size": [
+        300,
+        247
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-005",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 5,
+      "title": "Gastrocnemius attachments: fingertips",
+      "explanation": "Work the Gastrocnemicus attachment on the condyle. Slowly work with the finger tips on the Lateral and Medial condyles.",
+      "muscles": [
+        "gastrocnemius medial and lateral heads"
+      ],
+      "body_areas": [
+        "lower legs",
+        "knees"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-005.webp",
+      "anatomy": "images/anatomy/MER2-005.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        295
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-006",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 6,
+      "title": "Middle hamstring",
+      "explanation": "Place the right forearm to the level of the Ischial Tuberosity in the middle of the Hamstrings. Deeply stroke down to the back of the Knee. Work slowly and with sensitivity.",
+      "muscles": [
+        "hamstrings"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-006.webp",
+      "anatomy": "images/anatomy/MER2-006.webp",
+      "photo_size": [
+        600,
+        275
+      ],
+      "anatomy_size": [
+        212,
+        485
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-007",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 7,
+      "title": "Medial hamstring",
+      "explanation": "Move to the other side of the table. Starting with the Medial Hamstring, work from the bottom of the Pelvis slowly and deeply with a ﬂat right forearm, down to the attachment on the Tibia.",
+      "muscles": [
+        "semitendinosus",
+        "semimembranosus"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-007.webp",
+      "anatomy": "images/anatomy/MER2-007.webp",
+      "photo_size": [
+        600,
+        304
+      ],
+      "anatomy_size": [
+        300,
+        322
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-008",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 8,
+      "title": "Lateral hamstring",
+      "explanation": "With the left elbow crossing your body, standing with the left leg forward, slide down the Lateral part of the Hamstring, from the Pelvis to the Knee.",
+      "muscles": [
+        "biceps femoris long and short heads"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-008.webp",
+      "anatomy": "images/anatomy/MER2-008.webp",
+      "photo_size": [
+        600,
+        300
+      ],
+      "anatomy_size": [
+        300,
+        336
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER2-009",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 9,
+      "title": "Hamstring attachment: ischial tuberosity",
+      "explanation": "Working with your finger tips on the Ischial Tuberosity, ask the client to raise their lower leg up bending the knee feeling for the Hamstring Attachments. Work deeply sliding slowly medially. Work for about 1 minute.",
+      "muscles": [
+        "hamstring attachments"
+      ],
+      "body_areas": [
+        "pelvis",
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-009.webp",
+      "anatomy": "images/anatomy/MER2-009.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        199,
+        502
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-010",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 10,
+      "title": "Plantar fascia: thumbs and knuckles, three arches",
+      "explanation": "When the client is on the back, there is also much room to work deeply with the thumbs and knuckles on the Plantar fascia and the muscles of the foot. Starting with the knuckles and the thumbs, move down the foot through the Medial arch, to the Middle of the foot and to the Lateral arch. As you do it grab the toes of the foot and the ball of the foot and stretch down towards the leg.",
+      "muscles": [
+        "plantar fascia",
+        "foot muscles"
+      ],
+      "body_areas": [
+        "feet"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-010.webp",
+      "anatomy": "images/anatomy/MER2-010.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        286,
+        494
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-011",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 11,
+      "title": "Plantar fascia: medial arch with toe stretch",
+      "explanation": "With the knuckles or the thumb of the left hand on the Medial arch, slowly slide up to the ball of the foot while stretching the toes back with the right hand.",
+      "muscles": [
+        "plantar fascia"
+      ],
+      "body_areas": [
+        "feet"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-011.webp",
+      "anatomy": "images/anatomy/MER2-011.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        286,
+        496
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-012",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 12,
+      "title": "Achilles and ankle movement",
+      "explanation": "With the clients left foot sitting on your right leg, work with the fingers of the right hand on the side of the Achilles Tendon. In between the strokes hold the top of the foot and rotate the foot and ankle in different positions for maximum stretch and movement.",
+      "muscles": [
+        "Achilles tendon"
+      ],
+      "body_areas": [
+        "feet",
+        "ankles"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-012.webp",
+      "anatomy": "images/anatomy/MER2-012.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        295,
+        502
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-013",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 13,
+      "title": "Dorsal surface of foot",
+      "explanation": "With the client lying on his/her back: while sitting behind the left foot, holding the foot with the fingers, working with both thumbs down the Extensor Digitorum Longus Tendons of the 2nd through the 5th toe to the ankle. When working this area you can follow up the strokes by lightly rotating and gently squeezing the foot.",
+      "muscles": [
+        "extensor digitorum longus tendons"
+      ],
+      "body_areas": [
+        "feet"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-013.webp",
+      "anatomy": "images/anatomy/MER2-013.webp",
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": [
+        240,
+        502
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-014",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 14,
+      "title": "Peroneus: back of hand",
+      "explanation": "Stand facing the right foot, with the back of the right hand slide slowly down the Lateral line of the lower leg. Releasing the Peroneus from the Head of the Fibula down the Lateral shaft to External Malleolus.",
+      "muscles": [
+        "fibularis longus",
+        "fibularis brevis",
+        "fibularis tertius"
+      ],
+      "body_areas": [
+        "lower legs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-014.webp",
+      "anatomy": "images/anatomy/MER2-014.webp",
+      "photo_size": [
+        600,
+        362
+      ],
+      "anatomy_size": [
+        300,
+        275
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-015",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 15,
+      "title": "Peroneus: thumbs",
+      "explanation": "Working with the left thumb on the right leg slowly work the Peroneus down to the Middle of the ankle.",
+      "muscles": [
+        "fibularis longus",
+        "fibularis brevis",
+        "fibularis tertius"
+      ],
+      "body_areas": [
+        "lower legs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-015.webp",
+      "anatomy": "images/anatomy/MER2-015.webp",
+      "photo_size": [
+        600,
+        363
+      ],
+      "anatomy_size": [
+        300,
+        268
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-016",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 16,
+      "title": "Extensor digitorum longus and tibialis anterior: back of hand",
+      "explanation": "Working with the back of the right hand on the right leg, work lateral to the Tibialis Anterior down to the middle of the ankle.",
+      "muscles": [
+        "tibialis anterior",
+        "extensor digitorum longus"
+      ],
+      "body_areas": [
+        "lower legs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-016.webp",
+      "anatomy": "images/anatomy/MER2-016.webp",
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": [
+        300,
+        271
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-017",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 17,
+      "title": "Extensor digitorum longus and tibialis anterior: fingertips",
+      "explanation": "Facing the foot of the left side, working with the right leg, place your finger tips on the inside of the Medial side of the Tibia, working slowly and deeply down to the middle of the ankle.",
+      "muscles": [
+        "tibialis anterior",
+        "extensor digitorum longus"
+      ],
+      "body_areas": [
+        "lower legs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-017.webp",
+      "anatomy": "images/anatomy/MER2-017.webp",
+      "photo_size": [
+        600,
+        310
+      ],
+      "anatomy_size": [
+        300,
+        361
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER2-018",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 18,
+      "title": "Medial knee: fingertips",
+      "explanation": "Working on the right knee with the right hand on the Medial surface of the knee, work deep and slow. Often I have people lift their knee up and down as I work, repeat that stroke 2 or 3 times. With knee pain, stay on the point of pain with appropriate pressure.",
+      "muscles": [
+        "medial knee tissues"
+      ],
+      "body_areas": [
+        "knees"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-018.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        277
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-019",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 19,
+      "title": "Medial edge of patella: thumb",
+      "explanation": "Working on the right knee with the right thumb on the Medial surface of the patella working deep and slow, often I have people lift their knee up and down as I work, repeat that stroke 2 or 3 times. With knee pain, stay on the point of pain with appropriate pressure. Work all through the inside knee with the tumb.",
+      "muscles": [
+        "medial patellar tissues"
+      ],
+      "body_areas": [
+        "knees"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-019.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-020",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 20,
+      "title": "Lateral edge of patella: fingertips",
+      "explanation": "Working on the right knee with the finger tips on the Lateral surface of the Patella, work deep and slow. Often I have people lift their knee up and down as I work, repeat that stroke 2 or 3 times. With knee pain, stay on the point of pain with appropriate pressure. Work all through the Lateral knee with the finger tips.",
+      "muscles": [
+        "lateral patellar tissues"
+      ],
+      "body_areas": [
+        "knees"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-020.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-021",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 21,
+      "title": "Knee joint mobilisation",
+      "explanation": "With ons hand on the top of the knee and the other at the bottom compress and rotate the Knee joint. For about 30 seconds, keep compressing and rotating. If the knee has pain, work sensitively with this and compress the knee in the area where there is pain.",
+      "muscles": [
+        "knee joint"
+      ],
+      "body_areas": [
+        "knees"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-021.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-022",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 22,
+      "title": "Quadriceps: palm",
+      "explanation": "Start from the Knee and slowly move up the Quadriceps with your palm.",
+      "muscles": [
+        "rectus femoris",
+        "vastus lateralis",
+        "vastus intermedius",
+        "vastus medialis"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-022.webp",
+      "anatomy": "images/anatomy/MER2-022.webp",
+      "photo_size": [
+        600,
+        361
+      ],
+      "anatomy_size": [
+        300,
+        188
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-023",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 23,
+      "title": "Rectus femoris",
+      "explanation": "Working with the back of your hand from the Patella to the attachment of the Rectus Femoris to the Anterior Inferior Iliac Spine (AIIS).",
+      "muscles": [
+        "rectus femoris"
+      ],
+      "body_areas": [
+        "thighs",
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-023.webp",
+      "anatomy": "images/anatomy/MER2-023.webp",
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": [
+        178,
+        464
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-024",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 24,
+      "title": "Vastus lateralis",
+      "explanation": "With the left hand working on the right leg, starting from the Lateral aspect of the Patella pushing from your back leg through your hand towards the Greater Trocanter.",
+      "muscles": [
+        "vastus lateralis"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-024.webp",
+      "anatomy": "images/anatomy/MER2-024.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        257
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-025",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "feet_legs_knees",
+      "segment_name": "Feet, legs and knees",
+      "segment_chapter": "Working the feet / legs and knees",
+      "manual_order": 25,
+      "title": "Gluteals: back of hand",
+      "explanation": "Working with the backs of both hands, slowly slide towards the Greater Trocanter with the right hand and with the left around the crest of the Ilium.",
+      "muscles": [
+        "gluteus maximus",
+        "gluteus medius",
+        "gluteus minimus"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-025.webp",
+      "anatomy": "images/anatomy/MER2-025.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        300,
+        219
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-026",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "thoracic",
+      "belts": [],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 26,
+      "title": "Make contact with the client",
+      "explanation": "Make contact with the client with conscious touch. Breathe into your heart and out into your hands. Fully concentrate into the meditation.",
+      "muscles": [],
+      "body_areas": [
+        "whole body"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-026.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        204
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-027",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 27,
+      "title": "Erectors: palms",
+      "explanation": "Working with the palm of the hand down the Erectors. Slowly move down using your weight going down through your hand into the fascia of the back. Move slowly with their breathe having them breath deeply into your hands. Slowly move down on one side, then the other, and then let your hands dance down together.",
+      "muscles": [
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis"
+      ],
+      "body_areas": [
+        "upper back",
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-027.webp",
+      "anatomy": "images/anatomy/MER2-027.webp",
+      "photo_size": [
+        600,
+        426
+      ],
+      "anatomy_size": [
+        300,
+        193
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-028",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 28,
+      "title": "Erectors: fingertips",
+      "explanation": "With the finger tips you can be more specific, you can have more sense of what you are sensing. Move slowly down with your finger tips on the different parts of the back. Use their breath and invite unwinding. Use short strokes, and find pain points. Move down the back with one side, and then the other, or alternate, untill you get through the Lower Back into the Sacrum.",
+      "muscles": [
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis"
+      ],
+      "body_areas": [
+        "upper back",
+        "lower back",
+        "sacrum"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-028.webp",
+      "anatomy": "images/anatomy/MER2-028.webp",
+      "photo_size": [
+        600,
+        426
+      ],
+      "anatomy_size": [
+        300,
+        201
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-029",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 29,
+      "title": "Erectors: forearm",
+      "explanation": "Work with a broad forearm, along the side of the spine, your left foot forward and your right foot back. Push from your back foot through your right elbow along the side of the spine. Keeping a soft right hand. Slowly slide along the lateral mass next to the spine, as the client breaths into your forearm.",
+      "muscles": [
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis"
+      ],
+      "body_areas": [
+        "upper back",
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-029.webp",
+      "anatomy": "images/anatomy/MER2-029.webp",
+      "photo_size": [
+        600,
+        363
+      ],
+      "anatomy_size": [
+        300,
+        246
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-030",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 30,
+      "title": "Superior trapezius: palm",
+      "explanation": "With the palm of your right hand on their left side of the Upper Trapezius, your left foot forward and the left hand back, fall with your right hand into the trapezius, move from C7 into the Scapula. Have the client breathe into your touch and unwind the body.",
+      "muscles": [
+        "trapezius"
+      ],
+      "body_areas": [
+        "shoulders"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER2-030.webp",
+      "anatomy": "images/anatomy/MER2-030.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        240,
+        502
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-031",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 31,
+      "title": "Superior trapezius: back of hand",
+      "explanation": "Working the top part of the Trapezius down to where it attaches to the Scapula. Work on the left side with your left hand, your right foot forward (your foot should be behind your hand). The client can stretch the arm down, as it increases the stretch. Stroke down over the top of the Shoulder Girdle, being aware of softening your hand when you are over the bone.",
+      "muscles": [
+        "trapezius"
+      ],
+      "body_areas": [
+        "shoulders"
+      ],
+      "cautions": [
+        "Soften the hand over bone."
+      ],
+      "photo": "images/strokes/MER2-031.webp",
+      "anatomy": "images/anatomy/MER2-031.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        495
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-032",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 32,
+      "title": "Posterior neck work (1)",
+      "explanation": "Starting from the 7th Cervical vertabrea, stretching the lateral mass of muscles, the Trapezius, the Erectus Spinae muscles, Splenius Capitis, Splenius Cervicis and the deep intrinsic muscles. Sensing the holding pattern, move deep and slowly stretching up to the base of the Occiput. Spend time there releasing the tension by holding it.",
+      "muscles": [
+        "trapezius",
+        "erector spinae",
+        "splenius capitis",
+        "splenius cervicis",
+        "deep intrinsic neck muscles"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER2-032.webp",
+      "anatomy": "images/anatomy/MER2-032.webp",
+      "photo_size": [
+        600,
+        419
+      ],
+      "anatomy_size": [
+        300,
+        191
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER2-033",
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 33,
+      "title": "Posterior neck work (2)",
+      "explanation": "You can also work the right side of the neck with the left hand and the other way around. Place your hand under the neck and curl your fingers next to the spine. Then find your depth and slowly stretch out with your hand until you come to the base of the Occiput. Spend time there releasing the tension by holding it.",
+      "muscles": [
+        "trapezius",
+        "splenius capitis",
+        "splenius cervicis"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER2-033.webp",
+      "anatomy": "images/anatomy/MER2-033.webp",
+      "photo_size": [
+        600,
+        400
+      ],
+      "anatomy_size": [
+        300,
+        208
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-001",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 1,
+      "title": "Lower back: forearm",
+      "explanation": "Facing the feet, place the ﬂat right forearm at the Lumbar Dorsal Hinge, slide deeply down the lower back until you get to the Sacrum. If your client has got lower back pain, work for at least one minute deeply on the area of the pain, asking the client to breath into the stroke.",
+      "muscles": [
+        "latissimus dorsi"
+      ],
+      "body_areas": [
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-001.webp",
+      "anatomy": "images/anatomy/MER3-001.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        236,
+        446
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-002",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 2,
+      "title": "Superior trapezius: back of hand",
+      "explanation": "Working the top part of the Trapezius down to where it attaches to the Scapula. Work on the left side with your left hand, your right foot forward (your foot should be behind your hand). The client can stretch the arm down, as it increases the stretch. Stroke down over the top of the Shoulder Girdle, being aware of softening your hand when you are over the bone.",
+      "muscles": [
+        "trapezius"
+      ],
+      "body_areas": [
+        "shoulders"
+      ],
+      "cautions": [
+        "Soften the hand over bone."
+      ],
+      "photo": "images/strokes/MER3-002.webp",
+      "anatomy": "images/anatomy/MER3-002.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        274,
+        502
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-003",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 3,
+      "title": "Lower back: thumb and breath",
+      "explanation": "Use your finger tips or thumbs over the Lateral Mass between the Spineous process and the Transverse Process. Feel the places where there is less movement of the breath. Have the client breathe into your finger tips or thumbs and stay there for at least 30 sec. working with their breath. As they are breathing, ask them to move their spine around your thumb.",
+      "muscles": [
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis"
+      ],
+      "body_areas": [
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-003.webp",
+      "anatomy": "images/anatomy/MER3-003.webp",
+      "photo_size": [
+        600,
+        363
+      ],
+      "anatomy_size": [
+        300,
+        246
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-004",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 4,
+      "title": "Sacrum: fingertips",
+      "explanation": "With the finger tips of both hands, work the Sacral Fascia slowly while asking the client to breathe into your fingers and encourage them to move around your fingers with their Pelvis.",
+      "muscles": [
+        "sacral fascia"
+      ],
+      "body_areas": [
+        "sacrum",
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-004.webp",
+      "anatomy": "images/anatomy/MER3-004.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        305
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-005",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 5,
+      "title": "Gluteus medius and maximus attachments",
+      "explanation": "Working with the backs of both hands, slowly slide towards the greater trocanter with the right hand and with the left around the crest of the Ilium.",
+      "muscles": [
+        "gluteus maximus",
+        "gluteus medius"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-005.webp",
+      "anatomy": "images/anatomy/MER3-005.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        288
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-006",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 6,
+      "title": "Piriformis",
+      "explanation": "Sitting on the table next to the client facing the feet. Stretch the lower leg lateral and work with your forearm from the side of the Sacrum, stroke down deeply underneath the Gluteus, to the Greater Grocanter.",
+      "muscles": [
+        "piriformis"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-006.webp",
+      "anatomy": "images/anatomy/MER3-006.webp",
+      "photo_size": [
+        600,
+        314
+      ],
+      "anatomy_size": [
+        300,
+        489
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-007",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 7,
+      "title": "Gemellus superior and inferior",
+      "explanation": "Working on the Gemellus-twins, with the back of your hands sliding from the Ischial Tuberosity to the upper border of the Greater Trochanter.",
+      "muscles": [
+        "gemellus superior",
+        "gemellus inferior"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-007.webp",
+      "anatomy": "images/anatomy/MER3-007.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        318
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-008",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 8,
+      "title": "Obturator internus and externus",
+      "explanation": "With the elbow or the finger tips, from the Ischial Tuberosity and the basis of the pubic, work deeply towards the Greater Trochanter.",
+      "muscles": [
+        "obturator internus",
+        "obturator externus"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-008.webp",
+      "anatomy": "images/anatomy/MER3-008.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        315
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-009",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 9,
+      "title": "Quadratus femoris",
+      "explanation": "Sitting on the table next to the client facing the feet. Stretch the lower leg lateral and work with your elbow from the lateral edge of the Ischial Tuberosity to the Greater Trocanter.",
+      "muscles": [
+        "quadratus femoris"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-009.webp",
+      "anatomy": "images/anatomy/MER3-009.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        280,
+        502
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-010",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 10,
+      "title": "Sacrum and gluteal fascia: fingertips",
+      "explanation": "With the finger tips on top of the Sacral fascia, use oblique strokes spreading the fascia from the Medial Sacrum laterally into the Gluteus fascia.",
+      "muscles": [
+        "sacral fascia",
+        "gluteal fascia"
+      ],
+      "body_areas": [
+        "sacrum",
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-010.webp",
+      "anatomy": "images/anatomy/MER3-010.webp",
+      "photo_size": [
+        600,
+        313
+      ],
+      "anatomy_size": [
+        300,
+        264
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-011",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 11,
+      "title": "Middle hamstring",
+      "explanation": "Place the right forearm to the level of the Ischial Tuberosity in the middle of the Hamstrings. Deeply stroke down to the back of the Knee. Work slowly and with sensitivity.",
+      "muscles": [
+        "hamstrings"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-011.webp",
+      "anatomy": "images/anatomy/MER3-011.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        196,
+        484
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-012",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 12,
+      "title": "Medial hamstring",
+      "explanation": "Move to the other side of the table. Starting with the Medial Hamstring, work from the bottom of the Pelvis slowly and deeply with a ﬂat right forearm, down to the attachment on the Tibia.",
+      "muscles": [
+        "semitendinosus",
+        "semimembranosus"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-012.webp",
+      "anatomy": "images/anatomy/MER3-012.webp",
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": [
+        300,
+        324
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-013",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 13,
+      "title": "Lateral hamstring",
+      "explanation": "With the left forearm crossing your body, standing with the left leg forward, slide down the Lateral part of the Hamstring, from the Pelvis to the Knee.",
+      "muscles": [
+        "biceps femoris long and short heads"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-013.webp",
+      "anatomy": "images/anatomy/MER3-013.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        349
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-014",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 14,
+      "title": "Pelvic floor",
+      "explanation": "With the person lying on the side, with the fingers of your hands slowly and with sensitivity feel for the bottom of the Coccyx, the inside of the sit bones and the bottom of the Pubic bone. These are the attachments of the Pelvic ﬂoor muscles. Work underneath the Coccyx releasing the muscle and then turn your finger tips up and hook the Coccyx, pulling it out softly, to help straighten the Coccyx.",
+      "muscles": [
+        "coccygeus",
+        "levator ani",
+        "iliococcygeus",
+        "pubococcygeus",
+        "puborectalis"
+      ],
+      "body_areas": [
+        "pelvis",
+        "pelvic floor"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-014.webp",
+      "anatomy": "images/anatomy/MER3-014.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        311
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER3-015",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "abdominal",
+        "thoracic"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 15,
+      "title": "Rib attachments of rectus abdominis",
+      "explanation": "Bring your fingers just above the costal arch, on the 7th Rib at the level of the Xiphoid Process. With the finger pads of both hands, contact the R.A. attachments and stretch up while the client breaths deeply into your fingers.",
+      "muscles": [
+        "rectus abdominis"
+      ],
+      "body_areas": [
+        "abdomen",
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-015.webp",
+      "anatomy": "images/anatomy/MER3-015.webp",
+      "photo_size": [
+        600,
+        307
+      ],
+      "anatomy_size": [
+        240,
+        492
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-016",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "abdominal",
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 16,
+      "title": "Rectus abdominis: pubic attachment",
+      "explanation": "With the finger tips of your right hand contact the Crest of the right side of the Pubic Bone. Stretch the tissue slowly and with sensitivity, having your client breath deeply into the belly. Move medially to the Pubic Symphysis. Stay with the stroke for at least thirty sec, asking your client to breath into your fingers.",
+      "muscles": [
+        "rectus abdominis"
+      ],
+      "body_areas": [
+        "abdomen",
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-016.webp",
+      "anatomy": "images/anatomy/MER3-016.webp",
+      "photo_size": [
+        586,
+        308
+      ],
+      "anatomy_size": [
+        300,
+        393
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER3-017",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "abdominal"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 17,
+      "title": "Rectus abdominis: fingertips",
+      "explanation": "With the finger tips of your left hand, starting from the Costal Arch and sliding down to the the Pubic Crest with your hand at a horizontal level on the muscle until you get to the Pubic Attachments.",
+      "muscles": [
+        "rectus abdominis"
+      ],
+      "body_areas": [
+        "abdomen"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-017.webp",
+      "anatomy": "images/anatomy/MER3-017.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        432
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-018",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "abdominal",
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 18,
+      "title": "External oblique on iliac crest: back of hand",
+      "explanation": "Facing the right side of the Rectus Abdominis, with your right foot forward, place the back of your right hand on the lateral margin of the R.A. Stretch slowly down with the back of your hand over the Iliac Crest to the table.",
+      "muscles": [
+        "external oblique",
+        "iliac crest fascia"
+      ],
+      "body_areas": [
+        "abdomen",
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-018.webp",
+      "anatomy": "images/anatomy/MER3-018.webp",
+      "photo_size": [
+        600,
+        313
+      ],
+      "anatomy_size": [
+        300,
+        251
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-019",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "abdominal",
+        "thoracic"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 19,
+      "title": "External and internal oblique: back of hand",
+      "explanation": "Standing over the left shoulder, facing down towards the feet, place the back of your right hand on the Ribs from the bottom of the Costal Arch, slowly stretch down towards the armpit, as you ask your client to breath into the Ribs.",
+      "muscles": [
+        "external oblique",
+        "internal oblique"
+      ],
+      "body_areas": [
+        "abdomen",
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-019.webp",
+      "anatomy": "images/anatomy/MER3-019.webp",
+      "photo_size": [
+        600,
+        324
+      ],
+      "anatomy_size": [
+        300,
+        280
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-020",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "abdominal",
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 20,
+      "title": "Internal oblique: fingertips",
+      "explanation": "Have your client’s legs resting on a pillow. Find the Anterior Superior Iliac Spine at the Crest of the Ilium. With the finger tips of the right hand move up towards the lower Ribs stretching the Internal Oblique.",
+      "muscles": [
+        "internal oblique"
+      ],
+      "body_areas": [
+        "abdomen",
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-020.webp",
+      "anatomy": "images/anatomy/MER3-020.webp",
+      "photo_size": [
+        600,
+        317
+      ],
+      "anatomy_size": [
+        248,
+        499
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-021",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "thoracic",
+        "diaphragmatic"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 21,
+      "title": "Diaphragm work: fingertips and thumbs",
+      "explanation": "Have the client’s knees lift up in a neutral position, about shoulders width. Work the Diaphragm muscle on the client’s right side, with your left hand. Bring your fingertips underneath the Rib Cage, while your right hand cradles the Rib Cage from the top bringing it down and in towards your working hand, creating space while your left hand stays deep. Work from the bottom up staying with each segment through the time of three or four breaths. Have them breath in their chest not the belly. Move 3 segments up to the solar plexus. In between, you can gently hold the back and the front of the area you have been working.",
+      "muscles": [
+        "diaphragm"
+      ],
+      "body_areas": [
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-021.webp",
+      "anatomy": "images/anatomy/MER3-021.webp",
+      "photo_size": [
+        600,
+        224
+      ],
+      "anatomy_size": [
+        236,
+        386
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-022",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "thoracic",
+        "diaphragmatic"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 22,
+      "title": "Respiratory diaphragm hold",
+      "explanation": "Place the finger tips on top of the Xiphoid process, as you rest your hand down the middle of the Diaphragmatic Segment. The left hand slides under the middle back, as the client rests the arm above the head (use pillow if needed).",
+      "muscles": [
+        "respiratory diaphragm region"
+      ],
+      "body_areas": [
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-022.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        294
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-023",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "abdominal"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 23,
+      "title": "Linea alba: fingertips",
+      "explanation": "Contact the Linea Alba between the left and the right side of the Rectus Abdominis, at the level of the Costal Arch. Slowly stretch down the Linea Alba, stretching all the way to the Pubic Bone. Work slowly and with sensitivity, with the client’s breath.",
+      "muscles": [
+        "linea alba"
+      ],
+      "body_areas": [
+        "abdomen"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-023.webp",
+      "anatomy": "images/anatomy/MER3-023.webp",
+      "photo_size": [
+        600,
+        313
+      ],
+      "anatomy_size": [
+        300,
+        434
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-024",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs",
+        "abdominal"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 24,
+      "title": "Psoas",
+      "explanation": "Bring the finger tips of your left hand to the Anterior Iliac Spine. Make a line to the navel. Place the finder pads of your left hand at the level of 1/3th of the line from the Anterior Spine to the navel. With the fingers of you right hand on top of your left hand for support. Drop your weight slowly through your fingers, ask your client to raise his leg so you can feel the Psoas contract. Have the client place their foot on the table in neutral position. Stretch the Psoas up with your finger tips to the level of their Umbilicus. Ask your client to rock the Pelvis into full ﬂection and extension, while you stretch the Psoas.",
+      "muscles": [
+        "psoas major",
+        "psoas minor"
+      ],
+      "body_areas": [
+        "pelvis",
+        "abdomen"
+      ],
+      "cautions": [
+        "Wait until the client knows the work after a few sessions; do not overwork; allow integration."
+      ],
+      "photo": "images/strokes/MER3-024.webp",
+      "anatomy": "images/anatomy/MER3-024.webp",
+      "photo_size": [
+        600,
+        640
+      ],
+      "anatomy_size": [
+        300,
+        311
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-025",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 25,
+      "title": "Gluteal attachments on posterior iliac bone",
+      "explanation": "Working with the backs of both hands, slowly slide towards the Greater Trocanter with the right hand and with the left around the Crest of the Ilium.",
+      "muscles": [
+        "gluteal attachments",
+        "iliac crest fascia"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-025.webp",
+      "anatomy": "images/anatomy/MER3-025.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        216,
+        450
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-026",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 26,
+      "title": "Lesser trochanter: fingertips",
+      "explanation": "Bring your right knee up the table, place the client’s back of the right leg on your thigh, while you finger tips move in, towards the hip joint, until you feel a round surface of the Lesser Trocanter.",
+      "muscles": [
+        "lesser trochanter region"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-026.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-027",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 27,
+      "title": "Iliopsoas stretch",
+      "explanation": "Have your client lie on the right side with the pillow under the head. With your left hand lift your client’s left leg. Hold under the knee, with their lower leg resting on the side of your arm. Your right hand is placed at the back of L4 L5. Stretch back the client’s left leg with your left hand and push gently forward into the spine with your right hand, bringing the body into hyperextension. Hold for thirty sec, asking the client to breath into the stretch.",
+      "muscles": [
+        "psoas major",
+        "psoas minor",
+        "iliacus"
+      ],
+      "body_areas": [
+        "pelvis",
+        "lower back"
+      ],
+      "cautions": [
+        "Wait until the client knows the work after a few sessions; do not overwork; allow integration."
+      ],
+      "photo": "images/strokes/MER3-027.webp",
+      "anatomy": "images/anatomy/MER3-027.webp",
+      "photo_size": [
+        600,
+        375
+      ],
+      "anatomy_size": [
+        300,
+        204
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-028",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "abdominal"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 28,
+      "title": "Umbilicus",
+      "explanation": "Position your client with the knees up and feel for the outer edges of the Rectus. Bring your finger tips slowly underneath the Rectus until you contact the Umbilicus Fascia. Slowly bring your fingers together. When your finger tips are in contact with each other, the tissue on the inner aspect of the Umbilicus will be between your fingers. Slowly with sensitivity lift the Umbilicus towards the ceiling and towards the head. The Umbilicus is a rich source of emotional connection as well as fascial ones.",
+      "muscles": [
+        "umbilical fascia"
+      ],
+      "body_areas": [
+        "abdomen"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-028.webp",
+      "anatomy": null,
+      "photo_size": [
+        597,
+        312
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-029",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "thoracic_pelvic",
+      "segment_name": "Pelvis and core",
+      "segment_chapter": "Working the thoracic / pelvic area",
+      "manual_order": 29,
+      "title": "Pelvic lift",
+      "explanation": "Have your client push up into an arch. Bring your left hand to the lower abdomen and the right hand to the sacrum. As they come down with their back to the table hold that position and slowly slide your right hand down stretching the lower back and sacrum.",
+      "muscles": [
+        "lower back and sacral tissues"
+      ],
+      "body_areas": [
+        "pelvis",
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-029.webp",
+      "anatomy": null,
+      "photo_size": [
+        596,
+        312
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-030",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 30,
+      "title": "Posterior neck work (1)",
+      "explanation": "Starting from the 7th Cervical vertabrea, stretching the lateral mass of muscles, the Trapezius, the Erectus Spinae muscles, Splenius Capitis, Splenius Cervicis and the deep intrinsic muscles. Sensing the holding pattern, move deep and slowly stretching up to the base of the Occiput. Spend time there releasing the tension by holding it.",
+      "muscles": [
+        "trapezius",
+        "erector spinae",
+        "splenius capitis",
+        "splenius cervicis",
+        "deep intrinsic neck muscles"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER3-030.webp",
+      "anatomy": "images/anatomy/MER3-030.webp",
+      "photo_size": [
+        600,
+        419
+      ],
+      "anatomy_size": [
+        300,
+        190
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-031",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 31,
+      "title": "Posterior neck work (2)",
+      "explanation": "You can also work the right side of the neck with the left hand and the other way around. Place your hand under the neck and curl your fingers next to the spine. Then find your depth and slowly stretch out with your hand until you come to the base of the Occiput. Spend time there releasing the tension by holding it.",
+      "muscles": [
+        "trapezius",
+        "splenius capitis",
+        "splenius cervicis"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER3-031.webp",
+      "anatomy": "images/anatomy/MER3-031.webp",
+      "photo_size": [
+        600,
+        400
+      ],
+      "anatomy_size": [
+        300,
+        207
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-032",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 32,
+      "title": "Posterior neck work (3)",
+      "explanation": "Place your finger tips at the level the 3th Thoracic Vertabrae on the side of the spine. It is a good option to hold this spot for a while to release the expression that is often locked there. Then find your depth and slowly stretch out with your right hand until you come to the base of the Occiput.",
+      "muscles": [
+        "trapezius",
+        "splenius capitis",
+        "splenius cervicis"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER3-032.webp",
+      "anatomy": "images/anatomy/MER3-032.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        300,
+        247
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-033",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "cervical",
+      "belts": [
+        "cervical",
+        "ocular"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 33,
+      "title": "Cranial/occipital decompression",
+      "explanation": "Pressure is applied upwards at the base of the Occiput. Fingers are curved, with a pressure coming from the tips. The Occiput resting on your palms. Sometimes you have to wait several minutes to feel the softening and the decompression.",
+      "muscles": [
+        "suboccipital muscles"
+      ],
+      "body_areas": [
+        "neck",
+        "cranium"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER3-033.webp",
+      "anatomy": "images/anatomy/MER3-033.webp",
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": [
+        300,
+        311
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-034",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic_leg_stretches",
+      "segment_name": "Pelvic and leg stretches",
+      "segment_chapter": "Additional pelvic / leg stretches",
+      "manual_order": 34,
+      "title": "Adductors: back of hand",
+      "explanation": "Starting with the back of the right hand at the inside of the knee, slowly slide up the length of the Adductors to the attachments at the Pelvis. Work three lines up: Posterior, Medial and Anterior (back, middle and front).",
+      "muscles": [
+        "adductor longus",
+        "adductor brevis",
+        "adductor magnus",
+        "gracilis"
+      ],
+      "body_areas": [
+        "thighs",
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-034.webp",
+      "anatomy": "images/anatomy/MER3-034.webp",
+      "photo_size": [
+        600,
+        421
+      ],
+      "anatomy_size": [
+        300,
+        206
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-035",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic_leg_stretches",
+      "segment_name": "Pelvic and leg stretches",
+      "segment_chapter": "Additional pelvic / leg stretches",
+      "manual_order": 35,
+      "title": "Ischial tuberosity to pubic symphysis: fingertips",
+      "explanation": "With the finger pads of the right hand starting from the Ischial Tuberosity, slide in and forward along the bone all the way to the Pubic Symphysis. Feeling for the tendons and fascial bands, work slowly with very sensitive finger tips. Stay with this area for a few minutes.",
+      "muscles": [
+        "tendons and fascial bands along ischial-pubic region"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-035.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER3-036",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic_leg_stretches",
+      "segment_name": "Pelvic and leg stretches",
+      "segment_chapter": "Additional pelvic / leg stretches",
+      "manual_order": 36,
+      "title": "Hip joint stretch",
+      "explanation": "Slowly take the leg laterally and keep stretching down toward the table with the lower leg perpendicular to the upper leg. Hold the bottom of the foot and push the knee gently down towards the table. The right hand anchors the client’s right leg.",
+      "muscles": [
+        "hip joint"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-036.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-037",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic_leg_stretches",
+      "segment_name": "Pelvic and leg stretches",
+      "segment_chapter": "Additional pelvic / leg stretches",
+      "manual_order": 37,
+      "title": "Hamstring stretch",
+      "explanation": "Come up on the table, with your left knee supporting the client’s right knee, keeping it locked. With your left hand on the ball of the foot and right hand on the heel, move the leg up until you meet their resistance. Hold for 15 seconds.",
+      "muscles": [
+        "hamstrings"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-037.webp",
+      "anatomy": "images/anatomy/MER3-037.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        279
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER3-038",
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic_leg_stretches",
+      "segment_name": "Pelvic and leg stretches",
+      "segment_chapter": "Additional pelvic / leg stretches",
+      "manual_order": 38,
+      "title": "Side twist for lumbar spine",
+      "explanation": "Come up on the table with your right knee behind the client’s Pelvis, and your left foot resting gently on the right shoulder. With your right hand on the thigh and your left hand on the back of the Pelvis twist the leg and Pelvis until you meet resistance. Hold for 15 seconds.",
+      "muscles": [
+        "lumbar spine region"
+      ],
+      "body_areas": [
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER3-038.webp",
+      "anatomy": null,
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-001",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 1,
+      "title": "Posterior neck work (1)",
+      "explanation": "Starting from the 7th Cervical vertabrea, stretching the lateral mass of muscles, the Trapezius, the Erectus Spinae muscles, Splenius Capitis, Splenius Cervicis and the deep intrinsic muscles. Sensing the holding pattern, move deep and slowly stretching up to the base of the Occiput. Spend time there releasing the tension by holding it.",
+      "muscles": [
+        "trapezius",
+        "erector spinae",
+        "splenius capitis",
+        "splenius cervicis",
+        "deep intrinsic neck muscles"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-001.webp",
+      "anatomy": "images/anatomy/MER4-001.webp",
+      "photo_size": [
+        600,
+        419
+      ],
+      "anatomy_size": [
+        300,
+        191
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-002",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 2,
+      "title": "Posterior neck work (2)",
+      "explanation": "You can also work the right side of the neck with the left hand and the other way around. Place your hand under the neck and curl your fingers next to the spine. Then find your depth and slowly stretch out with your hand until you come to the base of the Occiput. Spend time there releasing the tension by holding it.",
+      "muscles": [
+        "trapezius",
+        "splenius capitis",
+        "splenius cervicis"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-002.webp",
+      "anatomy": "images/anatomy/MER4-002.webp",
+      "photo_size": [
+        600,
+        400
+      ],
+      "anatomy_size": [
+        300,
+        208
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-003",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 3,
+      "title": "Posterior neck work (3)",
+      "explanation": "Place your finger tips at the level the 3th Thoracic Vertabrae on the side of the spine. It is a good option to hold this spot for a while to release the expression that is often locked there. Then find your depth and slowly stretch out with your right hand until you come to the base of the Occiput.",
+      "muscles": [
+        "trapezius",
+        "splenius capitis",
+        "splenius cervicis"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-003.webp",
+      "anatomy": "images/anatomy/MER4-003.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        300,
+        247
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-004",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "cervical",
+        "ocular"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 4,
+      "title": "Cranial/occipital decompression",
+      "explanation": "Pressure is applied upwards at the base of the Occiput. Fingers are curved, with a pressure coming from the tips. The Occiput resting on your palms. Sometimes you have to wait several minutes to feel the softening and the decompression.",
+      "muscles": [
+        "suboccipital muscles"
+      ],
+      "body_areas": [
+        "neck",
+        "cranium"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-004.webp",
+      "anatomy": "images/anatomy/MER4-004.webp",
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": [
+        300,
+        311
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-005",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "cervical",
+        "thoracic"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 5,
+      "title": "Trapezius: soft knuckles",
+      "explanation": "With your two right (soft) knuckles, from the top (working down), hook the top of the Trapezius, and with the other hand stretch the neck in the opposition. Repeat this 4 to 5 times in different spots.",
+      "muscles": [
+        "trapezius"
+      ],
+      "body_areas": [
+        "neck",
+        "shoulders"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-005.webp",
+      "anatomy": "images/anatomy/MER4-005.webp",
+      "photo_size": [
+        600,
+        310
+      ],
+      "anatomy_size": [
+        232,
+        484
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-006",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 6,
+      "title": "Suboccipital muscle",
+      "explanation": "Turn the client’s head to the opposite side you are working. With the right thumb stroke below the posterior aspect of the Mastoid Process, sliding down to the Posterior Suboccipital muscle below the middle of the Occiput.",
+      "muscles": [
+        "obliquus capitis"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-006.webp",
+      "anatomy": "images/anatomy/MER4-006.webp",
+      "photo_size": [
+        600,
+        310
+      ],
+      "anatomy_size": [
+        241,
+        468
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-007",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 7,
+      "title": "Sternocleidomastoid",
+      "explanation": "With the finger tips or thumbs, with the client having turned the head in the opposite direction slide slowly and deeply on the SCM from the Mastoid Process untill you reach the Clavicle. Keep your hand at a oblique angle. Very important again to work the tendinous insertion on either side.",
+      "muscles": [
+        "sternocleidomastoid"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-007.webp",
+      "anatomy": "images/anatomy/MER4-007.webp",
+      "photo_size": [
+        600,
+        310
+      ],
+      "anatomy_size": [
+        249,
+        467
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-008",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 8,
+      "title": "SCM attachments",
+      "explanation": "Work with your finger tips on the insertion at the Clavicle, having the client breath in this area. Very important again to work the tendinous insertion on either side.",
+      "muscles": [
+        "sternocleidomastoid"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-008.webp",
+      "anatomy": "images/anatomy/MER4-008.webp",
+      "photo_size": [
+        600,
+        310
+      ],
+      "anatomy_size": [
+        182,
+        358
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-009",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 9,
+      "title": "Anterior scalene",
+      "explanation": "Palpate with your fingers for the Anterior Scalene and slowly add pressure. Slide over the belly of the muscle. The Anterior Scalene arises from the anterior tubercles of the transverse processes of the third, fourth, ﬁfth, and sixth cervical vertebrae,",
+      "muscles": [
+        "anterior scalene"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement.",
+        "Nerves run through this area toward the arm; monitor responses."
+      ],
+      "photo": "images/strokes/MER4-009.webp",
+      "anatomy": "images/anatomy/MER4-009.webp",
+      "photo_size": [
+        600,
+        361
+      ],
+      "anatomy_size": [
+        166,
+        502
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-010",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 10,
+      "title": "Middle scalene",
+      "explanation": "Palpate with your fingers for the Medial Scalene and slowly add pressure. Slide over the belly of the muscle. The Middle scalene arises from the posterior tubercles of the transverse processes of the lower six cervical vertebrae.",
+      "muscles": [
+        "middle scalene"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement.",
+        "Nerves run through this area toward the arm; monitor responses."
+      ],
+      "photo": "images/strokes/MER4-010.webp",
+      "anatomy": "images/anatomy/MER4-010.webp",
+      "photo_size": [
+        600,
+        276
+      ],
+      "anatomy_size": [
+        125,
+        495
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-011",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 11,
+      "title": "Posterior scalene",
+      "explanation": "Palpate with your fingers for the Posterior Scalene and slowly add pressure. Slide over the belly of the muscle. It arises, by two or three separate tendons, from the posterior tubercles of the transverse processes of the lower two or three cervical vertebrae.",
+      "muscles": [
+        "posterior scalene"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement.",
+        "Nerves run through this area toward the arm; monitor responses."
+      ],
+      "photo": "images/strokes/MER4-011.webp",
+      "anatomy": "images/anatomy/MER4-011.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        245,
+        495
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-012",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "cervical",
+      "belts": [
+        "oral",
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 12,
+      "title": "Infrahyoid: soft fingertips",
+      "explanation": "The Infrahyoid Muscles are located on the anterior neck superficial to the Trachea. Starting from the top of the Sternum, next to the Trachea, going very slowly with the (soft) finger tips of your left hand stroke upwards to the base of the Hyoid bone.",
+      "muscles": [
+        "infrahyoid muscles"
+      ],
+      "body_areas": [
+        "throat",
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-012.webp",
+      "anatomy": "images/anatomy/MER4-012.webp",
+      "photo_size": [
+        600,
+        385
+      ],
+      "anatomy_size": [
+        247,
+        502
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER4-013",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 13,
+      "title": "Pectoralis major (1): medial insertion",
+      "explanation": "Gently work the superficial structure of the Costal and Sternal connection. Start right on the front of the chest along the Costal Ridge and work slowly having the client breath into your fingers. Work at about 30 degrees angle, up towards the top of the Sternal Clavicular Joint.",
+      "muscles": [
+        "pectoralis major"
+      ],
+      "body_areas": [
+        "thorax",
+        "shoulders"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER4-013.webp",
+      "anatomy": "images/anatomy/MER4-013.webp",
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": [
+        300,
+        316
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-014",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 14,
+      "title": "Pectoralis major (2)",
+      "explanation": "With the your right hand slowly stretch the Pectoralis Major laterally and underneath the Clavicle towards the Humerus. Stroke the Clavicle attachment at the Sternum, moving towards the Anterior Deltoid Muscle.",
+      "muscles": [
+        "pectoralis major",
+        "anterior deltoid region"
+      ],
+      "body_areas": [
+        "thorax",
+        "shoulders"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER4-014.webp",
+      "anatomy": "images/anatomy/MER4-014.webp",
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": [
+        300,
+        353
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-015",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 15,
+      "title": "Pectoralis major (3): knuckles",
+      "explanation": "Facing the clients head bring the loose knuckles of your right hand underneath the Clavicle at the level of the Sternum. Slide down the Pectoralis Major by leaning your body over until you get to the Deltoid. Be aware of the Coracoid Process.",
+      "muscles": [
+        "pectoralis major"
+      ],
+      "body_areas": [
+        "thorax",
+        "shoulders"
+      ],
+      "cautions": [
+        "Be aware of / do not run over the coracoid process."
+      ],
+      "photo": "images/strokes/MER4-015.webp",
+      "anatomy": "images/anatomy/MER4-015.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        312
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-016",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "ocular",
+      "belts": [
+        "ocular"
+      ],
+      "segment": "face",
+      "segment_name": "Face",
+      "segment_chapter": "Working the face and cervical area",
+      "manual_order": 16,
+      "title": "Frontalis",
+      "explanation": "Stretching the Frontalis muscle on the forehead up into the front of the Scalp, with the finger tips or the thumbs. Work the whole forehead.",
+      "muscles": [
+        "frontalis"
+      ],
+      "body_areas": [
+        "forehead"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-016.webp",
+      "anatomy": "images/anatomy/MER4-016.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        135,
+        483
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-017",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "oral",
+      "belts": [
+        "oral"
+      ],
+      "segment": "face",
+      "segment_name": "Face",
+      "segment_chapter": "Working the face and cervical area",
+      "manual_order": 17,
+      "title": "Posterior attachments of mandible",
+      "explanation": "With the finger tips of the left hand go deep under the middle of the chin, hooking the muscle and stretching down the Mandible towards the ear. Work very slowly with sensitivity.",
+      "muscles": [
+        "mylohyoid"
+      ],
+      "body_areas": [
+        "jaw"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-017.webp",
+      "anatomy": "images/anatomy/MER4-017.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        135,
+        420
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-018",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "ocular",
+      "belts": [
+        "ocular"
+      ],
+      "segment": "face",
+      "segment_name": "Face",
+      "segment_chapter": "Working the face and cervical area",
+      "manual_order": 18,
+      "title": "Zygomatic arch",
+      "explanation": "Place your finger tips beside the nose curling into the Zygomatic Arch and slide back to the level of the Temporal bone.",
+      "muscles": [
+        "zygomaticus major",
+        "zygomaticus minor"
+      ],
+      "body_areas": [
+        "face"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-018.webp",
+      "anatomy": "images/anatomy/MER4-018.webp",
+      "photo_size": [
+        600,
+        363
+      ],
+      "anatomy_size": [
+        142,
+        456
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-019",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "ocular",
+      "belts": [
+        "ocular"
+      ],
+      "segment": "face",
+      "segment_name": "Face",
+      "segment_chapter": "Working the face and cervical area",
+      "manual_order": 19,
+      "title": "Fascia at side of scalp",
+      "explanation": "With the finger tips of both hands, work up the side of the Scalp with circular strokes, without sliding so you do not pull the client’s hair. Start on the Temporalis and work your way down. This is very soothing for people with headaches.",
+      "muscles": [
+        "temporalis",
+        "scalp fascia"
+      ],
+      "body_areas": [
+        "scalp"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement.",
+        "Use circular contact without sliding, to avoid pulling hair."
+      ],
+      "photo": "images/strokes/MER4-019.webp",
+      "anatomy": "images/anatomy/MER4-019.webp",
+      "photo_size": [
+        600,
+        363
+      ],
+      "anatomy_size": [
+        137,
+        416
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-020",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "ocular",
+      "belts": [
+        "ocular"
+      ],
+      "segment": "face",
+      "segment_name": "Face",
+      "segment_chapter": "Working the face and cervical area",
+      "manual_order": 20,
+      "title": "Sphenoid hold",
+      "explanation": "Cup your hands underneath the Occiput and both thumbs at the wing of the Sphenoid. Gently lift up feeling for movement. Hold for about 30 sec.",
+      "muscles": [
+        "sphenoid region",
+        "occipital region"
+      ],
+      "body_areas": [
+        "cranium"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-020.webp",
+      "anatomy": "images/anatomy/MER4-020.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        198,
+        492
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER4-021",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "oral",
+      "belts": [
+        "oral"
+      ],
+      "segment": "face",
+      "segment_name": "Face",
+      "segment_chapter": "Working the face and cervical area",
+      "manual_order": 21,
+      "title": "Masseter: outside work",
+      "explanation": "With the finger tips of your hand, anchored by the thumb in a counter stretch, contact the origin at the Zygomatic Arch, sliding down to the insertion at the angle at the Mandible. Ask your client to open the mouth, stretching the Masseter, while you stretch down the belly of the muscle. Work one side at a time.",
+      "muscles": [
+        "masseter"
+      ],
+      "body_areas": [
+        "jaw"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-021.webp",
+      "anatomy": "images/anatomy/MER4-021.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        158,
+        452
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-022",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "ocular",
+      "belts": [
+        "ocular"
+      ],
+      "segment": "face",
+      "segment_name": "Face",
+      "segment_chapter": "Working the face and cervical area",
+      "manual_order": 22,
+      "title": "Orbit of eye",
+      "explanation": "Place the thumb of your right hand on the Medial Posterior Orbit of the eye and stroke laterally and slowly. You can also stretch and hold this fascia until you feel it release.",
+      "muscles": [
+        "orbicularis oculi",
+        "orbital fascia"
+      ],
+      "body_areas": [
+        "eyes"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-022.webp",
+      "anatomy": "images/anatomy/MER4-022.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        123,
+        472
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER4-023",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "ocular",
+      "belts": [
+        "ocular"
+      ],
+      "segment": "face",
+      "segment_name": "Face",
+      "segment_chapter": "Working the face and cervical area",
+      "manual_order": 23,
+      "title": "Upper orbit of eye",
+      "explanation": "Place the finger tips of your right hand on the Upper Orbit curving slightly and slide laterally with sensitivity.",
+      "muscles": [
+        "orbicularis oculi"
+      ],
+      "body_areas": [
+        "eyes"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-023.webp",
+      "anatomy": "images/anatomy/MER4-023.webp",
+      "photo_size": [
+        600,
+        364
+      ],
+      "anatomy_size": [
+        123,
+        472
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER4-024",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "oral",
+      "belts": [
+        "oral"
+      ],
+      "segment": "face",
+      "segment_name": "Face",
+      "segment_chapter": "Working the face and cervical area",
+      "manual_order": 24,
+      "title": "Masseter and pterygoids: inside work",
+      "explanation": "Put on a glove when working on the inside of the mouth. Place your index finger on the inside of the cheek. Have your client tighten the jaw so you can feel the muscle contract. Feel for the upper attachments of the Maxilla, the Sphenoid and the Zygomatic Arch. Work slowly with much sensitivity on the muscle’s attachments and belly.",
+      "muscles": [
+        "masseter",
+        "pterygoids"
+      ],
+      "body_areas": [
+        "jaw"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement.",
+        "Wear a glove; work slowly and sensitively."
+      ],
+      "photo": null,
+      "anatomy": "images/anatomy/MER4-024.webp",
+      "photo_size": null,
+      "anatomy_size": [
+        132,
+        139
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER4-025",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "oral",
+      "belts": [
+        "oral"
+      ],
+      "segment": "face",
+      "segment_name": "Face",
+      "segment_chapter": "Working the face and cervical area",
+      "manual_order": 25,
+      "title": "Muscles of jaw",
+      "explanation": "Moving from the lateral side of the Mandible, down towards the chin, work slowly with the finger tips.",
+      "muscles": [
+        "jaw musculature (not individually named)"
+      ],
+      "body_areas": [
+        "jaw"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-025.webp",
+      "anatomy": "images/anatomy/MER4-025.webp",
+      "photo_size": [
+        600,
+        363
+      ],
+      "anatomy_size": [
+        180,
+        454
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-026",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "ocular",
+      "belts": [
+        "ocular"
+      ],
+      "segment": "face",
+      "segment_name": "Face",
+      "segment_chapter": "Working the face and cervical area",
+      "manual_order": 26,
+      "title": "Scalp",
+      "explanation": "With the thumb placed on top of the Scalp, use your fingers to release the top of the Scalp. Use your fingers to go left and right to release all different areas of the Scalp.",
+      "muscles": [
+        "scalp fascia"
+      ],
+      "body_areas": [
+        "scalp"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER4-026.webp",
+      "anatomy": "images/anatomy/MER4-026.webp",
+      "photo_size": [
+        600,
+        363
+      ],
+      "anatomy_size": [
+        175,
+        478
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-027",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 27,
+      "title": "Erectors: superficial to deeper",
+      "explanation": "Just like the work with the neck, we want to start releasing the more superficial structures like the Trapezius and the Latissimus Dorsi, moving into into the deeper muscles of the back. Have the client breathe into your touch (elbow, fingers, knuckles, fist).",
+      "muscles": [
+        "trapezius",
+        "latissimus dorsi",
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis"
+      ],
+      "body_areas": [
+        "upper back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER4-027.webp",
+      "anatomy": "images/anatomy/MER4-027.webp",
+      "photo_size": [
+        600,
+        363
+      ],
+      "anatomy_size": [
+        300,
+        243
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-028",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 28,
+      "title": "Back work: broad elbow",
+      "explanation": "Work with a broad elbow, along the side of the spine, your right foot forward left foot back. Push from your back foot through your left elbow along the side of the spine. Keeping a soft left hand. Slowly slide along the lateral mass next to the spine, as the client breaths into your elbow.",
+      "muscles": [
+        "latissimus dorsi"
+      ],
+      "body_areas": [
+        "upper back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER4-028.webp",
+      "anatomy": "images/anatomy/MER4-028.webp",
+      "photo_size": [
+        600,
+        311
+      ],
+      "anatomy_size": [
+        249,
+        484
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER4-029",
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 29,
+      "title": "Superior trapezius: back of hand",
+      "explanation": "Working the top part of the Trapezius down to where it attaches to the Scapula. Work on the left side with your left hand, your right foot forward (your foot should be behind your hand). The client can stretch the arm down, as it increases the stretch. Stroke down over the top of the Shoulder Girdle, being aware of softening your hand when you are over the bone.",
+      "muscles": [
+        "trapezius"
+      ],
+      "body_areas": [
+        "shoulders"
+      ],
+      "cautions": [
+        "Soften the hand over bone."
+      ],
+      "photo": "images/strokes/MER4-029.webp",
+      "anatomy": "images/anatomy/MER4-029.webp",
+      "photo_size": [
+        600,
+        312
+      ],
+      "anatomy_size": [
+        300,
+        495
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-001",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 1,
+      "title": "Pectoralis major: fingertips (a and b)",
+      "explanation": "(a) Gently work the superficial structure of the Costal and Sternal connection. Start right on the front of the chest along the costal ridge and work slowly having the client breath into your fingers. Work at about 30 degrees angle, up towards the top of the Sternal Clavicular Joint. (b) Work right under the clavicle with the finger tips, have them breath up into their first rib. Slow deep breaths. Work from the Sternum to the Acromium Process.",
+      "muscles": [
+        "pectoralis major"
+      ],
+      "body_areas": [
+        "thorax",
+        "shoulders"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-001.webp",
+      "anatomy": "images/anatomy/MER5-001.webp",
+      "photo_size": [
+        443,
+        228
+      ],
+      "anatomy_size": [
+        253,
+        387
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-002",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 2,
+      "title": "Pectoralis major: palm",
+      "explanation": "With the your left hand slowly stretch the Pectoralis Major, laterally and underneath the Clavicle towards the Humerus. Stroke the Clavicle attachment at the Sternum, moving towards the Anterior Deltoid Muscle.",
+      "muscles": [
+        "pectoralis major",
+        "anterior deltoid region"
+      ],
+      "body_areas": [
+        "thorax",
+        "shoulders"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-002.webp",
+      "anatomy": "images/anatomy/MER5-002.webp",
+      "photo_size": [
+        443,
+        228
+      ],
+      "anatomy_size": [
+        236,
+        380
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-003",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 3,
+      "title": "Pectoralis major: back of hand",
+      "explanation": "Facing the clients head bring the loose knuckles of your left hand underneath the Clavicle at the level of the Sternum. Slide down the Pectoralis Major by leaning your body over until you get to the Deltoid. Be aware not to run over the Coracoid Process.",
+      "muscles": [
+        "pectoralis major"
+      ],
+      "body_areas": [
+        "thorax",
+        "shoulders"
+      ],
+      "cautions": [
+        "Be aware of / do not run over the coracoid process."
+      ],
+      "photo": "images/strokes/MER5-003.webp",
+      "anatomy": "images/anatomy/MER5-003.webp",
+      "photo_size": [
+        442,
+        228
+      ],
+      "anatomy_size": [
+        261,
+        502
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-004",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 4,
+      "title": "Pectoralis minor: coracoid attachment",
+      "explanation": "The Pectoralis Minor is underneath the Pectoralis Major. Feel for the Coracoid Process, below the Clavicle. At the bottom of the Coracoid Process attaches the tendon of the Pectoralis Minor. Have the client bring the elbow out, and internally rotate the Humerus, it makes it easier to palpate that insertion. Work with your finger tips, deep and sensitive, while the client breaths into the upper ribs.",
+      "muscles": [
+        "pectoralis minor"
+      ],
+      "body_areas": [
+        "thorax",
+        "shoulders"
+      ],
+      "cautions": [
+        "Be aware of / do not run over the coracoid process."
+      ],
+      "photo": "images/strokes/MER5-004.webp",
+      "anatomy": "images/anatomy/MER5-004.webp",
+      "photo_size": [
+        600,
+        309
+      ],
+      "anatomy_size": [
+        300,
+        439
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-005",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 5,
+      "title": "Pectoralis minor: ribs 3 to 5",
+      "explanation": "Palpate the Ribs underneath the Pectoralis Major ribs 3 through 5. Take the arm and ask the client to move the arm medially. Feel the Pectoralis Minor contract. Have them breath into your fingers. Work slowly on the ribs, it is a very sensitive area.",
+      "muscles": [
+        "pectoralis minor"
+      ],
+      "body_areas": [
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-005.webp",
+      "anatomy": "images/anatomy/MER5-005.webp",
+      "photo_size": [
+        444,
+        230
+      ],
+      "anatomy_size": [
+        236,
+        442
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-006",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 6,
+      "title": "Anterior deltoid",
+      "explanation": "Use the back of your left hand, and this time your left foot is forward, your pelvis is lined behind the hand. Roll over your hand and stretch the Anterior Deltoid, with deep pressure, down to the Deltoid insertion into the Humerus. And then continue to stroke down over the lateral side of the Biceps to the elbow.",
+      "muscles": [
+        "anterior deltoid",
+        "biceps lateral region"
+      ],
+      "body_areas": [
+        "shoulders",
+        "arms"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-006.webp",
+      "anatomy": "images/anatomy/MER5-006.webp",
+      "photo_size": [
+        444,
+        228
+      ],
+      "anatomy_size": [
+        212,
+        502
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-007",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 7,
+      "title": "External oblique and serratus anterior: fingertips",
+      "explanation": "Have your client raised their arm above their head. With the finger tips of your hand slide up the side of the Rib Cage asking the client to breath in your finger tips. Work deep and slowly. Stroke up into the Axilla. Bridge your finger tips with your thumb, to create more strength in your hand. Have them breath into your fingers the whole time.",
+      "muscles": [
+        "external oblique",
+        "serratus anterior"
+      ],
+      "body_areas": [
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-007.webp",
+      "anatomy": "images/anatomy/MER5-007.webp",
+      "photo_size": [
+        447,
+        227
+      ],
+      "anatomy_size": [
+        300,
+        328
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-008",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "abdominal",
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 8,
+      "title": "Oblique layers: back of hand",
+      "explanation": "Work with the back of the hand between the rib cage and the Pelvis. Working the different layers between the Obliques and the Transverse Abdominis. Work slowly with deep slow breaths into your hands.",
+      "muscles": [
+        "transversus abdominis",
+        "internal oblique",
+        "external oblique"
+      ],
+      "body_areas": [
+        "abdomen",
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-008.webp",
+      "anatomy": "images/anatomy/MER5-008.webp",
+      "photo_size": [
+        441,
+        228
+      ],
+      "anatomy_size": [
+        300,
+        233
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER5-009",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 9,
+      "title": "Anterior scapula",
+      "explanation": "Placing the back of your hand on the Anterior Scapula, ask your client to raise their arm and fingers up over their head, slowly sliding your hand up to the Axilla. Releasing the subscapularis.",
+      "muscles": [
+        "subscapularis"
+      ],
+      "body_areas": [
+        "shoulders"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-009.webp",
+      "anatomy": "images/anatomy/MER5-009.webp",
+      "photo_size": [
+        448,
+        229
+      ],
+      "anatomy_size": [
+        244,
+        442
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-010",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 10,
+      "title": "Arm and rib cage counter-stretch",
+      "explanation": "As you stretch the arm up over the head and down to the table or pillow, you counter stretch by pushing the Rib Cage down with your right hand. Ask the client to extend the stretch by lifting the arm over head while extending the fingers. If the arm doesn’t rest easily on the table, put pillows to support the arm, so that the client can relax. with the hand on the rib cage slide with your finger tips and palms to stretch that myofascial line. Work with their breathing.",
+      "muscles": [
+        "obliques",
+        "serratus anterior"
+      ],
+      "body_areas": [
+        "thorax",
+        "shoulders",
+        "arms"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-010.webp",
+      "anatomy": "images/anatomy/MER5-010.webp",
+      "photo_size": [
+        600,
+        308
+      ],
+      "anatomy_size": [
+        300,
+        205
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-011",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 11,
+      "title": "Triceps: back of hand",
+      "explanation": "Bring the arm of your client over their head, if they need a pillow to relax their arm, put one under. With the back of your hand, fingers or thumbs, stretch from the Scapula attachement to the Olecranon process of the elbow.",
+      "muscles": [
+        "triceps brachii"
+      ],
+      "body_areas": [
+        "arms"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-011.webp",
+      "anatomy": "images/anatomy/MER5-011.webp",
+      "photo_size": [
+        375,
+        229
+      ],
+      "anatomy_size": [
+        300,
+        249
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-012",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "diaphragmatic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 12,
+      "title": "Rib cage stretch",
+      "explanation": "Stand above the rib cage, have the client’s knees lift up in a neutral position, about shoulders width. Work the Diaphragm muscle. With the palms and thumbs of both hands push the rib cage down and reach under the costal ridge with your fingers. Release the diaphragmatic segment by pulling the Rib Cage with both hands in a slow and sensitive way. * Everyone is different, some people will not have space under the arch so it is harder to access.",
+      "muscles": [
+        "diaphragm",
+        "rib cage"
+      ],
+      "body_areas": [
+        "thorax"
+      ],
+      "cautions": [
+        "Some clients have insufficient space under the costal arch for this approach."
+      ],
+      "photo": "images/strokes/MER5-012.webp",
+      "anatomy": "images/anatomy/MER5-012.webp",
+      "photo_size": [
+        436,
+        228
+      ],
+      "anatomy_size": [
+        253,
+        457
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-013",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "diaphragmatic",
+      "belts": [
+        "thoracic",
+        "diaphragmatic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 13,
+      "title": "Diaphragm work: fingertips and thumbs",
+      "explanation": "Have the client’s knees lift up in a neutral position, about shoulders width. Work the Diaphragm muscle on the client’s right side, with your left hand. Bring your fingertips underneath the Rib Cage, while your right hand cradles the Rib Cage from the top bringing it down and in towards your working hand, creating space while your left hand stays deep. Work from the bottom up staying with each segment through the time of three or four breaths. Have them breath in their chest not the belly. Move 3 segments up to the solar plexus. In between, you can gently hold the back and the front of the area you have been working.",
+      "muscles": [
+        "diaphragm"
+      ],
+      "body_areas": [
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-013.webp",
+      "anatomy": "images/anatomy/MER5-013.webp",
+      "photo_size": [
+        600,
+        226
+      ],
+      "anatomy_size": [
+        235,
+        426
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-014",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "diaphragmatic",
+      "belts": [
+        "thoracic",
+        "diaphragmatic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 14,
+      "title": "Respiratory diaphragm hold",
+      "explanation": "Place the finger tips on top of the Xiphoid process, as you rest your hand down the middle of the Diaphragmatic Segment. The left hand slides under the middle back, as the client rests the arm above the head (use pillow if needed).",
+      "muscles": [
+        "respiratory diaphragm region"
+      ],
+      "body_areas": [
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-014.webp",
+      "anatomy": null,
+      "photo_size": [
+        465,
+        228
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-015",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "abdominal"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 15,
+      "title": "Rectus abdominis: counter-strokes",
+      "explanation": "Your finger tips are straight and your hands are together, elbows together. Slowly open your elbows and let your hands open up. When your hands start to turn bring your elbows and finger tips together again. With both hands anchoring the tissue allow the stretch to go through your finger tips in opposing lines. Drop your weight into your finger tips.",
+      "muscles": [
+        "rectus abdominis"
+      ],
+      "body_areas": [
+        "abdomen"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-015.webp",
+      "anatomy": "images/anatomy/MER5-015.webp",
+      "photo_size": [
+        600,
+        306
+      ],
+      "anatomy_size": [
+        300,
+        332
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-016",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 16,
+      "title": "Posterior neck work (1)",
+      "explanation": "Starting from the 7th Cervical vertabrea, stretching the lateral mass of muscles, the Trapezius, the Erectus Spinae muscles, Splenius Capitis, Splenius Cervicis and the deep intrinsic muscles. Sensing the holding pattern, move deep and slowly stretching up to the base of the Occiput. Spend time there releasing the tension by holding it.",
+      "muscles": [
+        "trapezius",
+        "erector spinae",
+        "splenius capitis",
+        "splenius cervicis",
+        "deep intrinsic neck muscles"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER5-016.webp",
+      "anatomy": "images/anatomy/MER5-016.webp",
+      "photo_size": [
+        324,
+        227
+      ],
+      "anatomy_size": [
+        300,
+        191
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-017",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 17,
+      "title": "Posterior neck work (2)",
+      "explanation": "You can also work the right side of the neck with the left hand and the other way around. Place your hand under the neck and curl your fingers next to the spine. Then find your depth and slowly stretch out with your hand until you come to the base of the Occiput. Spend time there releasing the tension by holding it.",
+      "muscles": [
+        "trapezius",
+        "splenius capitis",
+        "splenius cervicis"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER5-017.webp",
+      "anatomy": "images/anatomy/MER5-017.webp",
+      "photo_size": [
+        340,
+        227
+      ],
+      "anatomy_size": [
+        300,
+        206
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-018",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 18,
+      "title": "Posterior neck work (3)",
+      "explanation": "Place your finger tips at the level the 3th Thoracic Vertabrae on the side of the spine. It is a good option to hold this spot for a while to release the expression that is often locked there. Then find your depth and slowly stretch out with your right hand until you come to the base of the Occiput.",
+      "muscles": [
+        "trapezius",
+        "splenius capitis",
+        "splenius cervicis"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER5-018.webp",
+      "anatomy": "images/anatomy/MER5-018.webp",
+      "photo_size": [
+        375,
+        228
+      ],
+      "anatomy_size": [
+        300,
+        245
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-019",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "cervical",
+      "belts": [
+        "cervical",
+        "ocular"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 19,
+      "title": "Cranial/occipital decompression",
+      "explanation": "Pressure is applied upwards at the base of the Occiput. Fingers are curved, with a pressure coming from the tips. The Occiput resting on your palms. Sometimes you have to wait several minutes to feel the softening and the decompression.",
+      "muscles": [
+        "suboccipital muscles"
+      ],
+      "body_areas": [
+        "neck",
+        "cranium"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER5-019.webp",
+      "anatomy": "images/anatomy/MER5-019.webp",
+      "photo_size": [
+        436,
+        227
+      ],
+      "anatomy_size": [
+        300,
+        308
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-020",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 20,
+      "title": "Sternocleidomastoid",
+      "explanation": "With the finger tips or thumbs, with the client having turned the head in the opposite direction slide slowly and deeply on the SCM from the Mastoid Process untill you reach the Clavicle. Keep your hand at a oblique angle. Very important again to work the tendinous insertion on either side.",
+      "muscles": [
+        "sternocleidomastoid"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER5-020.webp",
+      "anatomy": "images/anatomy/MER5-020.webp",
+      "photo_size": [
+        440,
+        228
+      ],
+      "anatomy_size": [
+        249,
+        462
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-021",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 21,
+      "title": "SCM attachments",
+      "explanation": "Work with your finger tips on the insertion at the Clavicle, having the client breath in this area. Very important again to work the tendinous insertion on either side.",
+      "muscles": [
+        "sternocleidomastoid"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER5-021.webp",
+      "anatomy": "images/anatomy/MER5-021.webp",
+      "photo_size": [
+        438,
+        228
+      ],
+      "anatomy_size": [
+        300,
+        369
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-022",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 22,
+      "title": "Anterior scalene",
+      "explanation": "Palpate with your fingers for the Anterior Scalene and slowly add pressure. Slide over the belly of the muscle. The Anterior Scalene arises from the anterior tubercles of the transverse processes of the third, fourth, fifth, and sixth cervical vertebrae,",
+      "muscles": [
+        "anterior scalene"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement.",
+        "Nerves run through this area toward the arm; monitor responses."
+      ],
+      "photo": "images/strokes/MER5-022.webp",
+      "anatomy": "images/anatomy/MER5-022.webp",
+      "photo_size": [
+        377,
+        228
+      ],
+      "anatomy_size": [
+        180,
+        502
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-023",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 23,
+      "title": "Middle scalene",
+      "explanation": "Palpate with your fingers for the Medial Scalene and slowly add pressure. Slide over the belly of the muscle. The Middle scalene arises from the posterior tubercles of the transverse processes of the lower six cervical vertebrae.",
+      "muscles": [
+        "middle scalene"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement.",
+        "Nerves run through this area toward the arm; monitor responses."
+      ],
+      "photo": "images/strokes/MER5-023.webp",
+      "anatomy": "images/anatomy/MER5-023.webp",
+      "photo_size": [
+        496,
+        229
+      ],
+      "anatomy_size": [
+        118,
+        491
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-024",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "cervical",
+      "belts": [
+        "cervical"
+      ],
+      "segment": "cervical",
+      "segment_name": "Cervical",
+      "segment_chapter": "Working the cervical area",
+      "manual_order": 24,
+      "title": "Posterior scalene",
+      "explanation": "Palpate with your fingers for the Posterior Scalene and slowly add pressure. Slide over the belly of the muscle. It arises, by two or three separate tendons, from the posterior tubercles of the transverse processes of the lower two or three cervical vertebrae.",
+      "muscles": [
+        "posterior scalene"
+      ],
+      "body_areas": [
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement.",
+        "Nerves run through this area toward the arm; monitor responses."
+      ],
+      "photo": "images/strokes/MER5-024.webp",
+      "anatomy": "images/anatomy/MER5-024.webp",
+      "photo_size": [
+        435,
+        228
+      ],
+      "anatomy_size": [
+        245,
+        490
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-025",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 25,
+      "title": "Erectors: superficial to deeper",
+      "explanation": "Just like the work with the neck, we want to start releasing the more superficial structures like the Trapezius and the Latissimus Dorsi, moving into into the deeper muscles of the back. Have the client breathe into your touch (elbow, fingers, knuckles, fist).",
+      "muscles": [
+        "trapezius",
+        "latissimus dorsi",
+        "spinalis thoracis",
+        "longissimus thoracis",
+        "iliocostalis thoracis"
+      ],
+      "body_areas": [
+        "upper back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-025.webp",
+      "anatomy": "images/anatomy/MER5-025.webp",
+      "photo_size": [
+        377,
+        229
+      ],
+      "anatomy_size": [
+        300,
+        241
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-026",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 26,
+      "title": "Back work: broad elbow",
+      "explanation": "Work with a broad elbow, along the side of the spine, your right foot forward left foot back. Push from your back foot through your left elbow along the side of the spine. Keeping a soft left hand. Slowly slide along the lateral mass next to the spine, as the client breaths into your elbow.",
+      "muscles": [
+        "latissimus dorsi"
+      ],
+      "body_areas": [
+        "upper back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-026.webp",
+      "anatomy": "images/anatomy/MER5-026.webp",
+      "photo_size": [
+        436,
+        228
+      ],
+      "anatomy_size": [
+        245,
+        500
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-027",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 27,
+      "title": "Superior trapezius: back of hand",
+      "explanation": "Working the top part of the Trapezius down to where it attaches to the Scapula. Work on the left side with your left hand, your right foot forward (your foot should be behind your hand). The client can stretch the arm down, as it increases the stretch. Stroke down over the top of the Shoulder Girdle, being aware of softening your hand when you are over the bone.",
+      "muscles": [
+        "trapezius"
+      ],
+      "body_areas": [
+        "shoulders"
+      ],
+      "cautions": [
+        "Soften the hand over bone."
+      ],
+      "photo": "images/strokes/MER5-027.webp",
+      "anatomy": "images/anatomy/MER5-027.webp",
+      "photo_size": [
+        435,
+        228
+      ],
+      "anatomy_size": [
+        300,
+        489
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-028",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "cervical"
+      ],
+      "segment": "thoracic",
+      "segment_name": "Thoracic",
+      "segment_chapter": "Working the thoracic area",
+      "manual_order": 28,
+      "title": "Superior trapezius with thumbs (includes levator scapulae)",
+      "explanation": "Move your thumb to the upper Trapezius, cirle the neck with your fingers, lightly and the work with your thumb, deep into the Levator Scapula, deep to the Trapezius where it inserts at the Medial and Anterior border of the Scapula. Continu to slide up to the Posterior Transverse Process of the Cervical Vertabrae.",
+      "muscles": [
+        "trapezius",
+        "levator scapulae"
+      ],
+      "body_areas": [
+        "shoulders",
+        "neck"
+      ],
+      "cautions": [
+        "Support the head without fixing it; allow movement."
+      ],
+      "photo": "images/strokes/MER5-028.webp",
+      "anatomy": "images/anatomy/MER5-028.webp",
+      "photo_size": [
+        436,
+        228
+      ],
+      "anatomy_size": [
+        245,
+        479
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER5-029",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 29,
+      "title": "Lumbar area: palm",
+      "explanation": "Work with your left hand on the client’s right side spreading the Thoracal Lumbar Fascia laterally. Your palm has an oblique contact and stretches the tissues slowly and deeply. All the time have them breath deeply into your hands.",
+      "muscles": [
+        "thoracolumbar fascia"
+      ],
+      "body_areas": [
+        "lower back"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-029.webp",
+      "anatomy": null,
+      "photo_size": [
+        447,
+        228
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-030",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 30,
+      "title": "Gluteal attachments on posterior iliac bone",
+      "explanation": "Working with the backs of both hands, slowly slide towards the Greater Trocanter with the right hand and with the left around the Crest of the Ilium.",
+      "muscles": [
+        "gluteal attachments",
+        "iliac crest fascia"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-030.webp",
+      "anatomy": "images/anatomy/MER5-030.webp",
+      "photo_size": [
+        435,
+        226
+      ],
+      "anatomy_size": [
+        217,
+        422
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-031",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 31,
+      "title": "Gluteus maximus, medius, minimus: forearm",
+      "explanation": "Bring your forearm across your body, and stretch down the Gluteus Maximus towards the feet right into the insertion on the Upper Femur. Then work the Gluteus Medius moving your elbow laterally on the Crest of the Ilium, stroking slowly down the Greater Trocanter. If possible go still deeper into the Gluteus Minimus. Bring the knee in flexion and move the foot which rotates the hip joint under your touch.",
+      "muscles": [
+        "gluteus maximus",
+        "gluteus medius",
+        "gluteus minimus"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-031.webp",
+      "anatomy": "images/anatomy/MER5-031.webp",
+      "photo_size": [
+        371,
+        228
+      ],
+      "anatomy_size": [
+        300,
+        232
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-032",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 32,
+      "title": "Middle hamstring",
+      "explanation": "Place the right forearm to the level of the Ischial Tuberosity in the middle of the Hamstrings. Deeply stroke down to the back of the Knee. Work slowly and with sensitivity.",
+      "muscles": [
+        "hamstrings"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-032.webp",
+      "anatomy": "images/anatomy/MER5-032.webp",
+      "photo_size": [
+        437,
+        228
+      ],
+      "anatomy_size": [
+        196,
+        480
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-033",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 33,
+      "title": "Medial hamstring",
+      "explanation": "Move to the other side of the table. Starting with the Medial Hamstring, work from the bottom of the Pelvis slowly and deeply with a flat right forearm, down to the attachment on the Tibia.",
+      "muscles": [
+        "semitendinosus",
+        "semimembranosus"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-033.webp",
+      "anatomy": "images/anatomy/MER5-033.webp",
+      "photo_size": [
+        439,
+        228
+      ],
+      "anatomy_size": [
+        300,
+        323
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-034",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 34,
+      "title": "Lateral hamstring",
+      "explanation": "With the left forearm crossing your body, standing with the left leg forward, slide down the Lateral part of the Hamstring, from the Pelvis to the Knee.",
+      "muscles": [
+        "biceps femoris long and short heads"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-034.webp",
+      "anatomy": "images/anatomy/MER5-034.webp",
+      "photo_size": [
+        437,
+        228
+      ],
+      "anatomy_size": [
+        300,
+        337
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-035",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 35,
+      "title": "Ischial tuberosity: hamstring attachment",
+      "explanation": "Working with your finger tips on the Ischial Tuberosity, ask your client to raise their lower leg up bending the knee feeling for the Hamstring Attachments. Work deeply sliding slowly medially.",
+      "muscles": [
+        "hamstring attachments"
+      ],
+      "body_areas": [
+        "pelvis",
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-035.webp",
+      "anatomy": "images/anatomy/MER5-035.webp",
+      "photo_size": [
+        579,
+        305
+      ],
+      "anatomy_size": [
+        201,
+        480
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-036",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 36,
+      "title": "Posterior knee: fingertips",
+      "explanation": "With the finger tips, either on the outside of the knee or the inside of the back of the knee, stretch down through the back of the knee, ask them to stretch out from their hip joint down towards your finger tips and straighten their knee as you stroke up the back of their knee. Connecting with slow deep breaths the whole time.",
+      "muscles": [
+        "semitendinosus",
+        "semimembranosus"
+      ],
+      "body_areas": [
+        "knees"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-036.webp",
+      "anatomy": "images/anatomy/MER5-036.webp",
+      "photo_size": [
+        434,
+        228
+      ],
+      "anatomy_size": [
+        300,
+        310
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER5-037",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 37,
+      "title": "Tensor fascia latae",
+      "explanation": "With the client on their side, supported by pillows, work up the Tensor fascia latae to the crest of the ilium with your forearm. Work slowly with their breathing and movement through the leg and pelvis. This is a very important muscle so spend some time with it.",
+      "muscles": [
+        "tensor fasciae latae"
+      ],
+      "body_areas": [
+        "pelvis",
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-037.webp",
+      "anatomy": "images/anatomy/MER5-037.webp",
+      "photo_size": [
+        435,
+        228
+      ],
+      "anatomy_size": [
+        243,
+        455
+      ],
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-038",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs"
+      ],
+      "segment": "pelvic",
+      "segment_name": "Pelvic",
+      "segment_chapter": "Working the pelvic area",
+      "manual_order": 38,
+      "title": "Side-lying iliotibial tract",
+      "explanation": "Support the clients body with pillows or bolsters. Put a pillow under their head and come up ont the table. Facing down towards the right knee slide, one at a time, your finger tips from the attachment of the Tensor Fascia Latae down the sides of the Ilio Tibial tract, releasing the attachment of the hamstrings and the quadriceps of the IT band.",
+      "muscles": [
+        "iliotibial tract",
+        "hamstring and quadriceps attachments"
+      ],
+      "body_areas": [
+        "thighs"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-038.webp",
+      "anatomy": "images/anatomy/MER5-038.webp",
+      "photo_size": [
+        435,
+        228
+      ],
+      "anatomy_size": [
+        196,
+        491
+      ],
+      "teacher_review_required": true
+    },
+    {
+      "id": "MER5-039",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic"
+      ],
+      "segment": "closing",
+      "segment_name": "Closing holds",
+      "segment_chapter": "Closing the MER session",
+      "manual_order": 39,
+      "title": "Thoracic inlet hold",
+      "explanation": "Place the right hand on the Clavicle on top of the Sternum, and the left hand between the shoulder blades and the upper thoracic. Hold for one minute.",
+      "muscles": [
+        "thoracic inlet"
+      ],
+      "body_areas": [
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-039.webp",
+      "anatomy": null,
+      "photo_size": [
+        465,
+        228
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-040",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "thoracic",
+      "belts": [
+        "thoracic",
+        "diaphragmatic"
+      ],
+      "segment": "closing",
+      "segment_name": "Closing holds",
+      "segment_chapter": "Closing the MER session",
+      "manual_order": 40,
+      "title": "Respiratory diaphragm hold",
+      "explanation": "Place the finger tips on top of the Xiphoid process, as you rest your hand down the middle of the Diaphragmatic Segment. The left hand slides under the middle back, as the client rests the arm above the head (use pillow if needed).",
+      "muscles": [
+        "respiratory diaphragm region"
+      ],
+      "body_areas": [
+        "thorax"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-040.webp",
+      "anatomy": null,
+      "photo_size": [
+        465,
+        228
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    },
+    {
+      "id": "MER5-041",
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "belt": "pelvic_and_legs",
+      "belts": [
+        "pelvic_and_legs",
+        "diaphragmatic"
+      ],
+      "segment": "closing",
+      "segment_name": "Closing holds",
+      "segment_chapter": "Closing the MER session",
+      "manual_order": 41,
+      "title": "Pelvic diaphragm hold",
+      "explanation": "Place your left hand on top of the belly with the edge touching the Pubic bone. Place your right hand on the Sacrum underneath the left hand.",
+      "muscles": [
+        "pelvic diaphragm region"
+      ],
+      "body_areas": [
+        "pelvis"
+      ],
+      "cautions": [],
+      "photo": "images/strokes/MER5-041.webp",
+      "anatomy": null,
+      "photo_size": [
+        466,
+        228
+      ],
+      "anatomy_size": null,
+      "teacher_review_required": false
+    }
+  ]
+}

@@ -1,0 +1,606 @@
+{
+  "schema_version": "8.0",
+  "rule": "Each client assessment shows only ONE segment from ONE manual matching the client's main issue, in original manual order. Do not combine manuals or add a second manual because another belt also scores high.",
+  "selection_precedence": [
+    "Match the client's actual presenting problem, especially specific pain, to one segment before considering broader belt scores.",
+    "A burning knee problem selects pelvic and legs → MER2 Grounding, even if thoracic tension is also strong. Do not automatically append Inspiration.",
+    "Where there is no specific pain, use the stated current problem, confirmed findings and relevant belt levels to choose one segment. A belt score alone must not manufacture a symptom.",
+    "If there are competing specific problems or no clear match, ask the practitioner to choose one active segment. Never concatenate manuals to avoid making the choice.",
+    "Resolve exactly one manual through belt_to_manual; show that manual's selected training flow in original manual_order.",
+    "default_flow is the complete chosen-manual sequence, including opening, integration and closing work that may reach beyond the local painful area. This matches the approved v7 Grounding preview (all 33 MER2 cards for knee pain). primary_segment identifies the local work that matches the problem; the app may later tighten the visible list to that segment after teacher review.",
+    "When a practitioner changes the active segment, replace the old visible list. Only one segment/manual is active at a time."
+  ],
+  "belt_to_manual": {
+    "ocular": {
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "primary_segment": "face",
+      "default_flow": "full_manual"
+    },
+    "oral": {
+      "manual": "MER4",
+      "training_name": "MER4 Original Face",
+      "primary_segment": "face",
+      "default_flow": "full_manual"
+    },
+    "cervical": {
+      "manual": "MER1",
+      "training_name": "MER1 Self-Empowerment",
+      "primary_segment": "cervical",
+      "default_flow": "full_manual"
+    },
+    "thoracic": {
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "primary_segment": "thoracic",
+      "default_flow": "full_manual"
+    },
+    "diaphragmatic": {
+      "manual": "MER5",
+      "training_name": "MER5 Inspiration",
+      "primary_segment": "thoracic",
+      "default_flow": "full_manual"
+    },
+    "abdominal": {
+      "manual": "MER3",
+      "training_name": "MER3 Centering",
+      "primary_segment": "thoracic_pelvic",
+      "problem_focused_subset": "abdomen_core",
+      "default_flow": "full_manual"
+    },
+    "pelvic_and_legs": {
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "primary_segment": "feet_legs_knees",
+      "default_flow": "full_manual"
+    },
+    "pelvic": {
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "primary_segment": "feet_legs_knees",
+      "default_flow": "full_manual"
+    },
+    "legs": {
+      "manual": "MER2",
+      "training_name": "MER2 Grounding",
+      "primary_segment": "feet_legs_knees",
+      "default_flow": "full_manual"
+    }
+  },
+  "segments": {
+    "MER1": [
+      {
+        "id": "cervical",
+        "name": "Cervical",
+        "belt": "cervical",
+        "chapter": "Working the cervical area",
+        "stroke_ids": [
+          "MER1-001",
+          "MER1-002",
+          "MER1-003",
+          "MER1-004",
+          "MER1-005",
+          "MER1-006",
+          "MER1-007",
+          "MER1-008"
+        ],
+        "count": 8
+      },
+      {
+        "id": "thoracic",
+        "name": "Thoracic",
+        "belt": "thoracic",
+        "chapter": "Working the thoracic area",
+        "stroke_ids": [
+          "MER1-009",
+          "MER1-010",
+          "MER1-011",
+          "MER1-012",
+          "MER1-013",
+          "MER1-014",
+          "MER1-015",
+          "MER1-016",
+          "MER1-017",
+          "MER1-018"
+        ],
+        "count": 10
+      },
+      {
+        "id": "pelvic",
+        "name": "Pelvic",
+        "belt": "pelvic_and_legs",
+        "chapter": "Working the pelvic area",
+        "stroke_ids": [
+          "MER1-019",
+          "MER1-020",
+          "MER1-021",
+          "MER1-022"
+        ],
+        "count": 4
+      },
+      {
+        "id": "closing",
+        "name": "Closing holds",
+        "belt": "thoracic",
+        "chapter": "Closing the MER session",
+        "stroke_ids": [
+          "MER1-023",
+          "MER1-024",
+          "MER1-025"
+        ],
+        "count": 3
+      }
+    ],
+    "MER2": [
+      {
+        "id": "feet_legs_knees",
+        "name": "Feet, legs and knees",
+        "belt": "pelvic_and_legs",
+        "chapter": "Working the feet / legs and knees",
+        "stroke_ids": [
+          "MER2-001",
+          "MER2-002",
+          "MER2-003",
+          "MER2-004",
+          "MER2-005",
+          "MER2-006",
+          "MER2-007",
+          "MER2-008",
+          "MER2-009",
+          "MER2-010",
+          "MER2-011",
+          "MER2-012",
+          "MER2-013",
+          "MER2-014",
+          "MER2-015",
+          "MER2-016",
+          "MER2-017",
+          "MER2-018",
+          "MER2-019",
+          "MER2-020",
+          "MER2-021",
+          "MER2-022",
+          "MER2-023",
+          "MER2-024",
+          "MER2-025"
+        ],
+        "count": 25
+      },
+      {
+        "id": "thoracic",
+        "name": "Thoracic",
+        "belt": "thoracic",
+        "chapter": "Working the thoracic area",
+        "stroke_ids": [
+          "MER2-026",
+          "MER2-027",
+          "MER2-028",
+          "MER2-029",
+          "MER2-030",
+          "MER2-031"
+        ],
+        "count": 6
+      },
+      {
+        "id": "cervical",
+        "name": "Cervical",
+        "belt": "cervical",
+        "chapter": "Working the cervical area",
+        "stroke_ids": [
+          "MER2-032",
+          "MER2-033"
+        ],
+        "count": 2
+      }
+    ],
+    "MER3": [
+      {
+        "id": "thoracic_pelvic",
+        "name": "Pelvis and core",
+        "belt": "pelvic_and_legs",
+        "chapter": "Working the thoracic / pelvic area",
+        "stroke_ids": [
+          "MER3-001",
+          "MER3-002",
+          "MER3-003",
+          "MER3-004",
+          "MER3-005",
+          "MER3-006",
+          "MER3-007",
+          "MER3-008",
+          "MER3-009",
+          "MER3-010",
+          "MER3-011",
+          "MER3-012",
+          "MER3-013",
+          "MER3-014",
+          "MER3-015",
+          "MER3-016",
+          "MER3-017",
+          "MER3-018",
+          "MER3-019",
+          "MER3-020",
+          "MER3-021",
+          "MER3-022",
+          "MER3-023",
+          "MER3-024",
+          "MER3-025",
+          "MER3-026",
+          "MER3-027",
+          "MER3-028",
+          "MER3-029"
+        ],
+        "count": 29
+      },
+      {
+        "id": "cervical",
+        "name": "Cervical",
+        "belt": "cervical",
+        "chapter": "Working the cervical area",
+        "stroke_ids": [
+          "MER3-030",
+          "MER3-031",
+          "MER3-032",
+          "MER3-033"
+        ],
+        "count": 4
+      },
+      {
+        "id": "pelvic_leg_stretches",
+        "name": "Pelvic and leg stretches",
+        "belt": "pelvic_and_legs",
+        "chapter": "Additional pelvic / leg stretches",
+        "stroke_ids": [
+          "MER3-034",
+          "MER3-035",
+          "MER3-036",
+          "MER3-037",
+          "MER3-038"
+        ],
+        "count": 5
+      }
+    ],
+    "MER4": [
+      {
+        "id": "cervical",
+        "name": "Cervical",
+        "belt": "cervical",
+        "chapter": "Working the cervical area",
+        "stroke_ids": [
+          "MER4-001",
+          "MER4-002",
+          "MER4-003",
+          "MER4-004",
+          "MER4-005",
+          "MER4-006",
+          "MER4-007",
+          "MER4-008",
+          "MER4-009",
+          "MER4-010",
+          "MER4-011",
+          "MER4-012"
+        ],
+        "count": 12
+      },
+      {
+        "id": "thoracic",
+        "name": "Thoracic",
+        "belt": "thoracic",
+        "chapter": "Working the thoracic area",
+        "stroke_ids": [
+          "MER4-013",
+          "MER4-014",
+          "MER4-015",
+          "MER4-027",
+          "MER4-028",
+          "MER4-029"
+        ],
+        "count": 6
+      },
+      {
+        "id": "face",
+        "name": "Face",
+        "belt": "ocular",
+        "chapter": "Working the face and cervical area",
+        "stroke_ids": [
+          "MER4-016",
+          "MER4-017",
+          "MER4-018",
+          "MER4-019",
+          "MER4-020",
+          "MER4-021",
+          "MER4-022",
+          "MER4-023",
+          "MER4-024",
+          "MER4-025",
+          "MER4-026"
+        ],
+        "count": 11
+      }
+    ],
+    "MER5": [
+      {
+        "id": "thoracic",
+        "name": "Thoracic",
+        "belt": "thoracic",
+        "chapter": "Working the thoracic area",
+        "stroke_ids": [
+          "MER5-001",
+          "MER5-002",
+          "MER5-003",
+          "MER5-004",
+          "MER5-005",
+          "MER5-006",
+          "MER5-007",
+          "MER5-008",
+          "MER5-009",
+          "MER5-010",
+          "MER5-011",
+          "MER5-012",
+          "MER5-013",
+          "MER5-014",
+          "MER5-015",
+          "MER5-025",
+          "MER5-026",
+          "MER5-027",
+          "MER5-028"
+        ],
+        "count": 19
+      },
+      {
+        "id": "cervical",
+        "name": "Cervical",
+        "belt": "cervical",
+        "chapter": "Working the cervical area",
+        "stroke_ids": [
+          "MER5-016",
+          "MER5-017",
+          "MER5-018",
+          "MER5-019",
+          "MER5-020",
+          "MER5-021",
+          "MER5-022",
+          "MER5-023",
+          "MER5-024"
+        ],
+        "count": 9
+      },
+      {
+        "id": "pelvic",
+        "name": "Pelvic",
+        "belt": "pelvic_and_legs",
+        "chapter": "Working the pelvic area",
+        "stroke_ids": [
+          "MER5-029",
+          "MER5-030",
+          "MER5-031",
+          "MER5-032",
+          "MER5-033",
+          "MER5-034",
+          "MER5-035",
+          "MER5-036",
+          "MER5-037",
+          "MER5-038"
+        ],
+        "count": 10
+      },
+      {
+        "id": "closing",
+        "name": "Closing holds",
+        "belt": "thoracic",
+        "chapter": "Closing the MER session",
+        "stroke_ids": [
+          "MER5-039",
+          "MER5-040",
+          "MER5-041"
+        ],
+        "count": 3
+      }
+    ]
+  },
+  "subsets": {
+    "abdomen_core": {
+      "manual": "MER3",
+      "parent_segment": "thoracic_pelvic",
+      "note": "Problem-focused subset of Centering strokes whose source body areas include the abdomen, plus the adjacent diaphragm holds that sit in the same source sequence. Not a separate manual chapter.",
+      "stroke_ids": [
+        "MER3-015",
+        "MER3-016",
+        "MER3-017",
+        "MER3-018",
+        "MER3-019",
+        "MER3-020",
+        "MER3-021",
+        "MER3-022",
+        "MER3-023",
+        "MER3-024",
+        "MER3-028"
+      ]
+    }
+  },
+  "full_manual_flows": {
+    "MER1": [
+      "MER1-001",
+      "MER1-002",
+      "MER1-003",
+      "MER1-004",
+      "MER1-005",
+      "MER1-006",
+      "MER1-007",
+      "MER1-008",
+      "MER1-009",
+      "MER1-010",
+      "MER1-011",
+      "MER1-012",
+      "MER1-013",
+      "MER1-014",
+      "MER1-015",
+      "MER1-016",
+      "MER1-017",
+      "MER1-018",
+      "MER1-019",
+      "MER1-020",
+      "MER1-021",
+      "MER1-022",
+      "MER1-023",
+      "MER1-024",
+      "MER1-025"
+    ],
+    "MER2": [
+      "MER2-001",
+      "MER2-002",
+      "MER2-003",
+      "MER2-004",
+      "MER2-005",
+      "MER2-006",
+      "MER2-007",
+      "MER2-008",
+      "MER2-009",
+      "MER2-010",
+      "MER2-011",
+      "MER2-012",
+      "MER2-013",
+      "MER2-014",
+      "MER2-015",
+      "MER2-016",
+      "MER2-017",
+      "MER2-018",
+      "MER2-019",
+      "MER2-020",
+      "MER2-021",
+      "MER2-022",
+      "MER2-023",
+      "MER2-024",
+      "MER2-025",
+      "MER2-026",
+      "MER2-027",
+      "MER2-028",
+      "MER2-029",
+      "MER2-030",
+      "MER2-031",
+      "MER2-032",
+      "MER2-033"
+    ],
+    "MER3": [
+      "MER3-001",
+      "MER3-002",
+      "MER3-003",
+      "MER3-004",
+      "MER3-005",
+      "MER3-006",
+      "MER3-007",
+      "MER3-008",
+      "MER3-009",
+      "MER3-010",
+      "MER3-011",
+      "MER3-012",
+      "MER3-013",
+      "MER3-014",
+      "MER3-015",
+      "MER3-016",
+      "MER3-017",
+      "MER3-018",
+      "MER3-019",
+      "MER3-020",
+      "MER3-021",
+      "MER3-022",
+      "MER3-023",
+      "MER3-024",
+      "MER3-025",
+      "MER3-026",
+      "MER3-027",
+      "MER3-028",
+      "MER3-029",
+      "MER3-030",
+      "MER3-031",
+      "MER3-032",
+      "MER3-033",
+      "MER3-034",
+      "MER3-035",
+      "MER3-036",
+      "MER3-037",
+      "MER3-038"
+    ],
+    "MER4": [
+      "MER4-001",
+      "MER4-002",
+      "MER4-003",
+      "MER4-004",
+      "MER4-005",
+      "MER4-006",
+      "MER4-007",
+      "MER4-008",
+      "MER4-009",
+      "MER4-010",
+      "MER4-011",
+      "MER4-012",
+      "MER4-013",
+      "MER4-014",
+      "MER4-015",
+      "MER4-016",
+      "MER4-017",
+      "MER4-018",
+      "MER4-019",
+      "MER4-020",
+      "MER4-021",
+      "MER4-022",
+      "MER4-023",
+      "MER4-024",
+      "MER4-025",
+      "MER4-026",
+      "MER4-027",
+      "MER4-028",
+      "MER4-029"
+    ],
+    "MER5": [
+      "MER5-001",
+      "MER5-002",
+      "MER5-003",
+      "MER5-004",
+      "MER5-005",
+      "MER5-006",
+      "MER5-007",
+      "MER5-008",
+      "MER5-009",
+      "MER5-010",
+      "MER5-011",
+      "MER5-012",
+      "MER5-013",
+      "MER5-014",
+      "MER5-015",
+      "MER5-016",
+      "MER5-017",
+      "MER5-018",
+      "MER5-019",
+      "MER5-020",
+      "MER5-021",
+      "MER5-022",
+      "MER5-023",
+      "MER5-024",
+      "MER5-025",
+      "MER5-026",
+      "MER5-027",
+      "MER5-028",
+      "MER5-029",
+      "MER5-030",
+      "MER5-031",
+      "MER5-032",
+      "MER5-033",
+      "MER5-034",
+      "MER5-035",
+      "MER5-036",
+      "MER5-037",
+      "MER5-038",
+      "MER5-039",
+      "MER5-040",
+      "MER5-041"
+    ]
+  },
+  "counts": {
+    "MER1": 25,
+    "MER2": 33,
+    "MER3": 38,
+    "MER4": 29,
+    "MER5": 41
+  }
+}
