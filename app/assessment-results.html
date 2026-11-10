@@ -226,7 +226,18 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 #pM .miniLines,#pM .lineFigs{grid-template-columns:repeat(3,minmax(0,1fr))}
 .lineFigs{display:grid;gap:8px;margin:8px 0 4px}
 .lineFigs figure{margin:0;min-width:0}
-.lineFigs img{width:100%;height:auto;display:block;border-radius:10px;background:#0a2a30}
+.lineFigs figure{margin:0;background:#0a2226;border:1px solid #c9a06a22;border-radius:14px;padding:8px 2px 6px;text-align:center}
+.lineFigs svg{width:100%;height:auto;display:block}
+.lineFigs figcaption{text-align:center;color:var(--gold);font-size:10px;letter-spacing:1.4px;text-transform:uppercase;margin-top:2px;font-weight:600}
+.lnLegend{display:flex;flex-direction:column;gap:10px;margin:2px 0 12px}
+.lnItem{display:grid;grid-template-columns:14px 1fr;gap:8px;align-items:start}
+.lnItem i{width:8px;height:8px;border-radius:50%;background:#f0d7a4;box-shadow:0 0 8px #c9a06acc;margin-top:6px}
+.lnItem h3{font-size:14px;font-weight:500;margin:0 0 1px}
+.lnRoute{font-size:12.5px;color:var(--gold);margin:0 0 2px;line-height:1.4}
+.lnWhy{font-size:13px;color:#c5d3d4;margin:0;line-height:1.45}
+.lnChips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.lnChips span{font-size:10.5px;padding:5px 9px;border-radius:14px;border:1px solid #c9a06a66;color:#c9a06ab3}
+.lnChips span.on{background:var(--gold);border-color:var(--gold);color:#0b1f22;font-weight:600}
 .lineFigs figcaption{text-align:center;color:var(--gold);font-size:12px;margin-top:4px}
 .stMedia{display:flex;gap:6px;align-items:center;margin:8px 0;padding:6px;border-radius:12px;background:#f3efe6;overflow:hidden}
 .stMedia img{display:block;object-fit:contain;background:#fff;border-radius:8px;max-height:148px}
@@ -245,13 +256,13 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="notes.js?v=0.23.239"></script><script src="mer.js?v=0.23.232"></script><script src="mer-v2.js?v=0.23.238"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="notes.js?v=0.23.239"></script><script src="mer.js?v=0.23.232"></script><script src="mer-lines.js?v=0.23.240"></script><script src="mer-v2.js?v=0.23.240"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null,merCatalog;
-async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.238";
+async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.240";
  const names=["mer_modules","mer_strokes","mer_cards","routing","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
  try{const parts=await Promise.all(names.map(n=>fetch("data/mer/"+n+".json?v="+v,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error(n);return res.json()})));
   const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_cards||!cat.mer_cards.cards)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}

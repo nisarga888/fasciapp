@@ -66,7 +66,10 @@ test("burning knee pain selects Grounding only, even with a strong thoracic belt
   assert.match(page, /data-mer-seg="pelvic" class="on"/);
   assert.match(page, /data-mer-src="images\/strokes\/MER2-001.webp"/);
   assert.match(page, /data-mer-src="images\/anatomy\/MER2-001.webp"/);
-  assert.match(page, /data\/mer\/lines\/back\.svg/);
+  assert.match(page, /Superficial Back line/);
+  assert.match(page, /class="lit"/);
+  assert.match(page, /These areas connect through the selected training/);
+  assert.equal(/data\/mer\/lines\/back\.svg/.test(page), false);
   assert.equal(/viewBox="0 0 80 116"/.test(page), false);
   assert.equal(/In this part/.test(page), false);
   const cardsOnly = page.slice(page.indexOf("Stroke 01"));
@@ -176,6 +179,31 @@ test("a changed picture-reading paragraph is marked as the practitioner’s note
   assert.match(page, /data-p="sections\.1\.items\.2\.p"/);
   assert.match(page, /Added: check the desk setup/);
   assert.equal(/class="gH faNote"/.test(page), false);
+});
+
+test("myofascial lines light only the training that matches the main issue", () => {
+  function legend(page){return page.slice(page.indexOf('class="lnLegend"'), page.indexOf('class="lnChips"'));}
+  const knee = legend(html(read({pain_areas:["knees"], complaint:"Burning knees"})));
+  assert.match(knee, /Superficial Back line/);
+  assert.match(knee, /Lateral line/);
+  assert.match(knee, /knees/);
+  assert.equal(/Arm lines|Deep Front line|Spiral line/.test(knee), false);
+  const jaw = legend(html(read({pain_areas:["jaw"]})));
+  assert.match(jaw, /Deep Front line/);
+  assert.match(jaw, /Superficial Front line/);
+  assert.match(jaw, /jaw/);
+  assert.equal(/Arm lines|Superficial Back line/.test(jaw), false);
+  const shoulder = legend(html(read({pain_areas:["Shoulders"]})));
+  assert.match(shoulder, /Arm lines/);
+  assert.match(shoulder, /Spiral line/);
+  assert.match(shoulder, /Shoulders/);
+  assert.equal(/Superficial Back line|Deep Front line/.test(shoulder), false);
+  const neck = legend(html(read({pain_areas:["neck"]})));
+  assert.match(neck, /Superficial Front line/);
+  assert.match(neck, /Lateral line/);
+  const belly = legend(html(read({pain_areas:["belly"]})));
+  assert.match(belly, /Deep Front line/);
+  assert.match(belly, /Functional line/);
 });
 
 test("missing belt levels stay unknown and empty intake does not throw", () => {
