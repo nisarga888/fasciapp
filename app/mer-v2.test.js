@@ -139,6 +139,14 @@ test("a strong core is not abdominal pain, and a belt score alone does not inven
   assert.equal(MER.visibleCards(onlyBelt).some(c=>c.module===2), false);
 });
 
+test("a changed picture-reading paragraph is marked as the practitioner’s note", () => {
+  const page = MER.renderMer(read({complaint:"Neck tension"}), {bodyItems:[{h:"Front",p:"Head sits slightly forward. Added: check the desk setup.",path:"sections.1.items.2.p",pathH:"sections.1.items.2.h",note:true,noteH:false}]});
+  assert.match(page, /class="bxp faNote"/);
+  assert.match(page, /data-p="sections\.1\.items\.2\.p"/);
+  assert.match(page, /Added: check the desk setup/);
+  assert.equal(/class="gH faNote"/.test(page), false);
+});
+
 test("missing belt levels stay unknown and empty intake does not throw", () => {
   assert.equal(MER.beltLevel(null), null);
   assert.equal(MER.beltLevel("nope"), null);

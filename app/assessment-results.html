@@ -33,10 +33,16 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 .prep h2{font-weight:300;font-size:24px;margin:0 0 10px}.prep p{color:var(--mut);font-size:14.5px;line-height:1.6;margin:0 auto;max-width:340px}.prep .cue{margin-top:24px;color:var(--gold);font-size:13px;letter-spacing:2px;text-transform:uppercase;animation:cue 6s ease-in-out infinite}
 @keyframes cue{0%,45%{opacity:1}50%,95%{opacity:.35}}
 .li{display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--tx)}.li span{color:var(--mut);font-size:13px}.pill{font-size:11px;padding:3px 9px;border-radius:10px;border:1px solid var(--gold);color:var(--gold)}
-.steps{display:flex;gap:6px;margin:10px 0 4px;padding:5px;border-radius:30px;background:#02191Ecc;border:1px solid var(--ln);position:sticky;top:8px;z-index:20;backdrop-filter:blur(8px)}
-.steps[hidden]{display:none}.steps a{flex:1;text-align:center;padding:9px 4px;border-radius:24px;font-size:12.5px;color:var(--mut);text-decoration:none;transition:background .3s,color .3s;white-space:nowrap;cursor:pointer}.steps a b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid currentColor;font-size:10px;margin-right:5px}
+.stepWrap{position:sticky;top:8px;z-index:20;margin:10px 0 4px}.stepWrap[hidden]{display:none}
+.steps{display:flex;gap:6px;margin:0;padding:5px;border-radius:30px;background:#02191Ecc;border:1px solid var(--ln);backdrop-filter:blur(8px)}
+.steps a{flex:1;text-align:center;padding:9px 4px;border-radius:24px;font-size:12.5px;color:var(--mut);text-decoration:none;transition:background .3s,color .3s;white-space:nowrap;cursor:pointer}.steps a b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid currentColor;font-size:10px;margin-right:5px}
 .steps a.on{background:var(--gold);color:var(--bg);font-weight:600}
-.tools{display:flex;justify-content:flex-end;margin-top:8px}.tools button{width:auto;padding:8px 14px;font-size:13px;font-weight:500;background:none;border:1px solid var(--ln);color:var(--gold);box-shadow:none}
+.cliSticky{display:flex;justify-content:center;margin-top:6px}.cliSticky[hidden]{display:none}
+.cliRec{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:9px 16px;border-radius:999px;border:1px solid #c99e67aa;background:#02191Eee;color:var(--gold);text-decoration:none;font-size:14.5px;font-weight:600;line-height:1.2}
+.hero .cliRec,.cliSticky .cliRec{margin-top:0}.cliEnd{display:flex;justify-content:center;margin:8px 0 0}
+.tools{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:8px}.tools button{width:auto;padding:8px 14px;font-size:13px;font-weight:500;background:none;border:1px solid var(--ln);color:var(--gold);box-shadow:none}
+.noteKey{margin-right:auto;font-size:12.5px;line-height:1.35;color:#ff8a7a;text-align:left}
+.faNote{color:#ff8a7a}
 .editing [data-p],.editing [data-d]{outline:1px dashed #c99e6788;outline-offset:3px;border-radius:6px;background:#02191E66}.editing [data-p]:focus,.editing [data-d]:focus{outline-color:var(--gold)}
 .nav2{display:grid;grid-template-columns:1fr 1.6fr;gap:10px;margin-top:24px}.nav2 .sec2{background:none;border:1px solid var(--ln);color:var(--gold);box-shadow:none;font-weight:500}
 .search{width:100%;font:inherit;font-size:16px;padding:13px 16px;border-radius:24px;border:1px solid #c99e6744;background:#02191Ecc;color:var(--tx);outline:none;margin-top:6px}.search:focus{border-color:var(--gold)}
@@ -50,7 +56,8 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 .mk{width:22px;height:22px;border-radius:50%;border:1.4px solid var(--tx);display:grid;place-items:center;font-size:11px}.bms{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin:16px 0 4px}
 @media print{@page{size:A4;margin:14mm}
  body{background:#fff!important;color:#1d2a2c}.wrap{max-width:none;padding:0}
- .top,.steps,.tools,.nav2,button,#vLoad,#vPrep,#vList,.toast{display:none!important}
+ .top,.steps,.stepWrap,.tools,.nav2,.cliRec,.cliEnd,.noteKey,button,#vLoad,#vPrep,#vList,.toast{display:none!important}
+ .faNote{color:#9c2f2f!important}
  .view{display:block!important;animation:none!important;opacity:1!important}
  .card{opacity:1!important;animation:none!important;background:#fff!important;box-shadow:none!important;border:1px solid #d9c4a3!important}.it,.ses,.tbl tr,.photos{break-inside:avoid;page-break-inside:avoid}
  .it p,.str li,.core,.tbl td,.row,.ses h2,.hero h1,.hero p{color:#1d2a2c!important}.it h3,.lbl,.hero .k,.dir,.tbl td:first-child{color:#8a6537!important}
@@ -225,7 +232,7 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 @media print{.stCard,.beltRow,.chH{break-inside:avoid}.chH h2,.stCard h3{color:#1d2a2c!important}.stMusc,.chH>b{color:#8a6537!important}}
 </style></head><body><div class="wrap">
 <div class="top"><a href="./" id="back">← FasciApp</a><span style="font-size:12px;color:var(--mut)">Private · only you see this</span></div>
-<nav class="steps" id="steps" hidden><a data-s="intake"><b>1</b>Intake<small>Form · summary</small></a><a data-s="bbtrs"><b>2</b>Breathwork<small>BBTRS · plan</small></a><a data-s="mer"><b>3</b>MER<small>Myofascial · plan</small></a></nav>
+<div class="stepWrap" id="stepWrap" hidden><nav class="steps" id="steps"><a data-s="intake"><b>1</b>Intake<small>Form · summary</small></a><a data-s="bbtrs"><b>2</b>Breathwork<small>BBTRS · plan</small></a><a data-s="mer"><b>3</b>MER<small>Myofascial · plan</small></a></nav><div id="cliSticky" class="cliSticky" hidden></div></div>
 <div class="pdfh"><span>FasciApp · Body Assessment</span><span>fasciapp.app</span></div>
 <div id="vLoad" class="view on prep"><div class="orb"></div></div>
 <div id="vList" class="view"></div>
@@ -234,13 +241,13 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="mer.js?v=0.23.232"></script><script src="mer-v2.js?v=0.23.235"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="mer.js?v=0.23.232"></script><script src="mer-v2.js?v=0.23.236"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null,merCatalog;
-async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.235";
+async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.236";
  const names=["mer_modules","mer_strokes","mer_cards","routing","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
  try{const parts=await Promise.all(names.map(n=>fetch("data/mer/"+n+".json?v="+v,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error(n);return res.json()})));
   const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_cards||!cat.mer_cards.cards)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}
@@ -252,20 +259,33 @@ const step=k=>$$("#steps a").forEach(a=>a.classList.toggle("on",a.dataset.s===k)
 const show=(v,top=true)=>{if(cur===v)return;const o=cur;cur=v;o.classList.add("out");setTimeout(()=>{o.classList.remove("on","out");v.classList.add("on");if(top)scrollTo({top:0,behavior:"instant"})},280)};
 setInterval(()=>{const c=$("#cue");c.textContent=c.textContent=="Breathe in"?"Breathe out":"Breathe in"},3000);
 const stag=h=>{let i=0;return h.replace(/class="card/g,()=>'style="animation-delay:'+Math.min(0.07*i++,.6)+'s" class="card')};
-const P=(path,v,tag="p",cls="")=>'<'+tag+(cls?' class="'+cls+'"':'')+' data-p="'+path+'">'+E(v)+'</'+tag+'>';
+const normNote=s=>String(s??"").replace(/\u00a0/g," ").replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+const clientKey=n=>String(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/ł/g,"l").replace(/Ł/g,"L").trim().replace(/\s+/g," ").toLowerCase();
+function clientRec(name){const n=String(name||"").trim(),k=clientKey(n);return k?{href:"./?go="+encodeURIComponent("client:"+k),label:"← "+n+"\u2019s records"}:{href:"./?go="+encodeURIComponent("cal"),label:"← Calendar & clients"}}
+function recPill(){const c=clientRec((row&&(row.client_name||(row.report&&row.report.client)))||"");return '<a class="cliRec" href="'+E(c.href)+'">'+E(c.label)+'</a>'}
+function pinClient(){const c=clientRec((row&&(row.client_name||(row.report&&row.report.client)))||"");const a=$("#back");if(a){a.href=c.href;a.textContent=c.label;a.dataset.lock="1"}const s=$("#cliSticky");if(s){s.innerHTML=recPill()}const w=$("#stepWrap");if(w)w.hidden=false;placeSticky();requestAnimationFrame(placeSticky)}
+function placeSticky(){const s=$("#cliSticky"),hero=document.querySelector("#vRes.on .hero .cliRec");if(!s)return;if(!hero){s.hidden=true;return}const b=hero.getBoundingClientRect();s.hidden=b.height<1||b.bottom>=8}
+addEventListener("scroll",placeSticky,{passive:true});
+function noteOn(path,v,kind){const bag=row&&row.report&&row.report[kind==="d"?"fa_orig_d":"fa_orig"];return !!(bag&&Object.prototype.hasOwnProperty.call(bag,path)&&normNote(bag[path])!==normNote(v))}
+const P=(path,v,tag="p",cls="")=>{const bits=[cls,noteOn(path,v)?"faNote":""].filter(Boolean);return '<'+tag+(bits.length?' class="'+bits.join(" ")+'"':'')+' data-p="'+path+'">'+E(v)+'</'+tag+'>'};
 const goIntake=()=>{document.body.style.transition="opacity .3s";document.body.style.opacity=0;setTimeout(()=>location.href="assessment.html?id="+id,300)};
 /* v0.23.202: three steps, each shows only its own part. Hash: #intake, #bbtrs, #mer (old #plan = #mer) */
 const PART={intake:"pI",bbtrs:"pB",mer:"pM"},hashStep=()=>{const h=location.hash.slice(1);return h=="plan"?"mer":PART[h]?h:"bbtrs"};
 const goPart=(k,push=true,top=true)=>{if(!PART[k])k="bbtrs";step(k);Object.entries(PART).forEach(([s,i])=>{const e=document.getElementById(i);if(e)e.classList.toggle("on",s==k)});
- if(push&&location.hash!="#"+k)history.pushState({},"","#"+k);show($("#vRes"),false);if(top)scrollTo({top:0,behavior:"instant"})};
+ if(push&&location.hash!="#"+k)history.pushState({},"","#"+k);show($("#vRes"),false);if(top)scrollTo({top:0,behavior:"instant"});placeSticky()};
 $$("#steps a").forEach(a=>a.onclick=()=>{const k=a.dataset.s;if(!row||!row.report){if(k=="intake")goIntake();return}goPart(k)});
-const tools=w=>'<div class="tools"><button data-edit="'+w+'">✎ Edit text</button></div>';
+const tools=w=>'<div class="tools"><span class="noteKey">Red text = your notes</span><button data-edit="'+w+'">✎ Edit text</button></div>';
 function setPath(o,path,v){const k=path.split(".");let x=o;for(let j=0;j<k.length-1;j++)x=x[k[j]];x[k[k.length-1]]=v}
-async function saveReport(msg){$$("[data-p]").forEach(el=>setPath(row.report,el.dataset.p,el.innerText.trim()));
- row.data=row.data||{};$$("[data-d]").forEach(el=>{const t=el.innerText.trim();if(t&&t!="—")row.data[el.dataset.d]=t;else delete row.data[el.dataset.d]});
+function fieldEls(attr){const seen={};$$("["+attr+"]").forEach(el=>{const k=el.getAttribute(attr);const vis=!!el.closest(".part.on")||!el.closest(".part");if(!seen[k]||vis)seen[k]=el});return Object.values(seen)}
+function stashBase(el){if(el.dataset.base!=null)return;const kind=el.dataset.d?"d":"p",k=el.dataset.d||el.dataset.p,bag=row&&row.report&&row.report[kind==="d"?"fa_orig_d":"fa_orig"];el.dataset.base=bag&&Object.prototype.hasOwnProperty.call(bag,k)?bag[k]:el.innerText}
+function paintField(el){const base=el.dataset.base;if(base==null){el.classList.toggle("faNote",noteOn(el.dataset.p||el.dataset.d,el.innerText,el.dataset.d?"d":"p"));return}el.classList.toggle("faNote",normNote(el.innerText)!==normNote(base))}
+async function saveReport(msg){row.report=row.report||{};row.report.fa_orig=row.report.fa_orig||{};row.report.fa_orig_d=row.report.fa_orig_d||{};
+ fieldEls("data-p").forEach(el=>{const k=el.dataset.p;if(!Object.prototype.hasOwnProperty.call(row.report.fa_orig,k))row.report.fa_orig[k]=el.dataset.base!=null?el.dataset.base:el.innerText;const saved=el.innerText.trim();setPath(row.report,k,saved);$$("[data-p]").forEach(o=>{if(o.dataset.p!==k)return;o.dataset.base=row.report.fa_orig[k];if(o!==el)o.innerText=saved;paintField(o)})});
+ row.data=row.data||{};fieldEls("data-d").forEach(el=>{const k=el.dataset.d;if(!Object.prototype.hasOwnProperty.call(row.report.fa_orig_d,k))row.report.fa_orig_d[k]=el.dataset.base!=null?el.dataset.base:el.innerText;const t=el.innerText.trim();if(t&&t!="—")row.data[k]=t;else delete row.data[k];$$("[data-d]").forEach(o=>{if(o.dataset.d!==k)return;o.dataset.base=row.report.fa_orig_d[k];if(o!==el)o.innerText=t;paintField(o)})});
  const {error}=await sb.from("assessments").update({report:row.report,data:row.data,updated_at:new Date().toISOString()}).eq("id",id);toast(error?"Could not save: "+error.message:msg||"Saved ✓");return !error}
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-edit]");if(!b)return;const v=b.closest(".view"),on=!v.classList.contains("editing");
- if(!on){await saveReport("Changes saved ✓")}v.classList.toggle("editing",on);v.querySelectorAll("[data-p],[data-d]").forEach(x=>x.contentEditable=on);v.querySelectorAll("[data-edit]").forEach(x=>x.textContent=on?"✓ Save changes":"✎ Edit text");if(on)toast("Tap any text to edit")});
+ if(!on){await saveReport("Changes saved ✓")}v.classList.toggle("editing",on);v.querySelectorAll("[data-p],[data-d]").forEach(x=>{if(on)stashBase(x);x.contentEditable=on;paintField(x)});v.querySelectorAll("[data-edit]").forEach(x=>x.textContent=on?"✓ Save changes":"✎ Edit text");if(on)toast("Tap any text to edit")});
+document.addEventListener("input",e=>{const el=e.target.closest&&e.target.closest("[data-p],[data-d]");if(el&&el.isContentEditable)paintField(el)});
 /* v0.23.132 Body map: report.body_map = {belts:{ocular..pelvic:0-3}, issues:[{label,view:"front|back|both",region|x,y,text}], note} */
 const BM_BELTS=[["ocular","Ocular",28,44],["oral","Oral",48,62],["cervical","Cervical",64,90],["thoracic","Thoracic",92,150],["diaphragmatic","Diaphragmatic",152,170],["abdominal","Abdominal",172,206],["pelvic","Pelvic & legs",208,460]];
 const BM_LV=["Balanced","Mild · to watch","To watch","Strong · over-charged"],BM_OP=[.07,.16,.36,.75];
@@ -385,9 +405,9 @@ function seriesCards(D){const F=window.FA_GIFTS,B=window.FA_BBTRS,g=giftsOf(D);i
  h+=R.sessions.map(s=>'<section class="card ses2"><div class="sTop"><div class="sNum">'+s.n+'</div><div><span class="sBelt">'+E(s.icon+" "+s.belt)+'</span><h3>'+E(s.t)+'</h3></div></div><p class="sAim">'+E(s.aim)+'</p><div class="sR"><b>🎯</b><div><span class="lbl">Focus</span>'+E(s.focus)+'</div></div><div class="sR"><b>🌬</b><div><span class="lbl">Breath &amp; technique</span>'+E(s.tech)+'</div></div><div class="sR"><b>✋</b><div><span class="lbl">Touch &amp; support</span>'+E(s.touch)+'</div></div><div class="sR"><b>🧘</b><div><span class="lbl">Meditation · exercise</span>'+E(s.med)+(s.home?' · '+E(s.home):'')+'</div></div>'+note("s"+s.n)+'</section>').join("");
  const C=R.closing;h+='<section class="card ses2 op"><div class="sTop"><div class="sNum">✧</div><div><span class="sBelt">Closing</span><h3>'+E(C.t)+'</h3></div></div><p class="sAim">'+E(C.aim)+'</p><div class="snd">'+C.sounds.map(([a,b])=>'<div><b>'+E(b)+'</b><span>'+E(a)+'</span></div>').join("")+'</div><p class="bxp">'+E(C.how)+'</p>'+note("close")+'</section>';
  return h}
-function renderRes(r){const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs=R.sections||[],sx=k=>{const i=secs.findIndex(s=>s.key==k);return i<0?null:{s:secs[i],b:"sections."+i}};
+function renderRes(r){row=r;const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs=R.sections||[],sx=k=>{const i=secs.findIndex(s=>s.key==k);return i<0?null:{s:secs[i],b:"sections."+i}};
  const rf=R.red_flag&&R.red_flag.level!="none";let n=0;const N=()=>String(++n);
- let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(new Date(r.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))+'</p></div>'+tools("res");
+ let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(new Date(r.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))+'</p>'+recPill()+'</div>'+tools("res");
  if(rf)h+='<div class="note rf">⚠️ <b>Please get medical clearance before bodywork and breathwork.</b> '+P("red_flag.text",R.red_flag.text,"span")+'</div>';
  const gh=giftsCard(D);
  /* MER: body type (unchanged content) */
@@ -406,8 +426,8 @@ function renderRes(r){const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs=R.sec
   +KEEP(SUB("5","The 8-session flow","Session by session, with notes for the main pattern","pt5"),seriesCards(D));
  const mLink='<section class="card mLink"><div class="gK">Also in this reading</div><h2 class="gH">Belts of tension and body reading</h2><p class="gSub">These sit in Breathwork (BBTRS), point 2 (Body reading), next to the character structure.</p><button type="button" class="sec2" data-tab="B" data-to="pt2">View in Breathwork (BBTRS) →</button></section>';
   const NV=(a,b,c)=>'<div class="nav2'+(c?' eq':'')+'">'+a+b+'</div>',PDFB='<button class="sec2" data-go="pdf">⤓ Export PDF</button>';
- h+='<div class="part" id="pI">'+overviewCard()+KEEP(SEGH("Part 1","Intake","Client details, posture photos and the client’s own answers",0),intakePart(r))+NV(PDFB,'<button data-tab="B">Next: Breathwork →</button>')+'</div>';
- h+='<div class="part" id="pB">'+B1.replace('<div class="keep">','<div class="keep">'+SEGH("Part 2","Biodynamic Breathwork &amp; Trauma Release (BBTRS)","A trauma-informed approach to psychological and emotional patterns and the nervous system",0)+'<div class="trN"><b>For practitioners.</b> This assessment is designed for therapist use and is best applied after participating in the Biodynamic Breathwork &amp; Trauma Release trainings, which give clarity on how to work with these findings.</div>')+NV(PDFB,'<button data-tab="M">Next: MER →</button>')+'</div>';
+ h+='<div class="part" id="pI">'+overviewCard()+KEEP(SEGH("Part 1","Intake","Client details, posture photos and the client’s own answers",0),intakePart(r))+NV(PDFB,'<button data-tab="B">Next: Breathwork →</button>')+'<div class="cliEnd">'+recPill()+'</div></div>';
+ h+='<div class="part" id="pB">'+B1.replace('<div class="keep">','<div class="keep">'+SEGH("Part 2","Biodynamic Breathwork &amp; Trauma Release (BBTRS)","A trauma-informed approach to psychological and emotional patterns and the nervous system",0)+'<div class="trN"><b>For practitioners.</b> This assessment is designed for therapist use and is best applied after participating in the Biodynamic Breathwork &amp; Trauma Release trainings, which give clarity on how to work with these findings.</div>')+NV(PDFB,'<button data-tab="M">Next: MER →</button>')+'<div class="cliEnd">'+recPill()+'</div></div>';
  let pl=SUB2("10-session treatment plan")+'<p class="subP">Bodywork and breathwork, step by step, at the client\u2019s pace.</p>';
  (R.plan||[]).forEach((s,i)=>{const b="plan."+i;pl+='<section class="card ses"><div class="num">'+s.n+'</div>'+P(b+".focus",s.focus,"h2")+'<div class="row"><b>✋</b><div><span class="lbl">Bodywork</span>'+P(b+".bodywork",s.bodywork,"div")+'</div></div><div class="row"><b>🌬</b><div><span class="lbl">Breathwork</span>'+P(b+".breathwork",s.breathwork,"div")+'</div></div><div class="row"><b>🏠</b><div><span class="lbl">Home practice</span>'+P(b+".home",s.home,"div")+'</div></div></section>'});
  let merHtml="";
@@ -423,14 +443,14 @@ function renderRes(r){const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs=R.sec
   if(!merBelts)merBelts=beltMissing;
   const skip=/zones of fear|energetics/i,order=["positive","front","side","back","face"];
   const bd=sx("body");
-  const bodyItems=bd?(bd.s.items||[]).filter(x=>x&&!skip.test(x.h||"")).slice().sort((a,b)=>{const ia=order.findIndex(k=>new RegExp(k,"i").test(a.h||"")),ib=order.findIndex(k=>new RegExp(k,"i").test(b.h||""));return (ia<0?9:ia)-(ib<0?9:ib)}).map(x=>({h:x.h,p:x.p})):[];
+  const bodyItems=bd?(bd.s.items||[]).filter(x=>x&&!skip.test(x.h||"")).slice().sort((a,b)=>{const ia=order.findIndex(k=>new RegExp(k,"i").test(a.h||"")),ib=order.findIndex(k=>new RegExp(k,"i").test(b.h||""));return (ia<0?9:ia)-(ib<0?9:ib)}).map(x=>{const j=(bd.s.items||[]).indexOf(x),ph=bd.b+".items."+j+".h",pp=bd.b+".items."+j+".p";return {h:x.h,p:x.p,pathH:ph,path:pp,noteH:noteOn(ph,x.h),note:noteOn(pp,x.p)}}):[];
   const merMain=V2.renderMer(reading,{beltHtml:merBelts,bodyItems:bodyItems});
-  merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Four chapters · clear guidance",0)+'<div class="trN"><b>For practitioners.</b> Use this with your MER training.</div>',merMain)+NV('<button class="sec2" data-tab="B">← Breathwork</button>',PDFB.replace('sec2',''),1)+'<button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button></div>';
+  merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Four chapters · clear guidance",0)+'<div class="trN"><b>For practitioners.</b> Use this with your MER training.</div>',merMain)+NV('<button class="sec2" data-tab="B">← Breathwork</button>',PDFB.replace('sec2',''),1)+'<div class="cliEnd">'+recPill()+'</div><button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button></div>';
  }catch(err){merHtml=""}}
- if(!merHtml)merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Physiological and emotional patterns and myofascial restrictions: body type, myofascial lines and the bodywork assessment",0)+'<div class="trN"><b>For practitioners.</b> This assessment is designed for therapist use and is best applied after participating in the Myofascial Energetic Release trainings, which give clarity on how to work with these findings.</div>',mer)+'<section class="card mer"><div class="gK">Manual content</div><h2 class="gH">Manual content unavailable</h2><p class="gSub">The MER training notes could not be loaded. The saved reading below is unchanged, and no new strokes are added.</p></section>'+mcLegacy+(R.plan&&R.plan.length?KEEP(pl.slice(0,pl.indexOf('<section')),pl.slice(pl.indexOf('<section'))):'')+mLink+NV('<button class="sec2" data-tab="B">← Breathwork</button>',PDFB.replace('sec2',''),1)+'<button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button></div>';
+ if(!merHtml)merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Physiological and emotional patterns and myofascial restrictions: body type, myofascial lines and the bodywork assessment",0)+'<div class="trN"><b>For practitioners.</b> This assessment is designed for therapist use and is best applied after participating in the Myofascial Energetic Release trainings, which give clarity on how to work with these findings.</div>',mer)+'<section class="card mer"><div class="gK">Manual content</div><h2 class="gH">Manual content unavailable</h2><p class="gSub">The MER training notes could not be loaded. The saved reading below is unchanged, and no new strokes are added.</p></section>'+mcLegacy+(R.plan&&R.plan.length?KEEP(pl.slice(0,pl.indexOf('<section')),pl.slice(pl.indexOf('<section'))):'')+mLink+NV('<button class="sec2" data-tab="B">← Breathwork</button>',PDFB.replace('sec2',''),1)+'<div class="cliEnd">'+recPill()+'</div><button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button></div>';
  h+=merHtml;
  h+='<p class="disc">'+E(F?F.DISC:R.disclaimer)+(R.disclaimer&&F?' '+E(R.disclaimer):'')+'</p>';
- $("#vRes").innerHTML=stag(h);
+ $("#vRes").innerHTML=stag(h);pinClient();
  /* v0.23.200 print flow: long cards may continue on the next page (between items), short cards stay whole */
  $("#vRes").querySelectorAll(".card").forEach(c=>{const g=c.classList.contains("gMain");if(g||c.querySelectorAll("tr,li,.it,.sR,.gBox,.row,.ses2,p").length>4){c.classList.add("flow");const k=c.closest(".keep");if(k&&!g)k.classList.add("flow")/* v0.23.201: part headers may also flow; .segH keeps with the first lines of its card */}});
  /* v0.23.203: clickable index at the top of Breathwork and MER, with "↑ Index" back links */
@@ -458,7 +478,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-mer-seg]")
 window.onpopstate=()=>{if(!row||!row.report)return;goPart(hashStep(),false)};
 async function load(){const {data,error}=await sb.from("assessments").select("id,client_name,data,red_flags,photo_front,photo_side,photo_back,report,report_ready_at,created_at").eq("id",id).maybeSingle();
  if(error||!data){$("#vList").innerHTML='<div class="prep"><h2>Record not found</h2><p>It may belong to another account.</p></div>';return show($("#vList"))}
- const first=!row;row=data;$("#steps").hidden=false;if(!data.report){show($("#vPrep"));step("bbtrs");timer=setTimeout(load,8000);return}
+ const first=!row;row=data;$("#stepWrap").hidden=false;if(!data.report){show($("#vPrep"));step("bbtrs");timer=setTimeout(load,8000);return}
  await loadMerCatalog();renderRes(data);if(first)window.FA_ph&&FA_ph("assessment_results_open",{});if(first&&data.report_ready_at){try{window.FA_ev&&FA_ev("report_ready",{once:"rr",props:{},source:"scan"})}catch(e){}}
  /* v0.23.133: photos are deleted from storage once the report is ready (records created from 26 Oct 2026 on) */
  if(data.report_ready_at&&new Date(data.created_at)>=new Date("2026-10-26T12:00:00Z")){const P=["front","side","back"].map(v=>data["photo_"+v]).filter(Boolean);if(P.length)setTimeout(async()=>{try{const r=await sb.storage.from("assessment-photos").remove(P);if(!r.error)await sb.from("assessments").update({photo_front:null,photo_side:null,photo_back:null}).eq("id",data.id)}catch(e){}},4000)}goPart(hashStep(),false,first)}
@@ -472,4 +492,4 @@ sb.auth.getSession().then(({data})=>{if(!data.session){$("#vList").innerHTML='<d
  if(id){$("#back").href="assessment-results.html";$("#back").textContent="← Records";load()}else{$("#back").href="./";$("#back").textContent="← FasciApp";list()}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&row&&!row.report){clearTimeout(timer);load()}});
 })();
-</script><script>/* v0.23.168 back to Calendar & clients or the client */(function(){function b(){try{var r=JSON.parse(sessionStorage.getItem("fa_ret")||"null");if(!r)return;var a=document.getElementById("back")||document.querySelector('a[href="./"]');if(a){a.href="./?go="+encodeURIComponent(r.go);a.textContent="← "+r.label}}catch(e){}}b();addEventListener("DOMContentLoaded",b);setTimeout(b,1200)})();</script></body></html>
+</script><script>/* v0.23.168 back to Calendar & clients or the client. A reading pins its own client-record link. */(function(){function b(){try{var a=document.getElementById("back");if(a&&a.dataset.lock)return;var r=JSON.parse(sessionStorage.getItem("fa_ret")||"null");if(!r)return;if(!a)a=document.querySelector('a[href="./"]');if(a){a.href="./?go="+encodeURIComponent(r.go);a.textContent="← "+r.label}}catch(e){}}b();addEventListener("DOMContentLoaded",b);setTimeout(b,1200)})();</script></body></html>

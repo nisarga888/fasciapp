@@ -5,7 +5,7 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_MER_V2 = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function(){
-const DATA_VERSION = "0.23.235";
+const DATA_VERSION = "0.23.236";
 const BELT_KEYS = ["ocular","oral","cervical","thoracic","diaphragmatic","abdominal","pelvic"];
 const BELT_LABEL = {ocular:"Ocular",oral:"Oral",cervical:"Cervical",thoracic:"Thoracic",diaphragmatic:"Diaphragmatic",abdominal:"Abdominal",pelvic:"Pelvic and legs"};
 const LEVEL_LABEL = ["Balanced","Mild · to watch","To watch","Strong · over-charged"];
@@ -299,7 +299,7 @@ function renderMer(reading, opts){
   [["Front", reading.obsFront],["Side", reading.obsSide],["Back", reading.obsBack]].forEach(([h2,p])=>{ if(p) intake.push([h2,p]); });
   if (intake.length) h += intake.map(([title, body])=>'<section class="card brd"><div class="gK">From this intake</div><h2 class="gH">'+esc(title)+'</h2><p class="bxp">'+esc(body)+'</p></section>').join("");
   const body = o.bodyItems||[];
-  if (body.length) h += body.map(card=>'<section class="card brd"><div class="gK">Saved picture reading</div><h2 class="gH">'+esc(card.h)+'</h2><p class="bxp">'+esc(card.p)+'</p></section>').join("");
+  if (body.length) h += body.map(card=>'<section class="card brd"><div class="gK">Saved picture reading</div><h2 class="gH'+(card.noteH?" faNote":"")+'"'+(card.pathH?' data-p="'+esc(card.pathH)+'"':'')+'>'+esc(card.h)+'</h2><p class="bxp'+(card.note?" faNote":"")+'"'+(card.path?' data-p="'+esc(card.path)+'"':'')+'>'+esc(card.p)+'</p></section>').join("");
   else if (!intake.length) h += '<section class="card brd"><div class="gK">From this intake</div><h2 class="gH">Picture reading</h2><p class="bxp">No picture-reading notes are saved on this assessment.</p></section>';
   h += lineFigures(activeManual(reading, segment));
 
