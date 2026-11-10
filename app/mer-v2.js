@@ -1,11 +1,13 @@
 /* MER assessment v7. One segment, one manual, four chapters.
    Stroke library stays generic. Nothing here is a client record. */
 (function(root, factory){
-  const api = factory();
+  let lines = root && root.FA_LINES;
+  if (!lines && typeof module === "object" && module.exports) { try { lines = require("./mer-lines.js"); } catch (e) { lines = null; } }
+  const api = factory(lines);
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_MER_V2 = api;
-})(typeof globalThis !== "undefined" ? globalThis : this, function(){
-const DATA_VERSION = "0.23.238";
+})(typeof globalThis !== "undefined" ? globalThis : this, function(FA_LINES){
+const DATA_VERSION = "0.23.240";
 const BELT_KEYS = ["ocular","oral","cervical","thoracic","diaphragmatic","abdominal","pelvic"];
 const BELT_LABEL = {ocular:"Ocular",oral:"Oral",cervical:"Cervical",thoracic:"Thoracic",diaphragmatic:"Diaphragmatic",abdominal:"Abdominal",pelvic:"Pelvic and legs"};
 const GROUPS = [
@@ -245,16 +247,10 @@ function cautionItems(reading, segment){
   return items;
 }
 
-const LINE_FIGS = [
-  ["back.svg","Back","feet → calves → hamstrings → spine"],
-  ["arms.svg","Arms","chest and shoulders → arms"],
-  ["core_front.svg","Core / front","pelvis and ribs"]
-];
-function lineFigures(manualId){
-  const note = manualId==="MER2"
-    ? "These areas connect through the Grounding sequence."
-    : "These areas connect through the selected training. They do not choose the manual or diagnose a cause.";
-  return '<section class="card mer"><h2 class="gH">Myofascial lines</h2><div class="lineFigs">'+LINE_FIGS.map(([file,label])=>'<figure><img src="data/mer/lines/'+file+'?v='+DATA_VERSION+'" alt="'+esc(label)+' fascia line"><figcaption>'+esc(label)+'</figcaption></figure>').join("")+'</div><ul class="mL">'+LINE_FIGS.map(([,label,text])=>'<li><b>'+esc(label==="Back"?"Back line":label==="Arms"?"Arm lines":"Core / front")+':</b> '+esc(text)+'</li>').join("")+'</ul><p class="mCav">'+esc(note)+'</p></section>';
+function lineFigures(manualId, reading){
+  const block = FA_LINES && FA_LINES.render ? FA_LINES.render(manualId, reading||{}) : null;
+  if (!block) return '<section class="card mer"><h2 class="gH">Myofascial lines</h2><p class="mCav">These areas connect through the selected training. They do not diagnose a cause.</p></section>';
+  return '<section class="card mer"><div class="gK">Body reading</div><h2 class="gH">Myofascial lines</h2><div class="lineFigs">'+block.figs+'</div><div class="lnLegend">'+block.items+'</div><div class="lnChips">'+block.chips+'</div><p class="mCav">These areas connect through the selected training. They do not diagnose a cause.</p></section>';
 }
 function cautionTexts(s){
   return (s.cautions||[]).map(c=>typeof c==="string"?c:(c&&c.text)||"").filter(Boolean);
@@ -332,7 +328,7 @@ function renderMer(reading, opts){
   const body = o.bodyItems||[];
   if (body.length) h += body.map(card=>'<section class="card brd"><div class="gK">Saved picture reading</div><h2 class="gH'+(card.noteH?" faNote":"")+'"'+(card.pathH?' data-p="'+esc(card.pathH)+'"':'')+'>'+esc(card.h)+'</h2><p class="bxp'+(card.note?" faNote":"")+'"'+(card.path?' data-p="'+esc(card.path)+'"':'')+'>'+esc(card.p)+'</p></section>').join("");
   else if (!intake.length) h += '<section class="card brd"><div class="gK">From this intake</div><h2 class="gH">Picture reading</h2><p class="bxp">No picture-reading notes are saved on this assessment.</p></section>';
-  h += lineFigures(activeManual(reading, segment));
+  h += lineFigures(activeManual(reading, segment), reading);
 
   h += '<div id="merCh3">'+chapterHead(3, "MER session plan with strokes", "merC3")+'<div id="merCh3Body">'+renderSessionBody(reading, segment)+'</div></div>';
   h += '<div id="merCh4">'+chapterHead(4, "Caution and Homework", "merC4")+'<div id="merCh4Body">'+renderTail(reading, segment)+'</div></div>';
