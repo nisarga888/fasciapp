@@ -191,6 +191,30 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 .gH .toIdx{float:right;margin-top:2px}
 .merLink{color:var(--gold)}
 @media print{.miniLines svg{max-height:110px}.strokeName,.moduleTag,.beltLinks span{color:#8a6537!important}.stroke p,.miniLines figcaption{color:#1d2a2c!important}.stroke{break-inside:avoid}}
+/* v0.23.233 four-chapter MER */
+.chGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.chGrid a{display:flex;gap:8px;align-items:flex-start;min-height:44px;padding:10px;border-radius:14px;background:#02191E99;border:1px solid var(--ln);color:var(--tx);text-decoration:none;cursor:pointer}
+.chGrid b{flex:none;width:22px;height:22px;border-radius:50%;background:var(--gold);color:#02191E;display:grid;place-items:center;font-size:12px}
+.chGrid span{font-size:13.5px;line-height:1.3}
+.chH{display:flex;gap:10px;align-items:flex-start;margin:22px 2px 8px;scroll-margin-top:96px}
+.chH>b{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-size:14px}
+.chH h2{margin:1px 0 0;font-size:20px;font-weight:500;line-height:1.25}
+.stCard{margin-top:10px;padding:12px 14px;border-radius:16px;border:1px solid var(--ln);background:#02191E88}
+.stK{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold);font-weight:700}
+.stCard h3{margin:4px 0;font-size:17px;font-weight:500;line-height:1.3}
+.stMusc{color:var(--gold);font-size:13.5px;line-height:1.45;margin:0}
+.stArea{font-size:12.5px;color:var(--mut);margin:2px 0 0}
+.stNote{font-size:13px;color:#ffd9bf;margin:6px 0 0}
+.beltRow{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid #c99e671a}
+.beltRow b{font-weight:500}.beltRow small{display:block;color:var(--gold);font-size:13px;margin-top:2px}
+.beltRow>span{color:var(--mut);font-size:13px;text-align:right;flex:none}
+.beltRow.on small{font-weight:600}
+.segPick{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.segPick button{width:auto;padding:8px 10px;font-size:12.5px;font-weight:500;border-radius:16px;background:none;border:1px solid var(--ln);color:var(--tx);box-shadow:none}
+.segPick button.on{background:var(--gold);color:#02191E}
+#pM .miniLines{grid-template-columns:repeat(3,minmax(0,1fr))}
+#pM .chH h2,#pM .stCard h3{overflow-wrap:break-word}
+@media print{.stCard,.beltRow,.chH{break-inside:avoid}.chH h2,.stCard h3{color:#1d2a2c!important}.stMusc,.chH>b{color:#8a6537!important}}
 </style></head><body><div class="wrap">
 <div class="top"><a href="./" id="back">← FasciApp</a><span style="font-size:12px;color:var(--mut)">Private · only you see this</span></div>
 <nav class="steps" id="steps" hidden><a data-s="intake"><b>1</b>Intake<small>Form · summary</small></a><a data-s="bbtrs"><b>2</b>Breathwork<small>BBTRS · plan</small></a><a data-s="mer"><b>3</b>MER<small>Myofascial · plan</small></a></nav>
@@ -202,13 +226,13 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="mer.js?v=0.23.232"></script><script src="mer-v2.js?v=0.23.232"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="mer.js?v=0.23.232"></script><script src="mer-v2.js?v=0.23.233"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null,merCatalog;
-async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.232";
+async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.233";
  const names=["mer_modules","mer_strokes","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
  try{const parts=await Promise.all(names.map(n=>fetch("data/mer/"+n+".json?v="+v,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error(n);return res.json()})));
   const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_strokes||!cat.mer_strokes.strokes)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}
@@ -292,7 +316,7 @@ const KEEP=(hd,x)=>{const i=x.indexOf('</section>');return i<0?hd+x:'<div class=
 const KC=(k,t,s,cls)=>'<section class="card '+(cls||'')+'"><div class="gK">'+k+'</div>'+(t?'<h2 class="gH">'+t+'</h2>':'')+(s?'<p class="gSub">'+s+'</p>':'');
 document.addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;e.preventDefault();goPart({I:"intake",B:"bbtrs",M:"mer"}[b.dataset.tab],true,!b.dataset.to);
  if(b.dataset.to)setTimeout(()=>{const el=document.getElementById(b.dataset.to);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},60)});
-function overviewCard(){return '<section class="card ovw"><div class="gK">How this report is organised</div><h2 class="gH">Three parts, one whole person</h2><p class="gSub">The intake, then two approaches that work together. It is an invitation to awareness, not a diagnosis. Use the three buttons at the top (Intake, Breathwork, MER) to move between the parts. The PDF holds all three in order.</p><div class="ovG three"><div class="ovP p3" data-tab="I"><span>Part 1 · Intake</span><h3>Client, photos and answers</h3><p>What the client shared before the session.</p><ol><li>Client details</li><li>Posture photos</li><li>Intake answers</li></ol></div><div class="ovP" data-tab="B"><span>Part 2 · BBTRS</span><h3>Biodynamic Breathwork &amp; Trauma Release</h3><p>A trauma-informed approach to psychological and emotional patterns and the nervous system.</p><ol><li>Reichian character structure map</li><li>Body reading: character structure, belts of tension and body</li><li>Breath patterns</li><li>Nervous system: a trauma-informed approach</li><li>The 8-session flow and plan</li></ol></div><div class="ovP p2" data-tab="M"><span>Part 3 · MER</span><h3>Myofascial Energetic Release</h3><p>Physiological and emotional patterns and myofascial restrictions.</p><ol><li>Belts of tension</li><li>Body type, linked to belts and MER</li><li>MER training approaches</li><li>Body reading, lines and priority segments</li><li>One 10-session plan, cautions and homework</li></ol></div></div></section>'}
+function overviewCard(){return '<section class="card ovw"><div class="gK">How this report is organised</div><h2 class="gH">Three parts, one whole person</h2><p class="gSub">The intake, then two approaches that work together. It is an invitation to awareness, not a diagnosis. Use the three buttons at the top (Intake, Breathwork, MER) to move between the parts. The PDF holds all three in order.</p><div class="ovG three"><div class="ovP p3" data-tab="I"><span>Part 1 · Intake</span><h3>Client, photos and answers</h3><p>What the client shared before the session.</p><ol><li>Client details</li><li>Posture photos</li><li>Intake answers</li></ol></div><div class="ovP" data-tab="B"><span>Part 2 · BBTRS</span><h3>Biodynamic Breathwork &amp; Trauma Release</h3><p>A trauma-informed approach to psychological and emotional patterns and the nervous system.</p><ol><li>Reichian character structure map</li><li>Body reading: character structure, belts of tension and body</li><li>Breath patterns</li><li>Nervous system: a trauma-informed approach</li><li>The 8-session flow and plan</li></ol></div><div class="ovP p2" data-tab="M"><span>Part 3 · MER</span><h3>Myofascial Energetic Release</h3><p>Physiological and emotional patterns and myofascial restrictions.</p><ol><li>Belts of Tension and Key Findings</li><li>Body Reading and Myofascial Lines</li><li>MER session plan with strokes</li><li>Caution and Homework</li></ol></div></div></section>'}
 /* v0.23.199 Part 1 Intake: client details, posture photos, answers (from the client's own intake) */
 function intakePart(r){const D=r.data||{},R=r.report||{},val=v=>Array.isArray(v)?v.filter(x=>x!==""&&x!=null).join(", "):(v==null?"":String(v).trim());
  const row=(l,v,u)=>{const t=val(v);return t?'<tr><td>'+l+'</td><td>'+E(t)+(u||"")+'</td></tr>':''};
@@ -373,24 +397,20 @@ function renderRes(r){const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs=R.sec
  (R.plan||[]).forEach((s,i)=>{const b="plan."+i;pl+='<section class="card ses"><div class="num">'+s.n+'</div>'+P(b+".focus",s.focus,"h2")+'<div class="row"><b>✋</b><div><span class="lbl">Bodywork</span>'+P(b+".bodywork",s.bodywork,"div")+'</div></div><div class="row"><b>🌬</b><div><span class="lbl">Breathwork</span>'+P(b+".breathwork",s.breathwork,"div")+'</div></div><div class="row"><b>🏠</b><div><span class="lbl">Home practice</span>'+P(b+".home",s.home,"div")+'</div></div></section>'});
  let merHtml="";
  const V2=window.FA_MER_V2;
- if(typeof merCatalog!=="undefined"&&merCatalog&&V2){try{
-  const gft=giftsOf(D),archetype=gft&&F?{name:F.G[gft.primary].name,reich:F.G[gft.primary].reich}:null;
-  const MVlabs=[["mv_neck_rotation","Neck rotation"],["mv_neck_side_bend","Neck side-bend"],["mv_arm_elevation","Arm elevation"],["mv_hand_behind_back","Hand behind back"],["mv_thoracic_rotation","Thoracic rotation"],["mv_rib_expansion","Rib expansion"],["mv_hip_ir_er","Hip IR / ER"],["mv_forward_fold","Forward fold"],["mv_single_leg_balance","Single-leg balance"],["mv_foot_arch_toes","Foot arch / toes"]];
-  const one=v=>Array.isArray(v)?v.filter(x=>x!=null&&String(x).trim()!=="").join(", "):(v==null?"":String(v).trim());
-  const movement=MVlabs.map(([k,l])=>{const t=one(D[k]);return t?{label:l,text:t}:null}).filter(Boolean);
-  const touch=[one(D.touch),one(D.touch_notes)].filter(Boolean).join(" ");
-  const reading=V2.withContext(V2.buildReading(merCatalog,{report:R,data:D,red_flags:r.red_flags,red_flag:R.red_flag,archetype}),{movement:movement,touch:touch});
-  if(reading.gaps&&reading.gaps.indexOf("manual-content-missing")>=0)throw new Error("mer data");
-  const blocks=V2.renderBlocks(reading);
-  const bodyMer=mer.replace('<h2>Body type','<h2 data-mer-sec="Body type">Body type').replace('</section>',blocks.bridge+'</section>');
+ if(typeof merCatalog!=="undefined"&&merCatalog&&V2&&V2.renderMer){try{
+  const reading=V2.buildReading(merCatalog,{report:R,data:D,red_flags:r.red_flags,red_flag:R.red_flag});
+  if(!reading.totalCards)throw new Error("mer data");
+  window.__faMerReading=reading;
   const beltHead='<div class="sh"><div class="n">◈</div><h2>Body map<small>Reich’s seven belts of tension · possible issues</small></h2></div>';
   const beltNew='<div class="gK">Belts of tension</div><h2 class="gH">Where tension sits</h2><p class="gSub">Reich’s seven belts, from the eyes down to the pelvis. Saved levels, not re-scored.</p>';
-  const beltMissing='<section class="card bmc"><div class="gK">Belts of tension</div><h2 class="gH">Where tension sits</h2><p class="gSub">No belt map is saved on this assessment. Missing levels stay unknown, and nothing here is filled in as balanced.</p></section>';
-  let merBelts=R.body_map?bodyMap(R.body_map,{prefix:"mer",strict:true}).replace(beltHead,beltNew).replace('<div class="bms">Possible issues</div>','</section><section class="card bmc bmi"><div class="gK">Belts of tension</div><h2 class="gH">Possible issues to explore</h2><p class="mCav">Saved generated observations, not a new examination.</p>'):beltMissing;
+  const beltMissing='<section class="card bmc"><div class="gK">Belts of tension</div><h2 class="gH">Where tension sits</h2><p class="gSub">No belt map is saved on this assessment. Missing levels stay unknown.</p></section>';
+  let merBelts=R.body_map&&R.body_map.belts?bodyMap(R.body_map,{prefix:"mer",strict:true}).replace(beltHead,beltNew).replace('<div class="bms">Possible issues</div>','</section><section class="card bmc bmi"><div class="gK">Belts of tension</div><h2 class="gH">Possible issues to explore</h2><p class="mCav">Saved generated observations, not a new examination.</p>'):beltMissing;
   if(!merBelts)merBelts=beltMissing;
-  let merRead="";{const bd=sx("body");if(bd){const skip=/zones of fear|energetics/i;merRead=bd.s.items.map(x=>skip.test(x.h)?"":'<section class="card brd"><div class="gK">Body reading</div><h2 class="gH">'+E(x.h)+'</h2><p class="bxp">'+E(x.p)+'</p><p class="mCav">'+E(V2.approachFor(x.h))+'</p></section>').join("")}}
-  const merMain='<div class="subH2" data-mer-sec="Belts of tension">Belts of tension</div><p class="subP">The saved front and back map and belt list come first, then the MER training approaches for this assessment.</p>'+merBelts+bodyMer+blocks.findings+blocks.modules+'<div class="subH2" data-mer-sec="Body reading">Body reading</div><p class="subP">Saved body-reading cards, where this report has them, then movement. Nothing new is inferred from photos.</p>'+merRead+blocks.movement+blocks.lines+blocks.priorities+blocks.plan+blocks.cautions+blocks.homework;
-  merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Physiological and emotional patterns and myofascial restrictions, read through the MER training approaches",0)+'<div class="trN"><b>For practitioners.</b> This assessment is designed for therapist use and is best applied after participating in the Myofascial Energetic Release trainings, which give clarity on how to work with these findings.</div>',merMain)+NV('<button class="sec2" data-tab="B">← Breathwork</button>',PDFB.replace('sec2',''),1)+'<button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button></div>';
+  const skip=/zones of fear|energetics/i,order=["positive","front","side","back","face"];
+  const bd=sx("body");
+  const bodyItems=bd?(bd.s.items||[]).filter(x=>x&&!skip.test(x.h||"")).slice().sort((a,b)=>{const ia=order.findIndex(k=>new RegExp(k,"i").test(a.h||"")),ib=order.findIndex(k=>new RegExp(k,"i").test(b.h||""));return (ia<0?9:ia)-(ib<0?9:ib)}).map(x=>({h:x.h,p:x.p})):[];
+  const merMain=V2.renderMer(reading,{beltHtml:merBelts,bodyItems:bodyItems});
+  merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Four chapters · clear guidance",0)+'<div class="trN"><b>For practitioners.</b> Use this with your MER training.</div>',merMain)+NV('<button class="sec2" data-tab="B">← Breathwork</button>',PDFB.replace('sec2',''),1)+'<button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button></div>';
  }catch(err){merHtml=""}}
  if(!merHtml)merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Physiological and emotional patterns and myofascial restrictions: body type, myofascial lines and the bodywork assessment",0)+'<div class="trN"><b>For practitioners.</b> This assessment is designed for therapist use and is best applied after participating in the Myofascial Energetic Release trainings, which give clarity on how to work with these findings.</div>',mer)+'<section class="card mer"><div class="gK">Manual content</div><h2 class="gH">Manual content unavailable</h2><p class="gSub">The MER training notes could not be loaded. The saved reading below is unchanged, and no new strokes are added.</p></section>'+mcLegacy+(R.plan&&R.plan.length?KEEP(pl.slice(0,pl.indexOf('<section')),pl.slice(pl.indexOf('<section'))):'')+mLink+NV('<button class="sec2" data-tab="B">← Breathwork</button>',PDFB.replace('sec2',''),1)+'<button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button></div>';
  h+=merHtml;
@@ -418,6 +438,7 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-go]"
  else if(g=="pdf"){if($(".editing"))await saveReport();const t=document.title;document.title="Body Assessment - "+(row.client_name||"client")+" - "+new Date(row.created_at).toLocaleDateString("en-GB");window.FA_ph&&FA_ph("assessment_pdf",{});setTimeout(()=>{window.print();document.title=t},50)}
  else if(g=="save"){if(await saveReport("Saved to your records ✓")){$$(".editing").forEach(v=>{v.classList.remove("editing");v.querySelectorAll("[data-p],[data-d]").forEach(x=>x.contentEditable=false);v.querySelectorAll("[data-edit]").forEach(x=>x.textContent="✎ Edit text")});setTimeout(()=>location.href="assessment-results.html",1400)}}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-j],[data-idx]");if(!a)return;e.preventDefault();const t=document.getElementById(a.dataset.j||a.dataset.idx);if(t)t.scrollIntoView({behavior:"smooth",block:"start"})});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-mer-seg]");if(!b||!window.__faMerReading||!window.FA_MER_V2)return;e.preventDefault();const seg=b.getAttribute("data-mer-seg");const body=document.getElementById("merCh3Body"),tail=document.getElementById("merCh4Body");if(body)body.innerHTML=FA_MER_V2.renderSession(window.__faMerReading,seg);if(tail)tail.innerHTML=FA_MER_V2.renderTail(window.__faMerReading,seg)});
 {const f=document.createElement("button");f.className="idxFab";f.type="button";f.textContent="☰ Index";document.body.appendChild(f);
  const cur=()=>{const p=document.querySelector("#vRes.on .part.on");return p&&document.getElementById(p.id+"Idx")};
  f.onclick=()=>{const n=cur();if(n)n.scrollIntoView({behavior:"smooth",block:"start"})};
