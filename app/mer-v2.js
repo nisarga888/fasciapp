@@ -11,7 +11,7 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_MER_V2 = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function(FA_LINES, FA_ANATOMY, FA_FIGURE){
-const DATA_VERSION = "0.23.244";
+const DATA_VERSION = "0.23.245";
 const BELT_KEYS = ["ocular","oral","cervical","thoracic","diaphragmatic","abdominal","pelvic"];
 const BELT_LABEL = {ocular:"Ocular",oral:"Oral",cervical:"Cervical",thoracic:"Thoracic",diaphragmatic:"Diaphragmatic",abdominal:"Abdominal",pelvic:"Pelvic and legs"};
 const GROUPS = [
@@ -42,7 +42,14 @@ function text(v){return asList(v).map(s=>String(s).trim()).filter(Boolean).join(
 function beltLevel(raw){
   if (raw==null || raw==="") return null;
   if (typeof raw==="boolean") return null;
-  const n = typeof raw==="number" ? raw : (/^-?\d+$/.test(String(raw).trim()) ? Number(raw) : NaN);
+  if (typeof raw==="object") raw = raw.level!=null ? raw.level : (raw.score!=null ? raw.score : raw.value);
+  if (raw==null || raw==="") return null;
+  const word = String(raw).trim().toLowerCase();
+  if (word==="strong" || word==="strong · over-charged" || word==="over-charged" || word==="overcharged") return 3;
+  if (word==="moderate" || word==="to watch") return 2;
+  if (word==="light" || word==="mild" || word==="mild · to watch") return 1;
+  if (word==="balanced") return 0;
+  const n = typeof raw==="number" ? raw : (/^-?\d+$/.test(word) ? Number(word) : NaN);
   if (!Number.isInteger(n) || n<0 || n>3) return null;
   return n;
 }
@@ -277,7 +284,7 @@ function chapterHead(n, title, id){
 const ANATOMY_BELT = {face:"ocular", cervical:"cervical", thorax:"thoracic", abdominal:"abdominal", pelvic:"pelvic"};
 function levelChip(reading, g){
   const label = groupLevel(reading||{}, g);
-  const map = {"Balanced":["balanced","Balanced"], "Mild · to watch":["mild","Mild"], "To watch":["watch","To watch"], "Strong · over-charged":["strong","Strong"]};
+  const map = {"Balanced":["balanced","Balanced"], "Light":["light","Light"], "Mild · to watch":["light","Light"], "Moderate":["moderate","Moderate"], "To watch":["moderate","Moderate"], "Strong":["strong","Strong"], "Strong · over-charged":["strong","Strong"]};
   const pair = map[label] || ["mild","Unknown"];
   return '<span class="chip '+pair[0]+'"><i></i>'+esc(pair[1])+'</span>';
 }
@@ -337,27 +344,6 @@ function sessionWhy(reading, s, prev){
   if (s.level===2) return "Moderate, after the stronger belts.";
   return "Light, after the belts that need more attention.";
 }
-function ringSvg(n, viewIndex, doneFlags){
-  if (!n) return "";
-  const cx=50, cy=50, r=41;
-  let h="";
-  for (let i=0;i<n;i++){
-    const gap=Math.min(0.16, Math.PI*2/n*0.18);
-    const sweep=(Math.PI*2)/n;
-    const a0=-Math.PI/2+i*sweep+gap/2;
-    const a1=-Math.PI/2+(i+1)*sweep-gap/2;
-    const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0);
-    const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
-    const large=(a1-a0)>Math.PI?1:0;
-    const d="M"+x0.toFixed(2)+" "+y0.toFixed(2)+" A"+r+" "+r+" 0 "+large+" 1 "+x1.toFixed(2)+" "+y1.toFixed(2);
-    const done=!!doneFlags[i], on=i===viewIndex;
-    const stroke=done?"#C99E67":on?"#E2C08A":"#7EB8BC";
-    const width=on?8:done?7.5:5.5;
-    const op=done||on?1:(0.35-i*0.04);
-    h+='<path d="'+d+'" fill="none" stroke="'+stroke+'" stroke-width="'+width+'" stroke-linecap="round" stroke-opacity="'+Math.max(0.18,op).toFixed(2)+'"/>';
-  }
-  return '<svg viewBox="0 0 100 100" aria-hidden="true">'+h+'</svg>';
-}
 function flowMarkup(reading, openId, done){
   done = done||[];
   const plan = buildSessions(reading);
@@ -400,10 +386,6 @@ function groupLevel(reading, g){
   if(!known.length) return "Unknown";
   return known[0].levelLabel;
 }
-function trainingRows(reading, segment){
-  const on = groupForKey(segment);
-  return GROUPS.map(g=>'<div class="beltRow'+(on&&on.id===g.id?' on':'')+'"><div><b>'+esc(g.label)+'</b><small>'+esc(g.line)+'</small></div><span>'+esc(groupLevel(reading, g))+'</span></div>').join("");
-}
 function renderSessionBody(reading, segment, flow){
   flow = flow||{};
   const done = flow.done||[];
@@ -445,7 +427,6 @@ function renderMer(reading, opts){
   h += chapterHead(1, "Belts of Tension & Key Findings", "merC1");
   h += o.beltHtml||'<section class="card bmc"><div class="gK">Belts of tension</div><h2 class="gH">Where tension sits</h2><p class="gSub">No belt map is saved. Missing levels stay unknown.</p></section>';
   h += '<section class="card mer"><h2 class="gH">Focus for this reading</h2>'+(items.length?'<ul class="mL">'+items.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul>':'<p>No current symptom is recorded yet.</p>')+'</section>';
-  h += '<section class="card mer"><h2 class="gH">Belts and MER trainings</h2>'+trainingRows(reading, segment)+'</section>';
   const begin = [];
   if (reading.stressN!=null) begin.push("Stress level: "+reading.stressN+"/10; agree an easy pace and a stop signal.");
   const res = [];

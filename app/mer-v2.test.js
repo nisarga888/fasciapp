@@ -61,7 +61,7 @@ test("burning knee pain selects Grounding only, even with a strong thoracic belt
   assert.equal(/PDF p\.|https?:|myofascialtrainings/i.test(page), false);
   assert.equal(/Reich|10-session|Check comfortable movement|Read together/i.test(page), false);
   assert.equal((page.match(/class="stCard"/g)||[]).length, 33);
-  assert.match(page, /MER5 · Inspiration/);
+  assert.match(page, /MER Inspiration/);
   assert.match(page, /MER Grounding Training/);
   assert.match(page, /data-mer-seg="pelvic"/);
   assert.match(page, /class="body-svg"/);
@@ -147,29 +147,22 @@ test("a strong core is not abdominal pain, and a belt score alone does not inven
   assert.equal(MER.visibleCards(onlyBelt).some(c=>c.module===2), false);
 });
 
-test("the belt picker and the training list are the same five rows", () => {
+test("the belt picker is the five session buttons", () => {
   const neck = html(read({complaint:"Neck tension", pain_areas:["neck"], pain_intensity:6}, {cervical:3, thoracic:3, diaphragmatic:2, oral:1, ocular:1}));
-  assert.equal((neck.match(/class="beltRow/g)||[]).length, 5);
-  const order = neck.slice(neck.indexOf('class="flowList"'), neck.indexOf('id="merStrokes"'));
-  assert.ok(order.indexOf("Cervical")<order.indexOf("Thoracic"));
-  assert.ok(order.indexOf("Thoracic")<order.indexOf("Ocular"));
-  assert.match(order, /NOW/);
-  assert.match(neck, /MER Self-Empowerment/);
-  assert.match(neck, /Ocular &amp; Oral/);
-  assert.match(neck, /Thoracic &amp; Diaphragmatic/);
-  assert.match(neck, /Abdominal/);
-  assert.match(neck, /Pelvic &amp; Legs/);
-  assert.match(neck, /Ocular &amp; Oral/);
-  assert.match(neck, /MER4 · Original Face \(Cranium\)/);
-  assert.match(neck, /Thoracic &amp; Diaphragmatic/);
-  assert.match(neck, /MER5 · Inspiration/);
-  assert.match(neck, /MER3 · Centering \(Pelvis\)/);
-  assert.match(neck, /Pelvic &amp; Legs/);
-  assert.match(neck, /beltRow on[\s\S]*Cervical[\s\S]*MER1 · Self-Empowerment[\s\S]*Strong/);
-  const list = neck.slice(neck.indexOf("Belts and MER trainings"), neck.indexOf('id="merC2"'));
-  assert.match(list, /Thoracic &amp; Diaphragmatic[\s\S]*MER5 · Inspiration[\s\S]*Strong/);
-  assert.equal(/<b>Ocular<\/b>/.test(list), false);
-  assert.equal(/<b>Diaphragmatic<\/b>/.test(list), false);
+  const list = neck.slice(neck.indexOf('class="flowList"'), neck.indexOf('id="merStrokes"'));
+  assert.equal((list.match(/data-mer-seg="/g)||[]).length, 3);
+  assert.equal((neck.match(/class="beltRow/g)||[]).length, 0);
+  assert.equal(neck.includes("Belts and MER trainings"), false);
+  assert.ok(list.indexOf("Cervical")<list.indexOf("Thoracic"));
+  assert.ok(list.indexOf("Thoracic")<list.indexOf("Ocular"));
+  assert.match(list, /NOW/);
+  assert.match(list, /MER Self-Empowerment/);
+  assert.match(list, /Ocular &amp; Oral/);
+  assert.match(list, /Thoracic &amp; Diaphragmatic/);
+  assert.equal(list.includes("Abdominal"), false);
+  assert.equal(list.includes("Pelvic"), false);
+  assert.match(list, /Strong/);
+  assert.equal(/Mild · to watch|To watch|Strong · over-charged/.test(neck), false);
   const face = MER.renderSession(read({pain_areas:["Jaw"]}), "face");
   assert.match(face, /data-mer-seg="face"/);
   assert.equal((face.match(/class="stCard"/g)||[]).length, 29);
@@ -280,5 +273,62 @@ test("a marked session can be stored and undone without a server", async () => {
   assert.deepEqual(await S.complete(key, "Sample", "pelvic", 1), ["pelvic"]);
   assert.deepEqual(await S.complete(key, "Sample", "thorax", 2), ["pelvic", "thorax"]);
   assert.deepEqual(await S.undo(key, "pelvic"), ["thorax"]);
+  assert.deepEqual(await S.complete(key, "Sample", "pelvic", 1, "bbtrs"), ["pelvic"]);
+  assert.deepEqual(await S.load(key, "mer"), ["thorax"]);
+  assert.deepEqual(await S.load(key, "bbtrs"), ["pelvic"]);
+  assert.deepEqual(await S.undo(key, "pelvic", "bbtrs"), []);
+  assert.deepEqual(await S.load(key, "mer"), ["thorax"]);
   delete globalThis.FA_MER_SESS_MEM;
+});
+
+test("older belt words and saved numeric maps use the same session order", () => {
+  const words = read({pain_areas:["knees"]}, {ocular:"Balanced", oral:"Mild · to watch", cervical:"To watch", thoracic:"Strong · over-charged", diaphragmatic:0, abdominal:"Light", pelvic:3});
+  assert.deepEqual(MER.buildSessions(words).sessions.map(s=>[s.id, s.level]), [["pelvic",3],["thorax",3],["cervical",2],["face",1],["abdominal",1]]);
+  const saved = [
+    {oral:1, ocular:1, pelvic:0, cervical:3, thoracic:3, abdominal:0, diaphragmatic:2},
+    {oral:1, ocular:1, pelvic:1, cervical:3, thoracic:2, abdominal:2, diaphragmatic:2},
+    {oral:1, ocular:1, pelvic:3, cervical:2, thoracic:3, abdominal:1, diaphragmatic:2},
+    {oral:3, ocular:1, pelvic:2, cervical:3, thoracic:3, abdominal:2, diaphragmatic:2}
+  ];
+  saved.forEach(belts => {
+    const reading = read({}, belts);
+    const page = html(reading);
+    assert.match(page, /class="flowList"/);
+    assert.match(page, /id="merSummary"/);
+    assert.equal(/Mild · to watch|To watch|Strong · over-charged|class="beltRow/.test(page), false);
+    const sessions = MER.buildSessions(reading).sessions;
+    assert.ok(sessions.length >= 1);
+    assert.ok(sessions.every(s => s.level === 1 || s.level === 2 || s.level === 3));
+    const levels = sessions.map(s => s.level);
+    const sorted = levels.slice().sort((a,b)=>b-a);
+    assert.deepEqual(levels, sorted);
+  });
+  const empty = read({}, {});
+  const emptyPage = html(empty);
+  assert.match(emptyPage, /id="merCh3"/);
+  assert.equal(MER.buildSessions(empty).sessions.length, 0);
+});
+
+test("BBTRS uses the same belt order and existing series text", () => {
+  global.window = globalThis;
+  require("./bbtrs.js");
+  const Flow = require("./bbtrs-flow.js");
+  const reading = read({pain_areas:["knees"]}, {ocular:0, oral:0, cervical:2, thoracic:3, diaphragmatic:0, abdominal:1, pelvic:3});
+  const htmlFlow = Flow.render(reading, null, [], "e");
+  const summary = Flow.summary(reading, "pelvic", "e");
+  assert.match(htmlFlow, /data-bbtrs-seg="pelvic"/);
+  assert.match(htmlFlow, /data-bbtrs-map/);
+  assert.match(htmlFlow, /Mark session 1 complete/);
+  assert.match(htmlFlow, /class="rec"/);
+  assert.match(htmlFlow, /Pelvic release/);
+  assert.equal(/pp\.\s|Labelled|All belts|8 sessions/.test(htmlFlow+summary), false);
+  assert.match(summary, /id="bbtrsSummary"/);
+  assert.match(summary, /Before/);
+  assert.match(summary, /Pelvic unwinding/);
+  const order = htmlFlow.slice(htmlFlow.indexOf("flowList"), htmlFlow.indexOf("skip-note"));
+  assert.ok(order.indexOf("Pelvic")<order.indexOf("Thoracic"));
+  assert.ok(order.indexOf("Thoracic")<order.indexOf("Cervical"));
+  assert.ok(order.indexOf("Cervical")<order.indexOf("Abdominal"));
+  assert.equal(/data-bbtrs-seg="face"/.test(htmlFlow), false);
+  assert.match(htmlFlow, /Skipped · Ocular &amp; Oral/);
 });

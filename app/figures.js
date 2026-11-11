@@ -137,5 +137,42 @@
       journeySvg+skipMark+badgeSvg+'</svg>';
   }
 
-  return { svgFigure, MIDLINE };
+  const EDGE = {
+    ocular: [122, 54],
+    cervical: [110, 101],
+    thoracic: [132, 156],
+    abdominal: [126, 219],
+    pelvic: [136, 248]
+  };
+
+  function drawLeaders(mapEl, svgEl, figEl){
+    if (!mapEl || !svgEl || !figEl) return;
+    const root = mapEl.getBoundingClientRect();
+    const fig = figEl.getBoundingClientRect();
+    const w = mapEl.clientWidth, h = mapEl.clientHeight;
+    if (!w || !h || !fig.width) return;
+    svgEl.setAttribute("viewBox", "0 0 "+w+" "+h);
+    const sx = fig.width / 200, sy = fig.height / 500;
+    const ox = fig.left - root.left, oy = fig.top - root.top;
+    const onBtn = mapEl.querySelector("button.current");
+    const onId = onBtn ? onBtn.getAttribute("data-belt") : "";
+    const parts = [];
+    Object.keys(EDGE).forEach(id => {
+      const btn = mapEl.querySelector('button[data-belt="'+id+'"]');
+      if (!btn) return;
+      const br = btn.getBoundingClientRect();
+      const x1 = ox + EDGE[id][0] * sx;
+      const y1 = oy + EDGE[id][1] * sy;
+      const x2 = br.left - root.left;
+      const y2 = br.top - root.top + br.height / 2;
+      const mid = x1 + Math.max(8, Math.min(16, (x2 - x1) * 0.2));
+      const d = "M"+x1.toFixed(1)+" "+y1.toFixed(1)+" L"+mid.toFixed(1)+" "+y1.toFixed(1)+" L"+(x2-4).toFixed(1)+" "+y2.toFixed(1);
+      const on = id === onId;
+      parts.push('<path d="'+d+'" fill="none" stroke="'+(on?"#E2C08A":"#A9D4D8")+'" stroke-width="'+(on?1.8:1.2)+'" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="'+(on?0.95:0.7)+'"/>');
+      parts.push('<circle cx="'+x1.toFixed(1)+'" cy="'+y1.toFixed(1)+'" r="'+(on?3.2:2.4)+'" fill="'+(on?"#E2C08A":"#D2EFF2")+'"/>');
+    });
+    svgEl.innerHTML = parts.join("");
+  }
+
+  return { svgFigure, drawLeaders, MIDLINE };
 });
