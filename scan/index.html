@@ -9,21 +9,15 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0
 .logo b{font-weight:600}
 nav a.quiet{color:var(--gold);font-size:13px;text-decoration:none}
 .k{margin:18px 0 0;font-size:11px;letter-spacing:2.6px;text-transform:uppercase;color:var(--gold)}
-.heroRow{display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:6px;align-items:end;margin-top:8px}
-.heroVis{position:relative;width:128px}
-.heroVis:before{content:"";position:absolute;left:10%;right:10%;top:18%;bottom:8%;border-radius:50%;background:radial-gradient(circle,#c99e6740,transparent 70%);filter:blur(8px);z-index:0}
-.heroVis svg{position:relative;z-index:1;width:100%;height:auto;display:block}
-h1{font-weight:300;font-size:32px;line-height:1.12;letter-spacing:-.02em;margin:8px 0 12px}
+h1{font-weight:300;font-size:34px;line-height:1.12;letter-spacing:-.02em;margin:8px 0 12px}
 h2{font-weight:300;font-size:26px;margin:0 0 6px;letter-spacing:-.02em}
 .lead{margin:0;color:#d5e4e2;font-size:16px;font-weight:300;line-height:1.55}
 section{padding:28px 0 8px}
 .steps{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
-.steps li{display:grid;grid-template-columns:46px minmax(0,1fr);gap:12px;align-items:center;background:linear-gradient(180deg,#0e353b,#0a2a30);border:1px solid var(--line);border-radius:18px;padding:12px 14px}
-.steps b{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15.5px;margin-bottom:3px}
-.steps b em{font-style:normal;color:var(--gold);font-size:12px;font-weight:700}
+.steps li{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;align-items:start;background:linear-gradient(180deg,#0e353b,#0a2a30);border:1px solid var(--line);border-radius:18px;padding:12px 14px 13px}
+.steps b{display:block;font-weight:600;font-size:15.5px;margin-bottom:3px}
 .steps span{display:block;color:#c5d6d4;font-size:13.5px;line-height:1.45;font-weight:400}
-.ic{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:radial-gradient(circle at 40% 30%,#1a4c52,#072126);border:1px solid #c99e6788;box-shadow:0 0 16px #c99e6722}
-.ic svg{width:22px;height:22px;stroke:#E2C08A;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.n{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--gold);color:var(--gold);font-weight:600;background:#02191E}
 .cards{display:flex;flex-direction:column;gap:12px;margin-top:14px}
 .card{background:linear-gradient(180deg,#0e353b,#0a2a30);border:1px solid var(--line);border-radius:20px;padding:16px 16px 14px}
 .card h3{margin:0 0 8px;font-size:16px;font-weight:600;color:var(--gold);letter-spacing:.2px}
@@ -32,28 +26,13 @@ section{padding:28px 0 8px}
 .card li{position:relative;padding:7px 0 7px 18px;color:#d7e4e2;font-size:14.5px;line-height:1.4;border-top:1px solid #c99e6718}
 .card li:first-child{border-top:0}
 .card li:before{content:"";position:absolute;left:0;top:14px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
-.read{margin-top:12px;padding:12px;border-radius:14px;background:#02191Eaa;border:1px solid #c99e6733}
-.read .rk{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold)}
-.read .rh{margin:4px 0 8px;font-size:14px;font-weight:500}
-.bars{height:6px;border-radius:6px;background:#073036;overflow:hidden;margin-bottom:8px}
-.bars i{display:block;height:100%;width:68%;background:linear-gradient(90deg,#e2bd86,#C99E67);box-shadow:0 0 8px #c99e6788}
-.read .row{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 0;border-top:1px solid #c99e6718;color:#c5d6d4}
-.read .row b{font-weight:600;color:var(--tx)}
-.previews{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;align-items:center;margin-top:12px}
-.miniWrap{position:relative;width:92px;height:168px}
-.miniWrap svg{width:92px;height:168px;display:block}
-.rec{position:absolute;left:64%;top:46%;width:8px;height:8px;border-radius:50%;background:#E53935;box-shadow:0 0 0 2px rgba(229,57,53,.28),0 0 8px rgba(229,57,53,.85)}
-.stroke{border-radius:14px;background:#f4efe6;color:#1d2a2c;padding:8px 8px 10px;min-height:148px}
-.stroke .sk{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:#8a6537;font-weight:700}
-.stroke svg{width:100%;height:78px;display:block;margin:4px 0}
-.stroke p{margin:0;font-size:11px;line-height:1.35;color:#3d4c4e}
 .note{margin:14px 0 0;color:var(--mut);font-size:13px;line-height:1.5}
 .plans{display:flex;flex-direction:column;gap:12px;margin-top:16px}
-.plan{position:relative;background:linear-gradient(165deg,#143f46 0%,#0c3036 42%,#081f24 100%);border:1px solid #c99e6755;border-radius:24px;padding:20px 16px 16px;box-shadow:inset 0 1px 0 #ffffff18,0 14px 32px #0005}
-.plan.hot{border-color:#E2C08A;background:linear-gradient(165deg,#3a3122 0%,#16383d 46%,#0a2428 100%);box-shadow:inset 0 1px 0 #ffffff22,0 0 0 1px #c99e6788,0 18px 40px #c99e6726}
-.tag{display:inline-block;margin-bottom:8px;background:linear-gradient(90deg,#e2bd86,#C99E67);color:#02191E;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+.plan{position:relative;background:linear-gradient(180deg,#0e353b,#0a2a30);border:1px solid var(--line);border-radius:22px;padding:18px 16px 16px}
+.plan.hot{border-color:var(--gold);box-shadow:0 0 0 1px #c99e6755,0 16px 36px #0005}
+.tag{display:inline-block;margin-bottom:8px;background:var(--gold);color:#02191E;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:4px 10px;border-radius:999px}
 .pt{color:var(--gold);letter-spacing:1.6px;text-transform:uppercase;font-size:12px}
-.pp{font-size:48px;font-weight:300;letter-spacing:-.03em;margin:2px 0 0;line-height:1}
+.pp{font-size:42px;font-weight:300;letter-spacing:-.03em;margin:4px 0 0;line-height:1}
 .pp span{font-size:15px;color:var(--mut);letter-spacing:0}
 .pm{color:#d5e4e2;font-size:14px;margin:6px 0 10px}
 .plan ul{list-style:none;margin:0 0 14px;padding:0}
@@ -74,21 +53,16 @@ html.embed .k{margin-top:8px}
 <nav><a class="logo" href="/app/"><b>FasciApp</b> · Scan</a><a class="quiet" href="/app/assessment-results.html">My records</a></nav>
 <section id="top">
 <p class="k">Body scan</p>
-<div class="heroRow">
-<div>
 <h1>A reading for the person in front of you</h1>
 <p class="lead">A short form and three photos. Then a breathwork reading and a bodywork reading, with a session plan you can follow together.</p>
-</div>
-<div class="heroVis" id="heroFig" aria-hidden="true"></div>
-</div>
 </section>
 <section id="how">
 <h2>How it goes</h2>
 <ol class="steps">
-<li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg></span><div><b><em>1</em> Pay securely</b><span>Choose a plan below and pay by card. A scan you already have still opens the form.</span></div></li>
-<li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8v3H8z"/><rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 12h6M9 16h4"/></svg></span><div><b><em>2</em> Fill in the form and photos</b><span>The body scan form, plus a front, side and back photo.</span></div></li>
-<li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.6 4.2L18 9l-4.4 1.2L12 14.5 10.4 10.2 6 9l4.4-1.8z"/><path d="M17 15l.7 1.8 1.8.7-1.8.7L17 20l-.7-1.8-1.8-.7 1.8-.7z"/></svg></span><div><b><em>3</em> Receive the reading</b><span>Breathwork (BBTRS) and bodywork (MER) open in the app.</span></div></li>
-<li><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="6" cy="7" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="17" r="2"/><path d="M7.6 8.4l2.8 2.2M13.6 13.4l2.8 2.2" stroke-dasharray="1.2 1.6"/></svg></span><div><b><em>4</em> Follow the session plan</b><span>Work through the belts that need attention, at a comfortable pace.</span></div></li>
+<li><i class="n">1</i><div><b>Pay securely</b><span>Choose a plan below and pay by card. A scan you already have still opens the form.</span></div></li>
+<li><i class="n">2</i><div><b>Fill in the form and photos</b><span>The body scan form, plus a front, side and back photo.</span></div></li>
+<li><i class="n">3</i><div><b>Receive the reading</b><span>Breathwork (BBTRS) and bodywork (MER) open in the app.</span></div></li>
+<li><i class="n">4</i><div><b>Follow the session plan</b><span>Work through the belts that need attention, at a comfortable pace.</span></div></li>
 </ol>
 </section>
 <section id="get">
@@ -97,13 +71,6 @@ html.embed .k{margin-top:8px}
 <article class="card">
 <h3>Breathwork · BBTRS</h3>
 <p>A character and body reading, how the breath tends to move, and a practice for each session.</p>
-<div class="read">
-<div class="rk">Character structure</div>
-<div class="rh">The pattern in the body</div>
-<div class="bars"><i></i></div>
-<div class="row"><b>Breath</b><span>How it tends to move</span></div>
-<div class="row"><b>Practice</b><span>For this session</span></div>
-</div>
 </article>
 <article class="card">
 <h3>Bodywork · MER</h3>
@@ -113,19 +80,6 @@ html.embed .k{margin-top:8px}
 <li>A summary with questions and homework</li>
 <li>Space for your practitioner notes</li>
 </ul>
-<div class="previews">
-<div class="miniWrap" id="merMini" aria-hidden="true"><span class="rec"></span></div>
-<article class="stroke">
-<div class="sk">Stroke</div>
-<svg viewBox="0 0 120 78" aria-hidden="true">
-<path d="M42 14c10-6 26-6 36 0 8 10 10 22 8 34-2 10-6 16-8 22H50c-2-6-6-12-8-22-2-12 0-24 8-34z" fill="#f7f1e6" stroke="#8a6537" stroke-width="1.3"/>
-<path d="M60 16v50" stroke="#c4b49a" stroke-width="1" stroke-dasharray="2 2"/>
-<ellipse cx="86" cy="40" rx="16" ry="10" fill="none" stroke="#1d2a2c" stroke-width="1.4"/>
-<path d="M74 38h20M76 44h14" stroke="#1d2a2c" stroke-width="1.1"/>
-</svg>
-<p>A picture with each stroke. This one is only a sketch.</p>
-</article>
-</div>
 </article>
 </div>
 <p class="note">An invitation to awareness, not a diagnosis, and not a substitute for a doctor. Photos are removed from storage once the report is ready. The reading stays private to you.</p>
@@ -165,31 +119,6 @@ html.embed .k{margin-top:8px}
 <p>© 2026 FasciApp</p>
 </footer>
 </div>
-<script src="/app/anatomy.js"></script><script src="/app/figures.js"></script>
-<script>
-(function(){
-  var F=window.FasciFigure,A=window.FasciAnatomy;
-  if(!F||!A)return;
-  var hero=document.getElementById("heroFig");
-  if(hero){
-    hero.innerHTML=F.svgFigure({id:"hero",lit:"thoracic",badges:[],journey:[]});
-    var svg=hero.querySelector("svg"),ns="http://www.w3.org/2000/svg",d=A.frontBodyD();
-    ["cervical","abdominal","pelvic"].forEach(function(z){
-      var g=document.createElementNS(ns,"g");
-      g.setAttribute("mask","url(#zone-"+z+"-fg-hero)");
-      g.setAttribute("filter","url(#goldGlow-fg-hero)");
-      var p=document.createElementNS(ns,"path");
-      p.setAttribute("d",d);p.setAttribute("fill","#C99E67");p.setAttribute("fill-opacity","0.5");
-      g.appendChild(p);svg.appendChild(g);
-    });
-  }
-  var mini=document.getElementById("merMini");
-  if(mini){
-    var fig=F.svgFigure({id:"mini",lit:"pelvic",badges:[{id:"pelvic",n:1,current:true},{id:"thoracic",n:2},{id:"cervical",n:3}],journey:["pelvic","thoracic","cervical"]});
-    mini.insertAdjacentHTML("afterbegin",fig);
-  }
-})();
-</script>
 <script src="/app/config.js"></script><script src="/app/track.js"></script>
 <script>
 /* Stripe Payment Links. Empty = "Coming soon". */
