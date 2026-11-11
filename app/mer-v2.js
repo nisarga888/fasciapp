@@ -3,11 +3,13 @@
 (function(root, factory){
   let lines = root && root.FA_LINES;
   if (!lines && typeof module === "object" && module.exports) { try { lines = require("./mer-lines.js"); } catch (e) { lines = null; } }
-  const api = factory(lines);
+  let anatomy = root && root.FasciAnatomy;
+  if (!anatomy && typeof module === "object" && module.exports) { try { require("./anatomy.js"); anatomy = globalThis.FasciAnatomy; } catch (e) { anatomy = null; } }
+  const api = factory(lines, anatomy);
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_MER_V2 = api;
-})(typeof globalThis !== "undefined" ? globalThis : this, function(FA_LINES){
-const DATA_VERSION = "0.23.240";
+})(typeof globalThis !== "undefined" ? globalThis : this, function(FA_LINES, FA_ANATOMY){
+const DATA_VERSION = "0.23.241";
 const BELT_KEYS = ["ocular","oral","cervical","thoracic","diaphragmatic","abdominal","pelvic"];
 const BELT_LABEL = {ocular:"Ocular",oral:"Oral",cervical:"Cervical",thoracic:"Thoracic",diaphragmatic:"Diaphragmatic",abdominal:"Abdominal",pelvic:"Pelvic and legs"};
 const GROUPS = [
@@ -270,9 +272,32 @@ function chapterHead(n, title, id){
   return '<div class="chH" id="'+id+'" data-mer-sec="'+esc(title)+'"><b>'+n+'</b><h2>'+esc(title)+'</h2></div>';
 }
 
-function segButtons(activeKey){
+const ANATOMY_BELT = {face:"ocular", cervical:"cervical", thorax:"thoracic", abdominal:"abdominal", pelvic:"pelvic"};
+function levelChip(reading, g){
+  const label = groupLevel(reading||{}, g);
+  const map = {"Balanced":["balanced","Balanced"], "Mild · to watch":["mild","Mild"], "To watch":["mild","To watch"], "Strong · over-charged":["strong","Strong"]};
+  const pair = map[label] || ["mild","Unknown"];
+  return '<span class="chip '+pair[0]+'"><i></i>'+esc(pair[1])+'</span>';
+}
+function segButtons(activeKey, reading, cardCount){
   const on = groupForKey(activeKey);
-  return GROUPS.map(g=>'<button type="button" data-mer-seg="'+g.id+'"'+(on&&on.id===g.id?' class="on"':'')+'><b>'+esc(g.label)+'</b><small> – '+esc(g.btn)+'</small></button>').join("");
+  const beltId = on ? ANATOMY_BELT[on.id] : "";
+  const svg = (FA_ANATOMY && FA_ANATOMY.svgSilhouette) ? FA_ANATOMY.svgSilhouette("map", beltId) : "";
+  const n = Number(cardCount)||0;
+  const button = (g)=>{
+    const active = !!(on && on.id===g.id);
+    const count = active ? '<span class="cards"><b>'+n+' cards</b> · one manual</span>' : "";
+    return '<button type="button" data-mer-seg="'+g.id+'"'+(active?' class="on"':'')+'><b>'+esc(g.label)+'</b><small>'+esc(g.btn)+'</small><span class="row2">'+levelChip(reading, g)+count+'</span></button>';
+  };
+  const upper = GROUPS.filter(g=>g.id!=="pelvic").map(g=>{
+    const active = !!(on && on.id===g.id);
+    const flow = active ? '<button type="button" class="cta" data-j="merStrokes">Start stroke flow →</button>' : "";
+    return '<div class="labWrap'+(active?' on':'')+'">'+button(g)+flow+'</div>';
+  }).join("");
+  const legsOn = !!(on && on.id==="pelvic");
+  const flow = legsOn ? '<button type="button" class="cta" data-j="merStrokes">Start stroke flow →</button>' : "";
+  const legs = '<div class="legs'+(legsOn?' on':'')+'">'+button(GROUPS[4])+flow+'</div>';
+  return '<div class="bmRow"><div class="bmFig">'+svg+'</div><div class="bmLabs">'+upper+'</div></div>'+legs;
 }
 function groupLevel(reading, g){
   const rows = g.keys.map(k=>(reading.belts||[]).find(b=>b.key===k)).filter(Boolean);
@@ -287,15 +312,15 @@ function trainingRows(reading, segment){
 function renderSessionBody(reading, segment){
   segment = resolveSegment(reading, segment);
   if (!segment){
-    return '<section class="card mer"><h3 class="gH">Choose one training</h3><p class="gSub">Nothing in the intake matches one training yet. Pick one. Only that manual is shown, and choosing another replaces this list.</p><div class="segPick">'+segButtons("")+'</div></section>';
+    return '<section class="card mer"><h3 class="gH">Choose one training</h3><p class="gSub">Nothing in the intake matches one training yet. Pick one. Only that manual is shown, and choosing another replaces this list.</p><div class="segPick" aria-label="Body regions">'+segButtons("", reading, 0)+'</div></section>';
   }
   const copy = sessionCopy(reading, segment);
   const cards = visibleCards(reading, segment);
-  const picks = segButtons(segment);
+  const picks = segButtons(segment, reading, cards.length);
   const list = cards.length
     ? cards.map((s,i)=>strokeCard(s,i+1)).join("")
     : '<p>No reviewed cards are available for this manual. Nothing is borrowed from another manual.</p>';
-  return '<section class="card mer"><h3 class="gH">'+esc(copy.name)+'</h3><p class="gSub">'+esc(copy.focus)+'</p><p><b>Focus:</b> '+esc(copy.why)+'</p><div class="it"><h3>Before</h3><p>'+esc(copy.before)+'</p></div><div class="it"><h3>Work</h3><p>'+esc(copy.work)+'</p></div><div class="it"><h3>After</h3><p>'+esc(copy.after)+'</p></div><div class="segPick" aria-label="Active segment">'+picks+'</div></section><p class="subP">'+esc(copy.name)+' · '+cards.length+' cards in manual order. One manual only.</p>'+list;
+  return '<section class="card mer"><h3 class="gH">'+esc(copy.name)+'</h3><p class="gSub">'+esc(copy.focus)+'</p><p><b>Focus:</b> '+esc(copy.why)+'</p><div class="it"><h3>Before</h3><p>'+esc(copy.before)+'</p></div><div class="it"><h3>Work</h3><p>'+esc(copy.work)+'</p></div><div class="it"><h3>After</h3><p>'+esc(copy.after)+'</p></div><div class="segPick" aria-label="Body regions">'+picks+'</div></section><p class="subP">'+esc(copy.name)+' · '+cards.length+' cards in manual order. One manual only.</p><div id="merStrokes">'+list+'</div>';
 }
 
 function renderMer(reading, opts){

@@ -216,12 +216,41 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 .beltRow b{font-weight:500}.beltRow small{display:block;color:var(--gold);font-size:13px;margin-top:2px}
 .beltRow>span{color:var(--mut);font-size:13px;text-align:right;flex:none}
 .beltRow.on small{font-weight:600}
-.segPick{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
-.segPick button{width:100%;white-space:normal;text-align:center;line-height:1.3;padding:10px 12px;border-radius:16px;background:none;border:1px solid var(--ln);color:var(--tx);box-shadow:none;min-height:44px}
-.segPick button b{font-weight:600;font-size:14px}
-.segPick button small{font-size:12.5px;font-weight:500;color:var(--gold)}
-.segPick button.on{background:var(--gold);color:#02191E}
-.segPick button.on small{color:#02191E}
+.segPick{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.bmRow{display:grid;grid-template-columns:minmax(96px,132px) minmax(0,1fr);gap:8px;align-items:start}
+.bmFig{min-width:0}
+.bmFig .body-svg{width:100%;height:auto;display:block;overflow:visible}
+.bmLabs{display:flex;flex-direction:column;gap:6px;min-width:0}
+.segPick .labWrap{display:flex;flex-direction:column;gap:6px;min-width:0}
+.segPick button{width:100%;white-space:normal;text-align:left;line-height:1.25;padding:6px 9px 6px 10px;border-radius:12px;background:#071f24;border:1px solid #c99e6733;color:var(--tx);box-shadow:none;min-height:44px}
+.segPick button b{display:block;font-weight:650;font-size:12.5px;letter-spacing:-0.2px}
+.segPick button small{display:block;font-size:11px;font-weight:600;color:var(--gold);margin-top:1px}
+.segPick .row2{display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
+.segPick button.on{border:1.5px solid var(--gold);background:linear-gradient(160deg,#2a2418,#1a1810);box-shadow:0 0 0 3px #c99e6730;color:var(--tx)}
+.segPick button.on small{color:var(--gold)}
+.segPick .chip{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:650;padding:2px 8px 2px 6px;border-radius:999px;line-height:1.3;white-space:nowrap}
+.segPick .chip i{width:6px;height:6px;border-radius:50%;display:inline-block;flex:none}
+.segPick .chip.strong{background:#C99E6733;color:#E2C08A;border:1px solid #C99E6788}
+.segPick .chip.strong i{background:#C99E67}
+.segPick .chip.mild{background:#9fb3b51a;color:#b7c7c8;border:1px solid #9fb3b544}
+.segPick .chip.mild i{background:#9fb3b5}
+.segPick .chip.balanced{background:#5FC9C322;color:#8eded9;border:1px solid #5FC9C366}
+.segPick .chip.balanced i{background:#5FC9C3}
+.segPick .cards{font-size:11.5px;color:var(--mut);font-weight:500;white-space:nowrap}
+.segPick .cards b{display:inline;color:var(--gold);font-weight:700;font-size:11.5px}
+.segPick .cta{width:auto;background:var(--gold);color:#02191E;border:none;border-radius:999px;font-weight:700;font-size:13px;padding:10px 14px;text-align:center;box-shadow:none;min-height:44px}
+.segPick .legs{display:flex;flex-direction:row;align-items:center;gap:10px;border-radius:16px;padding:4px}
+.segPick .legs button[data-mer-seg]{flex:1;min-width:0;border-radius:14px;padding:12px 12px 12px 14px}
+.segPick .legs button[data-mer-seg] b{font-size:15px}
+.segPick .legs button[data-mer-seg] small{font-size:12.5px}
+.segPick .legs.on{background:linear-gradient(160deg,#2a2418,#1a1810);border:1.5px solid var(--gold);box-shadow:0 0 0 3px #c99e6730, 0 8px 22px #0006;padding:8px 8px 8px 4px}
+.segPick .legs.on button[data-mer-seg]{background:none;border:none;box-shadow:none}
+.segPick .legs .cta{flex:none}
+@media (max-width:420px){
+  .segPick .legs{flex-wrap:wrap;padding:4px}
+  .segPick .legs .cta{width:100%}
+  .segPick button b{font-size:12px}
+}
 .beltRow.on b{color:var(--gold)}
 #pM .miniLines,#pM .lineFigs{grid-template-columns:repeat(3,minmax(0,1fr))}
 .lineFigs{display:grid;gap:8px;margin:8px 0 4px}
@@ -256,13 +285,13 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="notes.js?v=0.23.239"></script><script src="mer.js?v=0.23.232"></script><script src="mer-lines.js?v=0.23.240"></script><script src="mer-v2.js?v=0.23.240"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="notes.js?v=0.23.241"></script><script src="mer.js?v=0.23.232"></script><script src="anatomy.js?v=0.23.241"></script><script src="mer-lines.js?v=0.23.241"></script><script src="mer-v2.js?v=0.23.241"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null,merCatalog;
-async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.240";
+async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.241";
  const names=["mer_modules","mer_strokes","mer_cards","routing","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
  try{const parts=await Promise.all(names.map(n=>fetch("data/mer/"+n+".json?v="+v,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error(n);return res.json()})));
   const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_cards||!cat.mer_cards.cards)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}
