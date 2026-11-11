@@ -216,40 +216,55 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 .beltRow b{font-weight:500}.beltRow small{display:block;color:var(--gold);font-size:13px;margin-top:2px}
 .beltRow>span{color:var(--mut);font-size:13px;text-align:right;flex:none}
 .beltRow.on small{font-weight:600}
-.segPick{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.bmRow{display:grid;grid-template-columns:minmax(96px,132px) minmax(0,1fr);gap:8px;align-items:start}
-.bmFig{min-width:0}
-.bmFig .body-svg{width:100%;height:auto;display:block;overflow:visible}
-.bmLabs{display:flex;flex-direction:column;gap:6px;min-width:0}
-.segPick .labWrap{display:flex;flex-direction:column;gap:6px;min-width:0}
-.segPick button{width:100%;white-space:normal;text-align:left;line-height:1.25;padding:6px 9px 6px 10px;border-radius:12px;background:#071f24;border:1px solid #c99e6733;color:var(--tx);box-shadow:none;min-height:44px}
-.segPick button b{display:block;font-weight:650;font-size:12.5px;letter-spacing:-0.2px}
-.segPick button small{display:block;font-size:11px;font-weight:600;color:var(--gold);margin-top:1px}
-.segPick .row2{display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
-.segPick button.on{border:1.5px solid var(--gold);background:linear-gradient(160deg,#2a2418,#1a1810);box-shadow:0 0 0 3px #c99e6730;color:var(--tx)}
-.segPick button.on small{color:var(--gold)}
-.segPick .chip{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:650;padding:2px 8px 2px 6px;border-radius:999px;line-height:1.3;white-space:nowrap}
-.segPick .chip i{width:6px;height:6px;border-radius:50%;display:inline-block;flex:none}
-.segPick .chip.strong{background:#C99E6733;color:#E2C08A;border:1px solid #C99E6788}
-.segPick .chip.strong i{background:#C99E67}
-.segPick .chip.mild{background:#9fb3b51a;color:#b7c7c8;border:1px solid #9fb3b544}
-.segPick .chip.mild i{background:#9fb3b5}
-.segPick .chip.balanced{background:#5FC9C322;color:#8eded9;border:1px solid #5FC9C366}
-.segPick .chip.balanced i{background:#5FC9C3}
-.segPick .cards{font-size:11.5px;color:var(--mut);font-weight:500;white-space:nowrap}
-.segPick .cards b{display:inline;color:var(--gold);font-weight:700;font-size:11.5px}
-.segPick .cta{width:auto;background:var(--gold);color:#02191E;border:none;border-radius:999px;font-weight:700;font-size:13px;padding:10px 14px;text-align:center;box-shadow:none;min-height:44px}
-.segPick .legs{display:flex;flex-direction:row;align-items:center;gap:10px;border-radius:16px;padding:4px}
-.segPick .legs button[data-mer-seg]{flex:1;min-width:0;border-radius:14px;padding:12px 12px 12px 14px}
-.segPick .legs button[data-mer-seg] b{font-size:15px}
-.segPick .legs button[data-mer-seg] small{font-size:12.5px}
-.segPick .legs.on{background:linear-gradient(160deg,#2a2418,#1a1810);border:1.5px solid var(--gold);box-shadow:0 0 0 3px #c99e6730, 0 8px 22px #0006;padding:8px 8px 8px 4px}
-.segPick .legs.on button[data-mer-seg]{background:none;border:none;box-shadow:none}
-.segPick .legs .cta{flex:none}
-@media (max-width:420px){
-  .segPick .legs{flex-wrap:wrap;padding:4px}
-  .segPick .legs .cta{width:100%}
-  .segPick button b{font-size:12px}
+.segPick{display:flex;flex-direction:column;gap:0;margin-top:12px}
+.map{position:relative;display:grid;grid-template-columns:minmax(104px,124px) minmax(0,1fr);gap:12px;align-items:start;overflow:visible}
+.map .body-wrap{min-width:0;position:relative;z-index:1}
+.map .body-svg{width:100%;height:auto;display:block;overflow:visible}
+.map .leaders{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
+.map .labels{display:flex;flex-direction:column;justify-content:space-between;gap:6px;min-width:0;position:relative;z-index:3;align-self:stretch}
+.map button{position:relative;flex:1 1 auto;width:100%;white-space:normal;text-align:left;line-height:1.2;padding:5px 18px 5px 8px;border-radius:11px;background:#071f24;border:1px solid #c99e6733;color:var(--tx);box-shadow:none;font-size:12px;font-weight:500}
+.map button b{display:block;font-weight:650;font-size:11.5px;letter-spacing:-0.2px}
+.map button small{display:block;font-size:10px;font-weight:600;color:var(--gold);margin-top:1px}
+.map .row2{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:3px}
+.map button.on{border:1.5px solid var(--gold);background:linear-gradient(160deg,#2a2418,#1a1810);box-shadow:0 0 0 2px #c99e6733, 0 6px 16px #0005;color:var(--tx)}
+.map button.on small{color:var(--gold)}
+.map .chip{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:650;padding:1px 6px 1px 5px;border-radius:999px;line-height:1.3;white-space:nowrap}
+.map .chip i{width:5px;height:5px;border-radius:50%;display:inline-block;flex:none}
+.map .chip.strong{background:#C99E6733;color:#E2C08A;border:1px solid #C99E6788}
+.map .chip.strong i{background:#C99E67}
+.map .chip.mild{background:#9fb3b51a;color:#b7c7c8;border:1px solid #9fb3b544}
+.map .chip.mild i{background:#9fb3b5}
+.map .chip.watch{background:#e8a05a22;color:#F0C07A;border:1px solid #e8a05a88}
+.map .chip.watch i{background:#E8A05A}
+.map .chip.balanced{background:#5FC9C322;color:#8eded9;border:1px solid #5FC9C366}
+.map .chip.balanced i{background:#5FC9C3}
+.map .focusLab{font-size:9px;font-weight:650;letter-spacing:.01em;color:#E2C08A}
+.map .focusLab.sec{color:#e7a3a0}
+.map .rec{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#E53935;box-shadow:0 0 0 2px rgba(229,57,53,.28), 0 0 8px rgba(229,57,53,.85)}
+.map .rec::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1px solid rgba(229,57,53,.45)}
+.map .rec.soft{width:6px;height:6px;top:7px;right:7px;box-shadow:0 0 0 2px rgba(229,57,53,.16), 0 0 5px rgba(229,57,53,.45);opacity:.8}
+.map .rec.soft::after{inset:-2px;border-color:rgba(229,57,53,.28)}
+.cta-row{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:12px}
+.cta-row .cta{width:auto;min-width:168px;background:var(--gold);color:#02191E;border:none;border-radius:999px;font-weight:700;font-size:13.5px;padding:11px 18px;text-align:center;box-shadow:none}
+.cta-row .cards{font-size:11.5px;color:var(--mut);font-weight:500}
+.cta-row .cards b{display:inline;color:var(--gold);font-weight:700;font-size:11.5px}
+@media (min-width:1000px){
+  .wrap{max-width:960px}
+  .map{grid-template-columns:minmax(160px,188px) minmax(0,1fr);gap:28px}
+  .map button{border-radius:16px;padding:10px 28px 10px 16px}
+  .map button b{font-size:17px}
+  .map button small{font-size:13.5px;margin-top:2px}
+  .map .row2{margin-top:6px}
+  .map .chip{font-size:11.5px;padding:3px 9px 3px 7px;gap:5px}
+  .map .chip i{width:6px;height:6px}
+  .map .focusLab{font-size:12px}
+  .map .rec{top:14px;right:14px;width:10px;height:10px}
+  .map .rec::after{inset:-4px}
+  .map .rec.soft{width:8px;height:8px;top:15px;right:15px}
+  .cta-row{margin-top:18px}
+  .cta-row .cta{font-size:15px;padding:12px 22px}
+  .cta-row .cards{font-size:13px}
+  .cta-row .cards b{font-size:13px}
 }
 .beltRow.on b{color:var(--gold)}
 #pM .miniLines,#pM .lineFigs{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -285,13 +300,13 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="notes.js?v=0.23.241"></script><script src="mer.js?v=0.23.232"></script><script src="anatomy.js?v=0.23.241"></script><script src="mer-lines.js?v=0.23.241"></script><script src="mer-v2.js?v=0.23.241"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="notes.js?v=0.23.242"></script><script src="mer.js?v=0.23.232"></script><script src="anatomy.js?v=0.23.242"></script><script src="figures.js?v=0.23.242"></script><script src="mer-lines.js?v=0.23.242"></script><script src="mer-v2.js?v=0.23.242"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.199"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null,merCatalog;
-async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.241";
+async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.242";
  const names=["mer_modules","mer_strokes","mer_cards","routing","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
  try{const parts=await Promise.all(names.map(n=>fetch("data/mer/"+n+".json?v="+v,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error(n);return res.json()})));
   const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_cards||!cat.mer_cards.cards)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}
@@ -510,13 +525,16 @@ function renderRes(r){row=r;const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs
   [...$$("#pM [data-mer-sec]")].forEach((e,i)=>{e.id=e.id||"pMx"+(i+1);if(!e.querySelector(":scope > .toIdx"))e.insertAdjacentHTML("beforeend",'<a class="toIdx" data-idx="pMIdx">↑ Index</a>')})}
  $("#vRes").querySelectorAll("img[data-ph]").forEach(async im=>{const {data}=await sb.storage.from("assessment-photos").createSignedUrl(im.dataset.ph,3600);if(data)im.src=data.signedUrl});
  fillMerImages(document.getElementById("pM"));
+ drawMerLeaders();
 }
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-go]");if(!b)return;const g=b.dataset.go;
  if(g=="intake")goIntake();else if(g=="plan")goPart("mer");else if(g=="res")goPart("bbtrs");
  else if(g=="pdf"){if($(".editing"))await saveReport();const t=document.title;document.title="Body Assessment - "+(row.client_name||"client")+" - "+new Date(row.created_at).toLocaleDateString("en-GB");window.FA_ph&&FA_ph("assessment_pdf",{});setTimeout(()=>{window.print();document.title=t},50)}
  else if(g=="save"){if(await saveReport("Saved to your records ✓")){$$(".editing").forEach(v=>{v.classList.remove("editing");v.querySelectorAll("[data-p],[data-d]").forEach(x=>x.contentEditable=false);v.querySelectorAll("[data-edit]").forEach(x=>x.textContent="✎ Edit text")});setTimeout(()=>location.href="assessment-results.html",1400)}}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-j],[data-idx]");if(!a)return;e.preventDefault();const t=document.getElementById(a.dataset.j||a.dataset.idx);if(t)t.scrollIntoView({behavior:"smooth",block:"start"})});
-document.addEventListener("click",e=>{const b=e.target.closest("[data-mer-seg]");if(!b||!window.__faMerReading||!window.FA_MER_V2)return;e.preventDefault();const seg=b.getAttribute("data-mer-seg");const body=document.getElementById("merCh3Body"),tail=document.getElementById("merCh4Body");if(body)body.innerHTML=FA_MER_V2.renderSession(window.__faMerReading,seg);if(tail)tail.innerHTML=FA_MER_V2.renderTail(window.__faMerReading,seg);if(body)fillMerImages(body)});
+function drawMerLeaders(){const go=()=>{if(!window.FasciFigure)return;document.querySelectorAll("[data-side-map]").forEach(map=>{const svg=map.querySelector("svg.leaders"),fig=map.querySelector("svg.body-svg");if(svg&&fig)FasciFigure.drawLeaders(map,svg,fig)})};requestAnimationFrame(()=>requestAnimationFrame(go))}
+window.addEventListener("resize",drawMerLeaders);
+document.addEventListener("click",e=>{const b=e.target.closest("[data-mer-seg]");if(!b||!window.__faMerReading||!window.FA_MER_V2)return;e.preventDefault();const seg=b.getAttribute("data-mer-seg");const body=document.getElementById("merCh3Body"),tail=document.getElementById("merCh4Body");if(body)body.innerHTML=FA_MER_V2.renderSession(window.__faMerReading,seg);if(tail)tail.innerHTML=FA_MER_V2.renderTail(window.__faMerReading,seg);if(body)fillMerImages(body);drawMerLeaders()});
 {const f=document.createElement("button");f.className="idxFab";f.type="button";f.textContent="☰ Index";document.body.appendChild(f);
  const cur=()=>{const p=document.querySelector("#vRes.on .part.on");return p&&document.getElementById(p.id+"Idx")};
  f.onclick=()=>{const n=cur();if(n)n.scrollIntoView({behavior:"smooth",block:"start"})};
