@@ -176,6 +176,31 @@ test("the belt picker and the training list are the same five rows", () => {
   assert.match(breath, /Inspiration/);
 });
 
+test("a strong main region is the primary focus and other strong belts are secondary", () => {
+  const belts = {ocular:0, oral:0, cervical:2, thoracic:3, diaphragmatic:0, abdominal:1, pelvic:3};
+  const reading = read({pain_areas:["knees"], complaint:"Burning knees", pain_intensity:3}, belts);
+  const page = html(reading);
+  assert.match(page, /data-mer-seg="pelvic" class="on"/);
+  assert.match(page, /Primary focus/);
+  assert.match(page, /Secondary focus/);
+  assert.equal((page.match(/class="rec/g)||[]).length, 2);
+  const pelvic = page.slice(page.indexOf('data-mer-seg="pelvic"'), page.indexOf('data-mer-seg="pelvic"')+500);
+  assert.match(pelvic, /Primary focus/);
+  assert.match(pelvic, /class="rec"/);
+  const thor = page.slice(page.indexOf('data-belt="thoracic"'), page.indexOf('data-belt="thoracic"')+500);
+  assert.match(thor, /Secondary focus/);
+  assert.match(thor, /class="rec soft"/);
+  const next = MER.renderSession(reading, "thorax");
+  assert.match(next, /data-mer-seg="thorax" class="on"/);
+  assert.equal(/data-mer-seg="pelvic" class="on"/.test(next), false);
+  assert.match(next, /Primary focus/);
+  assert.match(next, /Secondary focus/);
+  assert.match(next, /MER5 · Inspiration|MER Inspiration/);
+  const mild = html(read({pain_areas:["knees"]}, {pelvic:1, thoracic:1, cervical:0, abdominal:0, ocular:0, oral:0, diaphragmatic:0}));
+  assert.match(mild, /data-mer-seg="pelvic" class="on"/);
+  assert.equal(/Primary focus|Secondary focus|class="rec/.test(mild), false);
+});
+
 test("a changed picture-reading paragraph is marked as the practitioner’s note", () => {
   const page = MER.renderMer(read({complaint:"Neck tension"}), {bodyItems:[{h:"Front",p:"Head sits slightly forward. Added: check the desk setup.",path:"sections.1.items.2.p",pathH:"sections.1.items.2.h",note:true,noteH:false}]});
   assert.match(page, /class="bxp faNote"/);

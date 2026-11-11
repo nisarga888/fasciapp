@@ -5,11 +5,13 @@
   if (!lines && typeof module === "object" && module.exports) { try { lines = require("./mer-lines.js"); } catch (e) { lines = null; } }
   let anatomy = root && root.FasciAnatomy;
   if (!anatomy && typeof module === "object" && module.exports) { try { require("./anatomy.js"); anatomy = globalThis.FasciAnatomy; } catch (e) { anatomy = null; } }
-  const api = factory(lines, anatomy);
+  let figure = root && root.FasciFigure;
+  if (!figure && typeof module === "object" && module.exports) { try { figure = require("./figures.js"); } catch (e) { figure = null; } }
+  const api = factory(lines, anatomy, figure);
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_MER_V2 = api;
-})(typeof globalThis !== "undefined" ? globalThis : this, function(FA_LINES, FA_ANATOMY){
-const DATA_VERSION = "0.23.241";
+})(typeof globalThis !== "undefined" ? globalThis : this, function(FA_LINES, FA_ANATOMY, FA_FIGURE){
+const DATA_VERSION = "0.23.242";
 const BELT_KEYS = ["ocular","oral","cervical","thoracic","diaphragmatic","abdominal","pelvic"];
 const BELT_LABEL = {ocular:"Ocular",oral:"Oral",cervical:"Cervical",thoracic:"Thoracic",diaphragmatic:"Diaphragmatic",abdominal:"Abdominal",pelvic:"Pelvic and legs"};
 const GROUPS = [
@@ -275,29 +277,36 @@ function chapterHead(n, title, id){
 const ANATOMY_BELT = {face:"ocular", cervical:"cervical", thorax:"thoracic", abdominal:"abdominal", pelvic:"pelvic"};
 function levelChip(reading, g){
   const label = groupLevel(reading||{}, g);
-  const map = {"Balanced":["balanced","Balanced"], "Mild · to watch":["mild","Mild"], "To watch":["mild","To watch"], "Strong · over-charged":["strong","Strong"]};
+  const map = {"Balanced":["balanced","Balanced"], "Mild · to watch":["mild","Mild"], "To watch":["watch","To watch"], "Strong · over-charged":["strong","Strong"]};
   const pair = map[label] || ["mild","Unknown"];
   return '<span class="chip '+pair[0]+'"><i></i>'+esc(pair[1])+'</span>';
+}
+function groupLevelNum(reading, g){
+  const rows = g.keys.map(k=>(reading.belts||[]).find(b=>b.key===k)).filter(Boolean);
+  const known = rows.filter(b=>b.level!=null).sort((a,b)=>b.level-a.level);
+  return known.length ? known[0].level : null;
 }
 function segButtons(activeKey, reading, cardCount){
   const on = groupForKey(activeKey);
   const beltId = on ? ANATOMY_BELT[on.id] : "";
-  const svg = (FA_ANATOMY && FA_ANATOMY.svgSilhouette) ? FA_ANATOMY.svgSilhouette("map", beltId) : "";
+  const svg = (FA_FIGURE && FA_FIGURE.svgFigure) ? FA_FIGURE.svgFigure({id:"map", beltId:beltId}) : "";
   const n = Number(cardCount)||0;
-  const button = (g)=>{
-    const active = !!(on && on.id===g.id);
-    const count = active ? '<span class="cards"><b>'+n+' cards</b> · one manual</span>' : "";
-    return '<button type="button" data-mer-seg="'+g.id+'"'+(active?' class="on"':'')+'><b>'+esc(g.label)+'</b><small>'+esc(g.btn)+'</small><span class="row2">'+levelChip(reading, g)+count+'</span></button>';
+  const primary = reading && groupForKey(reading.segment);
+  const anyStrong = GROUPS.some(g=>groupLevelNum(reading, g)===3);
+  const roleOf = (g)=>{
+    if (!anyStrong || groupLevelNum(reading, g)!==3) return "";
+    return primary && primary.id===g.id ? "primary" : "secondary";
   };
-  const upper = GROUPS.filter(g=>g.id!=="pelvic").map(g=>{
+  const buttons = GROUPS.map(g=>{
     const active = !!(on && on.id===g.id);
-    const flow = active ? '<button type="button" class="cta" data-j="merStrokes">Start stroke flow →</button>' : "";
-    return '<div class="labWrap'+(active?' on':'')+'">'+button(g)+flow+'</div>';
+    const role = roleOf(g);
+    const dot = role==="primary" ? '<span class="rec"></span>' : role==="secondary" ? '<span class="rec soft"></span>' : "";
+    const tag = role==="primary" ? '<span class="focusLab">Primary focus</span>' : role==="secondary" ? '<span class="focusLab sec">Secondary focus</span>' : "";
+    const belt = ANATOMY_BELT[g.id];
+    return '<button type="button" data-belt="'+belt+'" data-mer-seg="'+g.id+'"'+(active?' class="on"':'')+'><b>'+esc(g.label)+'</b><small>'+esc(g.btn)+'</small><span class="row2">'+levelChip(reading, g)+tag+'</span>'+dot+'</button>';
   }).join("");
-  const legsOn = !!(on && on.id==="pelvic");
-  const flow = legsOn ? '<button type="button" class="cta" data-j="merStrokes">Start stroke flow →</button>' : "";
-  const legs = '<div class="legs'+(legsOn?' on':'')+'">'+button(GROUPS[4])+flow+'</div>';
-  return '<div class="bmRow"><div class="bmFig">'+svg+'</div><div class="bmLabs">'+upper+'</div></div>'+legs;
+  const count = on ? '<div class="cards"><b>'+n+' cards</b> · one manual</div>' : "";
+  return '<div class="map" data-side-map><div class="body-wrap">'+svg+'</div><svg class="leaders" aria-hidden="true"></svg><div class="labels">'+buttons+'</div></div><div class="cta-row"><button type="button" class="cta" data-j="merStrokes">Start stroke flow →</button>'+count+'</div>';
 }
 function groupLevel(reading, g){
   const rows = g.keys.map(k=>(reading.belts||[]).find(b=>b.key===k)).filter(Boolean);
