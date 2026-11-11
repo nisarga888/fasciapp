@@ -319,13 +319,13 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="notes.js?v=0.23.246"></script><script src="mer.js?v=0.23.232"></script><script src="anatomy.js?v=0.23.246"></script><script src="figures.js?v=0.23.246"></script><script src="mer-lines.js?v=0.23.246"></script><script src="mer-sessions.js?v=0.23.246"></script><script src="mer-v2.js?v=0.23.246"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.246"></script><script src="bbtrs-flow.js?v=0.23.246"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="notes.js?v=0.23.247"></script><script src="mer.js?v=0.23.232"></script><script src="anatomy.js?v=0.23.247"></script><script src="figures.js?v=0.23.247"></script><script src="mer-lines.js?v=0.23.247"></script><script src="mer-sessions.js?v=0.23.247"></script><script src="mer-v2.js?v=0.23.247"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.247"></script><script src="bbtrs-flow.js?v=0.23.247"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null,merCatalog;
-async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.246";
+async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.247";
  const names=["mer_modules","mer_strokes","mer_cards","routing","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
  try{const parts=await Promise.all(names.map(n=>fetch("data/mer/"+n+".json?v="+v,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error(n);return res.json()})));
   const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_cards||!cat.mer_cards.cards)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}
