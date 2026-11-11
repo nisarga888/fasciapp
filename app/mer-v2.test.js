@@ -63,9 +63,9 @@ test("burning knee pain selects Grounding only, even with a strong thoracic belt
   assert.equal((page.match(/class="stCard"/g)||[]).length, 33);
   assert.match(page, /MER5 · Inspiration/);
   assert.match(page, /MER Grounding Training/);
-  assert.match(page, /data-mer-seg="pelvic" class="on"/);
+  assert.match(page, /data-mer-seg="pelvic"/);
   assert.match(page, /class="body-svg"/);
-  assert.match(page, /Start stroke flow/);
+  assert.match(page, /Start session 1/);
   assert.match(page, /M100\.0 22\.0/);
   assert.match(page, /data-mer-src="images\/strokes\/MER2-001.webp"/);
   assert.match(page, /data-mer-src="images\/anatomy\/MER2-001.webp"/);
@@ -149,13 +149,16 @@ test("a strong core is not abdominal pain, and a belt score alone does not inven
 
 test("the belt picker and the training list are the same five rows", () => {
   const neck = html(read({complaint:"Neck tension", pain_areas:["neck"], pain_intensity:6}, {cervical:3, thoracic:3, diaphragmatic:2, oral:1, ocular:1}));
-  assert.equal((neck.match(/data-mer-seg="/g)||[]).length, 5);
   assert.equal((neck.match(/class="beltRow/g)||[]).length, 5);
-  assert.match(neck, /data-mer-seg="cervical" class="on"><b>Cervical<\/b><small>MER Self-Empowerment<\/small>/);
-  assert.match(neck, /<b>Ocular &amp; Oral<\/b><small>MER Original Face<\/small>/);
-  assert.match(neck, /<b>Thoracic &amp; Diaphragmatic<\/b><small>MER Inspiration<\/small>/);
-  assert.match(neck, /<b>Abdominal<\/b><small>MER Centering<\/small>/);
-  assert.match(neck, /<b>Pelvic &amp; Legs<\/b><small>MER Grounding<\/small>/);
+  const order = neck.slice(neck.indexOf('class="flowList"'), neck.indexOf('class="combo-c"'));
+  assert.ok(order.indexOf("Cervical")<order.indexOf("Thoracic"));
+  assert.ok(order.indexOf("Thoracic")<order.indexOf("Ocular"));
+  assert.match(order, /NOW/);
+  assert.match(neck, /MER Self-Empowerment/);
+  assert.match(neck, /Ocular &amp; Oral/);
+  assert.match(neck, /Thoracic &amp; Diaphragmatic/);
+  assert.match(neck, /Abdominal/);
+  assert.match(neck, /Pelvic &amp; Legs/);
   assert.match(neck, /Ocular &amp; Oral/);
   assert.match(neck, /MER4 · Original Face \(Cranium\)/);
   assert.match(neck, /Thoracic &amp; Diaphragmatic/);
@@ -168,37 +171,39 @@ test("the belt picker and the training list are the same five rows", () => {
   assert.equal(/<b>Ocular<\/b>/.test(list), false);
   assert.equal(/<b>Diaphragmatic<\/b>/.test(list), false);
   const face = MER.renderSession(read({pain_areas:["Jaw"]}), "face");
-  assert.match(face, /data-mer-seg="face" class="on"/);
+  assert.match(face, /data-mer-seg="face"/);
   assert.equal((face.match(/class="stCard"/g)||[]).length, 29);
   const breath = MER.renderSession(read({breath:["Hold my breath"]}), "thorax");
-  assert.match(breath, /data-mer-seg="thorax" class="on"/);
+  assert.match(breath, /data-mer-seg="thorax"/);
   assert.match(breath, /breath restriction/i);
   assert.match(breath, /Inspiration/);
 });
 
-test("a strong main region is the primary focus and other strong belts are secondary", () => {
+test("sessions run Strong, then To watch, then Mild, and skip Balanced", () => {
   const belts = {ocular:0, oral:0, cervical:2, thoracic:3, diaphragmatic:0, abdominal:1, pelvic:3};
   const reading = read({pain_areas:["knees"], complaint:"Burning knees", pain_intensity:3}, belts);
   const page = html(reading);
-  assert.match(page, /data-mer-seg="pelvic" class="on"/);
-  assert.match(page, /Primary focus/);
-  assert.match(page, /Secondary focus/);
-  assert.equal((page.match(/class="rec/g)||[]).length, 2);
-  const pelvic = page.slice(page.indexOf('data-mer-seg="pelvic"'), page.indexOf('data-mer-seg="pelvic"')+500);
-  assert.match(pelvic, /Primary focus/);
-  assert.match(pelvic, /class="rec"/);
-  const thor = page.slice(page.indexOf('data-belt="thoracic"'), page.indexOf('data-belt="thoracic"')+500);
-  assert.match(thor, /Secondary focus/);
-  assert.match(thor, /class="rec soft"/);
+  const list = page.slice(page.indexOf('class="flowList"'), page.indexOf("combo-c"));
+  assert.ok(list.indexOf("Pelvic")<list.indexOf("Thoracic"));
+  assert.ok(list.indexOf("Thoracic")<list.indexOf("Cervical"));
+  assert.ok(list.indexOf("Cervical")<list.indexOf("Abdominal"));
+  assert.match(list, /NOW/);
+  assert.match(list, /NEXT/);
+  assert.match(page, /Skipped · Ocular &amp; Oral/);
+  assert.match(page, /Start session 1/);
+  assert.match(page, /burning knees/);
+  assert.equal((list.match(/class="rec"/g)||[]).length, 2);
   const next = MER.renderSession(reading, "thorax");
-  assert.match(next, /data-mer-seg="thorax" class="on"/);
-  assert.equal(/data-mer-seg="pelvic" class="on"/.test(next), false);
-  assert.match(next, /Primary focus/);
-  assert.match(next, /Secondary focus/);
-  assert.match(next, /MER5 · Inspiration|MER Inspiration/);
+  assert.match(next, /class="sess slim current" data-mer-seg="thorax"/);
+  assert.match(next, /MER Inspiration/);
+  assert.equal((next.match(/class="stCard"/g)||[]).length, 41);
+  const done = MER.renderSession(reading, null, {done:["pelvic"]});
+  assert.match(done, /class="sess slim current" data-mer-seg="thorax"/);
+  assert.match(done, /DONE/);
+  assert.match(done, /<span>2<\/span> of 4/);
   const mild = html(read({pain_areas:["knees"]}, {pelvic:1, thoracic:1, cervical:0, abdominal:0, ocular:0, oral:0, diaphragmatic:0}));
-  assert.match(mild, /data-mer-seg="pelvic" class="on"/);
-  assert.equal(/Primary focus|Secondary focus|class="rec/.test(mild), false);
+  assert.match(mild, /class="sess slim current" data-mer-seg="pelvic"/);
+  assert.equal(/class="rec"/.test(mild.slice(mild.indexOf('class="flowList"'), mild.indexOf("combo-c"))), false);
 });
 
 test("a changed picture-reading paragraph is marked as the practitioner’s note", () => {
@@ -261,4 +266,15 @@ test("service worker release matches the calendar build and the learn.js query",
   assert.equal(build[1], ver[1]);
   assert.equal(ver[1], MER.DATA_VERSION);
   assert.match(index, new RegExp("learn\\.js\\?v=" + ver[1].replace(/\./g, "\\.")));
+});
+
+test("a marked session can be stored and undone without a server", async () => {
+  globalThis.FA_MER_SESS_MEM = true;
+  const S = require("./mer-sessions.js");
+  const key = "sample client";
+  assert.deepEqual(await S.load(key), []);
+  assert.deepEqual(await S.complete(key, "Sample", "pelvic", 1), ["pelvic"]);
+  assert.deepEqual(await S.complete(key, "Sample", "thorax", 2), ["pelvic", "thorax"]);
+  assert.deepEqual(await S.undo(key, "pelvic"), ["thorax"]);
+  delete globalThis.FA_MER_SESS_MEM;
 });

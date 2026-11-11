@@ -11,7 +11,7 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_MER_V2 = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function(FA_LINES, FA_ANATOMY, FA_FIGURE){
-const DATA_VERSION = "0.23.242";
+const DATA_VERSION = "0.23.243";
 const BELT_KEYS = ["ocular","oral","cervical","thoracic","diaphragmatic","abdominal","pelvic"];
 const BELT_LABEL = {ocular:"Ocular",oral:"Oral",cervical:"Cervical",thoracic:"Thoracic",diaphragmatic:"Diaphragmatic",abdominal:"Abdominal",pelvic:"Pelvic and legs"};
 const GROUPS = [
@@ -286,27 +286,139 @@ function groupLevelNum(reading, g){
   const known = rows.filter(b=>b.level!=null).sort((a,b)=>b.level-a.level);
   return known.length ? known[0].level : null;
 }
-function segButtons(activeKey, reading, cardCount){
-  const on = groupForKey(activeKey);
-  const beltId = on ? ANATOMY_BELT[on.id] : "";
-  const svg = (FA_FIGURE && FA_FIGURE.svgFigure) ? FA_FIGURE.svgFigure({id:"map", beltId:beltId}) : "";
-  const n = Number(cardCount)||0;
-  const primary = reading && groupForKey(reading.segment);
-  const anyStrong = GROUPS.some(g=>groupLevelNum(reading, g)===3);
-  const roleOf = (g)=>{
-    if (!anyStrong || groupLevelNum(reading, g)!==3) return "";
-    return primary && primary.id===g.id ? "primary" : "secondary";
+function levelShort(n){
+  if (n===3) return ["strong","Strong"];
+  if (n===2) return ["watch","To watch"];
+  if (n===1) return ["mild","Mild"];
+  if (n===0) return ["balanced","Balanced"];
+  return ["mild","Unknown"];
+}
+function issuePhrase(reading){
+  const c = String(reading && reading.complaint || "").replace(/\s+/g," ").trim();
+  if (c && c.length<=48) return c.charAt(0).toLowerCase()+c.slice(1);
+  const area = reading && reading.painAreas && reading.painAreas[0] ? String(reading.painAreas[0]) : "";
+  const kind = reading && reading.painType ? String(reading.painType).split(",")[0].trim().toLowerCase() : "";
+  if (kind && area) return kind+" "+area;
+  if (area) return area;
+  if (c) return c.slice(0,45)+"…";
+  return "the reported issue";
+}
+function buildSessions(reading){
+  const main = groupForKey(reading && reading.segment);
+  const rows = GROUPS.map(g=>({g:g, level:groupLevelNum(reading, g)}));
+  const rank = (x)=>{
+    const primary = !!(main && x.g.id===main.id);
+    if (x.level===3) return primary ? 0 : 1;
+    if (x.level===2) return primary ? 2 : 3;
+    return primary ? 4 : 5;
   };
-  const buttons = GROUPS.map(g=>{
-    const active = !!(on && on.id===g.id);
-    const role = roleOf(g);
-    const dot = role==="primary" ? '<span class="rec"></span>' : role==="secondary" ? '<span class="rec soft"></span>' : "";
-    const tag = role==="primary" ? '<span class="focusLab">Primary focus</span>' : role==="secondary" ? '<span class="focusLab sec">Secondary focus</span>' : "";
-    const belt = ANATOMY_BELT[g.id];
-    return '<button type="button" data-belt="'+belt+'" data-mer-seg="'+g.id+'"'+(active?' class="on"':'')+'><b>'+esc(g.label)+'</b><small>'+esc(g.btn)+'</small><span class="row2">'+levelChip(reading, g)+tag+'</span>'+dot+'</button>';
+  const sessions = rows.filter(x=>x.level===1||x.level===2||x.level===3)
+    .sort((a,b)=>rank(a)-rank(b) || GROUPS.indexOf(a.g)-GROUPS.indexOf(b.g))
+    .map((x,i)=>({id:x.g.id, g:x.g, level:x.level, n:i+1, anatomy:ANATOMY_BELT[x.g.id]}));
+  if (!sessions.length && main){
+    sessions.push({id:main.id, g:main, level:groupLevelNum(reading, main), n:1, anatomy:ANATOMY_BELT[main.id]});
+  }
+  const skipped = rows.filter(x=>x.level===0 && !sessions.some(s=>s.id===x.g.id)).map(x=>x.g);
+  return {sessions, skipped};
+}
+function sessionStatus(s, sessions, done){
+  if (done.indexOf(s.id)>=0) return "done";
+  const now = sessions.find(x=>done.indexOf(x.id)<0);
+  if (now && now.id===s.id) return "now";
+  const idx = sessions.findIndex(x=>x.id===s.id);
+  const nowIdx = now ? sessions.findIndex(x=>x.id===now.id) : -1;
+  return idx===nowIdx+1 ? "next" : "later";
+}
+function sessionWhy(reading, s, prev){
+  const main = groupForKey(reading && reading.segment);
+  if (main && s.id===main.id) return "Chosen for this client's "+issuePhrase(reading)+".";
+  if (s.level===3 && prev) return "The next Strong belt, after "+prev.g.btn.replace(/^MER /,"")+".";
+  if (s.level===3) return "A Strong belt.";
+  if (s.level===2) return "To watch, after the stronger belts.";
+  return "Mild, after the belts that need more attention.";
+}
+function ringSvg(n, viewIndex, doneFlags){
+  if (!n) return "";
+  const cx=50, cy=50, r=41;
+  let h="";
+  for (let i=0;i<n;i++){
+    const gap=Math.min(0.16, Math.PI*2/n*0.18);
+    const sweep=(Math.PI*2)/n;
+    const a0=-Math.PI/2+i*sweep+gap/2;
+    const a1=-Math.PI/2+(i+1)*sweep-gap/2;
+    const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0);
+    const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    const large=(a1-a0)>Math.PI?1:0;
+    const d="M"+x0.toFixed(2)+" "+y0.toFixed(2)+" A"+r+" "+r+" 0 "+large+" 1 "+x1.toFixed(2)+" "+y1.toFixed(2);
+    const done=!!doneFlags[i], on=i===viewIndex;
+    const stroke=done?"#C99E67":on?"#E2C08A":"#7EB8BC";
+    const width=on?8:done?7.5:5.5;
+    const op=done||on?1:(0.35-i*0.04);
+    h+='<path d="'+d+'" fill="none" stroke="'+stroke+'" stroke-width="'+width+'" stroke-linecap="round" stroke-opacity="'+Math.max(0.18,op).toFixed(2)+'"/>';
+  }
+  return '<svg viewBox="0 0 100 100" aria-hidden="true">'+h+'</svg>';
+}
+function flowMarkup(reading, openId, done){
+  done = done||[];
+  const plan = buildSessions(reading);
+  const sessions = plan.sessions;
+  let view = sessions.findIndex(s=>s.id===openId);
+  const asked = openId && view<0 ? (groupById(openId)||groupForKey(openId)) : null;
+  if (view<0 && !asked){
+    const now = sessions.find(s=>done.indexOf(s.id)<0);
+    view = now ? sessions.indexOf(now) : 0;
+  }
+  const open = asked
+    ? {id:asked.id, g:asked, level:groupLevelNum(reading, asked), n:sessions.length+1, anatomy:ANATOMY_BELT[asked.id]}
+    : (sessions[view] || null);
+  if (!open) return "";
+  const lit = open.anatomy;
+  const badges = sessions.map(s=>({id:s.anatomy, n:s.n, done:done.indexOf(s.id)>=0, current:s.id===open.id && done.indexOf(s.id)<0}));
+  const svg = (FA_FIGURE && FA_FIGURE.svgFigure) ? FA_FIGURE.svgFigure({
+    id:"flow", midline:true, lit:lit,
+    muted:plan.skipped.map(g=>ANATOMY_BELT[g.id]),
+    doneZones:sessions.filter(s=>done.indexOf(s.id)>=0).map(s=>s.anatomy),
+    badges:badges, journey:sessions.map(s=>s.anatomy)
+  }) : "";
+  const rows = sessions.map(s=>{
+    const st = sessionStatus(s, sessions, done);
+    const pair = levelShort(s.level);
+    const label = st==="done"?"DONE":st==="now"?"NOW":st==="next"?"NEXT":"LATER";
+    const tag = st==="done"?"done-tag":st==="now"?"now":st==="next"?"next-tag":"later-tag";
+    const dot = s.level===3 ? '<span class="rec"></span>' : "";
+    const cls = "sess slim"+(s.id===open.id?" current":"")+(st==="done"?" done":"");
+    return '<button type="button" class="'+cls+'" data-mer-seg="'+s.id+'"><span class="num">'+(st==="done"?"✓":String(s.n))+'</span><span class="copy"><b class="belt">'+esc(s.g.label)+'</b><span class="mer">'+esc(s.g.btn)+'</span><span class="meta"><span class="'+tag+'">'+label+'</span><span class="chip '+pair[0]+'"><i></i>'+pair[1]+'</span>'+dot+'</span></span></button>';
   }).join("");
-  const count = on ? '<div class="cards"><b>'+n+' cards</b> · one manual</div>' : "";
-  return '<div class="map" data-side-map><div class="body-wrap">'+svg+'</div><svg class="leaders" aria-hidden="true"></svg><div class="labels">'+buttons+'</div></div><div class="cta-row"><button type="button" class="cta" data-j="merStrokes">Start stroke flow →</button>'+count+'</div>';
+  const skips = plan.skipped.map(g=>'<p class="skip-note">Skipped · '+esc(g.label)+' · <span class="chip balanced"><i></i>Balanced</span></p>').join("");
+  const prev = view>0 ? sessions[view-1] : null;
+  const next = sessions[view+1];
+  const pair = levelShort(open.level);
+  const st = sessionStatus(open, sessions, done);
+  const kicker = st==="done"?"DONE":st==="now"?"NOW":st==="next"?"NEXT":"LATER";
+  const kClass = st==="done"?"done-tag":st==="now"?"now":st==="next"?"next-tag":"later-tag";
+  const dot = open.level===3 ? '<span class="rec"></span>' : "";
+  const count = visibleCards(reading, open.id).length;
+  const mark = done.indexOf(open.id)>=0
+    ? '<button type="button" class="flowUndo" data-mer-undo="'+open.id+'">Undo completion</button>'
+    : '<button type="button" class="flowDone" data-mer-done="'+open.id+'" data-session-n="'+open.n+'">Mark session '+open.n+' complete</button>';
+  const hint = st==="done"
+    ? "Session "+open.n+" is complete. Undo it, or open another."
+    : (view>0 && done.indexOf(sessions[view-1].id)>=0 && st==="now")
+      ? "Session "+sessions[view-1].n+" is complete. Start session "+open.n+", or swipe to preview the next."
+      : st==="now"
+        ? "You are on session "+open.n+". Swipe for the next, or start this one."
+        : "Previewing session "+open.n+". Swipe back, or start this one.";
+  const after = next ? '<p class="c-next">After this · <b>session '+next.n+', '+esc(next.g.btn.replace(/^MER /,""))+'</b> · '+levelShort(next.level)[1]+'</p>' : '<p class="c-next">This is the last session in the order.</p>';
+  const peek = next ? '<button type="button" class="c-peek" data-mer-seg="'+next.id+'">Session '+next.n+'</button>' : "";
+  const dots = sessions.map((s,i)=>'<button type="button" data-mer-seg="'+s.id+'"'+(i===view?' class="on"':'')+' aria-label="Session '+s.n+'"></button>').join("");
+  const doneFlags = sessions.map(s=>done.indexOf(s.id)>=0);
+  return '<div class="flow">'+
+    '<div class="flowSplit"><div class="body-wrap">'+svg+'</div><div class="flowList">'+rows+'</div></div>'+
+    skips+
+    '<div class="combo-c"><div class="c-top"><div class="c-ring-wrap">'+ringSvg(sessions.length, view, doneFlags)+'</div><div class="c-legend"><div class="of"><span>'+open.n+'</span> of '+sessions.length+'</div><p class="hint">'+esc(hint)+'</p></div></div>'+
+    '<div class="c-stage" data-flow-at="'+view+'" data-flow-ids="'+sessions.map(s=>s.id).join(" ")+'">'+peek+
+    '<div class="c-card">'+dot+'<div class="kicker"><span class="'+kClass+'">'+kicker+'</span> <span class="chip '+pair[0]+'"><i></i>'+pair[1]+'</span></div><div class="belt">'+esc(open.g.label)+'</div><div class="mer">'+esc(open.g.btn)+'</div><p class="why">'+esc(sessionWhy(reading, open, prev))+'</p><button type="button" class="cta" data-mer-start="'+open.id+'">Start session '+open.n+' →</button><div class="count"><b>'+count+' cards</b> · one manual</div>'+mark+'</div></div>'+
+    '<div class="c-dots">'+dots+'</div>'+after+'</div></div>';
 }
 function groupLevel(reading, g){
   const rows = g.keys.map(k=>(reading.belts||[]).find(b=>b.key===k)).filter(Boolean);
@@ -318,18 +430,35 @@ function trainingRows(reading, segment){
   const on = groupForKey(segment);
   return GROUPS.map(g=>'<div class="beltRow'+(on&&on.id===g.id?' on':'')+'"><div><b>'+esc(g.label)+'</b><small>'+esc(g.line)+'</small></div><span>'+esc(groupLevel(reading, g))+'</span></div>').join("");
 }
-function renderSessionBody(reading, segment){
-  segment = resolveSegment(reading, segment);
-  if (!segment){
-    return '<section class="card mer"><h3 class="gH">Choose one training</h3><p class="gSub">Nothing in the intake matches one training yet. Pick one. Only that manual is shown, and choosing another replaces this list.</p><div class="segPick" aria-label="Body regions">'+segButtons("", reading, 0)+'</div></section>';
+function renderSessionBody(reading, segment, flow){
+  flow = flow||{};
+  const done = flow.done||[];
+  const plan = buildSessions(reading);
+  let open = flow.open || segment;
+  if (open){
+    const g = groupById(open)||groupForKey(open);
+    open = g ? g.id : null;
   }
-  const copy = sessionCopy(reading, segment);
-  const cards = visibleCards(reading, segment);
-  const picks = segButtons(segment, reading, cards.length);
+  if (!open){
+    const now = plan.sessions.find(s=>done.indexOf(s.id)<0) || plan.sessions[0];
+    open = now ? now.id : null;
+  }
+  if (!open){
+    return '<section class="card mer"><h3 class="gH">Choose one training</h3><p class="gSub">Nothing in the intake matches one training yet. Pick one. Only that manual is shown, and choosing another replaces this list.</p></section>';
+  }
+  const key = resolveSegment(reading, open);
+  const copy = sessionCopy(reading, key);
+  const cards = visibleCards(reading, open);
+  const picks = flowMarkup(reading, open, done);
+  const sess = plan.sessions.find(s=>s.id===open);
+  const n = sess ? sess.n : 1;
+  const end = done.indexOf(open)>=0
+    ? '<button type="button" class="flowUndo" data-mer-undo="'+open+'">Undo completion</button>'
+    : '<button type="button" class="flowDone" data-mer-done="'+open+'" data-session-n="'+n+'">Mark session '+n+' complete</button>';
   const list = cards.length
     ? cards.map((s,i)=>strokeCard(s,i+1)).join("")
     : '<p>No reviewed cards are available for this manual. Nothing is borrowed from another manual.</p>';
-  return '<section class="card mer"><h3 class="gH">'+esc(copy.name)+'</h3><p class="gSub">'+esc(copy.focus)+'</p><p><b>Focus:</b> '+esc(copy.why)+'</p><div class="it"><h3>Before</h3><p>'+esc(copy.before)+'</p></div><div class="it"><h3>Work</h3><p>'+esc(copy.work)+'</p></div><div class="it"><h3>After</h3><p>'+esc(copy.after)+'</p></div><div class="segPick" aria-label="Body regions">'+picks+'</div></section><p class="subP">'+esc(copy.name)+' · '+cards.length+' cards in manual order. One manual only.</p><div id="merStrokes">'+list+'</div>';
+  return '<section class="card mer"><div class="gK">Session flow</div><h3 class="gH">'+esc(copy.name)+'</h3><p class="gSub">'+plan.sessions.length+' session'+(plan.sessions.length===1?"":"s")+' · ordered by priority</p><p><b>Focus:</b> '+esc(copy.why)+'</p>'+picks+'<div class="it"><h3>Before</h3><p>'+esc(copy.before)+'</p></div><div class="it"><h3>Work</h3><p>'+esc(copy.work)+'</p></div><div class="it"><h3>After</h3><p>'+esc(copy.after)+'</p></div></section><p class="subP">Session '+n+' of '+plan.sessions.length+' · '+esc(copy.name)+' · '+cards.length+' cards in manual order. One manual only.</p><div id="merStrokes">'+list+end+'</div>';
 }
 
 function renderMer(reading, opts){
@@ -369,8 +498,8 @@ function renderMer(reading, opts){
   return h;
 }
 
-function renderSession(reading, segment){
-  return renderSessionBody(reading, segment);
+function renderSession(reading, segment, flow){
+  return renderSessionBody(reading, segment, flow);
 }
 function renderTail(reading, segment){
   segment = resolveSegment(reading, segment);
@@ -378,5 +507,5 @@ function renderTail(reading, segment){
   return '<section class="card mer"><h2 class="gH">Keep the work comfortable</h2><ul class="mL">'+cautionItems(reading, segment).map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul></section><section class="card mer"><h2 class="gH">Homework</h2><p class="gSub">5–20 minutes daily total. Choose a gentle, familiar practice. Do not work through pain.</p>'+(hw.length?hw.map(row=>'<div class="it"><h3>'+esc(row.title)+'</h3><p>'+esc(row.practice)+'</p><p class="mCav">'+esc(row.note)+'</p></div>').join(""):'<p>No home practice is matched until a segment is chosen.</p>')+'</section>';
 }
 
-return {DATA_VERSION, buildReading, renderMer, renderSession, renderTail, visibleCards, activeManual, beltLevel, chooseSegment, resolveSegment, BELT_KEYS, GROUPS, MANUAL_OF};
+return {DATA_VERSION, buildReading, renderMer, renderSession, renderTail, visibleCards, activeManual, beltLevel, chooseSegment, resolveSegment, buildSessions, BELT_KEYS, GROUPS, MANUAL_OF};
 });
