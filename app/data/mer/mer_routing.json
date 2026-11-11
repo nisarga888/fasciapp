@@ -4,9 +4,9 @@
   "authority": "Regional module associations requested by Nisarga; not manual-authored clinical scoring.",
   "belt_level_scale": {
     "0": "Balanced",
-    "1": "Mild · to watch",
-    "2": "To watch",
-    "3": "Strong · over-charged"
+    "1": "Light",
+    "2": "Moderate",
+    "3": "Strong"
   },
   "unknown_level": null,
   "default_module_tie_order": [
