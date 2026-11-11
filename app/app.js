@@ -1155,7 +1155,7 @@ let scanSb=null;async function scanLoad(){const L=$("#scList");if(!L)return;if(!
 /* v0.23.197 no free trial for new users (existing remaining trials still work); plans: single €3, monthly €25, yearly €150 */
 /* v0.23.135: admin = hub (free, unlimited); active paid plan = hub; everyone else = Scan landing */
 async function scanAccess(){const N=$("#scNew"),I=$("#scInfo");if(!N||!scanSb)return true;try{const {data}=await scanSb.rpc("fa_scan_status");if(!data)return true;
- if(!data.admin&&!data.active&&!(data.trial_remaining>0)){scanLanding("#pricing");return false}
+ if(!data.admin&&!data.active&&!(data.trial_remaining>0)){scanLanding();return false}
  if(data.allowed){N.href="assessment.html";N.textContent="＋ New assessment";I.innerHTML=data.admin?"":data.active?faScanLeft(data,1):(data.plan==="single"?'':'Free trial · ')+data.trial_remaining+' scan'+(data.trial_remaining==1?'':'s')+' left · <a href="#" data-scplans style="color:#C99E67">See plans</a>'}
  else{N.href="/scan/#pricing";N.textContent="Choose a plan to continue";I.innerHTML='No scans left. <a href="/scan/" style="color:#C99E67">See plans</a> · Need help? <a href="mailto:hello@fasciapp.app" style="color:#C99E67">hello@fasciapp.app</a>'}}catch(e){}return true}
 
