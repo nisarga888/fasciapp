@@ -64,6 +64,9 @@ test("burning knee pain selects Grounding only, even with a strong thoracic belt
   assert.match(page, /MER5 · Inspiration/);
   assert.match(page, /MER Grounding Training/);
   assert.match(page, /data-mer-seg="pelvic" class="on"/);
+  assert.match(page, /class="body-svg"/);
+  assert.match(page, /Start stroke flow/);
+  assert.match(page, /M100\.0 22\.0/);
   assert.match(page, /data-mer-src="images\/strokes\/MER2-001.webp"/);
   assert.match(page, /data-mer-src="images\/anatomy\/MER2-001.webp"/);
   assert.match(page, /Superficial Back line/);
@@ -148,11 +151,11 @@ test("the belt picker and the training list are the same five rows", () => {
   const neck = html(read({complaint:"Neck tension", pain_areas:["neck"], pain_intensity:6}, {cervical:3, thoracic:3, diaphragmatic:2, oral:1, ocular:1}));
   assert.equal((neck.match(/data-mer-seg="/g)||[]).length, 5);
   assert.equal((neck.match(/class="beltRow/g)||[]).length, 5);
-  assert.match(neck, /data-mer-seg="cervical" class="on"><b>Cervical<\/b><small> – MER Self-Empowerment<\/small>/);
-  assert.match(neck, /<b>Ocular &amp; Oral<\/b><small> – MER Original Face<\/small>/);
-  assert.match(neck, /<b>Thoracic &amp; Diaphragmatic<\/b><small> – MER Inspiration<\/small>/);
-  assert.match(neck, /<b>Abdominal<\/b><small> – MER Centering<\/small>/);
-  assert.match(neck, /<b>Pelvic &amp; Legs<\/b><small> – MER Grounding<\/small>/);
+  assert.match(neck, /data-mer-seg="cervical" class="on"><b>Cervical<\/b><small>MER Self-Empowerment<\/small>/);
+  assert.match(neck, /<b>Ocular &amp; Oral<\/b><small>MER Original Face<\/small>/);
+  assert.match(neck, /<b>Thoracic &amp; Diaphragmatic<\/b><small>MER Inspiration<\/small>/);
+  assert.match(neck, /<b>Abdominal<\/b><small>MER Centering<\/small>/);
+  assert.match(neck, /<b>Pelvic &amp; Legs<\/b><small>MER Grounding<\/small>/);
   assert.match(neck, /Ocular &amp; Oral/);
   assert.match(neck, /MER4 · Original Face \(Cranium\)/);
   assert.match(neck, /Thoracic &amp; Diaphragmatic/);
@@ -193,6 +196,11 @@ test("myofascial lines light only the training that matches the main issue", () 
   assert.match(jaw, /Superficial Front line/);
   assert.match(jaw, /jaw/);
   assert.equal(/Arm lines|Superficial Back line/.test(jaw), false);
+  const neckPage = html(read({pain_areas:["neck"]}));
+  const front = neckPage.slice(neckPage.indexOf('aria-label="front view"'), neckPage.indexOf('aria-label="back view"'));
+  const lit = front.slice(front.indexOf('class="lit"'));
+  assert.equal(/74\.0 480\.0/.test(lit), false);
+  assert.match(lit, /96\.0 64\.0/);
   const shoulder = legend(html(read({pain_areas:["Shoulders"]})));
   assert.match(shoulder, /Arm lines/);
   assert.match(shoulder, /Spiral line/);
