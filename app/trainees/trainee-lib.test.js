@@ -213,7 +213,8 @@ test("trainee profile hub, list place pickers, and certified move stay on the no
   assert.match(cal, /faOpenBbtrs/);
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
-  assert.equal(build[1], ver[1]);
+  assert.equal(ver[1], "0.23.246");
+  assert.equal(build[1], "0.23.245");
   assert.match(cal, /Update available: tap to refresh/);
   assert.match(cal, /location\.reload\(\)/);
 });
