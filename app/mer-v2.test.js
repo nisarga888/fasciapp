@@ -257,11 +257,15 @@ test("missing belt levels stay unknown and empty intake does not throw", () => {
 test("a reading can be printed as breathwork or bodywork on its own", () => {
   const page = fs.readFileSync(path.join(__dirname, "assessment-results.html"), "utf8");
   const app = fs.readFileSync(path.join(__dirname, "app.js"), "utf8");
-  assert.match(page, /Download BBTRS report/);
-  assert.match(page, /Download MER report/);
-  assert.equal(page.includes("Export PDF"), false);
+  assert.match(page, /Export BBTRS report \(PDF\)/);
+  assert.match(page, /Export MER report \(PDF\)/);
+  assert.match(page, /This is the BBTRS report/);
+  assert.match(page, /This is the MER report/);
+  assert.equal(page.includes("Download BBTRS report"), false);
+  assert.equal(page.includes("Download MER report"), false);
   assert.equal(page.includes("Full report"), false);
   assert.match(page, /body\.pdf-bbtrs #pI,body\.pdf-bbtrs #pM,body\.pdf-mer #pI,body\.pdf-mer #pB,body\.pdf-mer #merAhead/);
+  assert.match(page, /body\.pdf-bbtrs #pI\.part,body\.pdf-bbtrs #pM\.part,body\.pdf-mer #pI\.part,body\.pdf-mer #pB\.part/);
   const reading = read({complaint:"Knee pain when walking", pain_areas:["knees"], pain_intensity:4}, {pelvic:3, thoracic:2, cervical:1, abdominal:0, diaphragmatic:0, ocular:0, oral:0});
   const mer = MER.renderMer(reading, {beltHtml:"<section class='card bmc'>map</section>", bodyItems:[]});
   assert.ok(mer.indexOf('id="merAhead"') < mer.indexOf('id="merCh3"'));
@@ -269,9 +273,23 @@ test("a reading can be printed as breathwork or bodywork on its own", () => {
   assert.match(mer, /id="merSummary"/);
   assert.match(app, /\/scan\/\?embed=1"\+\(v\?"&v="/);
   const fn=page.slice(page.indexOf("function renderRes"), page.indexOf('document.addEventListener("click",async e=>{const b=e.target.closest("[data-go]")'));
-  const decl=fn.indexOf("const pdfBtns=");
-  const use=fn.indexOf("+pdfBtns+");
-  assert.ok(decl>=0 && use>decl, "download buttons must be created before the results markup uses them");
+  assert.equal(fn.includes("pdfBtns"), false);
+  const pb=fn.indexOf('id="pB"'), pm=fn.indexOf('id="pM"');
+  assert.ok(pb>=0 && fn.indexOf('pdfFoot("bbtrs")')>pb);
+  assert.ok(pm>pb && fn.indexOf('pdfFoot("mer")')>pm);
+  const pdf=page.slice(page.indexOf('else if(g=="pdf")'), page.indexOf('else if(g=="save")'));
+  assert.match(pdf, /primeMerPrintImages\(\)/);
+  assert.match(pdf, /holdPdfClass\(t\)/);
+  assert.match(pdf, /window\.print\(\)/);
+  assert.equal(/done\(\)/.test(pdf), false);
+  assert.ok(pdf.indexOf("primeMerPrintImages")<pdf.indexOf("holdPdfClass"));
+  assert.ok(pdf.indexOf("holdPdfClass")<pdf.indexOf("window.print()"));
+  assert.match(page, /addEventListener\("afterprint"/);
+  assert.match(page, /matchMedia\("print"\)/);
+  assert.match(page, /mq\.addListener\)/);
+  assert.match(page, /removeAttribute\("loading"\)/);
+  assert.match(page, /im\.decode\(\)/);
+  assert.match(page, /createSignedUrl\(key,3600\)/);
 });
 
 test("service worker release matches the calendar build and the learn.js query", () => {
