@@ -254,6 +254,22 @@ test("missing belt levels stay unknown and empty intake does not throw", () => {
   assert.match(page, /Four chapters/);
 });
 
+test("a reading can be printed as breathwork or bodywork on its own", () => {
+  const page = fs.readFileSync(path.join(__dirname, "assessment-results.html"), "utf8");
+  const app = fs.readFileSync(path.join(__dirname, "app.js"), "utf8");
+  assert.match(page, /Download BBTRS report/);
+  assert.match(page, /Download MER report/);
+  assert.equal(page.includes("Export PDF"), false);
+  assert.equal(page.includes("Full report"), false);
+  assert.match(page, /body\.pdf-bbtrs #pI,body\.pdf-bbtrs #pM,body\.pdf-mer #pI,body\.pdf-mer #pB,body\.pdf-mer #merAhead/);
+  const reading = read({complaint:"Knee pain when walking", pain_areas:["knees"], pain_intensity:4}, {pelvic:3, thoracic:2, cervical:1, abdominal:0, diaphragmatic:0, ocular:0, oral:0});
+  const mer = MER.renderMer(reading, {beltHtml:"<section class='card bmc'>map</section>", bodyItems:[]});
+  assert.ok(mer.indexOf('id="merAhead"') < mer.indexOf('id="merCh3"'));
+  assert.ok(mer.indexOf('id="merCh3"') < mer.indexOf('id="merCh4"'));
+  assert.match(mer, /id="merSummary"/);
+  assert.match(app, /\/scan\/\?embed=1"\+\(v\?"&v="/);
+});
+
 test("service worker release matches the calendar build and the learn.js query", () => {
   const sw = fs.readFileSync(path.join(__dirname, "sw.js"), "utf8");
   const cal = fs.readFileSync(path.join(__dirname, "cal.js"), "utf8");

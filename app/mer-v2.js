@@ -11,7 +11,7 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_MER_V2 = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function(FA_LINES, FA_ANATOMY, FA_FIGURE){
-const DATA_VERSION = "0.23.247";
+const DATA_VERSION = "0.23.248";
 const BELT_KEYS = ["ocular","oral","cervical","thoracic","diaphragmatic","abdominal","pelvic"];
 const BELT_LABEL = {ocular:"Ocular",oral:"Oral",cervical:"Cervical",thoracic:"Thoracic",diaphragmatic:"Diaphragmatic",abdominal:"Abdominal",pelvic:"Pelvic and legs"};
 const GROUPS = [
@@ -423,7 +423,7 @@ function renderMer(reading, opts){
   const segment = resolveSegment(reading, o.segment!=null ? o.segment : reading.segment);
   const items = focusItems(reading);
   const grid = [["1","Belts of Tension & Key Findings","merC1"],["2","Body Reading and Myofascial Lines","merC2"],["3","MER session plan with strokes","merC3"],["4","Caution and Homework","merC4"]];
-  let h = '<section class="card ovw"><div class="gK">How this report is organised</div><h2 class="gH">MER bodywork guidance</h2><p class="gSub">Four chapters · clear guidance</p><div class="chGrid">'+grid.map(g=>'<a data-j="'+g[2]+'"><b>'+g[0]+'</b><span>'+esc(g[1])+'</span></a>').join("")+'</div></section>';
+  let h = '<div id="merAhead"><section class="card ovw"><div class="gK">How this report is organised</div><h2 class="gH">MER bodywork guidance</h2><p class="gSub">Four chapters · clear guidance</p><div class="chGrid">'+grid.map(g=>'<a data-j="'+g[2]+'"><b>'+g[0]+'</b><span>'+esc(g[1])+'</span></a>').join("")+'</div></section>';
   h += chapterHead(1, "Belts of Tension & Key Findings", "merC1");
   h += o.beltHtml||'<section class="card bmc"><div class="gK">Belts of tension</div><h2 class="gH">Where tension sits</h2><p class="gSub">No belt map is saved. Missing levels stay unknown.</p></section>';
   h += '<section class="card mer"><h2 class="gH">Focus for this reading</h2>'+(items.length?'<ul class="mL">'+items.map(t=>'<li>'+esc(t)+'</li>').join("")+'</ul>':'<p>No current symptom is recorded yet.</p>')+'</section>';
@@ -448,6 +448,7 @@ function renderMer(reading, opts){
   if (body.length) h += body.map(card=>'<section class="card brd"><div class="gK">Saved picture reading</div><h2 class="gH'+(card.noteH?" faNote":"")+'"'+(card.pathH?' data-p="'+esc(card.pathH)+'"':'')+'>'+esc(card.h)+'</h2><p class="bxp'+(card.note?" faNote":"")+'"'+(card.path?' data-p="'+esc(card.path)+'"':'')+'>'+esc(card.p)+'</p></section>').join("");
   else if (!intake.length) h += '<section class="card brd"><div class="gK">From this intake</div><h2 class="gH">Picture reading</h2><p class="bxp">No picture-reading notes are saved on this assessment.</p></section>';
   h += lineFigures(activeManual(reading, segment), reading);
+  h += '</div>';
 
   h += '<div id="merCh3">'+chapterHead(3, "MER session plan with strokes", "merC3")+'<div id="merCh3Body">'+renderSessionBody(reading, segment)+'</div></div>';
   h += '<div id="merCh4">'+chapterHead(4, "Caution and Homework", "merC4")+'<div id="merCh4Body">'+renderTail(reading, segment)+'</div></div>';
