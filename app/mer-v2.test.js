@@ -268,6 +268,10 @@ test("a reading can be printed as breathwork or bodywork on its own", () => {
   assert.ok(mer.indexOf('id="merCh3"') < mer.indexOf('id="merCh4"'));
   assert.match(mer, /id="merSummary"/);
   assert.match(app, /\/scan\/\?embed=1"\+\(v\?"&v="/);
+  const fn=page.slice(page.indexOf("function renderRes"), page.indexOf('document.addEventListener("click",async e=>{const b=e.target.closest("[data-go]")'));
+  const decl=fn.indexOf("const pdfBtns=");
+  const use=fn.indexOf("+pdfBtns+");
+  assert.ok(decl>=0 && use>decl, "download buttons must be created before the results markup uses them");
 });
 
 test("service worker release matches the calendar build and the learn.js query", () => {

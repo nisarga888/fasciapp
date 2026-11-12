@@ -320,13 +320,13 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="notes.js?v=0.23.248"></script><script src="mer.js?v=0.23.232"></script><script src="anatomy.js?v=0.23.248"></script><script src="figures.js?v=0.23.248"></script><script src="mer-lines.js?v=0.23.248"></script><script src="mer-sessions.js?v=0.23.248"></script><script src="mer-v2.js?v=0.23.248"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.248"></script><script src="bbtrs-flow.js?v=0.23.248"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="notes.js?v=0.23.249"></script><script src="mer.js?v=0.23.232"></script><script src="anatomy.js?v=0.23.249"></script><script src="figures.js?v=0.23.249"></script><script src="mer-lines.js?v=0.23.249"></script><script src="mer-sessions.js?v=0.23.249"></script><script src="mer-v2.js?v=0.23.249"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.249"></script><script src="bbtrs-flow.js?v=0.23.249"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null,merCatalog;
-async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.248";
+async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.249";
  const names=["mer_modules","mer_strokes","mer_cards","routing","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
  try{const parts=await Promise.all(names.map(n=>fetch("data/mer/"+n+".json?v="+v,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error(n);return res.json()})));
   const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_cards||!cat.mer_cards.cards)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}
@@ -474,21 +474,21 @@ function seriesCards(D, report){const F=window.FA_GIFTS,B=window.FA_BBTRS,g=gift
  const openCard='<section class="card ses2 op"><div class="sTop"><div class="sNum">◇</div><div><span class="sBelt">Every session · opening</span><h3>'+E(open.t)+'</h3></div></div><p class="sAim">'+E(open.aim)+'</p><ul class="sL">'+open.items.map(x=>'<li>'+E(x)+'</li>').join("")+'</ul>'+openNote+'</section>';
  const closeCard='<section class="card ses2 op" id="bbtrsClose"><div class="sTop"><div class="sNum">✧</div><div><span class="sBelt">Closing</span><h3>'+E(close.t)+'</h3></div></div><p class="sAim">'+E(close.aim)+'</p><div class="snd">'+close.sounds.map(([a,b])=>'<div><b>'+E(b)+'</b><span>'+E(a)+'</span></div>').join("")+'</div><p class="bxp">'+E(close.how)+'</p>'+closeNote+'</section>';
  return '<section class="card sI"><div class="gK">Session flow</div><h2 class="gH">Breathwork by belt</h2><p class="lead2">'+E(R.intro)+'</p><p class="mCav">'+E(R.caution)+'</p></section>'+openCard+FA_BBTRS_FLOW.render(reading,flow.open,flow.done||[],k)+FA_BBTRS_FLOW.summary(reading,flow.open,k)+closeCard}
-function renderRes(r){row=r;const R=r.report,D=r.data||{},F=window.FA_GIFTS,secs=R.sections||[],sx=k=>{const i=secs.findIndex(s=>s.key==k);return i<0?null:{s:secs[i],b:"sections."+i}};
+function renderRes(r){row=r;const R=r.report||{},D=r.data||{},F=window.FA_GIFTS,secs=Array.isArray(R.sections)?R.sections:[],sx=k=>{const keys=k==="body"?["body","body_reading"]:k==="map"?["map","holistic_map"]:[k];for(const key of keys){const i=secs.findIndex(s=>s&&s.key===key);if(i>=0)return {s:secs[i],b:"sections."+i}}return null};
+ const pdfBtns='<div class="pdfBtns"><button type="button" data-go="pdf" data-pdf="bbtrs">Download BBTRS report</button><button type="button" data-go="pdf" data-pdf="mer">Download MER report</button></div>';
  const rf=R.red_flag&&R.red_flag.level!="none";let n=0;const N=()=>String(++n);
  let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(new Date(r.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))+'</p>'+recPill()+'</div>'+tools("res")+pdfBtns+'<div id="pnRead"></div>';
  if(rf)h+='<div class="note rf">⚠️ <b>Please get medical clearance before bodywork and breathwork.</b> '+P("red_flag.text",R.red_flag.text,"span")+'</div>';
  const gh=giftsCard(D);
  /* Belts of tension and body reading stay in BBTRS point 2 */
  let belts='';if(R.body_map)belts=bodyMap(R.body_map).replace('<div class="sh"><div class="n">◈</div><h2>Body map<small>Reich’s seven belts of tension · possible issues</small></h2></div>','<div class="gK">Belts of tension</div><h2 class="gH">Where tension sits</h2><p class="gSub">Reich’s seven belts, from the eyes down to the pelvis.</p>').replace('<div class="bms">Possible issues</div>','</section><section class="card bmc bmi"><div class="gK">Belts of tension</div><h2 class="gH">Possible issues to explore</h2>');
- let bread='';{const bd=sx("body");if(bd){const skip=/zones of fear|energetics/i;bread=bd.s.items.map((x,j)=>skip.test(x.h)?'':'<section class="card brd"><div class="gK">Body reading</div>'+P(bd.b+".items."+j+".h",x.h,"h2","gH")+P(bd.b+".items."+j+".p",x.p,"p","bxp")+'</section>').join('')}}
+ let bread='';{const bd=sx("body");if(bd&&Array.isArray(bd.s.items)){const skip=/zones of fear|energetics/i;bread=bd.s.items.map((x,j)=>!x||skip.test(x.h||"")?'':'<section class="card brd"><div class="gK">Body reading</div>'+P(bd.b+".items."+j+".h",x.h,"h2","gH")+P(bd.b+".items."+j+".p",x.p,"p","bxp")+'</section>').join('')}}
  const B1=KEEP(SUB("1","Reichian character structure map","The client’s five life themes, each with its Reichian character structure","pt1"),gh)
   +KEEP(SUB("2","Body reading","Character structure, belts of tension and what the body shows","pt2"),structCard(D,belts,bread))
   +KEEP(SUB("3","Breath patterns","How the client breathes now, and what helps the breath open","pt3"),breathCard(D))
   +KEEP(SUB("4","Nervous system","A trauma-informed approach for the client’s theme","pt4"),tiCard(D))+pracCard(D,"")
   +KEEP(SUB("5","Session flow","The belts that are above Balanced, in priority order","pt5"),seriesCards(D,R));
   const NV=(a,b,c)=>'<div class="nav2'+(c?' eq':'')+'">'+a+b+'</div>';
-  const pdfBtns='<div class="pdfBtns"><button type="button" data-go="pdf" data-pdf="bbtrs">Download BBTRS report</button><button type="button" data-go="pdf" data-pdf="mer">Download MER report</button></div>';
  h+='<div class="part" id="pI">'+overviewCard()+KEEP(SEGH("Part 1","Intake","Client details, posture photos and the client’s own answers",0),intakePart(r))+'<div class="nav2 one"><button data-tab="B">Next: Breathwork →</button></div><div class="cliEnd">'+recPill()+'</div></div>';
  h+='<div class="part" id="pB">'+B1.replace('<div class="keep">','<div class="keep">'+SEGH("Part 2","Biodynamic Breathwork &amp; Trauma Release (BBTRS)","A trauma-informed approach to psychological and emotional patterns and the nervous system",0)+'<div class="trN"><b>For practitioners.</b> This assessment is designed for therapist use and is best applied after participating in the Biodynamic Breathwork &amp; Trauma Release trainings, which give clarity on how to work with these findings.</div>')+'<div class="nav2 one"><button data-tab="M">Next: MER →</button></div><div class="cliEnd">'+recPill()+'</div></div>';
  let merHtml="";
