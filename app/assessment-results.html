@@ -40,7 +40,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 .cliSticky{display:flex;justify-content:center;margin-top:6px}.cliSticky[hidden]{display:none}
 .cliRec{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:9px 16px;border-radius:999px;border:1px solid #c99e67aa;background:#02191Eee;color:var(--gold);text-decoration:none;font-size:14.5px;font-weight:600;line-height:1.2}
 .hero .cliRec,.cliSticky .cliRec{margin-top:0}.cliEnd{display:flex;justify-content:center;margin:8px 0 0}
-.pdfBtns{display:flex;flex-direction:column;gap:8px;margin:14px 0 6px}.pdfBtns button{width:100%}
+.pdfFoot{margin:28px 0 12px;text-align:center}.pdfMark{margin:0 0 12px;font-size:14px;line-height:1.5;color:var(--mut)}.pdfExport{width:100%}
 .noteKey{margin-right:auto;font-size:12.5px;line-height:1.35;color:#ff8a7a;text-align:left}
 .faNote{color:#ff8a7a}
 .editing [data-p],.editing [data-d]{outline:1px dashed #c99e6788;outline-offset:3px;border-radius:6px;background:#02191E66}.editing [data-p]:focus,.editing [data-d]:focus{outline-color:var(--gold)}
@@ -56,7 +56,7 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 .mk{width:22px;height:22px;border-radius:50%;border:1.4px solid var(--tx);display:grid;place-items:center;font-size:11px}.bms{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin:16px 0 4px}
 @media print{@page{size:A4;margin:14mm}
  body{background:#fff!important;color:#1d2a2c}.wrap{max-width:none;padding:0}
- .top,.steps,.stepWrap,.tools,.nav2,.pdfBtns,.cliRec,.cliEnd,.noteKey,button,#vLoad,#vPrep,#vList,.toast{display:none!important}
+ .top,.steps,.stepWrap,.tools,.nav2,.pdfExport,.cliRec,.cliEnd,.noteKey,button,#vLoad,#vPrep,#vList,.toast{display:none!important}
  body.pdf-bbtrs #pI,body.pdf-bbtrs #pM,body.pdf-mer #pI,body.pdf-mer #pB,body.pdf-mer #merAhead{display:none!important}
  .faNote{color:#9c2f2f!important}
  .view{display:block!important;animation:none!important;opacity:1!important}
@@ -139,6 +139,8 @@ button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:16px;borde
 .brO{padding:9px 0;border-top:1px solid #c99e671a}.brO:first-of-type{border-top:0}.brO b{font-size:14px}.brO p{margin:3px 0 0;font-size:13.5px;line-height:1.5}
 .brd h2.gH{font-size:18px}.mLink button{margin-top:8px;width:100%}
 @media print{.keep{break-inside:avoid;page-break-inside:avoid}.tabs,.mLink button{display:none!important}.part{display:block!important;animation:none!important}
+ body.pdf-bbtrs #pI.part,body.pdf-bbtrs #pM.part,body.pdf-mer #pI.part,body.pdf-mer #pB.part,body.pdf-mer #merAhead{display:none!important}
+ .pdfMark{color:#5d6b6c!important}.stMedia img{max-height:180px!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  .card{break-inside:avoid;page-break-inside:avoid;margin-top:10px!important;padding:12px 14px!important}
  .segH,.subH,.subH2,.subP,.gK,.gH,.mH,.sTop{break-after:avoid;page-break-after:avoid}
  .segH{margin-top:0!important}.subH{margin:14px 2px 4px!important}.subH2{margin:12px 2px 2px!important;color:#8a6537!important}.subH2::after{background:#d9c4a3!important}.subP,.brO p{color:#1d2a2c!important}.brO b{color:#8a6537!important}
@@ -320,19 +322,36 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="notes.js?v=0.23.249"></script><script src="mer.js?v=0.23.232"></script><script src="anatomy.js?v=0.23.249"></script><script src="figures.js?v=0.23.249"></script><script src="mer-lines.js?v=0.23.249"></script><script src="mer-sessions.js?v=0.23.249"></script><script src="mer-v2.js?v=0.23.249"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.249"></script><script src="bbtrs-flow.js?v=0.23.249"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="notes.js?v=0.23.250"></script><script src="mer.js?v=0.23.232"></script><script src="anatomy.js?v=0.23.250"></script><script src="figures.js?v=0.23.250"></script><script src="mer-lines.js?v=0.23.250"></script><script src="mer-sessions.js?v=0.23.250"></script><script src="mer-v2.js?v=0.23.250"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.250"></script><script src="bbtrs-flow.js?v=0.23.250"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null,merCatalog;
-async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.249";
+async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.250";
  const names=["mer_modules","mer_strokes","mer_cards","routing","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
  try{const parts=await Promise.all(names.map(n=>fetch("data/mer/"+n+".json?v="+v,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error(n);return res.json()})));
   const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_cards||!cat.mer_cards.cards)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}
 async function fillMerImages(root){const scope=root&&root.querySelectorAll?root:document;const imgs=[...scope.querySelectorAll("img[data-mer-src]")].filter(im=>!im.getAttribute("src"));
  await Promise.all(imgs.map(async im=>{const path=im.getAttribute("data-mer-src")||"";let url="";try{if(window.FA_MER_ASSET_BASE)url=String(window.FA_MER_ASSET_BASE).replace(/\/$/,"")+"/"+path.replace(/^images\//,"");else{const key=path.replace(/^images\//,"");const {data,error}=await sb.storage.from("mer-manual").createSignedUrl(key,3600);if(!error&&data&&data.signedUrl)url=data.signedUrl}}catch(e){}if(url)im.src=url;else im.remove()}));
  [...scope.querySelectorAll(".stMedia")].forEach(box=>{if(!box.querySelector("img"))box.remove()})}
+function waitImg(im){return new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;resolve()};const timer=setTimeout(finish,8000);const ok=()=>{clearTimeout(timer);finish()};if(!im.getAttribute("src")){ok();return}if(im.complete&&im.naturalWidth>0){ok();return}im.addEventListener("load",ok,{once:true});im.addEventListener("error",ok,{once:true});if(typeof im.decode==="function")im.decode().then(ok).catch(()=>{})})}
+async function primeMerPrintImages(){const root=document.getElementById("pM");if(!root)return;const imgs=[...root.querySelectorAll("img[data-mer-src]")];
+ imgs.forEach(im=>{im.loading="eager";im.removeAttribute("loading");try{im.decoding="sync"}catch(e){}});
+ await Promise.all(imgs.map(async im=>{const path=im.getAttribute("data-mer-src")||"";let url="";try{if(window.FA_MER_ASSET_BASE)url=String(window.FA_MER_ASSET_BASE).replace(/\/$/,"")+"/"+path.replace(/^images\//,"");else{const key=path.replace(/^images\//,"");const {data,error}=await sb.storage.from("mer-manual").createSignedUrl(key,3600);if(!error&&data&&data.signedUrl)url=data.signedUrl}}catch(e){}if(url)im.src=url}));
+ await Promise.all(imgs.map(waitImg))}
+let pdfHoldToken=0;
+function holdPdfClass(restoreTitle){const token=++pdfHoldToken;let sawMedia=false,began=false,ended=false,poll=0,idle=0,cap=0;const mq=window.matchMedia?window.matchMedia("print"):{matches:false};const t0=Date.now();
+ function end(){if(ended)return;ended=true;window.removeEventListener("beforeprint",onBefore);window.removeEventListener("afterprint",onAfter);if(mq.removeEventListener)mq.removeEventListener("change",onMedia);else if(mq.removeListener)mq.removeListener(onMedia);clearInterval(poll);clearTimeout(idle);clearTimeout(cap);if(token!==pdfHoldToken)return;document.title=restoreTitle;document.body.classList.remove("pdf-bbtrs","pdf-mer")}
+ function onBefore(){began=true}
+ function onAfter(){if(Date.now()-t0<500)return;end()}
+ function onMedia(ev){const on=ev&&typeof ev.matches==="boolean"?ev.matches:!!mq.matches;if(on){sawMedia=true;began=true}else if(sawMedia)end()}
+ poll=setInterval(()=>{if(mq.matches){sawMedia=true;began=true}else if(sawMedia)end()},200);
+ idle=setTimeout(()=>{if(!began&&!sawMedia&&!mq.matches)end()},5000);
+ cap=setTimeout(end,120000);
+ window.addEventListener("beforeprint",onBefore);window.addEventListener("afterprint",onAfter);
+ if(mq.addEventListener)mq.addEventListener("change",onMedia);else if(mq.addListener)mq.addListener(onMedia)}
+function pdfFoot(kind){if(kind==="mer")return '<div class="pdfFoot"><p class="pdfMark">This is the MER report</p><button type="button" class="pdfExport" data-go="pdf" data-pdf="mer">Export MER report (PDF)</button></div>';return '<div class="pdfFoot"><p class="pdfMark">This is the BBTRS report</p><button type="button" class="pdfExport" data-go="pdf" data-pdf="bbtrs">Export BBTRS report (PDF)</button></div>'}
 const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),2200)};
 const step=k=>$$("#steps a").forEach(a=>a.classList.toggle("on",a.dataset.s===k));
 const show=(v,top=true)=>{if(cur===v)return;const o=cur;cur=v;o.classList.add("out");setTimeout(()=>{o.classList.remove("on","out");v.classList.add("on");if(top)scrollTo({top:0,behavior:"instant"})},280)};
@@ -475,9 +494,8 @@ function seriesCards(D, report){const F=window.FA_GIFTS,B=window.FA_BBTRS,g=gift
  const closeCard='<section class="card ses2 op" id="bbtrsClose"><div class="sTop"><div class="sNum">✧</div><div><span class="sBelt">Closing</span><h3>'+E(close.t)+'</h3></div></div><p class="sAim">'+E(close.aim)+'</p><div class="snd">'+close.sounds.map(([a,b])=>'<div><b>'+E(b)+'</b><span>'+E(a)+'</span></div>').join("")+'</div><p class="bxp">'+E(close.how)+'</p>'+closeNote+'</section>';
  return '<section class="card sI"><div class="gK">Session flow</div><h2 class="gH">Breathwork by belt</h2><p class="lead2">'+E(R.intro)+'</p><p class="mCav">'+E(R.caution)+'</p></section>'+openCard+FA_BBTRS_FLOW.render(reading,flow.open,flow.done||[],k)+FA_BBTRS_FLOW.summary(reading,flow.open,k)+closeCard}
 function renderRes(r){row=r;const R=r.report||{},D=r.data||{},F=window.FA_GIFTS,secs=Array.isArray(R.sections)?R.sections:[],sx=k=>{const keys=k==="body"?["body","body_reading"]:k==="map"?["map","holistic_map"]:[k];for(const key of keys){const i=secs.findIndex(s=>s&&s.key===key);if(i>=0)return {s:secs[i],b:"sections."+i}}return null};
- const pdfBtns='<div class="pdfBtns"><button type="button" data-go="pdf" data-pdf="bbtrs">Download BBTRS report</button><button type="button" data-go="pdf" data-pdf="mer">Download MER report</button></div>';
  const rf=R.red_flag&&R.red_flag.level!="none";let n=0;const N=()=>String(++n);
- let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(new Date(r.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))+'</p>'+recPill()+'</div>'+tools("res")+pdfBtns+'<div id="pnRead"></div>';
+ let h='<div class="hero"><div class="k">Body Assessment</div><h1>'+E(r.client_name||R.client||"Your results")+'</h1><p>'+E(new Date(r.created_at).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}))+'</p>'+recPill()+'</div>'+tools("res")+'<div id="pnRead"></div>';
  if(rf)h+='<div class="note rf">⚠️ <b>Please get medical clearance before bodywork and breathwork.</b> '+P("red_flag.text",R.red_flag.text,"span")+'</div>';
  const gh=giftsCard(D);
  /* Belts of tension and body reading stay in BBTRS point 2 */
@@ -490,7 +508,7 @@ function renderRes(r){row=r;const R=r.report||{},D=r.data||{},F=window.FA_GIFTS,
   +KEEP(SUB("5","Session flow","The belts that are above Balanced, in priority order","pt5"),seriesCards(D,R));
   const NV=(a,b,c)=>'<div class="nav2'+(c?' eq':'')+'">'+a+b+'</div>';
  h+='<div class="part" id="pI">'+overviewCard()+KEEP(SEGH("Part 1","Intake","Client details, posture photos and the client’s own answers",0),intakePart(r))+'<div class="nav2 one"><button data-tab="B">Next: Breathwork →</button></div><div class="cliEnd">'+recPill()+'</div></div>';
- h+='<div class="part" id="pB">'+B1.replace('<div class="keep">','<div class="keep">'+SEGH("Part 2","Biodynamic Breathwork &amp; Trauma Release (BBTRS)","A trauma-informed approach to psychological and emotional patterns and the nervous system",0)+'<div class="trN"><b>For practitioners.</b> This assessment is designed for therapist use and is best applied after participating in the Biodynamic Breathwork &amp; Trauma Release trainings, which give clarity on how to work with these findings.</div>')+'<div class="nav2 one"><button data-tab="M">Next: MER →</button></div><div class="cliEnd">'+recPill()+'</div></div>';
+ h+='<div class="part" id="pB">'+B1.replace('<div class="keep">','<div class="keep">'+SEGH("Part 2","Biodynamic Breathwork &amp; Trauma Release (BBTRS)","A trauma-informed approach to psychological and emotional patterns and the nervous system",0)+'<div class="trN"><b>For practitioners.</b> This assessment is designed for therapist use and is best applied after participating in the Biodynamic Breathwork &amp; Trauma Release trainings, which give clarity on how to work with these findings.</div>')+'<div class="nav2 one"><button data-tab="M">Next: MER →</button></div><div class="cliEnd">'+recPill()+'</div>'+pdfFoot("bbtrs")+'</div>';
  let merHtml="";
  const V2=window.FA_MER_V2;
  if(V2&&V2.renderMer){try{
@@ -505,15 +523,15 @@ function renderRes(r){row=r;const R=r.report||{},D=r.data||{},F=window.FA_GIFTS,
   const bd=sx("body");
   const bodyItems=bd?(bd.s.items||[]).filter(x=>x&&!skip.test(x.h||"")).slice().sort((a,b)=>{const ia=order.findIndex(k=>new RegExp(k,"i").test(a.h||"")),ib=order.findIndex(k=>new RegExp(k,"i").test(b.h||""));return (ia<0?9:ia)-(ib<0?9:ib)}).map(x=>{const j=(bd.s.items||[]).indexOf(x),ph=bd.b+".items."+j+".h",pp=bd.b+".items."+j+".p";return {h:x.h,p:x.p,pathH:ph,path:pp,noteH:noteOn(ph,x.h),note:noteOn(pp,x.p)}}):[];
   const merMain=V2.renderMer(reading,{beltHtml:merBelts,bodyItems:bodyItems});
-  merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Four chapters · clear guidance",0)+'<div class="trN"><b>For practitioners.</b> Use this with your MER training.</div>',merMain)+ '<div class="nav2 one"><button class="sec2" data-tab="B">← Breathwork</button></div>'+'<div class="cliEnd">'+recPill()+'</div><button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button></div>';
+  merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Four chapters · clear guidance",0)+'<div class="trN"><b>For practitioners.</b> Use this with your MER training.</div>',merMain)+ '<div class="nav2 one"><button class="sec2" data-tab="B">← Breathwork</button></div>'+'<div class="cliEnd">'+recPill()+'</div><button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button>'+pdfFoot("mer")+'</div>';
  }catch(err){merHtml=""}}
  if(!merHtml&&V2&&V2.renderMer){try{
   const reading=V2.buildReading({},{report:R,data:D,red_flags:r.red_flags,red_flag:R.red_flag});
   window.__faMerReading=reading;
   const merMain=V2.renderMer(reading,{beltHtml:'<section class="card bmc"><div class="gK">Belts of tension</div><h2 class="gH">Where tension sits</h2><p class="gSub">Saved belt levels, shown in the session flow.</p></section>',bodyItems:[]});
-  merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Four chapters · clear guidance",0)+'<div class="trN"><b>For practitioners.</b> Use this with your MER training.</div>',merMain)+ '<div class="nav2 one"><button class="sec2" data-tab="B">← Breathwork</button></div>'+'<div class="cliEnd">'+recPill()+'</div><button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button></div>';
+  merHtml='<div class="part" id="pM">'+KEEP(SEGH("Part 3","Myofascial Energetic Release (MER)","Four chapters · clear guidance",0)+'<div class="trN"><b>For practitioners.</b> Use this with your MER training.</div>',merMain)+ '<div class="nav2 one"><button class="sec2" data-tab="B">← Breathwork</button></div>'+'<div class="cliEnd">'+recPill()+'</div><button class="big sec2" data-go="save" style="background:none;border:1px solid var(--gold);color:var(--gold);box-shadow:none">✓ Save record</button>'+pdfFoot("mer")+'</div>';
  }catch(err){merHtml=""}}
- if(!merHtml)merHtml='<div class="part" id="pM"><section class="card mer"><h2 class="gH">Session flow</h2><p>The saved scores are unchanged. Reload this reading to open the session flow.</p></section></div>';
+ if(!merHtml)merHtml='<div class="part" id="pM"><section class="card mer"><h2 class="gH">Session flow</h2><p>The saved scores are unchanged. Reload this reading to open the session flow.</p></section>'+pdfFoot("mer")+'</div>';
  h+=merHtml;
  h+='<p class="disc">'+E(F?F.DISC:R.disclaimer)+(R.disclaimer&&F?' '+E(R.disclaimer):'')+'</p>';
  $("#vRes").innerHTML=stag(h);pinClient();mountReadNotes(r);
@@ -536,7 +554,7 @@ function renderRes(r){row=r;const R=r.report||{},D=r.data||{},F=window.FA_GIFTS,
 }
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-go]");if(!b)return;const g=b.dataset.go;
  if(g=="intake")goIntake();else if(g=="plan")goPart("mer");else if(g=="res")goPart("bbtrs");
- else if(g=="pdf"){const kind=b.getAttribute("data-pdf")==="mer"?"mer":"bbtrs";document.body.classList.remove("pdf-bbtrs","pdf-mer");document.body.classList.add("pdf-"+kind);if($(".editing"))await saveReport();const t=document.title;document.title=(kind==="mer"?"MER report":"BBTRS report")+" - "+(row.client_name||"client")+" - "+new Date(row.created_at).toLocaleDateString("en-GB");window.FA_ph&&FA_ph("assessment_pdf",{});const done=()=>{document.title=t;document.body.classList.remove("pdf-bbtrs","pdf-mer")};setTimeout(()=>{window.print();done()},50)}
+ else if(g=="pdf"){const kind=b.getAttribute("data-pdf")==="mer"?"mer":"bbtrs";if($(".editing"))await saveReport();if(kind==="mer")await primeMerPrintImages();document.body.classList.remove("pdf-bbtrs","pdf-mer");document.body.classList.add("pdf-"+kind);const t=document.title;document.title=(kind==="mer"?"MER report":"BBTRS report")+" - "+(row.client_name||"client")+" - "+new Date(row.created_at).toLocaleDateString("en-GB");window.FA_ph&&FA_ph("assessment_pdf",{});holdPdfClass(t);window.print()}
  else if(g=="save"){if(await saveReport("Saved to your records ✓")){$$(".editing").forEach(v=>{v.classList.remove("editing");v.querySelectorAll("[data-p],[data-d]").forEach(x=>x.contentEditable=false);v.querySelectorAll("[data-edit]").forEach(x=>x.textContent="✎ Edit text")});setTimeout(()=>location.href="assessment-results.html",1400)}}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-j],[data-idx]");if(!a)return;e.preventDefault();const t=document.getElementById(a.dataset.j||a.dataset.idx);if(t)t.scrollIntoView({behavior:"smooth",block:"start"})});
 function merClientKey(){const name=(typeof row!=="undefined"&&row&&(row.client_name||(row.report&&row.report.client)))||"";return clientKey(name)}
