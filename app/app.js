@@ -1162,7 +1162,7 @@ async function scanAccess(){const N=$("#scNew"),I=$("#scInfo");if(!N||!scanSb)re
 /* v0.23.146 Stripe links; v0.23.142 Scan landing inside the app (iframe of /scan/?embed=1), trial sign-in flow, profile plans card */
 window.FA_SCAN_BUY={single:"https://buy.stripe.com/cNi8wQ1F0dSnc1y6uD6Zy08",practitioner:"https://buy.stripe.com/aFa9AU4Rc8y38Pm9GP6Zy01",yearly:"https://buy.stripe.com/9B6eVe4Rc15B1mUaKT6Zy09"};
 function faBuyUrl(k){const u=(window.FA_SCAN_BUY||{})[k];if(!u)return "";return me&&me.email?u+"?prefilled_email="+encodeURIComponent(me.email):u}
-function scanLanding(hash){const S=$("#scan");if(!S)return;S.classList.add("scLand");let f=$("#scFrame");const src="/scan/?embed=1"+(hash||"");
+function scanLanding(hash){const S=$("#scan");if(!S)return;S.classList.add("scLand");let f=$("#scFrame");const v=window.FA_BUILD||"";const src="/scan/?embed=1"+(v?"&v="+encodeURIComponent(v):"")+(hash||"");
  if(!f){f=document.createElement("iframe");f.id="scFrame";f.title="FasciApp Scan";f.src=src;S.append(f)}else if(hash&&!f.src.endsWith(hash))f.src=src}
 /* v0.23.207 post-payment banner on the scan hub */
 function faPaidBanner(){const S=$("#scan");if(!S||$("#scPaid"))return;const d=document.createElement("div");d.id="scPaid";d.className="scPaid";d.innerHTML='Thank you! Your payment is received and your scans are now active.<span>If your scan doesn\u2019t unlock within a minute (for example if you paid with a different email than your FasciApp account), write to <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a>.</span>';const h=S.querySelector(".scH");(h||S.firstChild).before(d)}
