@@ -347,26 +347,46 @@ test("older belt words and saved numeric maps use the same session order", () =>
   assert.equal(MER.buildSessions(empty).sessions.length, 0);
 });
 
-test("BBTRS uses the same belt order and existing series text", () => {
+test("BBTRS keeps the eight-session series and not the belt map", () => {
+  const page = fs.readFileSync(path.join(__dirname, "assessment-results.html"), "utf8");
+  const fn = page.slice(page.indexOf("function seriesCards"), page.indexOf("function renderRes"));
+  assert.match(fn, /8 sessions, from the eyes to the pelvis/);
+  assert.match(fn, /The cycle within every session/);
+  assert.match(page, /The 8-session flow/);
+  assert.match(page, /The 8-session flow and plan/);
+  assert.equal(page.includes("FA_BBTRS_FLOW"), false);
+  assert.equal(page.includes("bbtrs-flow.js"), false);
+  assert.equal(page.includes("data-bbtrs-seg"), false);
+  assert.equal(page.includes("Mark session"), false);
+  assert.match(page, /V2\.renderMer/);
+  const built = page.slice(page.indexOf("const B1="), page.indexOf('id="pB"'));
+  assert.match(built, /seriesCards\(D\)/);
+  assert.match(built, /The 8-session flow/);
+  assert.match(page, /id="pB">'\+B1/);
+  assert.match(page, /pdfFoot\("bbtrs"\)/);
   global.window = globalThis;
   require("./bbtrs.js");
-  const Flow = require("./bbtrs-flow.js");
-  const reading = read({pain_areas:["knees"]}, {ocular:0, oral:0, cervical:2, thoracic:3, diaphragmatic:0, abdominal:1, pelvic:3});
-  const htmlFlow = Flow.render(reading, null, [], "e");
-  const summary = Flow.summary(reading, "pelvic", "e");
-  assert.match(htmlFlow, /data-bbtrs-seg="pelvic"/);
-  assert.match(htmlFlow, /data-bbtrs-map/);
-  assert.match(htmlFlow, /Mark session 1 complete/);
-  assert.match(htmlFlow, /class="rec"/);
-  assert.match(htmlFlow, /Pelvic release/);
-  assert.equal(/pp\.\s|Labelled|All belts|8 sessions/.test(htmlFlow+summary), false);
-  assert.match(summary, /id="bbtrsSummary"/);
-  assert.match(summary, /Before/);
-  assert.match(summary, /Pelvic unwinding/);
-  const order = htmlFlow.slice(htmlFlow.indexOf("flowList"), htmlFlow.indexOf("skip-note"));
-  assert.ok(order.indexOf("Pelvic")<order.indexOf("Thoracic"));
-  assert.ok(order.indexOf("Thoracic")<order.indexOf("Cervical"));
-  assert.ok(order.indexOf("Cervical")<order.indexOf("Abdominal"));
-  assert.equal(/data-bbtrs-seg="face"/.test(htmlFlow), false);
-  assert.match(htmlFlow, /Skipped · Ocular &amp; Oral/);
+  require("./gifts.js");
+  const E = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const KC = (k,t,s,cls) => '<section class="card '+(cls||"")+'"><div class="gK">'+k+'</div>'+(t?'<h2 class="gH">'+t+'</h2>':"")+(s?'<p class="gSub">'+s+'</p>':"");
+  function giftsOf(D){const F = window.FA_GIFTS; return F ? (D.gifts || F.fromLegacy(D.pattern_scores)) : null;}
+  const seriesCards = new Function("E", "KC", "giftsOf", fn + "\nreturn seriesCards;")(E, KC, giftsOf);
+  const empty = seriesCards({});
+  const titles = [
+    "General assessment session",
+    "Eye release breath session",
+    "‘Drooling’ breath session",
+    "Neck (SCM) opening session",
+    "Shoulder joint release session",
+    "Diaphragm release session",
+    "Abdominal opening and release",
+    "Pelvic release session"
+  ];
+  titles.forEach(t => assert.match(empty, new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))));
+  assert.match(empty, /Interview/);
+  assert.match(empty, /Healing Sounds meditation/);
+  assert.equal(/Mark session|NOW|NEXT|LATER|data-bbtrs|pp\./.test(empty), false);
+  const noted = seriesCards({pattern_scores:{e:80,a:10,o:5,s:3,p:2}});
+  assert.match(noted, /For /);
+  assert.match(noted, /Pelvic release session/);
 });
