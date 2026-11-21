@@ -1001,3 +1001,35 @@ body.modInfoOpen>main{overflow:hidden}
 
 /* v0.23.207 post-payment banner on scan hub */
 .scPaid{background:#C99E67;color:#02191E;text-align:center;padding:12px 14px;font-weight:600;font-size:14.5px;border-radius:12px;margin:6px 0 14px;line-height:1.4}.scPaid span{display:block;font-weight:400;font-size:12.5px;margin-top:5px}.scPaid a{color:#02191E}
+
+/* v0.23.252 EU data trust badge on the splash front screen */
+.euTrust{
+  display:block;
+  width:100%;
+  max-width:420px;
+  margin:0 auto 6px;
+  padding:12px 16px 13px;
+  border-radius:16px;
+  background:linear-gradient(180deg,rgba(95,201,195,.20),rgba(10,42,48,.92));
+  border:1.5px solid #C99E67;
+  box-shadow:0 0 0 1px rgba(95,201,195,.28),0 6px 20px rgba(2,25,30,.4);
+  color:#F3EDE4;
+  text-align:center;
+  line-height:1.35;
+}
+.euTrustMain{
+  display:block;
+  color:#F3EDE4;
+  font-size:15px;
+  font-weight:650;
+  letter-spacing:.01em;
+}
+.euTrustSub{
+  display:block;
+  margin-top:3px;
+  color:#C99E67;
+  font-size:13px;
+  font-weight:600;
+}
+#splash .splashCount{margin:-14px 0 12px}
+#splash .choices{margin-top:18px}
