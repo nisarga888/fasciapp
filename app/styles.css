@@ -1002,7 +1002,7 @@ body.modInfoOpen>main{overflow:hidden}
 /* v0.23.207 post-payment banner on scan hub */
 .scPaid{background:#C99E67;color:#02191E;text-align:center;padding:12px 14px;font-weight:600;font-size:14.5px;border-radius:12px;margin:6px 0 14px;line-height:1.4}.scPaid span{display:block;font-weight:400;font-size:12.5px;margin-top:5px}.scPaid a{color:#02191E}
 
-/* v0.23.252 EU data trust badge on the splash front screen */
+/* v0.23.253 EU data trust badge on the splash front screen */
 .euTrust{
   display:block;
   width:100%;
