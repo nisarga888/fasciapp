@@ -1002,12 +1002,12 @@ body.modInfoOpen>main{overflow:hidden}
 /* v0.23.207 post-payment banner on scan hub */
 .scPaid{background:#C99E67;color:#02191E;text-align:center;padding:12px 14px;font-weight:600;font-size:14.5px;border-radius:12px;margin:6px 0 14px;line-height:1.4}.scPaid span{display:block;font-weight:400;font-size:12.5px;margin-top:5px}.scPaid a{color:#02191E}
 
-/* v0.23.253 EU data trust badge on the splash front screen */
+/* v0.23.254 EU data trust badge above the splash newsletter */
 .euTrust{
   display:block;
   width:100%;
   max-width:420px;
-  margin:0 auto 6px;
+  margin:14px auto;
   padding:12px 16px 13px;
   border-radius:16px;
   background:linear-gradient(180deg,rgba(95,201,195,.20),rgba(10,42,48,.92));
@@ -1031,5 +1031,4 @@ body.modInfoOpen>main{overflow:hidden}
   font-size:13px;
   font-weight:600;
 }
-#splash .splashCount{margin:-14px 0 12px}
-#splash .choices{margin-top:18px}
+#splash .nlBox{margin-top:14px}
