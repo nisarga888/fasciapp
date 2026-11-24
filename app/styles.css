@@ -1032,3 +1032,18 @@ body.modInfoOpen>main{overflow:hidden}
   font-weight:600;
 }
 #splash .nlBox{margin-top:14px}
+
+/* v0.23.256 compact testimonials strip on the Home splash */
+.faHomeQuotes{max-width:420px;margin:14px auto 6px;padding:14px 16px 12px;border:1px solid #c99e6755;border-radius:16px;background:#0a2a3080;text-align:center}
+.faHomeQuotesK{margin:0 0 8px;color:var(--gold);font-size:13px;font-weight:600;letter-spacing:.04em}
+.faHomeQuotesTrack{display:grid;text-align:left}
+.faHomeQuote{grid-area:1/1;margin:0;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .45s ease}
+.faHomeQuote.is-on{opacity:1;visibility:visible;pointer-events:auto}
+.faHomeQuote p{margin:0 0 8px;color:var(--tx);font-size:14.5px;line-height:1.5;font-weight:400}
+.faHomeQuote p:before{content:"“";color:var(--gold);font-family:Georgia,"Times New Roman",serif;font-size:22px;line-height:0;margin-right:4px;vertical-align:-4px}
+.faHomeQuote .faWho{margin:0;color:#5FC9C3;font-size:12.5px;font-weight:600;letter-spacing:.2px}
+.faHomeQuote .faWho:before{content:"— ";color:var(--gold)}
+.faHomeDots{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:10px}
+#splash .faHomeDots button{width:8px;height:8px;min-width:8px;padding:0;border:0;border-radius:50%;background:#c99e6755;box-shadow:none;line-height:0}
+#splash .faHomeDots button.on{background:var(--gold)}
+@media (prefers-reduced-motion:reduce){.faHomeQuote{transition:none}}
