@@ -1044,6 +1044,8 @@ body.modInfoOpen>main{overflow:hidden}
 .faHomeQuote p:before{content:"“";color:var(--gold);font-family:Georgia,"Times New Roman",serif;font-size:22px;line-height:0;margin-right:4px;vertical-align:-4px}
 .faHomeQuote .faWho{margin:0;color:#5FC9C3;font-size:12.5px;font-weight:600;letter-spacing:.2px}
 .faHomeQuote .faWho:before{content:"— ";color:var(--gold)}
+.faHomeQuote .faMore{display:inline;margin:0;padding:0;border:0;background:none;color:#5FC9C3;font:600 13px/1.4 var(--font);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.faHomeQuote .faFull[hidden],.faHomeQuote .faShort[hidden]{display:none!important}
 #splash .faHomeArrow{width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border-radius:50%;border:1px solid var(--gold);background:#0a2a30;color:var(--gold);display:grid;place-items:center;box-shadow:none;line-height:0}
 #splash .faHomeArrow:disabled{opacity:.35}
 #splash .faHomeArrow svg{display:block}
