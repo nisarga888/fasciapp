@@ -120,7 +120,6 @@ async function goPractitioner(){if(!me){me=await DB.session().catch(()=>null);hd
 $("#goPract").onclick=()=>goPractitioner();
 $$("[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.go));
 const logoHome=$("#logoHome");if(logoHome)logoHome.onclick=()=>show("splash");
-const quoteBan=$("#quoteBan");if(quoteBan)quoteBan.addEventListener("click",e=>{e.preventDefault();show("splash");setTimeout(()=>{const dot=document.querySelector("#homeQuotes .faHomeDots button");if(dot)dot.click();const el=$("#homeQuotes");if(el)el.scrollIntoView({block:"center"})},80)});
 $$("nav button").forEach(b=>b.onclick=()=>{if(b.dataset.t==="list"&&$("#list").classList.contains("active")&&window.faListHome){faListHome();return}show(b.dataset.t)});
 $("#hIn").onclick=()=>{fillLastEmail();show("auth")};
 $("#hEdit").onclick=async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(me)show("profile");else{fillLastEmail();show("auth")}};
