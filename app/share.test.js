@@ -127,7 +127,7 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);
-  assert.equal(ver[1], "0.23.259");
+  assert.equal(ver[1], "0.23.260");
   const quote = "A fellow practitioner found me through FasciApp and referred a client to me for a trial BBTRS® session, which led to her booking six more sessions.";
   assert.ok(index.includes(quote));
   assert.ok(index.includes("Viktoria (BBTRS® practitioner)"));
@@ -137,8 +137,12 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const quotes = landing.slice(landing.indexOf('id="quotes"'), landing.indexOf("<footer>"));
   assert.ok(quotes.includes(quote));
   assert.ok(quotes.includes("those who can benefit from it."));
+  assert.ok(quotes.includes("sessions…"));
+  assert.ok(quotes.includes(">Read more<"));
+  assert.ok(index.includes("sessions…"));
+  assert.ok(index.includes(">Read more<"));
   assert.ok(quotes.includes("Viktoria (BBTRS® practitioner)"));
-  assert.match(quotes, /faQuoteWide/);
+  assert.equal(quotes.includes("faQuoteWide"), false);
   assert.equal(quotes.includes("-webkit-line-clamp"), false);
   assert.match(index, new RegExp("share\\.js\\?v=" + ver[1].replace(/\./g, "\\.")));
   assert.match(index, new RegExp("learn\\.js\\?v=" + ver[1].replace(/\./g, "\\.")));
