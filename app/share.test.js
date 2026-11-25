@@ -127,12 +127,13 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);
-  assert.equal(ver[1], "0.23.260");
+  assert.equal(ver[1], "0.23.261");
   const quote = "A fellow practitioner found me through FasciApp and referred a client to me for a trial BBTRS® session, which led to her booking six more sessions.";
   assert.ok(index.includes(quote));
   assert.ok(index.includes("Viktoria (BBTRS® practitioner)"));
   assert.equal((index.match(/class="faHomeQuote"/g) || []).length, 5);
-  assert.match(index, /Show quote 5 of 5, Viktoria/);
+  assert.match(index, /Show quote 1 of 5, Viktoria/);
+  assert.ok(index.indexOf("Viktoria (BBTRS® practitioner)") < index.indexOf(">Paul</p>"));
   const landing = fs.readFileSync(path.join(__dirname, "../index.html"), "utf8");
   const quotes = landing.slice(landing.indexOf('id="quotes"'), landing.indexOf("<footer>"));
   assert.ok(quotes.includes(quote));
@@ -142,6 +143,7 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   assert.ok(index.includes("sessions…"));
   assert.ok(index.includes(">Read more<"));
   assert.ok(quotes.includes("Viktoria (BBTRS® practitioner)"));
+  assert.ok(quotes.indexOf("Viktoria (BBTRS® practitioner)") < quotes.indexOf(">Paul</p>"));
   assert.equal(quotes.includes("faQuoteWide"), false);
   assert.equal(quotes.includes("-webkit-line-clamp"), false);
   assert.match(index, new RegExp("share\\.js\\?v=" + ver[1].replace(/\./g, "\\.")));
