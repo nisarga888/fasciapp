@@ -1054,3 +1054,60 @@ body.modInfoOpen>main{overflow:hidden}
 #splash .faHomeDots button.on:after{background:var(--gold);width:13px;height:13px}
 .faHomeCount{grid-column:3;justify-self:end;margin:0 6px 0 0;color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.04em}
 @media (prefers-reduced-motion:reduce){.faHomeQuotesTrack{scroll-behavior:auto}}
+
+/* v0.23.258 share profile and session reviews */
+.toast{z-index:4000}
+.ptShare{position:absolute;top:56px;right:14px;z-index:5;width:36px;height:36px;border-radius:50%;border:1px solid #C99E67;background:#02191Ecc;color:#C99E67;padding:0;display:flex;align-items:center;justify-content:center}
+.ptShareBtn{width:100%;margin:8px 0 2px;display:flex;align-items:center;justify-content:center;gap:8px;background:none;color:#C99E67;border:1px solid #C99E67;border-radius:14px;padding:11px;font-weight:700}
+.ptRating{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0 4px;flex-wrap:wrap}
+.ptAvgs{display:flex;align-items:center;gap:6px;min-width:0}
+.ptAvgs b{font-weight:600;font-size:13.5px;color:#F3EDE4}
+.ptStar{color:#C99E67;letter-spacing:1px;font-size:14px;line-height:1}
+.ptStar i{color:#3d5558;font-style:normal}
+.ptRateBtn{flex:none;border-radius:16px;padding:8px 12px;font-size:13px}
+.ptRevs{margin:14px 0 4px}
+.ptRevs h4{margin:0 0 2px;font-size:15px;font-weight:700;color:#F3EDE4}
+.ptRevNote,.ptRevEmpty{margin:0;color:#9fb3b5;font-size:12.5px;line-height:1.4}
+.ptRev{background:#02191E88;border:1px solid #c99e6733;border-radius:14px;padding:10px 12px;margin-top:8px}
+.ptRev header{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ptRev header b{color:#F3EDE4;font-size:14px}
+.ptRev time{margin-left:auto;color:#9fb3b5;font-size:12px}
+.ptRev p{margin:6px 0 0;font-size:13.5px;line-height:1.4;color:#d9d3ca;white-space:pre-wrap}
+.ptRevAct{display:flex;justify-content:flex-end;gap:12px}
+.ptRep{background:none;border:0;color:#9fb3b5;font-size:12.5px;padding:4px 0;text-decoration:underline;text-underline-offset:2px}
+.ptHid{font-style:normal;font-size:11px;font-weight:700;color:#02191E;background:#C99E67;border-radius:8px;padding:1px 6px}
+.ptRev.isHid{opacity:.72}
+.ptPop{position:fixed;inset:0;z-index:2300;display:flex;align-items:flex-end;justify-content:center}
+.ptPop[hidden]{display:none}
+.ptPopDim{position:absolute;inset:0;background:#000b}
+.ptPopBox{position:relative;width:100%;max-width:480px;max-height:92dvh;overflow:auto;background:#061f24;border:1px solid #C99E6788;border-bottom:0;border-radius:22px 22px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));color:#F3EDE4;box-shadow:0 -10px 40px #000a}
+.ptPopBox::before{content:"";display:block;width:42px;height:5px;border-radius:3px;background:#3b5559;margin:4px auto 10px}
+.ptPopTop{display:flex;align-items:center;gap:10px}
+.ptPopTop b{flex:1;font-size:18px;font-weight:700}
+.ptPopX{flex:none;width:36px;height:36px;padding:0;border-radius:50%;border:1px solid #c99e6766;background:#0a2a30;color:#F3EDE4}
+.ptPopSub,.ptPopWith,.ptPopHelp{margin:6px 0 10px;color:#9fb3b5;font-size:13px;line-height:1.4}
+.ptPopWith{text-align:center;color:#d9d3ca;margin-bottom:4px}
+.ptLink{display:flex;align-items:center;gap:8px;background:#02191E;border:1px solid #C99E6755;border-radius:12px;padding:8px 8px 8px 12px;margin:0 0 12px}
+.ptLink b{flex:1;min-width:0;font-weight:600;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ptLink button{flex:none;background:#C99E67;color:#02191E;border:0;border-radius:10px;padding:8px 12px;font-weight:700}
+.ptNative{width:100%;margin:0 0 12px;border-radius:14px;padding:12px}
+.ptShareGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 12px}
+.ptShareGrid button{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;color:#F3EDE4;font-size:11.5px;font-weight:600;padding:6px 2px}
+.ptShareGrid i{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#02191E;border:1px solid #C99E6788;color:#C99E67}
+.ptShareGrid i.wa{color:#5FC9C3;border-color:#5FC9C388}
+.ptShareGrid i.ig{color:#E7C78F}
+.ptShareGrid i.fb{color:#8FB4E8;border-color:#8FB4E855}
+.ptShareGrid i.tg{color:#7EC8E3;border-color:#7EC8E355}
+.ptPopDone{width:100%;border-radius:14px;padding:12px}
+.ptBigStars{display:flex;justify-content:center;gap:4px;margin:4px 0}
+.ptBigStars button{width:44px;height:44px;border:0;background:none;color:#3d5558;font-size:32px;padding:0;line-height:1}
+.ptBigStars button.on{color:#C99E67}
+.ptOutOf{text-align:center;margin:0 0 10px;color:#C99E67;font-weight:700;font-size:14px}
+.ptNoteLbl{display:block;font-size:12.5px;color:#9fb3b5}
+.ptNoteLbl textarea{display:block;width:100%;margin-top:6px;min-height:96px;resize:vertical;box-sizing:border-box}
+.ptCount{text-align:right;margin:4px 0 8px;color:#9fb3b5;font-size:12px}
+.ptCount.hot{color:#C99E67}
+.ptPopErr{min-height:1.2em;margin:0 0 8px;color:#E7C78F;font-size:13px}
+.ptPopErr:empty{display:none}
+.ptPost{width:100%;border-radius:14px;padding:13px;font-size:16px}
+.ptPost:disabled{opacity:.6}
