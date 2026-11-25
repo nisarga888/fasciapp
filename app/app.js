@@ -85,6 +85,7 @@ window.addEventListener("popstate",()=>{const tk=traineeKind();if(tk)show(tk)});
 function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(sp.get("reset")==="1")return false;
  const tr=sp.get("trainees");if(tr==="1"||tr==="dir"){show("bbtrs");return true}if(tr==="mine"||tr==="join"){show("bbtrsMe");return true}
+ const slug=(sp.get("p")||"").trim();if(slug&&window.FA_SHARE&&FA_SHARE.isProfileSlug(slug)){if(window.faOpenSlug)faOpenSlug(slug);return true}
  const tab=(sp.get("tab")||"").toLowerCase();if(tab==="learn"||tab==="lab"){show("learn");return true}
  if(sp.get("join")==="1"){wantForm=true;if(me){show("profile");return true}setMode(true);show("auth");return true}
  if(sp.get("move")==="1"){try{const u=new URL(location.href);u.searchParams.delete("move");history.replaceState({},"",u.pathname+u.search+u.hash)}catch(e){}faStartMove();return true}
@@ -155,7 +156,7 @@ $("#resetForm").onsubmit=async e=>{e.preventDefault();const a=$("#newPw").value,
   try{const u=new URL(location.href);u.searchParams.delete("reset");history.replaceState({},"",u.pathname+u.search+u.hash.replace(/access_token=[^&]+/g,""))}catch(e){}
   hdr();await refresh();msgInit();setTimeout(()=>show("profile"),600)}catch(err){m.textContent=err.message||"Could not update password."}};
 $("#authForm").onsubmit=async e=>{e.preventDefault();const em=$("#email").value.trim().toLowerCase(),pw=$("#pw").value,m=$("#authMsg");if(signUpMode&&!$("#agree").checked){m.textContent="Please confirm you are 18+ and accept the Terms and Privacy Policy.";return}m.textContent="…";
- try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);try{if(window.PasswordCredential&&navigator.credentials)navigator.credentials.store(new PasswordCredential({id:em,password:pw,name:em})).catch(()=>{})}catch(x){}m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath,nw=pendingWa,wv=pendingWatch;pendingChat=null;pendingBreath=null;pendingWa=null;pendingWatch=null;if(nw){backToPract(nw)}else if(wv&&me){show("learn");setTimeout(()=>{try{labView("watch");openVideo(wv.id,wv.title)}catch(x){}},250)}else if(nb){show("learn");if(nb!=="lab")setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else if((()=>{try{return sessionStorage.getItem("fa_after")==="move"}catch(e){return false}})()){try{sessionStorage.removeItem("fa_after")}catch(e){}faStartMove()}else show("profile")}catch(err){m.textContent=err.message}};
+ try{me=signUpMode?await DB.signUp(em,pw,{news_optin:!!$("#newsOpt").checked}):await DB.signIn(em,pw);rememberEmail(em);try{if(window.PasswordCredential&&navigator.credentials)navigator.credentials.store(new PasswordCredential({id:em,password:pw,name:em})).catch(()=>{})}catch(x){}m.textContent="";hdr();refresh();msgInit();const next=pendingChat,nb=pendingBreath,nw=pendingWa,wv=pendingWatch;pendingChat=null;pendingBreath=null;pendingWa=null;pendingWatch=null;let rateDraft=null;try{rateDraft=JSON.parse(sessionStorage.getItem("fa_rate")||"null")}catch(e){}try{sessionStorage.removeItem("fa_rate")}catch(e){}if(nw){backToPract(nw)}else if(wv&&me){show("learn");setTimeout(()=>{try{labView("watch");openVideo(wv.id,wv.title)}catch(x){}},250)}else if(nb){show("learn");if(nb!=="lab")setTimeout(()=>{try{FasciBreath.openIntro(nb)}catch(x){}},200)}else if(next){show("inbox");openChat(next)}else if(rateDraft&&rateDraft.id&&window.faReturnToRate){faReturnToRate(rateDraft)}else if((()=>{try{return sessionStorage.getItem("fa_after")==="move"}catch(e){return false}})()){try{sessionStorage.removeItem("fa_after")}catch(e){}faStartMove()}else show("profile")}catch(err){m.textContent=err.message}};
 
 // helpers
 function dist1(p,from){const R=6371,r=x=>x*Math.PI/180,dl=r(p.lat-from[0]),dg=r(p.lng-from[1]);const a=Math.sin(dl/2)**2+Math.cos(r(from[0]))*Math.cos(r(p.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(a))}
@@ -473,6 +474,7 @@ function setupSafariChrome(){const ua=navigator.userAgent||"";
  me=await DB.session().catch(()=>null);hdr();
  await refresh();
  applyDeepLink();
+ setTimeout(()=>{try{window.faResumeRate&&faResumeRate()}catch(e){}},500);
  if(DB.mode==="local"&&window.FASCIAPP_CONFIG&&FASCIAPP_CONFIG.SUPABASE_URL&&window.supabase&&!sessionStorage.getItem("fa_sb_retry")){
   sessionStorage.setItem("fa_sb_retry","1");location.reload();return}
  msgInit();
@@ -946,17 +948,22 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   return `<div class="ptLock"><p>🔒 <b>Contact details are for members.</b> Log in or create a free account to message, WhatsApp, email, website${ig?" or Instagram":""}.</p>${cbs?cbs.outerHTML:""}<button type="button" class="gold ptLogin">Log in to contact</button></div>`}
  function paint(){const p=cur.list[cur.i];if(!p)return;const many=cur.list.length>1;
   const backRes=sh.querySelector(".ptBackRes"),backCo=sh.querySelector(".ptBackCo");
-  if(backRes)backRes.hidden=cur.kind==="country";
+  if(backRes)backRes.hidden=cur.kind==="country"||cur.kind==="share";
   if(backCo){backCo.hidden=cur.kind!=="country";const sp=backCo.querySelector("span");if(sp)sp.textContent=cur.label||"Back"}
   const hl=faIsHL(p);
-  scr.innerHTML=`<div class="ptHero">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`}${hl?`<span class="shSeal">${faSeal(60)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}${many?`<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i+1} of ${cur.list.length}${cur.label?" · "+esc(cur.label):""}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>`:""}</div>
+  const shareOn=!!(p.slug&&p.consent!==false&&window.FA_SHARE);
+  const visitor=!me||sh.classList.contains("selfPrev");
+  const own=!visitor&&!!(me&&p.user_id&&me.user_id===p.user_id);
+  scr.innerHTML=`<div class="ptHero">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`}${shareOn?FA_SHARE.shareIconHtml():""}${hl?`<span class="shSeal">${faSeal(60)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}${many?`<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i+1} of ${cur.list.length}${cur.label?" · "+esc(cur.label):""}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>`:""}</div>
   <div class="ptBody" data-pid="${esc(p.id||"")}"><h3>${esc(practiceTitle(p))}</h3>${hl?`<div class="shHl">${faLaurel(24)} ${faHLLine(p)}</div>`:""}${String(p.practice_name||"").trim()&&p.name?`<div class="ptWho">${esc(p.name)}</div>`:""}
   <div class="ptLocs">${locLine(p)}</div><div class="chs ptMods">${(p.mods||[]).filter(Boolean).map(x=>`<span class="ch${faHLChip(x)?" hlCh":""}">${esc(faModLabel(x))}</span>`).join("")}</div>
+  ${shareOn?FA_SHARE.shareButtonHtml():""}
+  <div id="ptRatingSlot">${p.consent!==false&&window.FA_SHARE?FA_SHARE.ratingRowHtml({count:0,own:own}):""}</div>
   ${p.bio?`<div class="ptBio">${esc(p.bio)}</div><button type="button" class="ptMore">Read more</button>`:""}
-  ${contacts(p)}<button type="button" class="ptMap">📍 Show on map</button></div>`;
-  scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});if(srcOv!=="self_preview")view(p)}
+  ${contacts(p)}<div id="ptRevSlot"></div><button type="button" class="ptMap">📍 Show on map</button></div>`;
+  scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});if(srcOv!=="self_preview")view(p);if(window.faLoadReviews)faLoadReviews(p,visitor)}
  function open(list,i,label,so,kind){srcOv=so||"";const was=!sh.hidden;if(was){}else saveListScroll();cur={list,i,label:label||"",kind:kind||""};sh.hidden=false;document.body.classList.add("ptOpen");paint();if(!was)hpush("sheet")}
- function hideSheet(){const was=!sh.hidden;sh.hidden=true;sh.classList.remove("selfPrev");document.body.classList.remove("ptOpen");if(was)restoreListScroll()}
+ function hideSheet(){const was=!sh.hidden;sh.hidden=true;sh.classList.remove("selfPrev");document.body.classList.remove("ptOpen");if(was){restoreListScroll();try{if(window.faClosePops)faClosePops()}catch(e){}try{const u=new URL(location.href);if(u.searchParams.has("p")){u.searchParams.delete("p");history.replaceState(history.state,"",u.pathname+u.search+u.hash)}}catch(e){}}}
  function close(){if(sh.hidden)return;hideSheet();hpop("sheet")}
  const step=k=>{if(cur.list.length<2)return;cur.i=(cur.i+k+cur.list.length)%cur.list.length;paint()};
  window.faSheetClose=()=>{close();if(!cp.hidden){hideCity();hpop("city")}};
@@ -964,7 +971,13 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  // v0.23.100: my own listing exactly as a logged-out visitor sees it (no view stat)
  window.faPreviewMe=p=>{const sv=me;me=null;try{sh.classList.add("selfPrev");open([p],0,"My profile","self_preview")}finally{me=sv}};
  window.faOpenPract=id=>{const p=all().find(x=>x.id===id);if(p)open([p],0,"")};
+ window.faOpenSlug=function(slug){slug=String(slug||"").trim().toLowerCase();const known=all().find(x=>x.slug===slug&&x.consent!==false&&!x.admin_hidden);
+  const go=person=>{if(!person||person.consent===false||person.admin_hidden){show("list");showToast("That profile isn't available");return}show("list");open([person],0,"","share_link","share")};
+  if(known){go(known);return}if(DB.bySlug){DB.bySlug(slug).then(go).catch(()=>go(null));return}go(null)};
  sh.addEventListener("click",e=>{const t=e.target;
+  if(t.closest("[data-share]")){if(window.faOpenShare)faOpenShare(cur.list[cur.i]);return}
+  if(t.closest("[data-rate]")){if(window.faOpenRate)faOpenRate(cur.list[cur.i]);return}
+  if(t.closest("[data-report],[data-hide],[data-restore]")){if(window.faReviewAct)faReviewAct(e);return}
   if(t.closest(".ptX")||t.closest(".ptBk")||t.classList.contains("ptDim")){close();return}
   if(t.closest(".ptPrev")){step(-1);return}if(t.closest(".ptNext")){step(1);return}
   if(t.closest(".ptMore")){const b=scr.querySelector(".ptBio");if(b)b.classList.add("open");t.closest(".ptMore").hidden=true;return}
@@ -974,7 +987,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  let tx=0,ty=0;const bx=sh.querySelector(".ptBox");
  bx.addEventListener("touchstart",e=>{const t=e.touches[0];tx=t.clientX;ty=t.clientY},{passive:true});
  bx.addEventListener("touchend",e=>{const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)step(dx<0?1:-1)},{passive:true});
- document.addEventListener("keydown",e=>{if(!cp.hidden&&e.key==="Escape"){hideCity();hpop("city");return}if(sh.hidden)return;if(e.key==="Escape")close();else if(e.key==="ArrowRight")step(1);else if(e.key==="ArrowLeft")step(-1)});
+ document.addEventListener("keydown",e=>{if(window.faPopOn&&faPopOn())return;if(!cp.hidden&&e.key==="Escape"){hideCity();hpop("city");return}if(sh.hidden)return;if(e.key==="Escape")close();else if(e.key==="ArrowRight")step(1);else if(e.key==="ArrowLeft")step(-1)});
  // ---- list clicks
  const lst=$("#list");if(lst)lst.addEventListener("click",e=>{const t=e.target;
   const nb=t.closest("[data-nav]");if(nb){if(nb.dataset.nav==="allmod"){window.faSetModality("");return}if(nb.dataset.nav==="back"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}else{const pp=placeParts();if(pp)setPlaceV("co:"+pp.co)}return}
@@ -1208,3 +1221,144 @@ document.addEventListener("change",e=>{if(e.target&&e.target.name==="session_typ
 
 window.faShowLog=async id=>{show("log");await loadLog();const e=document.getElementById("se-"+id);if(e){e.scrollIntoView({block:"center"});e.classList.add("hl");setTimeout(()=>e.classList.remove("hl"),2500)}};
 window.faLogFor=async nm=>{show("log");await loadLog();const f=$("#sessForm");f.client_name.value=nm||"";f.initials.value=(nm||"").split(/\s+/).filter(Boolean).map(w=>w[0].toUpperCase()).join("").slice(0,4);f.scrollIntoView({block:"start"});setTimeout(()=>f.comment.focus(),300)};
+
+/* v0.23.258 share a profile and session reviews. Reviews load only for the open profile. */
+(function(){
+ const revMem=new Map();
+ let revTok=0,popP=null,popMode="",rateStars=0,busy=false;
+ const pop=document.createElement("div");
+ pop.id="ptPop"; pop.className="ptPop"; pop.hidden=true;
+ pop.innerHTML='<div class="ptPopDim" data-popx></div><div class="ptPopBox" role="dialog" aria-modal="true"></div>';
+ document.body.appendChild(pop);
+ const box=pop.querySelector(".ptPopBox");
+ const reviewAdmin=()=>{try{if(window.FA_TR&&FA_TR.isAdminUser(me&&me.user_id))return true}catch(e){}try{if(typeof isAdmin==="function"&&isAdmin())return true}catch(e){}return false};
+ function paintBundle(p,bundle,visitor){
+  const S=window.FA_SHARE; if(!S||!p)return;
+  const body=document.querySelector("#ptSheet .ptBody");
+  if(!body||body.dataset.pid!==String(p.id||""))return;
+  const own=!visitor&&!!(me&&p.user_id&&me.user_id===p.user_id);
+  const rate=document.getElementById("ptRatingSlot"),rev=document.getElementById("ptRevSlot");
+  if(rate)rate.innerHTML=S.ratingRowHtml({avg:bundle&&bundle.avg,count:bundle&&bundle.count,own:own,mine:!!(bundle&&bundle.mine)});
+  if(rev)rev.innerHTML=S.reviewsSectionHtml(bundle||{},{signedIn:!visitor&&!!me,admin:!visitor&&reviewAdmin(),now:Date.now()});
+ }
+ window.faLoadReviews=function(p,visitor){
+  if(!p||!p.id||p.consent===false||!window.FA_SHARE||!DB.reviewBundle)return;
+  const tok=++revTok;
+  if(revMem.has(p.id))paintBundle(p,revMem.get(p.id),visitor);
+  DB.reviewBundle(p.id).then(data=>{
+   if(tok!==revTok)return;
+   const bundle=data||{avg:null,count:0,reviews:[],mine:null};
+   revMem.set(p.id,bundle); paintBundle(p,bundle,visitor);
+  }).catch(()=>{
+   if(tok!==revTok)return;
+   const rev=document.getElementById("ptRevSlot"),body=document.querySelector("#ptSheet .ptBody");
+   if(rev&&body&&body.dataset.pid===String(p.id||""))rev.innerHTML='<section class="ptRevs"><h4>Session reviews</h4><p class="ptRevEmpty">Reviews aren\'t available right now.</p></section>';
+  });
+ };
+ window.faPopOn=()=>!pop.hidden;
+ window.faClosePops=()=>{pop.hidden=true;popP=null;popMode="";busy=false};
+ function ctx(p){const url=FA_SHARE.profileUrl(p.slug),title=practiceTitle(p);return{url,title,label:FA_SHARE.profileLabel(p.slug),targets:FA_SHARE.shareTargets(url,title)}}
+ async function copyText(text){
+  try{await navigator.clipboard.writeText(text);return true}catch(e){}
+  try{const t=document.createElement("textarea");t.value=text;t.setAttribute("readonly","");t.style.position="fixed";t.style.left="-9999px";document.body.appendChild(t);t.select();const ok=document.execCommand("copy");t.remove();return ok}catch(e){return false}
+ }
+ window.faOpenShare=async function(p){
+  if(!p||p.consent===false||!p.slug||!window.FA_SHARE){showToast("This profile can't be shared yet");return}
+  const c=ctx(p);
+  const coarse=window.matchMedia&&matchMedia("(pointer: coarse)").matches;
+  if(coarse&&navigator.share){try{await navigator.share({title:c.title,text:c.title+" on FasciApp",url:c.url});return}catch(e){if(e&&e.name==="AbortError")return}}
+  popP=p; popMode="share";
+  box.innerHTML=FA_SHARE.shareSheetHtml({label:c.label,native:typeof navigator.share==="function"});
+  box.setAttribute("aria-label","Share this profile");
+  pop.hidden=false;
+ };
+ window.faOpenRate=function(p,draft){
+  if(!p||p.consent===false||!window.FA_SHARE)return;
+  if(me&&p.user_id&&me.user_id===p.user_id){showToast("You can't rate your own profile.");return}
+  popP=p; popMode="rate";
+  const mine=(revMem.get(p.id)||{}).mine;
+  const stars=draft&&draft.stars||mine&&mine.stars||0;
+  const body=draft&&draft.body!=null?draft.body:(mine&&mine.body)||"";
+  rateStars=Number(stars)||0;
+  box.innerHTML=FA_SHARE.rateSheetHtml({name:p.name||practiceTitle(p),stars:rateStars,body:body,signedIn:!!me,editing:!!(mine&&mine.id)});
+  box.setAttribute("aria-label","Rate your session");
+  pop.hidden=false;
+ };
+ window.faReturnToRate=function(draft){
+  if(!draft||!draft.id)return;
+  const p=all().find(x=>x.id===draft.id&&x.consent!==false&&!x.admin_hidden);
+  if(!p||!window.faOpenPract)return;
+  show("list"); faOpenPract(p.id);
+  setTimeout(()=>faOpenRate(p,draft),80);
+ };
+ window.faResumeRate=function(){
+  let draft=null; try{draft=JSON.parse(sessionStorage.getItem("fa_rate")||"null")}catch(e){}
+  if(!draft||!draft.id)return;
+  if(!me||Date.now()-(draft.at||0)>15*60*1000){if(draft.at&&Date.now()-draft.at>15*60*1000){try{sessionStorage.removeItem("fa_rate")}catch(e){}}return}
+  try{sessionStorage.removeItem("fa_rate")}catch(e){}
+  faReturnToRate(draft);
+ };
+ async function postReview(){
+  if(busy||!popP)return;
+  const note=box.querySelector("[data-note]"),err=box.querySelector("[data-err]");
+  const body=note?note.value:"";
+  if(!rateStars){if(err)err.textContent="Choose a star rating from 1 to 5.";return}
+  if(body.length>200){if(err)err.textContent="Please keep the note to 200 characters.";return}
+  if(!me){
+   try{sessionStorage.setItem("fa_rate",JSON.stringify({id:popP.id,stars:rateStars,body:body.slice(0,200),at:Date.now()}))}catch(e){}
+   const id=popP.id; faClosePops();
+   fillLastEmail(); setMode(false); show("auth");
+   return id;
+  }
+  busy=true; const btn=box.querySelector("[data-post]"); if(btn)btn.disabled=true;
+  try{
+   const mine=(revMem.get(popP.id)||{}).mine;
+   await DB.saveReview(popP.id,rateStars,body,mine&&mine.id);
+   const data=await DB.reviewBundle(popP.id);
+   revMem.set(popP.id,data); paintBundle(popP,data,false);
+   const edited=!!(mine&&mine.id); faClosePops();
+   showToast(edited?"Review updated":"Review posted");
+  }catch(e){if(err)err.textContent=FA_SHARE.reviewError(e); if(btn)btn.disabled=false}
+  finally{busy=false}
+ }
+ window.faReviewAct=async function(e){
+  const t=e.target.closest("[data-report],[data-hide],[data-restore]"); if(!t)return;
+  const pid=(document.querySelector("#ptSheet .ptBody")||{}).dataset.pid;
+  const person=all().find(x=>x.id===pid);
+  if(t.dataset.report){
+   if(!me){showToast("Sign in to report a review"); fillLastEmail(); setMode(false); show("auth"); return}
+   try{await DB.reportReview(t.dataset.report); showToast("Reported. This review is hidden until an admin checks it.");
+    if(person){const data=await DB.reviewBundle(person.id); revMem.set(person.id,data); paintBundle(person,data,false)}}
+   catch(err){showToast(FA_SHARE.reviewError(err))}
+   return;
+  }
+  if(!reviewAdmin())return;
+  const hide=!!t.dataset.hide, rid=t.dataset.hide||t.dataset.restore;
+  try{await DB.setReviewHidden(rid,hide);
+   if(person){const data=await DB.reviewBundle(person.id); revMem.set(person.id,data); paintBundle(person,data,false)}
+   showToast(hide?"Review hidden":"Review restored")}
+  catch(err){showToast(FA_SHARE.reviewError(err))}
+ };
+ pop.addEventListener("click",async e=>{
+  const t=e.target;
+  if(t.closest("[data-popx]")){faClosePops();return}
+  if(popMode==="share"&&popP){
+   const c=ctx(popP);
+   const chan=t.closest("[data-chan]");
+   if(t.closest("[data-copy]")||(chan&&chan.dataset.chan==="copy")){showToast(await copyText(c.url)?"Link copied":"Could not copy the link");return}
+   if(t.closest("[data-native]")){try{await navigator.share({title:c.title,text:c.title+" on FasciApp",url:c.url})}catch(err){if(!err||err.name!=="AbortError")showToast("Could not open sharing")}return}
+   if(!chan)return;
+   if(chan.dataset.chan==="instagram"){const ok=await copyText(c.url); showToast(ok?"Link copied. Paste it into Instagram.":"Copy the link, then paste it into Instagram."); window.open(c.targets.instagram,"_blank","noopener"); return}
+   const href=c.targets[chan.dataset.chan];
+   if(!href)return;
+   if(chan.dataset.chan==="email") location.href=href; else window.open(href,"_blank","noopener");
+   return;
+  }
+  if(popMode!=="rate")return;
+  const star=t.closest("[data-star]");
+  if(star){rateStars=+star.dataset.star; box.querySelectorAll("[data-star]").forEach(b=>{const on=+b.dataset.star<=rateStars; b.classList.toggle("on",on); b.setAttribute("aria-pressed",on?"true":"false")}); const o=box.querySelector("[data-outof]"); if(o)o.textContent=rateStars+" out of 5"; return}
+  if(t.closest("[data-post]")) postReview();
+ });
+ pop.addEventListener("input",e=>{if(!e.target.matches||!e.target.matches("[data-note]"))return; const n=e.target.value.length,c=box.querySelector("[data-count]"); if(c){c.textContent=n+"/200"; c.classList.toggle("hot",n>180)}});
+ document.addEventListener("keydown",e=>{if(pop.hidden||e.key!=="Escape")return; e.stopPropagation(); faClosePops()},true);
+})();

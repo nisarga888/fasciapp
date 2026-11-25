@@ -55,7 +55,8 @@ const local={mode:"local",
  async signOut(){localStorage.removeItem("fyp_session")},
  async list(){const s=await this.session();return Object.values(LS.get("fyp_profiles2",{})).filter(p=>p.consent||(s&&p.user_id===s.user_id)).map(norm)},
  async mine(){const s=await this.session();return s?norm(LS.get("fyp_profiles2",{})[s.user_id]||null):null},
- async save(p){p=canonP(p);const s=await this.session();const all=LS.get("fyp_profiles2",{});const row={...pick(p),news_optin:!!p.news_optin,news_optin_at:p.news_optin?(p.news_optin_at||new Date().toISOString()):null,news_optout_at:p.news_optout_at||null,locations:p.locations||null,id:all[s.user_id]?.id||crypto.randomUUID(),user_id:s.user_id,created_at:all[s.user_id]?.created_at||new Date().toISOString()};
+ async save(p){p=canonP(p);const s=await this.session();const all=LS.get("fyp_profiles2",{});const prev=all[s.user_id]||{};const row={...pick(p),news_optin:!!p.news_optin,news_optin_at:p.news_optin?(p.news_optin_at||new Date().toISOString()):null,news_optout_at:p.news_optout_at||null,locations:p.locations||null,id:prev.id||crypto.randomUUID(),user_id:s.user_id,created_at:prev.created_at||new Date().toISOString(),slug:prev.slug||null};
+  if(!row.slug&&window.FA_SHARE){const taken=new Set(Object.values(all).map(x=>x&&x.slug).filter(Boolean));const city=p.city||(p.locations&&p.locations[0]&&p.locations[0].city)||"";row.slug=FA_SHARE.allocSlug(p.name||p.practice_name||"",city,taken)}
   all[s.user_id]=row;LS.set("fyp_profiles2",all);return norm(row)},
  async sessions(){const s=await this.session();if(!s)return[];return (LS.get("fyp_sessions",{})[s.user_id]||[]).map(unpackSession).slice().sort(cmp)},
  async saveSession(x){const s=await this.session();const all=LS.get("fyp_sessions",{}),l=all[s.user_id]||[];const i=l.findIndex(r=>r.id===x.id);
@@ -66,6 +67,11 @@ const local={mode:"local",
  async setNews(on){},
  async resetPassword(email){throw new Error("Password reset needs the live FasciApp server. Open the app at fasciapp.app and try again.")},
  async updatePassword(){throw new Error("Password reset needs the live FasciApp server.")},
+ async bySlug(slug){return Object.values(LS.get("fyp_profiles2",{})).map(norm).find(p=>p&&p.slug===slug&&p.consent!==false)||null},
+ async reviewBundle(){return {avg:null,count:0,reviews:[],mine:null}},
+ async saveReview(){throw new Error("Reviews need the live FasciApp server.")},
+ async reportReview(){throw new Error("Reviews need the live FasciApp server.")},
+ async setReviewHidden(){throw new Error("Reviews need the live FasciApp server.")},
  onAuth(){return ()=>{}}};
 
 
@@ -98,14 +104,17 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
    // Egress fix v0.23.181: photos are NOT pulled from the DB (they were ~4 MB of base64 per load). They come from static
    // webp files in app/ph/ (tools/export_photos.py). Only people missing from that index get their photo fetched, by id.
    // Result cached in sessionStorage for 10 min; DB.save() clears it.
-   const ck="fa_list_v2_"+(s?1:0);try{const c=JSON.parse(sessionStorage.getItem(ck)||"null");if(c&&Date.now()-c.t<600000)return c.d}catch(e){}
+   const ck="fa_list_v3_"+(s?1:0);try{const c=JSON.parse(sessionStorage.getItem(ck)||"null");if(c&&Date.now()-c.t<600000)return c.d}catch(e){}
    const base="id,user_id,name,mods,address,city,country,lat,lng,website,bio,consent,whatsapp,created_at,locations,practice_name";
    const ixP=fetch("ph/index.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).catch(()=>({}));
-   let r;
-   if(s){r=await sb.from("practitioners").select(base+",phone,email,news_optin,news_optin_at").order("created_at");
-    if(r.error)r=await sb.from("practitioners").select(base+",phone,email").order("created_at");}
-   else{r=await sb.from("practitioners").select(base+",has_email").order("created_at");
-    if(r.error){r=await sb.from("practitioners").select(base+",email").order("created_at");(r.data||[]).forEach(p=>{p.has_email=!!(p.email&&String(p.email).trim());delete p.email})}}
+   const pull=async cols=>{let r;
+    if(s){r=await sb.from("practitioners").select(cols+",phone,email,news_optin,news_optin_at").order("created_at");
+     if(r.error&&/news_optin/.test(r.error.message||""))r=await sb.from("practitioners").select(cols+",phone,email").order("created_at");}
+    else{r=await sb.from("practitioners").select(cols+",has_email").order("created_at");
+     if(r.error){r=await sb.from("practitioners").select(cols+",email").order("created_at");(r.data||[]).forEach(p=>{p.has_email=!!(p.email&&String(p.email).trim());delete p.email})}}
+    return r};
+   let r=await pull(base+",slug");
+   if(r.error&&/slug/.test(r.error.message||""))r=await pull(base);
    const rows=chk(r),ix=await ixP;const miss=[];
    const PK="fa_ph_extra";let X={};try{X=JSON.parse(localStorage.getItem(PK)||"{}")}catch(e){}
    rows.forEach(p=>{const o=X["u:"+p.user_id];if(o&&o.own)p.photo=o.p;else if(ix[p.id])p.photo="ph/"+ix[p.id];else{p.photo=null;miss.push(p.id)}});
@@ -116,7 +125,7 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
    const out=rows.map(norm);try{sessionStorage.setItem(ck,JSON.stringify({t:Date.now(),d:out}))}catch(e){}
    return out},
   async mine(){const s=await sess();if(!s)return null;return norm(chk(await sb.from("practitioners").select("*").eq("user_id",s.user_id).maybeSingle()))},
-  async save(p){p=canonP(p);const s=await sess();try{sessionStorage.removeItem("fa_list_v2_0");sessionStorage.removeItem("fa_list_v2_1");const X=JSON.parse(localStorage.getItem("fa_ph_extra")||"{}");if(s&&s.user_id&&p.photo&&/^data:/.test(p.photo)){X["u:"+s.user_id]={t:Date.now(),p:p.photo,own:1};localStorage.setItem("fa_ph_extra",JSON.stringify(X))}}catch(e){}const pn=(p.practice_name||"").trim()||null;let L=stripLocMeta(p.locations||[]);
+  async save(p){p=canonP(p);const s=await sess();try{sessionStorage.removeItem("fa_list_v2_0");sessionStorage.removeItem("fa_list_v2_1");sessionStorage.removeItem("fa_list_v3_0");sessionStorage.removeItem("fa_list_v3_1");const X=JSON.parse(localStorage.getItem("fa_ph_extra")||"{}");if(s&&s.user_id&&p.photo&&/^data:/.test(p.photo)){X["u:"+s.user_id]={t:Date.now(),p:p.photo,own:1};localStorage.setItem("fa_ph_extra",JSON.stringify(X))}}catch(e){}const pn=(p.practice_name||"").trim()||null;let L=stripLocMeta(p.locations||[]);
    const base0=pick(p);base0.practice_name=pn;base0.consent=true;// v0.23.182: every practitioner is public automatically
    base0.news_optin=!!p.news_optin;base0.news_optin_at=p.news_optin?(p.news_optin_at||new Date().toISOString()):null;
    const upsert=async row=>{const r=await sb.from("practitioners").upsert(row,{onConflict:"user_id"}).select().single();return r};
@@ -159,6 +168,20 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
   async sendMsg(to,body){const s=await sess();return chk(await sb.from("messages").insert({sender:s.user_id,recipient:to,body}).select().single())},
   async unreadCount(){const s=await sess();if(!s)return 0;const r=await sb.from("messages").select("id",{count:"exact",head:true}).eq("recipient",s.user_id).is("read_at",null);if(r.error)throw r.error;return r.count||0},
   async markRead(from){const s=await sess();chk(await sb.from("messages").update({read_at:new Date().toISOString()}).eq("recipient",s.user_id).eq("sender",from).is("read_at",null))},
+  async bySlug(slug){const s=await sess().catch(()=>null);const cols="id,user_id,name,mods,address,city,country,lat,lng,website,bio,consent,whatsapp,created_at,locations,practice_name,slug,admin_hidden";
+   let r=s?await sb.from("practitioners").select(cols+",phone,email").eq("slug",slug).eq("consent",true).eq("admin_hidden",false).limit(1)
+    :await sb.from("practitioners").select(cols+",has_email").eq("slug",slug).eq("consent",true).eq("admin_hidden",false).limit(1);
+   if(r.error&&/admin_hidden/.test(r.error.message||""))r=s?await sb.from("practitioners").select(cols.replace(",admin_hidden","")+",phone,email").eq("slug",slug).eq("consent",true).limit(1):await sb.from("practitioners").select(cols.replace(",admin_hidden","")+",has_email").eq("slug",slug).eq("consent",true).limit(1);
+   const row=(r.data||[])[0];if(r.error)throw new Error(r.error.message);if(!row||row.consent===false||row.admin_hidden)return null;
+   if(!s&&row.email){row.has_email=!!String(row.email).trim();delete row.email}
+   try{const ix=await fetch("ph/index.json",{cache:"force-cache"}).then(x=>x.ok?x.json():{}).catch(()=>({}));if(ix[row.id])row.photo="ph/"+ix[row.id]}catch(e){}
+   return norm(row)},
+  async reviewBundle(id){const r=await sb.rpc("fa_profile_reviews",{p_id:id});if(r.error)throw new Error(r.error.message);return r.data||{avg:null,count:0,reviews:[],mine:null}},
+  async saveReview(practitionerId,stars,body,existingId){const row={stars:stars,body:String(body||"").slice(0,200)};
+   const q=existingId?sb.from("practitioner_reviews").update(row).eq("id",existingId):sb.from("practitioner_reviews").insert(Object.assign({practitioner_id:practitionerId},row));
+   const r=await q.select("id,stars,body,reviewer_label,created_at,hidden").single();if(r.error)throw new Error(r.error.message);return r.data},
+  async reportReview(id){const r=await sb.from("review_reports").insert({review_id:id});if(r.error)throw new Error(r.error.message);return true},
+  async setReviewHidden(id,hidden){const r=await sb.from("practitioner_reviews").update({hidden:!!hidden}).eq("id",id).select("id,hidden").single();if(r.error)throw new Error(r.error.message);return r.data},
   onMsg(cb,uid){try{const ch=sb.channel("msgs-"+(uid||"x"));const f=uid?[{filter:"recipient=eq."+uid},{filter:"sender=eq."+uid}]:[{}];f.forEach(o=>ch.on("postgres_changes",{event:"*",schema:"public",table:"messages",...o},cb));window.RT_OK=false;ch.subscribe(st=>{window.RT_OK=st==="SUBSCRIBED"});return ()=>sb.removeChannel(ch)}catch(e){return ()=>{}}}};
 }
 window.DB=(cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY&&window.supabase)?supa():local;
