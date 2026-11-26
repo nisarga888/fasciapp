@@ -36,7 +36,7 @@ function emailHtml(client: string, date: string, time: string, zone: string, tit
 <tr><td style="padding:14px 26px 8px;font-size:15px;line-height:1.55;color:#F3EDE4">Session with <b>${enc(client)}</b><br>${enc(date)} at <b>${enc(time)}</b><br><span style="color:#9fb3b5">${enc(zone)}</span></td></tr>
 ${what}
 <tr><td align="center" style="padding:12px 26px 22px"><a href="https://fasciapp.app/app/" style="display:inline-block;background:#C99E67;color:#02191E;text-decoration:none;font-weight:bold;padding:12px 26px;border-radius:24px">Open calendar</a></td></tr>
-<tr><td style="padding:0 26px 24px;font-size:13px;color:#9fb3b5;text-align:center">This reminder follows the time saved on the session.</td></tr>
+<tr><td style="padding:0 26px 24px;font-size:13px;color:#9fb3b5;text-align:center">This reminder follows the time saved on the session. It is sent to your login email.</td></tr>
 </table></td></tr></table></body></html>`;
 }
 
@@ -79,6 +79,7 @@ Deno.serve(async (req) => {
     const title = String(row.modality || "").replace(/[\r\n]/g, " ").trim().slice(0, 80);
     const subject = `Reminder: session with ${first} at ${w.time}`;
     const html = emailHtml(label, w.date, w.time, w.zone, title);
+    const text = `Session reminder\n\nSession with ${label}\n${w.date} at ${w.time} (${w.zone})\n\nThis was sent to your login email, ${to}.`;
     if (!to) { failed++; await admin.from("planned_sessions").update({ reminder_sent_at: null }).eq("id", row.id); continue; }
     const r = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
@@ -89,6 +90,7 @@ Deno.serve(async (req) => {
         to: [{ email: to }],
         subject,
         htmlContent: html,
+        textContent: text,
         tags: ["session-reminder"],
       }),
     });
