@@ -965,6 +965,16 @@ body.modInfoOpen>main{overflow:hidden}
 .clScanCta{display:flex;flex-direction:column;gap:6px;margin:6px 0 12px}.clCtaB{display:block;text-align:center;text-decoration:none;background:#C99E67;color:#02191E;font-weight:700;font-size:16px;border-radius:14px;padding:14px}.clCtaS{align-self:center;color:#C99E67;font-size:14px;text-decoration:none}.clScanCta small{text-align:center;color:#9fb3b5;font-size:12.5px}
 .clName{margin:8px 0 0;font-size:28px}.clSince{margin:0 0 12px;color:#9fb3b5}.clWait,.clView{display:block;text-align:center;color:#9fb3b5;margin:6px 0 10px}.clView{color:#C99E67;text-decoration:none}
 .clSend{display:block;width:100%;margin-top:8px;padding:14px;border-radius:14px;border:1px solid #C99E67;background:transparent;color:#C99E67;font:inherit;font-weight:700;font-size:16px}
+.asmList{display:flex;flex-direction:column;gap:10px;margin:0 0 14px}
+.asmCard{border:1px solid #C99E6755;border-radius:16px;padding:12px 14px;background:#0a2a30}
+.asmTop{display:flex;gap:8px;align-items:center}.asmTop b{font-size:16px}
+.asmTag{font-size:11px;font-weight:800;border-radius:999px;padding:3px 8px}
+.asmTag.draft{background:#C99E67;color:#02191E}
+.asmTag.done{background:#1c6b45;color:#e7fff2}
+.asmCard small{display:block;color:#9fb3b5;margin:6px 0 0}
+.asmGo{display:block;text-align:center;margin-top:10px;background:#C99E67;color:#02191E;border-radius:999px;padding:12px;font-weight:800;text-decoration:none}
+.asmView{display:block;text-align:center;margin-top:10px;border:1px solid #C99E67;color:#C99E67;border-radius:999px;padding:12px;font-weight:800;text-decoration:none}
+#clAsm .linkish{display:block;width:100%;margin-top:6px;background:none;border:0;color:#9fb3b5;font:inherit;font-size:13px;padding:6px}
 .clCred{text-align:center;color:#C99E67;margin:8px 0}.clBuyLine{text-align:center;color:#9fb3b5;font-size:13px}
 .slH{margin:16px 0 8px}.slAct{display:flex;gap:8px}.slAct button{flex:1}.slNote{color:#9fb3b5;font-size:13px}
 .slRow{display:flex;gap:10px;align-items:flex-start;padding:12px;margin:8px 0;border:1px solid #C99E6733;border-radius:14px;background:#0a2a30}
