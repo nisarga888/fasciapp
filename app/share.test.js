@@ -146,7 +146,7 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);
-  assert.equal(ver[1], "0.23.266");
+  assert.equal(ver[1], "0.23.267");
   assert.match(app, /faOpenLocation/);
   assert.match(app, /data-locshare/);
   const quote = "A fellow practitioner found me through FasciApp and referred a client to me for a trial BBTRS® session, which led to her booking six more sessions.";
@@ -154,11 +154,11 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   assert.ok(index.includes("Viktoria (BBTRS® practitioner)"));
   assert.equal((index.match(/class="faHomeQuote"/g) || []).length, 7);
   assert.match(index, /Show quote 1 of 7, Viktoria/);
-  assert.ok(index.includes("Paul, Netherlands"));
+  assert.equal(index.includes("Paul, Netherlands"), false);
   assert.ok(index.includes("found a great MER® practitioner in the Netherlands"));
   assert.ok(index.includes("find great practitioners all over the world"));
-  assert.ok(index.indexOf(">Steve</p>") < index.indexOf("Paul, Netherlands"));
-  assert.ok(index.indexOf("Paul, Netherlands") < index.indexOf(">Anna</p>"));
+  assert.ok(index.indexOf(">Steve</p>") < index.indexOf("found a great MER® practitioner in the Netherlands"));
+  assert.ok(index.indexOf("found a great MER® practitioner in the Netherlands") < index.indexOf(">Anna</p>"));
   assert.ok(index.indexOf("Viktoria (BBTRS® practitioner)") < index.indexOf(">Paul</p>"));
   const landing = fs.readFileSync(path.join(__dirname, "../index.html"), "utf8");
   const quotes = landing.slice(landing.indexOf('id="quotes"'), landing.indexOf("<footer>"));
