@@ -154,12 +154,14 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);
-  assert.equal(ver[1], "0.23.270");
+  assert.equal(ver[1], "0.23.271");
   assert.equal(app.includes("Turn on location for this site"), false);
+  assert.equal(app.includes("permissions.query"), false);
   assert.match(app, /https:\/\/get\.geojs\.io\/v1\/ip\/geo\.json/);
   assert.match(app, /https:\/\/ipapi\.co\/json\//);
-  assert.match(app, /enableHighAccuracy:false,timeout:6000,maximumAge:1800000/);
-  assert.match(app, /Showing practitioners near/);
+  assert.match(app, /enableHighAccuracy:true,timeout:10000,maximumAge:0/);
+  assert.match(app, /Showing practitioners near you/);
+  assert.match(app, /Use my exact location/);
   assert.match(app, /data-nearchange/);
   assert.equal(/supabase[\s\S]{0,80}fa_near/.test(app), false);
   assert.match(app, /faOpenLocation/);
