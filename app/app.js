@@ -351,15 +351,18 @@ $("#listClear")&&($("#listClear").onclick=()=>{if(nearScope){nearScope=null;cons
 $("#qCountry")&&($("#qCountry").onchange=()=>{const ci=$("#qCity");if(ci)ci.value="";renderList();renderMarkers()});
 $("#qCity")&&($("#qCity").onchange=()=>{renderList();renderMarkers()});
 $("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show("map");didFit=false;setTimeout(()=>{fitPins(true);map&&map.invalidateSize()},100)});
-let geoErr=0;function geoOnce(){return new Promise(resolve=>{geoErr=0;if(!navigator.geolocation||!window.isSecureContext)return resolve(null);
-  navigator.geolocation.getCurrentPosition(pos=>resolve([pos.coords.latitude,pos.coords.longitude,pos.coords.accuracy]),e=>{geoErr=(e&&e.code)||2;resolve(null)},{enableHighAccuracy:true,timeout:15000,maximumAge:60000})})}
-async function ipLoc(){for(const url of["https://ipapi.co/json/","https://get.geojs.io/v1/ip/geo.json"]){try{const ctrl=typeof AbortController!=="undefined"?new AbortController():null;const t=ctrl?setTimeout(()=>ctrl.abort(),4500):null;const r=await fetch(url,ctrl?{signal:ctrl.signal}:{});if(t)clearTimeout(t);if(!r.ok)continue;const j=await r.json();const lat=+(j.latitude??j.lat),lng=+(j.longitude??j.lng??j.lon);if(Number.isFinite(lat)&&Number.isFinite(lng))return[lat,lng]}catch(e){}}return null}
+function geoOnce(){return new Promise(resolve=>{if(!navigator.geolocation||!window.isSecureContext)return resolve(null);
+  let done=false;const finish=v=>{if(done)return;done=true;resolve(v)};
+  const t=setTimeout(()=>finish(null),6000);
+  try{navigator.geolocation.getCurrentPosition(pos=>{clearTimeout(t);finish([pos.coords.latitude,pos.coords.longitude,pos.coords.accuracy||0])},()=>{clearTimeout(t);finish(null)},{enableHighAccuracy:false,timeout:6000,maximumAge:1800000})}catch(e){clearTimeout(t);finish(null)}})}
+async function ipLoc(){const urls=["https://get.geojs.io/v1/ip/geo.json","https://ipapi.co/json/"];
+ for(const url of urls){try{const ctrl=typeof AbortController!=="undefined"?new AbortController():null;const t=ctrl?setTimeout(()=>ctrl.abort(),4500):null;const r=await fetch(url,ctrl?{signal:ctrl.signal}:{});if(t)clearTimeout(t);if(!r.ok)continue;const j=await r.json();const lat=+(j.latitude??j.lat),lng=+(j.longitude??j.lng??j.lon);if(!Number.isFinite(lat)||!Number.isFinite(lng))continue;const city=String(j.city||j.region||j.country||"").trim();return {lat,lng,city}}catch(e){}}return null}
 function openNearestCard(p,loc){if(!map||!p||!loc)return;try{L.popup({maxWidth:320,className:"faPop"}).setLatLng([+loc.lat,+loc.lng]).setContent(card(p)).openOn(map)}catch(e){console.warn(e)}}
 let nearScope=null;
-async function revCountry(lat,lng){try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&zoom=3&accept-language=en&lat=${lat}&lon=${lng}`);const j=await r.json();const c=j&&j.address&&j.address.country;return c?(window.canonCountry?canonCountry(c):c):""}catch(e){return ""}}
+async function revCountry(lat,lng){try{const ctrl=typeof AbortController!=="undefined"?new AbortController():null;const t=ctrl?setTimeout(()=>ctrl.abort(),4000):null;const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&zoom=3&accept-language=en&lat=${lat}&lon=${lng}`,ctrl?{signal:ctrl.signal}:{});if(t)clearTimeout(t);const j=await r.json();const c=j&&j.address&&j.address.country;return c?(window.canonCountry?canonCountry(c):c):""}catch(e){return ""}}
 // Rough continent boxes (lat/lng), enough for a fallback scope
 function region(la,ln){la=+la;ln=+ln;if(la>=34&&la<=72&&ln>=-25&&ln<=45)return"Europe";if(la>=5&&la<=84&&ln>=-170&&ln<=-50)return"North America";if(la<5&&la>=-57&&ln>=-92&&ln<=-30)return"South America";if(la>=-36&&la<34&&ln>=-20&&ln<=52)return"Africa";if(la<0&&la>=-50&&ln>=110&&ln<=180)return"Oceania";if(la>=-11&&la<=82&&ln>25&&ln<=180)return"Asia";return""}
-async function applyNear(lat,lng){here=[+lat,+lng];didFit=true;if(!map)initMap();show("map");
+async function applyNear(lat,lng){here=[+lat,+lng];didFit=true;if(!map)initMap();show("map");try{openClosest()}catch(e){}
  const ps=filtered().map(p=>({p,d:dist(p)})).filter(x=>x.d!=null).sort((a,b)=>a.d-b.d);
  const locs=[];ps.forEach(({p})=>pins(p).forEach(l=>locs.push({p,l,d:dist1(l,here)})));locs.sort((a,b)=>a.d-b.d);
  const near=locs[0];let sc=null;
@@ -375,7 +378,20 @@ async function applyNear(lat,lng){here=[+lat,+lng];didFit=true;if(!map)initMap()
  const n=ps.filter(x=>nearScope.ok(x.p)).length;showToast(`${n} practitioner${n===1?"":"s"} ${nearScope.label}`);try{openClosest()}catch(e){}}
 function inPersonPins(p){return pins(p).filter(l=>l&&l.lat!=null&&!isOnline(l))}
 function closestRows(){if(!here)return [];const rows=[];filtered().forEach(p=>{const locs=inPersonPins(p);if(!locs.length)return;let best=null;locs.forEach(l=>{const d=dist1(l,here);if(!best||d<best.d)best={l,d}});if(best)rows.push({p,d:best.d})});rows.sort((a,b)=>a.d-b.d);return rows.slice(0,40)}
-function openClosest(){let s=document.getElementById("nearSheet");if(!s){s=document.createElement("div");s.id="nearSheet";s.className="nearSheet";s.hidden=true;s.innerHTML=`<div class="nearDim" data-nearx></div><div class="nearBox" role="dialog" aria-modal="true" aria-label="Closest to you"><div class="ptPopTop"><b>Closest to you</b><button type="button" class="ptPopX" data-nearx aria-label="Close">✕</button></div><div class="nearList"></div></div>`;document.body.appendChild(s);s.addEventListener("click",e=>{if(e.target.closest("[data-nearx]")){s.hidden=true;return}const b=e.target.closest("[data-nearid]");if(!b)return;const person=all().find(x=>x.id===b.dataset.nearid);s.hidden=true;if(person&&window.faOpenPract)faOpenPract(person.id)})}const rows=closestRows();s.querySelector(".nearList").innerHTML=rows.length?rows.map(r=>`<button type="button" class="nearRow" data-nearid="${esc(r.p.id)}"><b>${esc(practiceTitle(r.p))}</b><small>${Math.round(r.d)} km</small></button>`).join(""):`<p class="muted">No in-person practitioners with a map pin nearby.</p>`;s.hidden=false}
+let nearApprox=false,nearPlaceName="",nearWant="sheet";
+function placeCentroids(){const cities=new Map(),countries=new Map();all().forEach(p=>inPersonPins(p).forEach(l=>{const country=String(l.country||"").trim();if(!country)return;const city=faCity(l.city);const add=(map,k,o)=>{const x=map.get(k)||Object.assign({lat:0,lng:0,n:0},o);x.lat+=+l.lat;x.lng+=+l.lng;x.n++;map.set(k,x)};if(city)add(cities,fold(city)+"|"+fold(country),{city,country});add(countries,fold(country),{country})}));
+ const avg=o=>({...o,lat:o.lat/o.n,lng:o.lng/o.n});return {cities:[...cities.values()].map(avg),countries:[...countries.values()].map(avg)}}
+function nearestPlaceName(lat,lng){let best=null;placeCentroids().cities.forEach(c=>{const d=dist1({lat:c.lat,lng:c.lng},[+lat,+lng]);if(!best||d<best.d)best={d,name:c.city}});return best?best.name:""}
+function nearSheetEl(){let s=document.getElementById("nearSheet");if(s)return s;s=document.createElement("div");s.id="nearSheet";s.className="nearSheet";s.hidden=true;s.innerHTML=`<div class="nearDim" data-nearx></div><div class="nearBox" role="dialog" aria-modal="true" aria-label="Closest to you"><div class="ptPopTop"><b>Closest to you</b><button type="button" class="ptPopX" data-nearx aria-label="Close">✕</button></div><p class="nearNote" hidden></p><div class="nearList"></div></div>`;document.body.appendChild(s);
+ s.addEventListener("click",e=>{if(e.target.closest("[data-nearx]")){s.hidden=true;return}if(e.target.closest("[data-nearchange]")){openPlacePick();return}const pick=e.target.closest("[data-picklat]");if(pick){const lat=+pick.dataset.picklat,lng=+pick.dataset.picklng,name=pick.dataset.pickname||"";nearApprox=true;nearPlaceName=name;try{sessionStorage.setItem("fa_near_approx",JSON.stringify({lat,lng,city:name}))}catch(err){}if(nearWant==="sort"){here=[lat,lng];listSort="near";s.hidden=true;renderList();renderMarkers();return}applyNear(lat,lng);return}const b=e.target.closest("[data-nearid]");if(!b)return;const person=all().find(x=>x.id===b.dataset.nearid);s.hidden=true;if(person&&window.faOpenPract)faOpenPract(person.id)});return s}
+function nearTitle(s,text){const b=s.querySelector(".ptPopTop b");if(b)b.textContent=text;const box=s.querySelector(".nearBox");if(box)box.setAttribute("aria-label",text)}
+function openClosest(){const s=nearSheetEl();nearTitle(s,"Closest to you");const note=s.querySelector(".nearNote");if(nearApprox&&nearPlaceName){note.hidden=false;note.innerHTML=`Showing practitioners near ${esc(nearPlaceName)} (approximate) <button type="button" data-nearchange>Change</button>`}else note.hidden=true;const rows=closestRows();s.querySelector(".nearList").innerHTML=rows.length?rows.map(r=>`<button type="button" class="nearRow" data-nearid="${esc(r.p.id)}"><b>${esc(practiceTitle(r.p))}</b><small>${Math.round(r.d)} km</small></button>`).join(""):`<p class="muted">No in-person practitioners with a map pin nearby.</p>`;s.hidden=false}
+function openPlacePick(){const s=nearSheetEl();nearTitle(s,"Choose a place");s.querySelector(".nearNote").hidden=true;const {cities,countries}=placeCentroids();const box=s.querySelector(".nearList");box.innerHTML=`<input class="nearFind" type="search" placeholder="City or country" aria-label="City or country" autocomplete="off"><div class="nearHits"></div>`;const input=box.querySelector(".nearFind"),hits=box.querySelector(".nearHits");
+ const paint=()=>{const q=fold(input.value.trim());const cs=cities.filter(c=>!q||fold(c.city).includes(q)||fold(c.country).includes(q)).slice(0,12);const cos=(!q||q.length<2)?[]:countries.filter(c=>fold(c.country).includes(q)).slice(0,6);hits.innerHTML=cs.map(c=>`<button type="button" class="nearRow" data-picklat="${c.lat}" data-picklng="${c.lng}" data-pickname="${esc(c.city)}"><b>${esc(c.city)}</b><small>${esc(c.country)}</small></button>`).join("")+cos.map(c=>`<button type="button" class="nearRow" data-picklat="${c.lat}" data-picklng="${c.lng}" data-pickname="${esc(c.country)}"><b>${esc(c.country)}</b><small>Country</small></button>`).join("")||`<p class="muted">Type a city or country</p>`};input.addEventListener("input",paint);paint();s.hidden=false;setTimeout(()=>{try{input.focus()}catch(e){}},50)}
+async function locateUser(){const pos=await geoOnce();if(pos){const city=nearestPlaceName(pos[0],pos[1]);nearApprox=(+pos[2]||0)>25000;nearPlaceName=city;return {lat:+pos[0],lng:+pos[1],city,approx:nearApprox}}
+ try{const cached=JSON.parse(sessionStorage.getItem("fa_near_approx")||"null");if(cached&&Number.isFinite(+cached.lat)&&Number.isFinite(+cached.lng)){nearApprox=true;nearPlaceName=cached.city||nearestPlaceName(+cached.lat,+cached.lng)||"your area";return {lat:+cached.lat,lng:+cached.lng,city:nearPlaceName,approx:true}}}catch(e){}
+ const ip=await ipLoc();if(ip){const city=ip.city||nearestPlaceName(ip.lat,ip.lng)||"your area";nearApprox=true;nearPlaceName=city;try{sessionStorage.setItem("fa_near_approx",JSON.stringify({lat:ip.lat,lng:ip.lng,city}))}catch(e){}return {lat:ip.lat,lng:ip.lng,city,approx:true}}
+ return null}
 const FA_FAV="fa_favs";
 function faFavIds(){try{const a=JSON.parse(localStorage.getItem(FA_FAV)||"[]");return Array.isArray(a)?a.map(String):[]}catch(e){return []}}
 function faFavHas(id){return faFavIds().indexOf(String(id))>=0}
@@ -391,14 +407,11 @@ function faMarkReviewed(id){const o=faReviewedMap();o[id]=1;try{localStorage.set
 function faOpenFav(){favOn=true;show("list")}
 document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#profFav")){e.preventDefault();faOpenFav()}});
 function clearNear(){nearScope=null;const nb=$("#nearAll");if(nb)nb.hidden=true;renderMarkers();renderList();fitPins(true)}
-async function nearMe(){const btn=$("#near");if(btn)btn.disabled=true;try{
-  showToast("Finding your location…");
-  // Device GPS only. Never guess from IP (IP location can be hundreds of km off, e.g. a mobile network exit in another country).
-  const pos=await geoOnce();
-  if(pos){const acc=+pos[2]||0;await applyNear(pos[0],pos[1]);if(acc>5000)setTimeout(()=>showToast(`Approximate location (±${Math.round(acc/1000)} km).`),1800);return}
-  // No typing, ever: one short toast, map stays as it was
-  showToast(geoErr===1?"Turn on location for this site to use Near me":"Couldn’t get your location. Try again in a moment",3000)}
- catch(e){showToast("Turn on location for this site to use Near me",3000)}
+async function nearMe(){const btn=$("#near");if(btn)btn.disabled=true;nearWant="sheet";try{
+  const loc=await locateUser();
+  if(!loc){openPlacePick();return}
+  await applyNear(loc.lat,loc.lng)}
+ catch(e){openPlacePick()}
  finally{if(btn)btn.disabled=false}}
 $("#near").onclick=()=>nearMe();$("#nearAll")&&($("#nearAll").onclick=()=>clearNear());
 const isAdmin=()=>!!(me&&String(me.email||"").toLowerCase()==="nisarga8@gmail.com");
@@ -957,7 +970,7 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
    if(nameQ)fc.push(`<button type="button" class="fChip" data-clr="name">“${esc(nameQ)}” <i>✕</i></button>`);
    if(nearScope)fc.push(`<button type="button" class="fChip" data-clr="near">📍 Near me <i>✕</i></button>`);
    top=`<div class="fChips">${fc.join("")}</div>`;$("#list").dataset.br=pp?"co":"res";
-   if(pp){const placeHead=pp.ci?head(pp.ci,`${esc(pp.co)} · ${n} ${noun(n)}`,shareBtn("city",pp.ci,n,pp.co)):head(pp.co,`${n} ${noun(n)}`,shareBtn("country",pp.co,n));const sortBar=`<div class="faSort" role="group" aria-label="Sort practitioners"><button type="button" data-sort="az" class="${listSort==="az"?"on":""}">A–Z</button><button type="button" data-sort="top" class="${listSort==="top"?"on":""}">Top rated</button><button type="button" data-sort="near" class="${listSort==="near"?"on":""}">Nearest</button></div>`;top=placeHead+sortBar+top}
+   if(pp){const placeHead=pp.ci?head(pp.ci,`${esc(pp.co)} · ${n} ${noun(n)}`,shareBtn("city",pp.ci,n,pp.co)):head(pp.co,`${n} ${noun(n)}`,shareBtn("country",pp.co,n));const sortBar=`<div class="faSort" role="group" aria-label="Sort practitioners"><button type="button" data-sort="az" class="${listSort==="az"?"on":""}">A–Z</button><button type="button" data-sort="top" class="${listSort==="top"?"on":""}">Top rated</button><button type="button" data-sort="near" class="${listSort==="near"?"on":""}">Nearest</button></div>${listSort==="near"&&nearApprox&&nearPlaceName?`<p class="nearNote">Showing practitioners near ${esc(nearPlaceName)} (approximate) <button type="button" data-nearchange>Change</button></p>`:""}`;top=placeHead+sortBar+top}
    if(pp){const allIn=filteredNoPlace().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co)));const mc=new Map();(mod?all().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co))&&p.consent!==false):allIn).forEach(p=>(p.mods||[]).filter(Boolean).forEach(m=>mc.set(m,(mc.get(m)||0)+1)));const ms=[...mc.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
     if(ms.length)top+=`<div class="brMods"><button type="button" class="cChip${mod?"":" on"}" data-mod="">All</button>${ms.map(([m,c])=>`<button type="button" class="cChip${mod===m?" on":""}" data-mod="${esc(m)}">${esc(faModLabel(m))} <i>${c}</i></button>`).join("")}</div>`}
    if(pp){const allIn=filteredNoPlace().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co)));const cs=cityList(pp.co,allIn.map(p=>({p})));
@@ -1049,7 +1062,8 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
   if(t.closest("#favChip")){faOpenFav();return}
   if(t.closest("#listNear")){nearMe();return}
   if(t.closest("[data-favback]")){favOn=false;renderList();const m0=document.querySelector("main");if(m0)m0.scrollTop=0;return}
-  const srt=t.closest("[data-sort]");if(srt){const k=srt.dataset.sort;if(k==="near"&&!here){srt.disabled=true;geoOnce().then(pos=>{srt.disabled=false;if(!pos){showToast(geoErr===1?"Turn on location for this site to use Near me":"Couldn’t get your location. Try again in a moment",3000);return}here=[+pos[0],+pos[1]];listSort="near";renderList();renderMarkers()});return}listSort=k;renderList();return}
+  if(t.closest("[data-nearchange]")){nearWant="sort";openPlacePick();return}
+  const srt=t.closest("[data-sort]");if(srt){const k=srt.dataset.sort;if(k==="near"&&!here){srt.disabled=true;nearWant="sort";locateUser().then(loc=>{srt.disabled=false;if(!loc){openPlacePick();return}here=[loc.lat,loc.lng];listSort="near";renderList();renderMarkers()}).catch(()=>{srt.disabled=false;openPlacePick()});return}listSort=k;renderList();return}
   const shb=t.closest("[data-locshare]");if(shb){e.preventDefault();e.stopPropagation();openLocShare(shb);return}
   const nb=t.closest("[data-nav]");if(nb){if(nb.dataset.nav==="allmod"){window.faSetModality("");return}if(nb.dataset.nav==="back"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}else{const pp=placeParts();if(pp)setPlaceV("co:"+pp.co)}return}
   const fc=t.closest("[data-clr]");if(fc){const k=fc.dataset.clr;
