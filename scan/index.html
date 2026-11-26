@@ -152,13 +152,15 @@ function faCheckout(k,b,fb){var c=window.FASCIAPP_CONFIG||{},t=b?b.textContent:"
  .then(function(r){return r.json()}).then(function(d){if(d&&d.url&&/^https:\/\/checkout\.stripe\.com\//.test(d.url))location.href=d.url;else back()}).catch(back)}
 document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest('[data-buy]');if(!b)return;var k=b.dataset.buy;if(k==="trial"||!/stripe/.test(b.href))return;e.preventDefault();
  if(EMB&&window.parent!==window){window.parent.postMessage({fa:"scan-buy",plan:k},location.origin);return}
- if(faSigned()){faCheckout(k,b,b.href);return}
+ if(faSigned()){var emNow=faEmail();if(emNow&&/buy\.stripe\.com/.test(b.href))b.href=b.href.split("?")[0]+"?prefilled_email="+encodeURIComponent(emNow);faCheckout(k,b,b.href);return}
  try{sessionStorage.setItem("fa_after","buy:"+k)}catch(x){}location.href="/app/?scan=buy&plan="+encodeURIComponent(k)},true);
 document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('[data-buy="trial"]');if(a&&EMB&&window.parent!==window){e.preventDefault();window.parent.postMessage({fa:"scan-trial"},location.origin)}else if(a&&!faSigned()){try{sessionStorage.setItem("fa_after","scan")}catch(x){}}});
 (function(){var U={single:BUY_SINGLE_URL,practitioner:BUY_PRACTITIONER_URL,yearly:BUY_YEARLY_URL};
 function tr(n,p){try{window.FA_ev&&FA_ev(n,{props:p,source:"scan"})}catch(e){}}
 tr("scan_landing_view",{});
-if(/[?&]paid=1/.test(location.search)){var pb=document.createElement("div");pb.className="paidMsg";pb.innerHTML='Thank you! Your payment is received and your scans are now active. <a href="/app/">Open FasciApp</a><span class="paidHelp">If your scan doesn\u2019t unlock within a minute (for example if you paid with a different email than your FasciApp account), write to <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a>.</span>';document.body.prepend(pb);tr("scan_paid_return",{plan:(location.search.match(/plan=(\w+)/)||[])[1]||""})}
+if(/[?&]paid=1/.test(location.search)){var pb=document.createElement("div");pb.className="paidMsg";pb.innerHTML='Thank you! Your payment is received and your scans are now active. <a href="/app/">Open FasciApp</a><span class="paidHelp">If your scan doesn\u2019t unlock within a minute (for example if you paid with a different email than your FasciApp account), write to <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a>.</span>';document.body.prepend(pb);tr("scan_paid_return",{plan:(location.search.match(/plan=(\w+)/)||[])[1]||""});
+ (function claim(){var sid=(location.search.match(/session_id=(cs_(?:test|live)_[A-Za-z0-9]+)/)||[])[1],tok=faTok(),cfg=window.FASCIAPP_CONFIG||{},n=0;if(!sid||!tok||!cfg.SUPABASE_URL)return;
+  function once(){fetch(cfg.SUPABASE_URL+"/rest/v1/rpc/fa_scan_claim_return",{method:"POST",headers:{apikey:cfg.SUPABASE_ANON_KEY||"","authorization":"Bearer "+tok,"content-type":"application/json"},body:JSON.stringify({p_session:sid})}).then(function(r){return r.json()}).then(function(d){if(d&&d.status==="waiting"&&n++<5)setTimeout(once,1500)}).catch(function(){})}once()})()}
 document.querySelectorAll("[data-buy]").forEach(function(a){var k=a.dataset.buy;
  if(k!=="trial"){if(U[k]){var em=faEmail();a.href=U[k]+(em?"?prefilled_email="+encodeURIComponent(em):"")}else{a.href="mailto:info@bodyawareness.ee?subject=FasciApp%20Scan%20"+k;a.textContent="Coming soon – contact info@bodyawareness.ee";a.style.fontSize="13px"}}
  a.addEventListener("click",function(){tr("buy_click",{plan:k,live:!!U[k]})})});})();

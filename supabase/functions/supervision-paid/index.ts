@@ -19,6 +19,7 @@ Deno.serve(async (req) => {
   const ev = JSON.parse(body);
   if (ev.type !== "checkout.session.completed") return new Response("ignored");
   const s = ev.data.object, id = s.client_reference_id;
+  if (s.metadata?.source === "fasciapp-scan") return new Response("ignored");
   if (!id || s.payment_status !== "paid") return new Response("no ref");
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data: row } = await db.from("supervision_signups").select("*").eq("id", id).maybeSingle();

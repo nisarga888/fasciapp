@@ -19,7 +19,9 @@ const j = (req: Request, b: unknown, status = 200) => new Response(JSON.stringif
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", {headers: cors(req)});
   if (req.method !== "POST") return j(req, {error: "method"}, 405);
-  const key = Deno.env.get("STRIPE_SECRET_KEY");
+  // STRIPE_SECRET_KEY was never set. The live restricted key already used by
+  // scan-paid is STRIPE_SCAN_KEY. Prefer an explicit checkout key if one is added later.
+  const key = Deno.env.get("STRIPE_SECRET_KEY") || Deno.env.get("STRIPE_SCAN_KEY");
   if (!key) return j(req, {error: "not_configured"}, 503);
   const token = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
   const url = Deno.env.get("SUPABASE_URL")!;
@@ -38,9 +40,9 @@ Deno.serve(async (req) => {
   f.set("currency", "eur");
   f.set("adaptive_pricing[enabled]", "false");
   f.set("allow_promotion_codes", "true");
-  // client_reference_id is deliberately NOT used: the account's MER supervision webhook treats it as a supervision sign-up id.
   if (row?.stripe_customer_id) f.set("customer", row.stripe_customer_id); else if (user.email) f.set("customer_email", user.email);
-  f.set("success_url", "https://fasciapp.app/scan/?paid=1&plan=" + plan);
+  f.set("client_reference_id", user.id);
+  f.set("success_url", "https://fasciapp.app/scan/?paid=1&plan=" + plan + "&session_id={CHECKOUT_SESSION_ID}");
   f.set("cancel_url", "https://fasciapp.app/scan/?cancel=1#pricing");
   for (const [k, v] of [["source", "fasciapp-scan"], ["user_id", user.id], ["plan", plan]]) {
     f.set(`metadata[${k}]`, v);
@@ -48,7 +50,9 @@ Deno.serve(async (req) => {
   }
   if (P.mode === "subscription") f.set("payment_method_collection", "if_required");
   else if (!row?.stripe_customer_id) f.set("customer_creation", "always");
-  const r = await fetch("https://api.stripe.com/v1/checkout/sessions", {method: "POST", body: f,
+  // Stripe only substitutes the literal {CHECKOUT_SESSION_ID}. URLSearchParams encodes the braces.
+  const body = f.toString().replace("session_id=%7BCHECKOUT_SESSION_ID%7D", "session_id={CHECKOUT_SESSION_ID}");
+  const r = await fetch("https://api.stripe.com/v1/checkout/sessions", {method: "POST", body,
     headers: {authorization: `Bearer ${key}`, "content-type": "application/x-www-form-urlencoded"}});
   const s = await r.json();
   if (!r.ok) { console.error("stripe", r.status, s?.error?.code, s?.error?.message); return j(req, {error: "stripe", code: s?.error?.code || r.status}, 502); }

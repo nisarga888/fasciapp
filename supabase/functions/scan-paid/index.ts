@@ -83,11 +83,12 @@ Deno.serve(async (req) => {
     const user = mine && /^[0-9a-f-]{36}$/.test(o.metadata.user_id || "") ? o.metadata.user_id : null;
     const email = o.customer_details?.email || o.customer_email || null;
     const customer = idOf(o.customer);
-    if (plan === "single") return apply({p_session: o.id, p_user: user, p_email: email, p_action: "single", p_customer: customer}, true);
+    const payer = o.customer_details?.name || null;
+    if (plan === "single") return apply({p_session: o.id, p_user: user, p_email: email, p_action: "single", p_customer: customer, p_name: payer}, true);
     const subId = idOf(o.subscription);
     const sub = subId ? await stripe("subscriptions/" + subId) : null;
     const exp = periodEnd(sub) || new Date(Date.now() + (plan === "yearly" ? 366 : 31) * 864e5).toISOString();
-    return apply({p_session: o.id, p_user: user, p_email: email, p_action: "subscribe", p_plan: subPlan(sub) || plan, p_expires: exp, p_sub: subId, p_customer: customer}, true);
+    return apply({p_session: o.id, p_user: user, p_email: email, p_action: "subscribe", p_plan: subPlan(sub) || plan, p_expires: exp, p_sub: subId, p_customer: customer, p_name: payer}, true);
   }
   if (ev.type === "invoice.paid") {
     const subId = idOf(o.subscription) || idOf(o.parent?.subscription_details?.subscription);
