@@ -322,13 +322,13 @@ h3.mH .toIdx{float:right;margin-top:-4px}.subH2::after{order:2}
 <p class="faHelp" id="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div><div class="toast" id="toast"></div>
 <script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
-<script src="notes.js?v=0.23.251"></script><script src="mer.js?v=0.23.232"></script><script src="anatomy.js?v=0.23.251"></script><script src="figures.js?v=0.23.251"></script><script src="mer-lines.js?v=0.23.251"></script><script src="mer-sessions.js?v=0.23.251"></script><script src="mer-v2.js?v=0.23.277"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.251"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
+<script src="notes.js?v=0.23.251"></script><script src="mer.js?v=0.23.232"></script><script src="anatomy.js?v=0.23.251"></script><script src="figures.js?v=0.23.251"></script><script src="mer-lines.js?v=0.23.251"></script><script src="mer-sessions.js?v=0.23.251"></script><script src="mer-v2.js?v=0.23.278"></script><script src="gifts.js?v=0.23.199"></script><script src="bbtrs.js?v=0.23.251"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
 (function(){
 const C=window.FASCIAPP_CONFIG,sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:localStorage,storageKey:"fasciapp-auth"}});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const id=new URLSearchParams(location.search).get("id");let cur=$("#vLoad"),row=null,timer=null,merCatalog;
-async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.277";
+async function loadMerCatalog(){if(merCatalog)return merCatalog;const v=(window.FA_MER_V2&&FA_MER_V2.DATA_VERSION)||"0.23.278";
  const names=["mer_modules","mer_strokes","mer_cards","routing","mer7_segments","homework_mapping","fascia_lines","mer_routing"];
  try{const parts=await Promise.all(names.map(n=>fetch("data/mer/"+n+".json?v="+v,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error(n);return res.json()})));
   const cat={};names.forEach((n,i)=>cat[n]=parts[i]);if(!cat.mer_modules||!cat.mer_modules.modules||!cat.mer_cards||!cat.mer_cards.cards)throw new Error("shape");merCatalog=cat}catch(e){merCatalog=null}return merCatalog}
@@ -563,9 +563,9 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-mer-seg],[
  f.onclick=()=>{const n=cur();if(n)n.scrollIntoView({behavior:"smooth",block:"start"})};
  const upd=()=>{const n=cur();f.classList.toggle("on",!!n&&n.getBoundingClientRect().bottom<0)};addEventListener("scroll",upd,{passive:true});addEventListener("hashchange",upd);setInterval(upd,800)}
 window.onpopstate=()=>{if(!row||!row.report)return;goPart(hashStep(),false)};
-async function load(){const {data,error}=await sb.from("assessments").select("id,client_name,data,red_flags,photo_front,photo_side,photo_back,report,report_ready_at,created_at").eq("id",id).maybeSingle();
+async function load(){const {data,error}=await sb.from("assessments").select("id,client_name,data,red_flags,photo_front,photo_side,photo_back,report,report_ready_at,created_at,via,opened_at").eq("id",id).maybeSingle();
  if(error||!data){$("#vList").innerHTML='<div class="prep"><h2>Record not found</h2><p>It may belong to another account.</p></div>';return show($("#vList"))}
- const first=!row;row=data;$("#stepWrap").hidden=false;if(!data.report){show($("#vPrep"));step("bbtrs");timer=setTimeout(load,8000);return}
+ const first=!row;row=data;if(data.via==="client"&&!data.opened_at)sb.from("assessments").update({opened_at:new Date().toISOString()}).eq("id",data.id);$("#stepWrap").hidden=false;if(!data.report){show($("#vPrep"));step("bbtrs");timer=setTimeout(load,8000);return}
  await loadMerCatalog();renderRes(data);if(first)window.FA_ph&&FA_ph("assessment_results_open",{});if(first&&data.report_ready_at){try{window.FA_ev&&FA_ev("report_ready",{once:"rr",props:{},source:"scan"})}catch(e){}}
  /* v0.23.133: photos are deleted from storage once the report is ready (records created from 26 Oct 2026 on) */
  if(data.report_ready_at&&new Date(data.created_at)>=new Date("2026-10-26T12:00:00Z")){const P=["front","side","back"].map(v=>data["photo_"+v]).filter(Boolean);if(P.length)setTimeout(async()=>{try{const r=await sb.storage.from("assessment-photos").remove(P);if(!r.error)await sb.from("assessments").update({photo_front:null,photo_side:null,photo_back:null}).eq("id",data.id)}catch(e){}},4000)}goPart(hashStep(),false,first)}

@@ -115,7 +115,16 @@
         + '<p class="intro">'+esc(nm)+' has received your answers and will use them to prepare for your session.</p><p class="sub">You can close this page.</p>';
     }catch(err){msg.textContent = "That didn't work. Please try again."; btn.disabled = false;}
   };
-  loadPerson(); mountTs();
+  async function route(){
+    if(/^[a-f0-9]{36}$/.test(slug)){
+      try{
+        const r = await fetch(cfg.SUPABASE_URL+"/functions/v1/assess-open",{method:"POST",headers:{"content-type":"application/json",apikey:cfg.SUPABASE_ANON_KEY,authorization:"Bearer "+cfg.SUPABASE_ANON_KEY},body:JSON.stringify({token:slug})});
+        if(r.ok){location.replace("/assess.html?t="+encodeURIComponent(slug));return;}
+      }catch(e){}
+    }
+    loadPerson(); mountTs();
+  }
+  route();
 })();
 </script>
 </body>
