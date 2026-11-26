@@ -177,6 +177,8 @@ function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPAB
    try{const ix=await fetch("ph/index.json",{cache:"force-cache"}).then(x=>x.ok?x.json():{}).catch(()=>({}));if(ix[row.id])row.photo="ph/"+ix[row.id]}catch(e){}
    return norm(row)},
   async reviewBundle(id){const r=await sb.rpc("fa_profile_reviews",{p_id:id});if(r.error)throw new Error(r.error.message);return r.data||{avg:null,count:0,reviews:[],mine:null}},
+  async ratingAgg(){const r=await sb.from("practitioner_rating_agg").select("practitioner_id,avg_stars,review_count");if(r.error)throw new Error(r.error.message);return r.data||[]},
+  async guestReview(body){const r=await fetch(cfg.SUPABASE_URL+"/functions/v1/submit-review",{method:"POST",headers:{"content-type":"application/json",apikey:cfg.SUPABASE_ANON_KEY,authorization:"Bearer "+cfg.SUPABASE_ANON_KEY},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"That didn't work. Please try again.");return j},
   async saveReview(practitionerId,stars,body,existingId){const row={stars:stars,body:String(body||"").slice(0,200)};
    const q=existingId?sb.from("practitioner_reviews").update(row).eq("id",existingId):sb.from("practitioner_reviews").insert(Object.assign({practitioner_id:practitionerId},row));
    const r=await q.select("id,stars,body,reviewer_label,created_at,hidden").single();if(r.error)throw new Error(r.error.message);return r.data},

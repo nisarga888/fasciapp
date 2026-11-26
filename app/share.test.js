@@ -120,13 +120,21 @@ test("the profile shows stars, a report button, and no rate button on your own l
   }, {signedIn: true, admin: true, now: new Date("2026-11-25T12:00:00Z")});
   assert.match(hidden, /data-restore="r2"/);
   assert.match(hidden, /Hidden/);
-  const form = S.rateSheetHtml({name: "Aisha Archer", stars: 5, body: "Left with more space", signedIn: false});
+  const form = S.rateSheetHtml({name: "Aisha Archer", stars: 5, body: "Left with more space", signedIn: false, guest: true});
   assert.match(form, /Rate your session/);
   assert.match(form, /with Aisha Archer/);
   assert.match(form, /5 out of 5/);
   assert.match(form, /20\/200/);
   assert.match(form, /maxlength="200"/);
-  assert.match(form, /Post review/);
+  assert.match(form, /First name/);
+  assert.match(form, /id="tsRate"/);
+  assert.match(form, /Submit/);
+  assert.match(S.heartButtonHtml(true), /data-fav/);
+  assert.match(S.heartButtonHtml(true), /ptHeart on/);
+  assert.match(S.starChipHtml(4.8, 12), /★ 4\.8 \(12\)/);
+  assert.match(S.starChipHtml(4.6, 3), /Top rated/);
+  assert.equal(S.starChipHtml(4.8, 0), "");
+  assert.equal(S.starChipHtml(4.9, 2).includes("Top rated"), false);
 });
 
 test("the app opens a public slug, keeps share and reviews off the main list, and bumps the release", () => {
@@ -146,7 +154,7 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);
-  assert.equal(ver[1], "0.23.268");
+  assert.equal(ver[1], "0.23.269");
   assert.match(app, /faOpenLocation/);
   assert.match(app, /data-locshare/);
   const quote = "A fellow practitioner found me through FasciApp and referred a client to me for a trial BBTRS® session, which led to her booking six more sessions.";
