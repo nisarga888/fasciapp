@@ -33,6 +33,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold)}textarea{min-he
 .opt{font-size:11px;color:var(--gold);border:1px solid var(--ln);border-radius:10px;padding:1px 7px;margin-left:6px}
 .bar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(0deg,var(--bg) 70%,transparent)}
 .bar div{max-width:560px;margin:auto}
+.scanProg{margin:8px 0 4px}.spTop{display:flex;justify-content:space-between;align-items:baseline;color:var(--mut);font-size:13px}.spTop b{color:var(--gold);font-weight:700}
+.spBars{display:flex;gap:4px;margin:8px 0}.spBars i{flex:1;height:5px;border-radius:3px;background:#1d4a52}.spBars i.on{background:var(--gold)}
+#spName{margin:4px 0 0;font-size:22px;font-weight:600}
+.draftActs{display:flex;gap:8px}.draftActs button{flex:1;width:auto}
+.draftActs .later{background:transparent;color:var(--gold);border:1px solid var(--gold);box-shadow:none}
+.linkish{width:auto;background:none;color:var(--mut);box-shadow:none;padding:6px 0;font-size:13px;font-weight:600}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:40;background:#0a2a30;color:var(--tx);border:1px solid var(--gold);border-radius:999px;padding:8px 14px;font-size:14px;white-space:nowrap}
+body.scanSteps .sec{display:none}body.scanSteps .sec.show{display:block}body.scanSteps #steps,body.scanSteps #go{display:none}
 button{width:100%;font:inherit;font-size:16px;font-weight:600;padding:15px;border-radius:28px;border:0;background:linear-gradient(90deg,#d8b07a,#C99E67);color:var(--bg);cursor:pointer;box-shadow:0 6px 20px #c99e6740}
 button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;color:var(--mut)}
 .consent{display:flex;gap:10px;font-size:13px;color:var(--mut);line-height:1.45;margin-top:16px}.consent input{width:auto;flex:none;margin-top:3px;accent-color:var(--gold)}
@@ -51,34 +59,36 @@ button:disabled{opacity:.6}.msg{text-align:center;font-size:14px;margin-top:8px;
 body:not(.imp) .unI,body.imp .unM{display:none}
 /* v0.23.205 support line */.faHelp{text-align:center;font-size:12.5px;color:#9fb3b5;margin:18px 0 6px}.faHelp a{color:#C99E67;text-decoration:none;border-bottom:1px solid #c99e6766}@media print{.faHelp{display:none!important}}
 </style></head><body><div class="wrap" id="form">
-<div class="top"><a href="./">← FasciApp</a><a href="assessment-results.html">Records →</a></div>
+<div class="top"><a href="./" id="back">← FasciApp</a><a href="assessment-results.html">Records →</a></div>
 <nav class="steps" id="steps"><a class="on"><b>1</b>Intake<small>Form · summary</small></a><a class="off" data-s="#bbtrs"><b>2</b>Breathwork<small>BBTRS · plan</small></a><a class="off" data-s="#mer"><b>3</b>MER<small>Myofascial · plan</small></a></nav>
 <div class="hero"><div class="k">Fascia Lab</div><h1>Body Assessment</h1><p>Three photos and a short intake. Together they help plan each session around the whole body.</p></div>
+<div id="scanProg" class="scanProg" hidden><div class="spTop"><span id="spWith"></span><b id="spStep">Step 1 of 7</b></div><div class="spBars" id="spBars"></div><h2 id="spName">Client &amp; photos</h2><button type="button" id="draftDel" class="linkish" hidden>Delete draft</button></div>
+<div id="toast" class="toast" hidden>Saved · you can continue anytime</div>
 <div class="who" id="who">Checking sign-in…</div>
 
-<section class="sec"><div class="sh"><div class="n">◎</div><h2>Client<small>Who is this assessment for?</small></h2></div>
+<section class="sec" data-step="1"><div class="sh"><div class="n">◎</div><h2>Client<small>Who is this assessment for?</small></h2></div>
 <input id="client_name" placeholder="Client name or initials" autocomplete="off"></section>
 
-<section class="sec"><div class="sh"><div class="n">📷</div><h2>Posture photos<small>Front, side and back. Standing relaxed, feet hip-width.</small></h2></div>
+<section class="sec" data-step="1"><div class="sh"><div class="n">📷</div><h2>Posture photos<small>Front, side and back. Standing relaxed, feet hip-width.</small></h2></div>
 <div class="photos" id="photos"></div>
 <div class="tip">Tips: full body in frame, plain wall behind, fitted clothes, camera at hip height about 2–3 m away.</div></section>
 
-<section class="sec"><div class="sh"><div class="n">1</div><h2>Main complaint &amp; goal</h2></div>
+<section class="sec" data-step="2"><div class="sh"><div class="n">1</div><h2>Main complaint &amp; goal</h2></div>
 <label class="f">Reason for coming</label><div class="chips" data-k="reasons" data-o="Pain,Stiffness,Posture,Breath,Stress,Emotional tension,Other"></div>
 <label class="f">What brings you in?</label><textarea data-k="complaint" placeholder="e.g. lower back pain after sitting"></textarea>
 <label class="f">What would you like to be able to do again?</label><textarea data-k="goal" placeholder="e.g. play with my kids without pain"></textarea></section>
 
-<section class="sec"><div class="sh"><div class="n">2</div><h2>Pain map</h2></div>
+<section class="sec" data-step="3"><div class="sh"><div class="n">2</div><h2>Where it is felt</h2></div>
 <label class="f">Where does it hurt?</label><div class="chips" data-k="pain_areas" data-o="Head,Jaw,Neck,Shoulders,Upper back,Chest,Arms,Elbows,Wrists / hands,Lower back,Abdomen,Pelvis,Hips,Glutes,Thighs,Knees,Calves,Ankles,Feet"></div>
 <label class="f">Intensity (0–10)</label><div class="rng"><input type="range" min="0" max="10" value="0" data-k="pain_intensity"><output>0</output></div>
 <label class="f">Type of pain</label><div class="chips" data-k="pain_type" data-o="Sharp,Dull,Burning,Radiating,Aching,Tingling,Pulling,Heavy,Tight"></div>
 <label class="f">Constant or comes and goes?</label><div class="chips" data-k="pain_pattern" data-r="1" data-o="Constant,Comes and goes"></div></section>
 
-<section class="sec"><div class="sh"><div class="n">3</div><h2>Tension &amp; stiffness</h2></div>
+<section class="sec" data-step="4"><div class="sh"><div class="n">3</div><h2>Tension &amp; stiffness</h2></div>
 <label class="f">Where do you feel tight or restricted?</label><div class="chips" data-k="tension_areas" data-o="Jaw,Neck,Shoulders,Upper back,Chest,Diaphragm,Lower back,Hips,Hamstrings,Calves,Feet"></div>
 <label class="f">When is it worse?</label><div class="chips" data-k="tension_when" data-o="Morning,Evening,After sitting,After standing,After exercise,Under stress,Cold weather,Night"></div></section>
 
-<section class="sec"><div class="sh"><div class="n">4</div><h2>History &amp; timeline</h2></div>
+<section class="sec" data-step="4"><div class="sh"><div class="n">4</div><h2>History &amp; timeline</h2></div>
 <div class="row"><div><label class="f">When did it start?</label><input data-k="started" placeholder="e.g. 2 years ago"></div>
 <div><label class="f">Onset</label><select data-k="onset"><option value="">Choose</option><option>Sudden</option><option>Gradual</option><option>Not sure</option></select></div></div>
 <label class="f">What makes it better?</label><input data-k="better" placeholder="e.g. walking, warmth">
@@ -86,10 +96,10 @@ body:not(.imp) .unI,body.imp .unM{display:none}
 <label class="f">When it started, what was happening in your life then? <span class="opt">optional</span></label><textarea data-k="started_life" placeholder="Share only what feels right"></textarea>
 <label class="f">Previous treatment and what helped</label><input data-k="prev_treatment" placeholder="e.g. massage 2024, helped for a week"></section>
 
-<section class="sec"><div class="sh"><div class="n">5</div><h2>Injuries, surgeries &amp; scars<small>Old ones count too. Scars often shape fascial patterns.</small></h2></div>
+<section class="sec" data-step="4"><div class="sh"><div class="n">5</div><h2>Injuries, surgeries &amp; scars<small>Old ones count too. Scars often shape fascial patterns.</small></h2></div>
 <textarea data-k="injuries" placeholder="e.g. broken left ankle 2015, C-section 2019"></textarea></section>
 
-<section class="sec"><div class="sh"><div class="n">6</div><h2>Body basics</h2></div>
+<section class="sec" data-step="5"><div class="sh"><div class="n">6</div><h2>Body basics</h2></div>
 <div class="unT" id="unT" role="group" aria-label="Units"><button type="button" data-u="m">cm · kg</button><button type="button" data-u="i">ft/in · lbs</button></div>
 <div class="row3"><div><label class="f">Age</label><input type="number" inputmode="numeric" data-k="age" min="0" max="120"></div>
 <div class="unM"><label class="f">Height cm</label><input type="number" inputmode="numeric" data-k="height_cm" id="hCm"></div>
@@ -100,18 +110,18 @@ body:not(.imp) .unI,body.imp .unM{display:none}
 <label class="f">Known structural issues</label><div class="chips" data-k="structural" data-o="Scoliosis,Leg length difference,Flat feet,Hypermobility,None known"></div>
 <input data-k="structural_other" placeholder="Other" style="margin-top:10px"></section>
 
-<section class="sec"><div class="sh"><div class="n">7</div><h2>Daily posture &amp; activity</h2></div>
+<section class="sec" data-step="5"><div class="sh"><div class="n">7</div><h2>Daily posture &amp; activity</h2></div>
 <div class="chips" data-k="daily" data-o="Desk work,Standing work,Driving,Lots of phone use,Physical work,Caring for kids"></div>
 <label class="f">Sport &amp; exercise (what, how often)</label><input data-k="exercise" placeholder="e.g. yoga 2× week, running"></section>
 
-<section class="sec"><div class="sh"><div class="n">8</div><h2>Sleep, stress &amp; breath</h2></div>
+<section class="sec" data-step="6"><div class="sh"><div class="n">8</div><h2>Sleep, stress &amp; breath</h2></div>
 <label class="f">Sleep quality</label><div class="chips" data-k="sleep" data-r="1" data-o="Good,Okay,Poor,Very poor"></div>
 <label class="f">Stress level (0–10)</label><div class="rng"><input type="range" min="0" max="10" value="0" data-k="stress"><output>0</output></div>
 <label class="f">Breathing</label><div class="chips" data-k="breath" data-o="Shallow,Hold my breath,Chest breathing,Mouth breathing,Sigh a lot,Feels free"></div>
 <label class="f">Under stress my body tends to</label><div class="chips" data-k="stress_response" data-o="Tense up,Go numb or spacey,Get restless,Collapse"></div>
 <label class="f">Breathwork or meditation experience <span class="opt">optional</span></label><input data-k="breath_experience" placeholder="e.g. yoga, some breathwork"></section>
 
-<section class="sec"><div class="sh"><div class="n">✧</div><h2>How do you experience your body?<small>In your own words, then practitioner markers.</small></h2></div>
+<section class="sec" data-step="6"><div class="sh"><div class="n">✧</div><h2>How do you experience your body?<small>In your own words, then practitioner markers.</small></h2></div>
 <label class="f">How do you experience your body?</label><textarea data-k="body_experience" placeholder="e.g. I feel heavy in my legs, my head is always busy, my chest feels closed"></textarea>
 <div class="tip" style="margin-top:16px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;font-size:11px"><b>Practitioner markers · Grounding &amp; energetics</b></div>
 <label class="f">Where energy / charge sits</label><div class="chips" data-k="energetics" data-o="Legs,Lower body,Torso,Chest,Face &amp; eyes"></div>
@@ -120,14 +130,14 @@ body:not(.imp) .unI,body.imp .unM{display:none}
 <label class="f">Energy &amp; patterns</label><div class="chips" data-k="energetics" data-o="Collapsed shoulders,Lack of energy,Never collapses / always holds up,Finishes projects,Rarely finishes projects"></div>
 <label class="f">Energetics notes <span class="opt">optional</span></label><textarea data-k="energetics_notes" placeholder="e.g. charge held high, eyes alert, legs cool and less present"></textarea></section>
 
-<section class="sec" id="gifts"><div class="sh"><div class="n">✦</div><h2>Your Five Gifts<small>A short self-reflection · about 3 minutes</small></h2></div><p class="gIn">Every way we learned to stay safe also carries a gift. <span id="gIntro"></span></p><div class="gSc"><span>0 Not true</span><span>1 Rarely</span><span>2 Sometimes</span><span>3 Often</span><span>4 Very true</span></div><div class="gPr"><div class="gT"><i id="gBar"></i></div><span id="gCnt">0 / 25</span></div><div id="pqs"></div><p class="tip" id="gDisc"></p></section>
+<section class="sec" id="gifts" data-step="6"><div class="sh"><div class="n">✦</div><h2>Your Five Gifts<small>A short self-reflection · about 3 minutes</small></h2></div><p class="gIn">Every way we learned to stay safe also carries a gift. <span id="gIntro"></span></p><div class="gSc"><span>0 Not true</span><span>1 Rarely</span><span>2 Sometimes</span><span>3 Often</span><span>4 Very true</span></div><div class="gPr"><div class="gT"><i id="gBar"></i></div><span id="gCnt">0 / 25</span></div><div id="pqs"></div><p class="tip" id="gDisc"></p></section>
 
-<section class="sec"><div class="sh"><div class="n">9</div><h2>Health &amp; medication</h2></div>
+<section class="sec" data-step="7"><div class="sh"><div class="n">9</div><h2>Health &amp; medication</h2></div>
 <label class="f">Health conditions and medication</label><textarea data-k="health" placeholder="e.g. hypothyroid, ibuprofen as needed"></textarea>
 <label class="f">Do any of these apply? <span class="opt">any yes → see a doctor before hands-on work</span></label><div class="chips" id="flags" data-k="red_flags" data-o="Pregnancy,Blood thinners,Recent trauma or accident,Unexplained weight loss,Numbness or loss of strength,Fever or night sweats,Constant or night pain not changed by position,Bowel or bladder changes / groin numbness,Chest pain / palpitations / unexplained breathlessness,Swollen hot or painful calf,Known cancer / osteoporosis / aneurysm / hernia / inflammatory flare,Surgery in the last 6 weeks,Dizziness / fainting / stroke / vertebral artery history"></div>
 <div class="warn" id="warn">⚠️ <b>Please check with a doctor first.</b> One or more of these needs medical clearance before bodywork.</div></section>
 
-<section class="sec"><div class="sh"><div class="n">10</div><h2>Emotional background &amp; touch <span class="opt">optional</span></h2></div>
+<section class="sec" data-step="7"><div class="sh"><div class="n">10</div><h2>Emotional background &amp; touch <span class="opt">optional</span></h2></div>
 <label class="f">Anything you'd like your practitioner to know?</label><textarea data-k="emotional" placeholder="Share only what feels right"></textarea>
 <label class="f">Touch &amp; boundaries</label><div class="chips" data-k="touch" data-o="Light pressure,Medium pressure,Deep pressure,Ask before each area,Avoid some areas"></div>
 <input data-k="touch_notes" placeholder="Areas to avoid or other wishes" style="margin-top:10px">
@@ -137,7 +147,7 @@ body:not(.imp) .unI,body.imp .unM{display:none}
 <label class="f">Photo consent</label><div class="chips" data-k="photo_consent" data-o="Front,Sides,Back,None"></div>
 <label class="consent"><input type="checkbox" id="consent"> I agree this information and photos are stored privately for planning my sessions. I can ask for deletion at any time.</label></section>
 
-<section class="sec"><div class="sh"><div class="n">✚</div><h2>Practitioner · after the scan<small>Confirm or correct the photo reading.</small></h2></div>
+<section class="sec" data-step="7"><div class="sh"><div class="n">✚</div><h2>Practitioner · after the scan<small>Confirm or correct the photo reading.</small></h2></div>
 <div class="row3"><div><label class="f">Side</label><input data-k="obs_side" placeholder="head forward, pelvis neutral"></div><div><label class="f">Front</label><input data-k="obs_front" placeholder="shoulders level, feet straight"></div><div><label class="f">Back</label><input data-k="obs_back" placeholder="R shoulder lower"></div></div>
 <label class="f">Movement and palpation · tick the restricted side</label>
 <label class="f" style="margin-top:8px;font-size:12px">Neck rotation</label><div class="chips" data-k="mv_neck_rotation" data-o="L restricted,R restricted,Painful"></div>
@@ -155,7 +165,7 @@ body:not(.imp) .unI,body.imp .unM{display:none}
 <p class="faHelp">Need help? <a href="mailto:hello@fasciapp.app">hello@fasciapp.app</a></p>
 </div>
 <div class="done" id="done"><h2>Assessment saved ✓</h2><p style="color:var(--mut)">Stored privately in your account.</p><button onclick="location.reload()" style="max-width:280px;margin-top:20px">New assessment</button></div>
-<div class="bar" id="bar"><div><button id="go">Save &amp; next: Breathwork →</button><div class="msg" id="msg"></div></div></div>
+<div class="bar" id="bar"><div class="draftActs" id="draftActs" hidden><button type="button" class="later" id="saveLater">Save &amp; finish later</button><button type="button" id="nextStep">Next</button></div><div><button id="go">Save &amp; next: Breathwork →</button><div class="msg" id="msg"></div></div></div>
 <script>try{localStorage.setItem("faScanSeen","1")}catch(e){}</script><script src="config.js?v=0.23.133"></script><script src="track.js?v=0.23.133"></script>
 <script src="gifts.js?v=0.23.191"></script><script src="vendor/supabase-js-2.118.0.min.js"></script>
 <script>
@@ -187,7 +197,7 @@ async function loadRec(){const {data,error}=await sb.from("assessments").select(
  $$("#steps a").forEach(a=>{if(a.dataset.s!=null){a.classList.remove("off");a.href="assessment-results.html?id="+EID+a.dataset.s}});
  $("#del").hidden=false;
  for(const v of ["front","side","back"])if(data["photo_"+v]){const r=await sb.storage.from("assessment-photos").createSignedUrl(data["photo_"+v],3600);if(r.data)setImg(v,r.data.signedUrl)}}
-let user=null;sb.auth.getSession().then(({data})=>{user=data.session&&data.session.user;if(!user){location.replace("./?scan=trial");return}$("#who").innerHTML=user?'Signed in as <b>'+user.email+'</b>':'Please <a style="color:var(--gold)" href="./">sign in to FasciApp</a> to save.';if(user&&EID)loadRec();if(user&&!EID)scanGate()});
+let user=null;sb.auth.getSession().then(({data})=>{user=data.session&&data.session.user;if(!user){location.replace("./?scan=trial");return}$("#who").innerHTML=user?'Signed in as <b>'+user.email+'</b>':'Please <a style="color:var(--gold)" href="./">sign in to FasciApp</a> to save.';if(user&&EID)loadRec();if(user&&!EID){scanGate();startSteps()}});
 const ev=(n,p)=>{try{window.FA_ev&&FA_ev(n,{props:p||{},source:"scan"})}catch(e){}};
 async function scanGate(){try{const {data,error}=await sb.rpc("fa_scan_status");if(error||!data)return;
  if(!data.allowed){const b=$("#go");b.disabled=true;b.textContent="No scans left";$("#msg").innerHTML='No scans left. <a style="color:var(--gold)" href="/scan/#pricing">Choose a plan to continue →</a>';ev("scan_gate_blocked",{plan:data.plan});return}
@@ -202,19 +212,51 @@ const FG=window.FA_GIFTS;$("#gIntro").textContent=FG.INTRO;$("#gDisc").textConte
 const gUpd=()=>{const n=$$("#pqs input:checked").length,t=FG.Q.length;$("#gCnt").textContent=n+" / "+t;$("#gBar").style.width=(n/t*100)+"%"};$("#pqs").addEventListener("change",gUpd);
 const collect=()=>{const d={};$$("[data-k]").forEach(el=>{const k=el.dataset.k;if(el.classList.contains("chips")){const v=[...el.querySelectorAll("input:checked")].map(i=>i.value);d[k]=el.dataset.r?(v[0]||null):(Array.isArray(d[k])?d[k].concat(v):v)}else if(el.value!=="")d[k]=el.type=="number"||el.type=="range"?Number(el.value):el.value.trim()});const pt={};$$("#pqs input:checked").forEach(x=>pt[x.name.slice(3)]=Number(x.value));if(Object.keys(pt).length){const r=FG.score(pt);r.answers=pt;d.gifts=r;const sc={};FG.ORDER.forEach(k=>sc[FG.G[k].legacy]=Math.round(r.pct[k]*15/100));d.pattern_scores=sc}return d};
 const msg=t=>$("#msg").textContent=t;
+const kept={front:"",side:"",back:""};let draftId=new URLSearchParams(location.search).get("draft")||"",draftRow=null,stepN=1,saving=false,finishing=false;
+const STEP_NAMES=["Client & photos","Why they're here","Where it is felt","Tension & history","Body & daily life","Breath & gifts","Health & the reading"];
+const ck=n=>(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/ł/g,"l").replace(/Ł/g,"L").trim().replace(/\s+/g," ").toLowerCase();
+let toastT;function toast(s){const t=$("#toast");if(!t)return;t.textContent=s;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2400)}
+function showStep(n){stepN=Math.max(1,Math.min(7,n));$$(".sec[data-step]").forEach(s=>s.classList.toggle("show",+s.dataset.step===stepN));
+ const bars=$("#spBars");if(bars)bars.innerHTML=[1,2,3,4,5,6,7].map(i=>'<i class="'+(i<=stepN?"on":"")+'"></i>').join("");
+ const lab=$("#spStep");if(lab)lab.textContent="Step "+stepN+" of 7";const nm=$("#spName");if(nm)nm.textContent=STEP_NAMES[stepN-1];
+ const next=$("#nextStep");if(next)next.textContent=stepN===7?"Finish":"Next";
+ const who=$("#client_name").value.trim();const w=$("#spWith");if(w)w.textContent=who?("With "+who+" · in person"):"In person";
+ try{scrollTo(0,0)}catch(e){}}
+const shrinkWebp=f=>new Promise(res=>{const im=new Image();im.onload=()=>{const s=Math.min(1,1400/Math.max(im.width||1,im.height||1)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));c.getContext("2d").drawImage(im,0,0,c.width,c.height);c.toBlob(b=>res(b||f),"image/webp",.72)};im.onerror=()=>res(f);im.src=URL.createObjectURL(f)});
+function fillDraft(d){const data=Object.assign({},d.data||{});$$("[data-k]").forEach(el=>{const k=el.dataset.k,v=data[k];if(v==null)return;if(el.classList.contains("chips")){const a=[].concat(v);el.querySelectorAll("input").forEach(i=>i.checked=a.includes(i.value))}else{el.value=v;if(el.type==="range"&&el.nextElementSibling)el.nextElementSibling.value=v}});
+ const PT=((data.gifts||{}).answers)||{};for(const q in PT){const x=document.querySelector('#pqs input[name="pq_'+q+'"][value="'+PT[q]+'"]');if(x)x.checked=true}if(window.FA_unitsRefresh)FA_unitsRefresh();try{gUpd()}catch(e){}$("#warn").classList.toggle("on",!!(data.red_flags||[]).length)}
+async function saveDraft(silent){if(!user||EID||saving)return false;const name=$("#client_name").value.trim();if(!name){msg("Add the client name first.");showStep(1);return false}
+ saving=true;try{
+  if(!draftId){const ins=await sb.from("assessment_drafts").insert({owner_id:user.id,client_name:name.slice(0,80),client_key:ck(name),step:stepN,step_count:7,data:collect()}).select("id").single();if(ins.error)throw ins.error;draftId=ins.data.id;const u=new URL(location.href);u.searchParams.set("draft",draftId);history.replaceState({},"",u.pathname+u.search)}
+  for(const v of ["front","side","back"]){if(!files[v])continue;const p=user.id+"/"+draftId+"/"+v+".webp";const up=await sb.storage.from("assessment-photos").upload(p,await shrinkWebp(files[v]),{contentType:"image/webp",upsert:true});if(up.error)throw up.error;kept[v]=p;files[v]=null}
+  const upd=await sb.from("assessment_drafts").update({client_name:name.slice(0,80),client_key:ck(name),step:stepN,data:collect(),photo_front:kept.front||null,photo_side:kept.side||null,photo_back:kept.back||null,updated_at:new Date().toISOString()}).eq("id",draftId);if(upd.error)throw upd.error;
+  $("#draftDel").hidden=false;if(!silent)toast("Saved · you can continue anytime");msg("");return true
+ }catch(e){msg("Could not save the draft.");return false}finally{saving=false}}
+async function startSteps(){document.body.classList.add("scanSteps");$("#scanProg").hidden=false;$("#draftActs").hidden=false;$(".hero h1").textContent="Body Scan";
+ const cn=new URLSearchParams(location.search).get("client")||"";if(cn&&!$("#client_name").value)$("#client_name").value=cn.slice(0,80);
+ const back=$("#back");if(back&&$("#client_name").value){back.textContent="← "+$("#client_name").value.trim();back.href="./?go="+encodeURIComponent("client:"+ck($("#client_name").value))}
+ if(draftId){const r=await sb.from("assessment_drafts").select("*").eq("id",draftId).maybeSingle();draftRow=r.data;
+  if(draftRow&&draftRow.assessment_id){location.replace("assessment-results.html?id="+draftRow.assessment_id+"#bbtrs");return}
+  if(draftRow){$("#client_name").value=draftRow.client_name||$("#client_name").value;fillDraft(draftRow);["front","side","back"].forEach(v=>{kept[v]=draftRow["photo_"+v]||""});for(const v of ["front","side","back"])if(kept[v]){const pic=await sb.storage.from("assessment-photos").createSignedUrl(kept[v],3600);if(pic.data)setImg(v,pic.data.signedUrl)}stepN=draftRow.step||1;$("#draftDel").hidden=false}}
+ showStep(stepN)}
+$("#saveLater").onclick=()=>saveDraft(false);
+$("#nextStep").onclick=async()=>{if(stepN<7){const ok=await saveDraft(true);if(!ok)return;showStep(stepN+1);return}if(!(await saveDraft(true))&&!EID)return;if($("#go").onclick)$("#go").onclick()};
+$("#draftDel").onclick=async()=>{if(!draftId||!confirm("Delete this draft? Photos in it are removed."))return;const paths=["front","side","back"].map(v=>kept[v]).filter(Boolean);if(paths.length)await sb.storage.from("assessment-photos").remove(paths);await sb.from("assessment_drafts").delete().eq("id",draftId);const back=$("#back");location.href=back&&back.getAttribute("href")||"./"};
 $("#go").onclick=async()=>{
- if(!user)return msg("Please sign in to FasciApp first.");
- if(!$("#consent").checked)return msg("Please tick the consent box at the end.");
- if(!rec&&(!files.front||!files.side||!files.back))return (msg("Please add all three photos."),$("#photos").scrollIntoView({block:"center"}));
+ if(finishing)return;finishing=true;
+ if(!user){finishing=false;return msg("Please sign in to FasciApp first.");}
+ if(draftRow&&draftRow.assessment_id){location.href="assessment-results.html?id="+draftRow.assessment_id+"#bbtrs";return}
+ if(!$("#consent").checked){finishing=false;return msg("Please tick the consent box at the end.");}
+ if(!rec&&["front","side","back"].some(v=>!files[v]&&!kept[v])){finishing=false;return (msg("Please add all three photos."),showStep(1));}
  const b=$("#go");b.disabled=true;b.textContent="Saving privately…";
  try{let id2;const id=rec?rec.id:crypto.randomUUID(),d=collect(),row={id,owner_id:user.id,client_name:$("#client_name").value.trim()||null,data:d,red_flags:d.red_flags||[]};delete d.red_flags;
   if(rec){row.id=id2=rec.id;row.owner_id=rec.owner_id}const rid=row.id;
-  for(const v of ["front","side","back"]){if(!files[v]){row["photo_"+v]=rec["photo_"+v];continue}const p=rec&&rec["photo_"+v]||(user.id+"/"+rid+"/"+v+".jpg");const {error}=await sb.storage.from("assessment-photos").upload(p,await shrink(files[v]),{contentType:"image/jpeg",upsert:true});if(error)throw error;row["photo_"+v]=p}
+  for(const v of ["front","side","back"]){if(!files[v]){row["photo_"+v]=(rec&&rec["photo_"+v])||kept[v]||null;continue}const p=rec&&rec["photo_"+v]||(user.id+"/"+rid+"/"+v+".jpg");const {error}=await sb.storage.from("assessment-photos").upload(p,await shrink(files[v]),{contentType:"image/jpeg",upsert:true});if(error)throw error;row["photo_"+v]=p}
   if(rec){const {error}=await sb.from("assessments").update({client_name:row.client_name,data:row.data,red_flags:row.red_flags,photo_front:row.photo_front,photo_side:row.photo_side,photo_back:row.photo_back,updated_at:new Date().toISOString()}).eq("id",rid);if(error)throw error}
-  else{const {error}=await sb.from("assessments").insert(row);if(error)throw error}
+  else{const {error}=await sb.from("assessments").insert(row);if(error)throw error;draftRow=draftRow||{};draftRow.assessment_id=id;if(draftId)await sb.from("assessment_drafts").update({assessment_id:id,updated_at:new Date().toISOString()}).eq("id",draftId)}
   window.FA_ph&&FA_ph(rec?"assessment_updated":"assessment_submitted",{});if(!rec)ev("assessment_saved",{});
   b.textContent="Saved ✓";document.body.classList.add("leave");setTimeout(()=>location.href="assessment-results.html?id="+id+(rec?"#intake":"#bbtrs"),480);
- }catch(e){if(/SCAN_LIMIT/.test(e.message||"")){$("#msg").innerHTML='No scans left. <a style="color:var(--gold)" href="/scan/#pricing">Choose a plan →</a>';b.textContent="No scans left";return}msg("Could not save: "+(e.message||e));b.disabled=false;b.textContent="Save & next: Breathwork →"}};
+ }catch(e){finishing=false;if(/SCAN_LIMIT/.test(e.message||"")){$("#msg").innerHTML='No scans left. <a style="color:var(--gold)" href="/scan/#pricing">Choose a plan →</a>';b.textContent="No scans left";return}msg("Could not save: "+(e.message||e));b.disabled=false;b.textContent="Save & next: Breathwork →"}};
 })();
 </script><script>/* v0.23.168 back to Calendar & clients or the client */(function(){function b(){try{var r=JSON.parse(sessionStorage.getItem("fa_ret")||"null");if(!r)return;var a=document.getElementById("back")||document.querySelector('a[href="./"]');if(a){a.href="./?go="+encodeURIComponent(r.go);a.textContent="← "+r.label}}catch(e){}}b();addEventListener("DOMContentLoaded",b);setTimeout(b,1200)})();</script><script>/* v0.23.204: height/weight unit toggle. Always stores metric (height_cm whole, weight_kg 1 decimal). */
 (()=>{const g=i=>document.getElementById(i),KEY="fa_units",hCm=g("hCm"),wKg=g("wKg"),hFt=g("hFt"),hIn=g("hIn"),wLb=g("wLb");
