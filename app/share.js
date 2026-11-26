@@ -13,6 +13,9 @@ const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
+function cityKey(name){
+  return slugify(name);
+}
 function slugify(src){
   let s = String(src||"").trim().toLowerCase();
   if(!s) return "";
@@ -256,7 +259,7 @@ function reviewError(err){
 }
 
 return {
-  RESERVED, slugify, allocSlug, isProfileSlug, redirectTarget, profileUrl, profileLabel,
+  RESERVED, slugify, cityKey, allocSlug, isProfileSlug, redirectTarget, profileUrl, profileLabel,
   regionSlug, regionBySlug, locationUrl, locationLabel, locShareButton,
   shareTargets, publicName, relativeDate, formatAvg, starRow, shareIconHtml, shareButtonHtml,
   ratingRowHtml, reviewsSectionHtml, shareSheetHtml, rateSheetHtml, reviewError, esc
