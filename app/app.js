@@ -352,6 +352,23 @@ $("#qCountry")&&($("#qCountry").onchange=()=>{const ci=$("#qCity");if(ci)ci.valu
 $("#qCity")&&($("#qCity").onchange=()=>{renderList();renderMarkers()});
 $("#listToMap")&&($("#listToMap").onclick=()=>{syncModFilter("listFilter");show("map");didFit=false;setTimeout(()=>{fitPins(true);map&&map.invalidateSize()},100)});
 let nearScope=null;
+const FA_FAV="fa_favs";
+function faFavIds(){try{const a=JSON.parse(localStorage.getItem(FA_FAV)||"[]");return Array.isArray(a)?a.map(String):[]}catch(e){return []}}
+function faFavHas(id){return faFavIds().indexOf(String(id))>=0}
+function faFavToggle(id){id=String(id||"");const a=faFavIds().filter(x=>x!==id);let on=false;if(!faFavHas(id)){a.unshift(id);on=true}try{localStorage.setItem(FA_FAV,JSON.stringify(a.slice(0,200)))}catch(e){}return on}
+// A removed Nearest sort could still be sitting in storage. Treat it as A–Z.
+(function(){const bad=v=>v==="near"||v==="nearest";const keys=["fa_sort","listSort","fa_list_sort","fa_listsort","faSort"];[localStorage,sessionStorage].forEach(store=>{keys.forEach(k=>{try{const v=store.getItem(k);if(v&&bad(String(v).trim().toLowerCase()))store.removeItem(k)}catch(e){}})})})();
+let favOn=false,listSort="az",faRates=new Map();
+function faRateOf(p){const r=p&&faRates.get(p.id);return r&&r.n?r:null}
+function faCardMarks(p){const r=faRateOf(p);return r&&window.FA_SHARE?FA_SHARE.starChipHtml(r.avg,r.n):""}
+async function loadRates(){if(!DB||!DB.ratingAgg)return;const rows=await DB.ratingAgg();faRates=new Map((rows||[]).map(r=>[r.practitioner_id,{avg:Number(r.avg_stars),n:Number(r.review_count)||0}]))}
+function faDevice(){const k="fa_device";let id="";try{id=localStorage.getItem(k)||""}catch(e){}if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)){id=(crypto.randomUUID&&crypto.randomUUID())||"00000000-0000-4000-8000-000000000000";try{localStorage.setItem(k,id)}catch(e){}}return id.toLowerCase()}
+function faReviewedMap(){try{const o=JSON.parse(localStorage.getItem("fa_reviewed")||"{}");return o&&typeof o==="object"?o:{}}catch(e){return {}}}
+function faReviewed(id){return !!faReviewedMap()[id]}
+function faMarkReviewed(id){const o=faReviewedMap();o[id]=1;try{localStorage.setItem("fa_reviewed",JSON.stringify(o))}catch(e){}}
+function faOpenFav(){favOn=true;show("list")}
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#profFav")){e.preventDefault();faOpenFav()}});
+function clearNear(){nearScope=null;renderMarkers();renderList()}
 const isAdmin=()=>!!(me&&String(me.email||"").toLowerCase()==="nisarga8@gmail.com");
 // ===== Newly joined strip (List): latest published practitioners with a photo =====
 let njKey="";const flagOf=c=>{try{const M=window.FA_CC||{},k=Object.keys(M).find(x=>M[x]===c);return k?String.fromCodePoint(...[...k].map(ch=>127397+ch.charCodeAt(0))):""}catch(e){return""}};
@@ -879,7 +896,7 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
   box.hidden=true;box.innerHTML=""}
  function setPlaceV(v){const el=qp();if(!el)return;fillPlaces();if(v&&![...el.options].some(o=>o.value===v))return;el.value=v;el.dispatchEvent(new Event("change"))}
  function leaveSeeAll(){const top=savedTop,was=seeAll;seeAll=false;listSort="az";if(BR){const lf=$("#listFilter");if(lf)lf.value=""}const el=qp();if(el&&el.value){el.value="";el.dispatchEvent(new Event("change"))}else renderList();if(was)requestAnimationFrame(()=>{const m=document.querySelector("main");if(m)m.scrollTop=top})}
- renderList=function(){try{fillGeo()}catch(e){}renderNewJ();faHLPaint();faLiveCount();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));
+ renderList=function(){if(listSort!=="az"&&listSort!=="top")listSort="az";try{fillGeo()}catch(e){}renderNewJ();faHLPaint();faLiveCount();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));
   const _pe=qp(),n=ps.length,q=placeV(),mod=($("#listFilter")&&$("#listFilter").value)||"",nameQ=(($("#qName")||{}).value||"").trim(),geo=geoPick();
   const active=!!(nearScope||q||mod||nameQ||geo.co||geo.ci);
   // MER & BBTRS always first, then the usual order
