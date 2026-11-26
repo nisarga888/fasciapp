@@ -63,7 +63,7 @@
   <div id="thanks" class="thanks hide"></div>
 </main>
 <script src="/app/config.js"></script>
-<script src="/app/gifts.js?v=0.23.286"></script>
+<script src="/app/gifts.js?v=0.23.287"></script>
 <script>
 (function(){
   const cfg = window.FASCIAPP_CONFIG || {};
@@ -72,7 +72,8 @@
   path.textContent = "fasciapp.app/intake/" + (token || "");
   const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const files = {};
-  let info = null, tok = null;
+  let info = null, tok = null, tokAt = 0, widgetId = null, waitTok = null;
+  const draftKey = () => "faAssessDraft:" + token;
   const SECTIONS = [
     ["1","Main complaint & goal",[["chips","reasons","Reason for coming","Pain,Stiffness,Posture,Breath,Stress,Emotional tension,Other"],["area","complaint","What brings you in?","e.g. lower back pain after sitting"],["area","goal","What would you like to be able to do again?","e.g. play with my kids without pain"]]],
     ["2","Pain map",[["chips","pain_areas","Where does it hurt?","Head,Jaw,Neck,Shoulders,Upper back,Chest,Arms,Elbows,Wrists / hands,Lower back,Abdomen,Pelvis,Hips,Glutes,Thighs,Knees,Calves,Ankles,Feet"],["range","pain_intensity","Intensity (0–10)"],["chips","pain_type","Type of pain","Sharp,Dull,Burning,Radiating,Aching,Tingling,Pulling,Heavy,Tight"],["radio","pain_pattern","Constant or comes and goes?","Constant,Comes and goes"]]],
@@ -122,11 +123,46 @@
       l.querySelector("input").onchange = e => { const file = e.target.files[0]; if(!file) return; const u = URL.createObjectURL(file); const im = new Image(); im.onload = () => { files[v] = file; let i = l.querySelector("img"); if(!i){ i = document.createElement("img"); l.prepend(i); } i.src = u; l.classList.add("ok"); }; im.src = u; };
       document.getElementById("photos").append(l);
     });
+    restoreDraft();
+    form.addEventListener("input", saveDraft);
+    form.addEventListener("change", saveDraft);
     const s = document.createElement("script");
     s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-    s.onload = () => window.turnstile.render("#ts", {sitekey:"0x4AAAAAAFvW3PHVqRby8-Fk", action:"assess", theme:"dark", size:"flexible", callback:t=>{tok=t}});
+    s.onload = () => { widgetId = window.turnstile.render("#ts", {sitekey:"0x4AAAAAAFvW3PHVqRby8-Fk", action:"assess", theme:"dark", size:"flexible", callback:onToken, "expired-callback":()=>{tok=null;tokAt=0}, "error-callback":()=>{tok=null;tokAt=0}}); };
     document.head.appendChild(s);
     form.onsubmit = submit;
+  }
+  function onToken(t){ tok = t; tokAt = Date.now(); if(waitTok){ const go = waitTok; waitTok = null; go(t); } }
+  function freshToken(force){
+    const stale = !tok || (Date.now() - tokAt) > 4 * 60 * 1000;
+    if(!force && !stale) return Promise.resolve(tok);
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => { waitTok = null; reject(new Error("security")); }, 20000);
+      waitTok = t => { clearTimeout(timer); resolve(t); };
+      try { window.turnstile.reset(widgetId); } catch(e) { clearTimeout(timer); waitTok = null; reject(new Error("security")); }
+    });
+  }
+  function saveDraft(){
+    try {
+      const name = (document.getElementById("client_name") || {}).value || "";
+      localStorage.setItem(draftKey(), JSON.stringify({ name, data: collect() }));
+    } catch(e) {}
+  }
+  function restoreDraft(){
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(draftKey()) || "null"); } catch(e) { saved = null; }
+    if(!saved || !saved.data) return;
+    const name = document.getElementById("client_name");
+    if(name && saved.name) name.value = saved.name;
+    const d = saved.data;
+    document.querySelectorAll("[data-k]").forEach(el => {
+      const k = el.dataset.k, v = d[k];
+      if(v == null) return;
+      if(el.classList.contains("chips")){ const a = [].concat(v); el.querySelectorAll("input").forEach(i => { i.checked = a.includes(i.value); }); }
+      else el.value = v;
+    });
+    const answers = (d.gifts && d.gifts.answers) || {};
+    Object.keys(answers).forEach(q => { const x = document.querySelector('#pqs input[name="pq_'+q+'"][value="'+answers[q]+'"]'); if(x) x.checked = true; });
   }
   function collect(){
     const d = {};
@@ -140,38 +176,84 @@
     if(FG && Object.keys(pt).length){ const r = FG.score(pt); r.answers = pt; d.gifts = r; }
     return d;
   }
+  function readBlob(b){
+    return new Promise(res => { if(!b){ res(null); return; } const r = new FileReader(); r.onload = () => res(String(r.result || "")); r.onerror = () => res(""); r.readAsDataURL(b); });
+  }
+  function looksWebp(url){ return /^data:image\/webp;base64,/.test(url || ""); }
+  function looksJpeg(url){ return /^data:image\/jpeg;base64,/.test(url || ""); }
   function shrink(file){
-    return new Promise(res=>{
+    return new Promise(res => {
       const im = new Image();
       im.onload = () => {
-        const s = Math.min(1, 1400/Math.max(im.width, im.height)), c = document.createElement("canvas");
-        c.width = Math.max(1, Math.round(im.width*s)); c.height = Math.max(1, Math.round(im.height*s));
+        const s = Math.min(1, 1400 / Math.max(im.width || 1, im.height || 1)), c = document.createElement("canvas");
+        c.width = Math.max(1, Math.round(im.width * s)); c.height = Math.max(1, Math.round(im.height * s));
         c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
-        c.toBlob(b => { if(b){ const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(b); } else res(null); }, "image/webp", 0.72);
+        const asJpeg = () => {
+          try { const u = c.toDataURL("image/jpeg", 0.82); if(looksJpeg(u)) { res(u); return; } } catch(e) {}
+          if(!c.toBlob){ res(null); return; }
+          c.toBlob(b => readBlob(b).then(u => res(looksJpeg(u) ? u : null)), "image/jpeg", 0.82);
+        };
+        if(!c.toBlob){ try { const u = c.toDataURL("image/webp", 0.72); if(looksWebp(u)) res(u); else asJpeg(); } catch(e) { asJpeg(); } return; }
+        c.toBlob(b => {
+          const type = b && b.type;
+          if(b && (type === "image/webp" || type === "")){
+            readBlob(b).then(u => { if(looksWebp(u)) res(u); else asJpeg(); });
+          } else asJpeg();
+        }, "image/webp", 0.72);
       };
       im.onerror = () => res(null);
       im.src = URL.createObjectURL(file);
     });
   }
+  function failText(status, j, err){
+    if(err && err.message === "photo") return "One of the photos couldn't be prepared. Please add it again as a JPG or PNG.";
+    if(err && err.message === "security") return "Please complete the security check.";
+    if(err && (err.name === "TypeError" || /fetch|network/i.test(err.message || ""))) return "The connection failed. Your answers are still here. Please try again.";
+    const e = j && j.error;
+    if(e) return e;
+    return "That didn't work. Your answers are still here. Please try again.";
+  }
+  async function postAssess(securityToken, photos){
+    const r = await fetch(cfg.SUPABASE_URL + "/functions/v1/submit-assess", {method:"POST", headers:{"content-type":"application/json", apikey:cfg.SUPABASE_ANON_KEY, authorization:"Bearer " + cfg.SUPABASE_ANON_KEY},
+      body: JSON.stringify({link:token, token:securityToken, consent:true, data:collect(), photos})});
+    const j = await r.json().catch(() => ({}));
+    return { ok: r.ok, status: r.status, j };
+  }
+  async function photosPayload(){
+    const photos = {};
+    for(const v of ["front","side","back"]){
+      photos[v] = await shrink(files[v]);
+      if(!photos[v]) throw new Error("photo");
+    }
+    return photos;
+  }
   async function submit(e){
     e.preventDefault();
     const msg = document.getElementById("msg"), btn = e.target.querySelector(".send");
+    saveDraft();
     if(!document.getElementById("consent").checked){ msg.textContent = "Please agree to share your answers with your practitioner."; return; }
     if(!files.front || !files.side || !files.back){ msg.textContent = "Please add all three photos."; document.getElementById("photos").scrollIntoView({block:"center"}); return; }
-    if(!tok){ msg.textContent = "Please complete the security check."; return; }
     btn.disabled = true; msg.textContent = "Sending privately…";
     try{
-      const photos = {};
-      for(const v of ["front","side","back"]){ photos[v] = await shrink(files[v]); if(!photos[v]) throw new Error("photo"); }
-      const r = await fetch(cfg.SUPABASE_URL+"/functions/v1/submit-assess", {method:"POST", headers:{"content-type":"application/json", apikey:cfg.SUPABASE_ANON_KEY, authorization:"Bearer "+cfg.SUPABASE_ANON_KEY},
-        body: JSON.stringify({link:token, token:tok, consent:true, data:collect(), photos})});
-      const j = await r.json().catch(()=>({}));
-      if(!r.ok){ msg.textContent = j.error || "That didn't work. Please try again."; btn.disabled = false; tok = null; try{turnstile.reset()}catch(x){} return; }
+      const photos = await photosPayload();
+      let securityToken = await freshToken(false);
+      let result = await postAssess(securityToken, photos);
+      if(!result.ok && result.status === 400 && /security check/i.test((result.j && result.j.error) || "")){
+        msg.textContent = "Checking again…";
+        securityToken = await freshToken(true);
+        result = await postAssess(securityToken, photos);
+      }
+      if(!result.ok || !result.j || result.j.ok !== true){
+        msg.textContent = failText(result.status, result.j, null);
+        btn.disabled = false;
+        return;
+      }
+      try { localStorage.removeItem(draftKey()); } catch(x) {}
       const nm = (info.practitioner && info.practitioner.name) || "Your practitioner";
       document.getElementById("formView").classList.add("hide");
       const t = document.getElementById("thanks"); t.classList.remove("hide");
       t.innerHTML = '<div class="tick">✓</div><h1>Thank you, '+esc(info.first||"")+'</h1><p class="intro">'+esc(nm)+' has your assessment and will use it to prepare for your session.</p><p class="sub">You can close this page.</p>';
-    }catch(err){ msg.textContent = "That didn't work. Please try again."; btn.disabled = false; }
+    }catch(err){ msg.textContent = failText(0, null, err); btn.disabled = false; }
   }
   async function open(){
     if(!/^[a-f0-9]{36}$/.test(token)){ document.getElementById("who").innerHTML = "<p>This link isn't valid.</p>"; return; }
