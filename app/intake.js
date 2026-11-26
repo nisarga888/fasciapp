@@ -2,7 +2,9 @@
 (function(){
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function sb(){if(window.scanSb)return window.scanSb;const c=window.FASCIAPP_CONFIG||{};return window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}
+let _sb=null;
+async function sb(){const c=window.FASCIAPP_CONFIG||{};if(!_sb){_sb=window.scanSb||window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}
+ const {data}=await _sb.auth.getSession();if(!data.session){try{const s=JSON.parse(localStorage.getItem("fasciapp-auth")||"null");if(s&&s.access_token&&s.refresh_token)await _sb.auth.setSession({access_token:s.access_token,refresh_token:s.refresh_token})}catch(e){}}return _sb}
 function me(){try{return window.faMe}catch(e){return null}}
 let credits=null, slug="", list=[];
 function allowed(d){return !!(d&&(d.admin||d.active||d.trial_remaining>0))}
@@ -12,11 +14,11 @@ function creditLabel(d){
   const n=d.trial_remaining||0;
   return n+" credit"+(n===1?"":"s")+" left";
 }
-async function loadCredits(){try{const {data}=await sb().rpc("fa_scan_status");credits=data||null}catch(e){credits=null}return credits}
+async function loadCredits(){try{const {data}=await (await sb()).rpc("fa_scan_status");credits=data||null}catch(e){credits=null}return credits}
 function screen(){let s=$("#intake");if(s)return s;s=document.createElement("section");s.id="intake";s.className="screen";document.querySelector("main").appendChild(s);return s}
 function dateOf(iso){try{return new Date(iso).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}catch(e){return ""}}
 function initials(n){return String(n||"?").trim().split(/\s+/).slice(0,2).map(w=>w[0]||"").join("").toUpperCase()}
-async function unread(){const {count}=await sb().from("intake_forms").select("id",{count:"exact",head:true}).is("read_at",null);return count||0}
+async function unread(){const {count}=await (await sb()).from("intake_forms").select("id",{count:"exact",head:true}).is("read_at",null);return count||0}
 function paintDot(n){const b=document.querySelector('#tabs [data-t="profile"]');if(!b)return;let d=b.querySelector(".inDot");if(!d){d=document.createElement("i");d.className="badge inDot";b.appendChild(d)}d.hidden=!n;d.textContent=n>9?"9+":String(n||"")}
 async function refreshDot(){if(!me()){paintDot(0);return}try{paintDot(await unread())}catch(e){}}
 function cardHtml(p){
@@ -47,7 +49,7 @@ async function openList(){
   if(!me()){show("auth");return}
   const s=screen();s.innerHTML='<button type="button" class="back mapBack" data-inback>‹ My profile</button><p class="inKicker">INTAKE FORMS</p><div id="inBody"><p class="muted">Loading…</p></div>';
   show("intake");
-  const r=await sb().from("intake_forms").select("id,client_name,created_at,read_at,matched_key").order("created_at",{ascending:false}).limit(100);
+  const r=await (await sb()).from("intake_forms").select("id,client_name,created_at,read_at,matched_key").order("created_at",{ascending:false}).limit(100);
   list=r.data||[];
   const n=list.filter(x=>!x.read_at).length;
   paintDot(n);
@@ -57,9 +59,9 @@ async function openList(){
   $("#inBody").innerHTML=banner+(rows||'<p class="muted">No forms yet. Share your intake link with a client.</p>');
 }
 async function openOne(id){
-  const r=await sb().from("intake_forms").select("id,client_name,contact,dob,concern,conditions,injuries,pregnant,hope,created_at,read_at,matched_key").eq("id",id).maybeSingle();
+  const r=await (await sb()).from("intake_forms").select("id,client_name,contact,dob,concern,conditions,injuries,pregnant,hope,created_at,read_at,matched_key").eq("id",id).maybeSingle();
   const f=r.data;if(!f){openList();return}
-  if(!f.read_at){await sb().from("intake_forms").update({read_at:new Date().toISOString()}).eq("id",id);refreshDot()}
+  if(!f.read_at){await (await sb()).from("intake_forms").update({read_at:new Date().toISOString()}).eq("id",id);refreshDot()}
   const line=(t,v)=>`<p class="inLab">${t}</p><p>${esc(v||"—")}</p>`;
   screen().innerHTML=`<button type="button" class="back mapBack" data-inbacklist>‹ Intake forms</button>
     <h2>${esc(f.client_name)}</h2><p class="muted">${esc(dateOf(f.created_at))}${f.matched_key?" · linked to a client":""}</p>
@@ -71,7 +73,7 @@ async function openOne(id){
   screen().dataset.id=id;
 }
 async function pdf(id){
-  const f=list.find(x=>x.id===id);const full=await sb().from("intake_forms").select("client_name,contact,dob,concern,conditions,injuries,pregnant,hope,created_at").eq("id",id).maybeSingle();
+  const full=await (await sb()).from("intake_forms").select("client_name,contact,dob,concern,conditions,injuries,pregnant,hope,created_at").eq("id",id).maybeSingle();
   const row=full.data;if(!row)return;
   await new Promise((ok,no)=>{if(window.jspdf)return ok();const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";s.onload=ok;s.onerror=no;document.head.appendChild(s)});
   const {jsPDF}=window.jspdf,doc=new jsPDF({unit:"mm",format:"a4"});
@@ -81,9 +83,9 @@ async function pdf(id){
   doc.text(body,14,30);
   doc.save((row.client_name||"intake").replace(/[^\w]+/g,"-").slice(0,40)+".pdf");
 }
-async function del(id){if(!confirm("Delete this intake form? This cannot be undone."))return;await sb().from("intake_forms").delete().eq("id",id);openList()}
+async function del(id){if(!confirm("Delete this intake form? This cannot be undone."))return;await (await sb()).from("intake_forms").delete().eq("id",id);openList()}
 window.faOpenIntake=openList;
-window.faIntakeClient=async function(name,key){const box=$("#inCl");if(!box||!key)return;const r=await sb().from("intake_forms").select("id,created_at").eq("matched_key",key).order("created_at",{ascending:false}).limit(5);
+window.faIntakeClient=async function(name,key){const box=$("#inCl");if(!box||!key)return;const r=await (await sb()).from("intake_forms").select("id,created_at").eq("matched_key",key).order("created_at",{ascending:false}).limit(5);
   const rows=r.data||[];if(!rows.length){box.innerHTML="";return}
   box.innerHTML='<div class="card inCl"><b>Intake form</b>'+rows.map(x=>'<button type="button" data-inid="'+esc(x.id)+'">'+esc(dateOf(x.created_at))+' ›</button>').join("")+"</div>"};
 document.addEventListener("click",e=>{
