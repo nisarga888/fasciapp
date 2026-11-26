@@ -161,6 +161,16 @@ function locShareButton(label, attrs){
 function shareButtonHtml(){
   return '<button type="button" class="ptShareBtn" data-share>'+SHARE_SVG+" Share profile</button>";
 }
+const HEART_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 20s-7-4.4-7-9a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 4.6-7 9-7 9z"/></svg>';
+function heartButtonHtml(on){
+  return '<button type="button" class="ptHeart'+(on?" on":"")+'" data-fav aria-pressed="'+(on?"true":"false")+'" aria-label="'+(on?"Saved to Favourites":"Save to Favourites")+'">'+HEART_SVG+"</button>";
+}
+function starChipHtml(avg, count){
+  const n = Number(count)||0;
+  if(!n) return "";
+  const top = n>=3 && Number(avg)>=4.5 ? '<em class="faTop">Top rated</em>' : "";
+  return '<span class="faStarChip">★ '+esc(formatAvg(avg))+" ("+n+")</span>"+top;
+}
 
 function ratingRowHtml(o){
   o = o||{};
@@ -189,7 +199,7 @@ function reviewCard(r, o){
 function reviewsSectionHtml(bundle, o){
   o = o||{};
   const rows = Array.isArray(bundle&&bundle.reviews) ? bundle.reviews : [];
-  let note = o.signedIn ? "One review per person. You can edit it later." : "Sign in to rate · One review per person, editable";
+  let note = o.signedIn ? "One review per person. You can edit it later." : "One review per phone, per practitioner. No sign-in needed.";
   if(bundle && bundle.mine && bundle.mine.hidden) note = "Your review is hidden after a report until an admin restores it.";
   const cards = rows.length ? rows.map(r=>reviewCard(r,o)).join("") : '<p class="ptRevEmpty">No session reviews yet.</p>';
   return '<section class="ptRevs" aria-label="Session reviews"><h4>Session reviews</h4><p class="ptRevNote">'+esc(note)+"</p>"+cards+"</section>";
@@ -230,19 +240,25 @@ function rateSheetHtml(o){
   let btns = "";
   for(let i=1;i<=5;i++) btns += '<button type="button" data-star="'+i+'" class="'+(i<=stars?"on":"")+'" aria-label="'+i+' star'+(i===1?"":"s")+'" aria-pressed="'+(i<=stars?"true":"false")+'">★</button>';
   const word = stars ? stars+" out of 5" : "Tap a star";
+  const guest = !!o.guest;
   const help = o.signedIn
     ? "One review per person. You can edit it later. It shows right away."
-    : "Sign in to rate · One review per person, per practitioner.";
+    : "One review per phone, per practitioner. No sign-in needed.";
+  const first = guest ? '<label class="ptNoteLbl">First name<input data-first maxlength="40" autocomplete="given-name" placeholder="First name"></label>' : "";
+  const check = guest ? '<div id="tsRate" class="tsBox" aria-label="Security check"></div>' : "";
+  const label = guest ? "Submit" : (o.editing?"Update review":"Post review");
   return '<div class="ptPopTop"><b>Rate your session</b><button type="button" class="ptPopX" data-popx aria-label="Close">✕</button></div>'
     +'<p class="ptPopWith">with '+esc(o.name||"this practitioner")+"</p>"
     +'<div class="ptBigStars" role="group" aria-label="Star rating">'+btns+"</div>"
     +'<p class="ptOutOf" data-outof>'+esc(word)+"</p>"
+    +first
     +'<label class="ptNoteLbl">Short feedback about your session'
     +'<textarea maxlength="200" rows="4" data-note placeholder="Short feedback about your session">'+esc(body)+"</textarea></label>"
     +'<p class="ptCount" data-count>'+body.length+"/200</p>"
+    +check
     +'<p class="ptPopHelp">'+esc(help)+"</p>"
     +'<p class="ptPopErr" data-err></p>'
-    +'<button type="button" class="gold ptPost" data-post>'+(o.editing?"Update review":"Post review")+"</button>";
+    +'<button type="button" class="gold ptPost" data-post>'+label+"</button>";
 }
 
 function reviewError(err){
@@ -262,6 +278,7 @@ return {
   RESERVED, slugify, cityKey, allocSlug, isProfileSlug, redirectTarget, profileUrl, profileLabel,
   regionSlug, regionBySlug, locationUrl, locationLabel, locShareButton,
   shareTargets, publicName, relativeDate, formatAvg, starRow, shareIconHtml, shareButtonHtml,
+  heartButtonHtml, starChipHtml,
   ratingRowHtml, reviewsSectionHtml, shareSheetHtml, rateSheetHtml, reviewError, esc
 };
 });

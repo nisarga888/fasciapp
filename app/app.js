@@ -113,7 +113,7 @@ async function loadPCache(){try{const j=await Promise.race([PIDB.get("people"),n
 function cachedPeople(){return pCache}
 const byName=l=>(l||[]).slice().sort((a,b)=>practiceTitle(a).localeCompare(practiceTitle(b),undefined,{sensitivity:"base"}));
 async function paintFromCache(){await loadPCache();const c=cachedPeople();if(!c||people.length)return false;people=byName(c);fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true);return true}
-async function refresh(){try{people=byName(await DB.list());faFresh=true;PIDB.set("people",people).catch(()=>{})}catch(e){console.warn(e);if(!people.length)people=cachedPeople()||[];faFresh=true}fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true)}
+ async function refresh(){try{people=byName(await DB.list());faFresh=true;PIDB.set("people",people).catch(()=>{})}catch(e){console.warn(e);if(!people.length)people=cachedPeople()||[];faFresh=true}try{await loadRates()}catch(e){}fillFilter();renderMarkers();renderList();if(!didFit)fitPins(true)}
 
 // navigation
 $("#goLook").onclick=()=>show("map");$("#authLook").onclick=e=>{e.preventDefault();show("map")};
@@ -336,7 +336,7 @@ function renderMarkers(){count();if(!layer)return;layer.clearLayers();if(threads
   const m=L.marker([e.lat,e.lng],{icon:pinIcon(e.p,side,e.l,withLabel),fa:{p:e.p,l:e.l}});
   m.bindPopup(()=>card(e.p));return m});
  if(layer.addLayers)layer.addLayers(ms);else ms.forEach(m=>m.addTo(layer));
- if(here)L.circleMarker(here,{radius:7,color:"#fff",weight:3,fillColor:"#2a9d96",fillOpacity:1}).bindPopup("You are here").addTo(threads||layer);
+ if(here)L.circleMarker(here,{radius:8,color:"#fff",weight:3,fillColor:"#2F6FED",fillOpacity:1}).bindPopup("You are here").addTo(threads||layer);
  if(ps.length&&!didFit)fitPins(true)}
 $("#filter")&&($("#filter").onchange=()=>{renderMarkers();fitPins(true)});
 $("#listFilter")&&($("#listFilter").onchange=()=>syncModFilter("listFilter"));
@@ -369,10 +369,27 @@ async function applyNear(lat,lng){here=[+lat,+lng];didFit=true;if(!map)initMap()
  if(!sc&&locs.length){const ids=new Set(ps.slice(0,8).map(x=>x.p));sc={label:"nearest to you",t:null,ids}}
  nearScope=sc?{label:sc.label,ok:p=>sc.t?pins(p).some(sc.t):sc.ids.has(p)}:null;
  renderMarkers();renderList();const nb=$("#nearAll");if(nb)nb.hidden=!nearScope;
- if(!nearScope){map.setView(here,7,{animate:false});showToast("Location set");return}
+ if(!nearScope){map.setView(here,12,{animate:false});renderMarkers();try{openClosest()}catch(e){}showToast(closestRows().length?closestRows().length+" closest to you":"Location set");return}
  const pts=[];ps.filter(x=>nearScope.ok(x.p)).forEach(({p})=>pins(p).forEach(l=>{if(!sc.t||sc.t(l))pts.push([+l.lat,+l.lng])}));if(!sc.t)pts.push(here);
  try{pts.length===1?map.setView(pts[0],12,{animate:false}):map.fitBounds(L.latLngBounds(pts),{padding:[56,56],maxZoom:13,animate:false})}catch(e){map.setView(here,9,{animate:false})}
- const n=ps.filter(x=>nearScope.ok(x.p)).length;showToast(`${n} practitioner${n===1?"":"s"} ${nearScope.label}`)}
+ const n=ps.filter(x=>nearScope.ok(x.p)).length;showToast(`${n} practitioner${n===1?"":"s"} ${nearScope.label}`);try{openClosest()}catch(e){}}
+function inPersonPins(p){return pins(p).filter(l=>l&&l.lat!=null&&!isOnline(l))}
+function closestRows(){if(!here)return [];const rows=[];filtered().forEach(p=>{const locs=inPersonPins(p);if(!locs.length)return;let best=null;locs.forEach(l=>{const d=dist1(l,here);if(!best||d<best.d)best={l,d}});if(best)rows.push({p,d:best.d})});rows.sort((a,b)=>a.d-b.d);return rows.slice(0,40)}
+function openClosest(){let s=document.getElementById("nearSheet");if(!s){s=document.createElement("div");s.id="nearSheet";s.className="nearSheet";s.hidden=true;s.innerHTML=`<div class="nearDim" data-nearx></div><div class="nearBox" role="dialog" aria-modal="true" aria-label="Closest to you"><div class="ptPopTop"><b>Closest to you</b><button type="button" class="ptPopX" data-nearx aria-label="Close">✕</button></div><div class="nearList"></div></div>`;document.body.appendChild(s);s.addEventListener("click",e=>{if(e.target.closest("[data-nearx]")){s.hidden=true;return}const b=e.target.closest("[data-nearid]");if(!b)return;const person=all().find(x=>x.id===b.dataset.nearid);s.hidden=true;if(person&&window.faOpenPract)faOpenPract(person.id)})}const rows=closestRows();s.querySelector(".nearList").innerHTML=rows.length?rows.map(r=>`<button type="button" class="nearRow" data-nearid="${esc(r.p.id)}"><b>${esc(practiceTitle(r.p))}</b><small>${Math.round(r.d)} km</small></button>`).join(""):`<p class="muted">No in-person practitioners with a map pin nearby.</p>`;s.hidden=false}
+const FA_FAV="fa_favs";
+function faFavIds(){try{const a=JSON.parse(localStorage.getItem(FA_FAV)||"[]");return Array.isArray(a)?a.map(String):[]}catch(e){return []}}
+function faFavHas(id){return faFavIds().indexOf(String(id))>=0}
+function faFavToggle(id){id=String(id||"");const a=faFavIds().filter(x=>x!==id);let on=false;if(!faFavHas(id)){a.unshift(id);on=true}try{localStorage.setItem(FA_FAV,JSON.stringify(a.slice(0,200)))}catch(e){}return on}
+let favOn=false,listSort="az",faRates=new Map();
+function faRateOf(p){const r=p&&faRates.get(p.id);return r&&r.n?r:null}
+function faCardMarks(p){const r=faRateOf(p);return r&&window.FA_SHARE?FA_SHARE.starChipHtml(r.avg,r.n):""}
+async function loadRates(){if(!DB||!DB.ratingAgg)return;const rows=await DB.ratingAgg();faRates=new Map((rows||[]).map(r=>[r.practitioner_id,{avg:Number(r.avg_stars),n:Number(r.review_count)||0}]))}
+function faDevice(){const k="fa_device";let id="";try{id=localStorage.getItem(k)||""}catch(e){}if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)){id=(crypto.randomUUID&&crypto.randomUUID())||"00000000-0000-4000-8000-000000000000";try{localStorage.setItem(k,id)}catch(e){}}return id.toLowerCase()}
+function faReviewedMap(){try{const o=JSON.parse(localStorage.getItem("fa_reviewed")||"{}");return o&&typeof o==="object"?o:{}}catch(e){return {}}}
+function faReviewed(id){return !!faReviewedMap()[id]}
+function faMarkReviewed(id){const o=faReviewedMap();o[id]=1;try{localStorage.setItem("fa_reviewed",JSON.stringify(o))}catch(e){}}
+function faOpenFav(){favOn=true;show("list")}
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#profFav")){e.preventDefault();faOpenFav()}});
 function clearNear(){nearScope=null;const nb=$("#nearAll");if(nb)nb.hidden=true;renderMarkers();renderList();fitPins(true)}
 async function nearMe(){const btn=$("#near");if(btn)btn.disabled=true;try{
   showToast("Finding your location…");
@@ -870,7 +887,7 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
   return `<p class="brTot">${tot.size} practitioners in ${nc} countries</p><div class="brRegs">${REGS.filter(r=>by.has(r)).map((r,i)=>{const o=by.get(r),ps=[...o.ids.values()].sort((a,b)=>(!!b.photo)-(!!a.photo)),sh=Math.min(6,ps.filter(p=>p.photo).length);
    return `<button type="button" class="brReg r${i}" data-reg="${esc(r)}"><span class="brRegT"><b>${esc(r)}</b><small>${r==="Online & other"?"":`${o.n} countr${o.n===1?"y":"ies"} · `}${ps.length} practitioner${ps.length===1?"":"s"}</small></span>${bub(ps,6,ps.length-sh)}<em>›</em></button>`}).join("")}</div>`}
  function goPlace(v,co){const m=document.querySelector("main");const el=qp();fillPlaces();if(el&&v&&![...el.options].some(x=>x.value===v)){const o=document.createElement("option");o.value=v;o.textContent=v.replace(/^c[io]:/,"").replace("|",", ");el.appendChild(o);el.value=v}if(!el||![...el.options].some(x=>x.value===v))return false;BR=regionOf(co);savedTop=m?m.scrollTop:0;seeAll=true;hpush("seeall");setPlaceV(v);if(m)m.scrollTop=0;return true}
- window.faListHome=()=>{BR=null;BC=null;seeAll=false;const nb=$("#qName");if(nb)nb.value="";const lf=$("#listFilter");if(lf)lf.value="";const el=qp();if(el)el.value="";clearGeo();const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}while(HS.length&&HS[HS.length-1]!=="sheet"&&HS[HS.length-1]!=="pe")HS.pop();try{fillPlaces()}catch(e){}renderMarkers();renderList();const m=document.querySelector("main");if(m)m.scrollTop=0};
+ window.faListHome=()=>{BR=null;BC=null;seeAll=false;favOn=false;listSort="az";const nb=$("#qName");if(nb)nb.value="";const lf=$("#listFilter");if(lf)lf.value="";const el=qp();if(el)el.value="";clearGeo();const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}while(HS.length&&HS[HS.length-1]!=="sheet"&&HS[HS.length-1]!=="pe")HS.pop();try{fillPlaces()}catch(e){}renderMarkers();renderList();const m=document.querySelector("main");if(m)m.scrollTop=0};
  window.faMatchCountry=matchCountry;
  window.faOpenLocation=function(slug,citySlug){slug=String(slug||"").trim().toLowerCase();citySlug=String(citySlug||"").trim().toLowerCase();if(!window.FA_SHARE)return false;const reg=FA_SHARE.regionBySlug(slug);
   const wipe=()=>{seeAll=false;const lf=$("#listFilter");if(lf)lf.value="";const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}const nm=$("#qName");if(nm)nm.value="";clearGeo();const el=qp();if(el)el.value="";if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}};
@@ -903,7 +920,7 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
  const inCity=(g,k)=>!k?g.list:g.list.map(({p})=>{const l=L0(p).find(l=>(coOf(l)||OTHER)===g.c&&faCityKey(cityOf(l))===k);return l?{p,l}:null}).filter(Boolean);
  function tile(p,loc,g,i,nCh,d){const co=loc?coOf(loc):"";const fl=co?flagOf(co):"";const city=cityOf(loc)||co;
   const hl=faIsHL(p);
-  return `<button type="button" class="ptT${hl?" hlA":""}" data-tid="${esc(p.id||"")}" data-g="${g}" data-i="${i}" aria-label="${esc(practiceTitle(p))}${city?", "+esc(city):""}">${pic(p)}${d!=null?`<span class="ptKm">${Math.round(d)} km</span>`:""}<span class="ptOv"><b>${esc(nm(p))}</b><small>📍 ${fl?fl+" ":""}${esc(city)}</small><span class="chs">${chips(p,nCh)}</span></span>${hl?`<span class="aSeal">${faSeal(32)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}</button>`}
+  return `<button type="button" class="ptT${hl?" hlA":""}" data-tid="${esc(p.id||"")}" data-g="${g}" data-i="${i}" aria-label="${esc(practiceTitle(p))}${city?", "+esc(city):""}">${pic(p)}${d!=null?`<span class="ptKm">${Math.round(d)} km</span>`:""}<span class="ptOv"><b>${esc(nm(p))}</b><small>📍 ${fl?fl+" ":""}${esc(city)}</small>${faCardMarks(p)}<span class="chs">${chips(p,nCh)}</span></span>${hl?`<span class="aSeal">${faSeal(32)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}</button>`}
  function rowHtml(gi){const g=model.groups[gi];const list=inCity(g,sel[g.c]);return list.map(({p,l},i)=>tile(p,l,gi,i,1,null)).join("")}
  function chipLabel(g){const k=sel[g.c];if(!k)return"All cities";const o=g.cities.find(x=>x.k===k);return o?o.n:"All cities"}
  function nav(){const box=$("#listNav"),pp=placeParts(),lst=$("#list");const on=!!pp;const mod=($("#listFilter")&&$("#listFilter").value)||"";if(lst)lst.classList.toggle("ptPlace",on);if(!box)return;
@@ -911,12 +928,15 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
   if(mod){box.hidden=false;box.innerHTML=`<button type="button" class="brBack allMod" data-nav="allmod"><b>←</b> All modalities</button>`;return}
   box.hidden=true;box.innerHTML=""}
  function setPlaceV(v){const el=qp();if(!el)return;fillPlaces();if(v&&![...el.options].some(o=>o.value===v))return;el.value=v;el.dispatchEvent(new Event("change"))}
- function leaveSeeAll(){const top=savedTop,was=seeAll;seeAll=false;if(BR){const lf=$("#listFilter");if(lf)lf.value=""}const el=qp();if(el&&el.value){el.value="";el.dispatchEvent(new Event("change"))}else renderList();if(was)requestAnimationFrame(()=>{const m=document.querySelector("main");if(m)m.scrollTop=top})}
+ function leaveSeeAll(){const top=savedTop,was=seeAll;seeAll=false;listSort="az";if(BR){const lf=$("#listFilter");if(lf)lf.value=""}const el=qp();if(el&&el.value){el.value="";el.dispatchEvent(new Event("change"))}else renderList();if(was)requestAnimationFrame(()=>{const m=document.querySelector("main");if(m)m.scrollTop=top})}
  renderList=function(){try{fillGeo()}catch(e){}renderNewJ();faHLPaint();faLiveCount();const ps=filtered().filter(p=>!nearScope||nearScope.ok(p)).map(p=>({p,d:dist(p)}));
   const _pe=qp(),n=ps.length,q=placeV(),mod=($("#listFilter")&&$("#listFilter").value)||"",nameQ=(($("#qName")||{}).value||"").trim(),geo=geoPick();
   const active=!!(nearScope||q||mod||nameQ||geo.co||geo.ci);
   // MER & BBTRS always first, then the usual order
   if(here&&active)ps.sort((a,b)=>faHLCmp(a.p,b.p)||a.d-b.d);else ps.sort((a,b)=>faHLCmp(a.p,b.p)||azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
+  const pp0=placeParts();
+  if(pp0&&listSort==="top")ps.sort((a,b)=>{const ra=faRateOf(a.p),rb=faRateOf(b.p),ha=!!ra,hb=!!rb;if(ha!==hb)return ha?-1:1;if(ha&&rb.avg!==ra.avg)return rb.avg-ra.avg;if(ha&&rb.n!==ra.n)return rb.n-ra.n;return azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"})});
+  else if(pp0&&listSort==="near"&&here)ps.sort((a,b)=>(a.d==null)-(b.d==null)||((a.d||0)-(b.d||0))||azKey(a.p).localeCompare(azKey(b.p),undefined,{sensitivity:"base"}));
   const pp=placeParts();
   const lstEl=$("#list");if(lstEl)lstEl.dataset.modon=mod?"1":"";const qw=$("#qWhere");if(qw&&document.activeElement!==qw)qw.value=mod?faModLabel(mod):"";
   const where=pp?(pp.ci||pp.co):(geo.ci&&geo.co?geo.ci+", "+geo.co:geo.co||"");
@@ -925,7 +945,9 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
   $("#from").textContent=here&&active?"Sorted by distance from you":"";
   if(seeAll&&!pp){seeAll=false;hpop("seeall")}
   nav();
-  const box=$("#items");if(!box)return;const keep={};box.querySelectorAll(".ptRow[data-c]").forEach(r=>{if(r.scrollLeft)keep[r.dataset.c]=r.scrollLeft});
+  const box=$("#items");if(!box)return;
+  if(favOn){const nb=$("#listNav");if(nb){nb.hidden=false;nb.innerHTML=`<button type="button" class="brBack" data-favback="1"><b>←</b> Back</button>`}$("#list").dataset.br="co";const saved=faFavIds().map(id=>all().find(x=>x.id===id&&x.consent!==false&&!x.admin_hidden)).filter(Boolean);model={groups:[],grid:saved,gridLabel:"Favourites"};const note=`<p class="faFavNote">Saved on this phone · no sign-in needed</p>`;box.innerHTML=saved.length?note+`<div class="ptGrid">${saved.map((p,i)=>tile(p,(p.locations&&p.locations[0])||p,-1,i,2,null)).join("")}</div>`:note+`<p class="faFavEmpty">No favourites yet. Tap the heart on a profile to save them here.</p>`;return}
+  const keep={};box.querySelectorAll(".ptRow[data-c]").forEach(r=>{if(r.scrollLeft)keep[r.dataset.c]=r.scrollLeft});
   let top="";
   if(active){const fc=[];
    if(pp)fc.push(`<button type="button" class="fChip" data-clr="place">📍 ${esc(pp.ci?pp.ci+", "+pp.co:pp.co)} <i>✕</i></button>`);
@@ -935,7 +957,7 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
    if(nameQ)fc.push(`<button type="button" class="fChip" data-clr="name">“${esc(nameQ)}” <i>✕</i></button>`);
    if(nearScope)fc.push(`<button type="button" class="fChip" data-clr="near">📍 Near me <i>✕</i></button>`);
    top=`<div class="fChips">${fc.join("")}</div>`;$("#list").dataset.br=pp?"co":"res";
-   if(pp){const placeHead=pp.ci?head(pp.ci,`${esc(pp.co)} · ${n} ${noun(n)}`,shareBtn("city",pp.ci,n,pp.co)):head(pp.co,`${n} ${noun(n)}`,shareBtn("country",pp.co,n));top=placeHead+top}
+   if(pp){const placeHead=pp.ci?head(pp.ci,`${esc(pp.co)} · ${n} ${noun(n)}`,shareBtn("city",pp.ci,n,pp.co)):head(pp.co,`${n} ${noun(n)}`,shareBtn("country",pp.co,n));const sortBar=`<div class="faSort" role="group" aria-label="Sort practitioners"><button type="button" data-sort="az" class="${listSort==="az"?"on":""}">A–Z</button><button type="button" data-sort="top" class="${listSort==="top"?"on":""}">Top rated</button><button type="button" data-sort="near" class="${listSort==="near"?"on":""}">Nearest</button></div>`;top=placeHead+sortBar+top}
    if(pp){const allIn=filteredNoPlace().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co)));const mc=new Map();(mod?all().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co))&&p.consent!==false):allIn).forEach(p=>(p.mods||[]).filter(Boolean).forEach(m=>mc.set(m,(mc.get(m)||0)+1)));const ms=[...mc.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
     if(ms.length)top+=`<div class="brMods"><button type="button" class="cChip${mod?"":" on"}" data-mod="">All</button>${ms.map(([m,c])=>`<button type="button" class="cChip${mod===m?" on":""}" data-mod="${esc(m)}">${esc(faModLabel(m))} <i>${c}</i></button>`).join("")}</div>`}
    if(pp){const allIn=filteredNoPlace().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co)));const cs=cityList(pp.co,allIn.map(p=>({p})));
@@ -943,7 +965,7 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
   if(!n){if(!active)$("#list").dataset.br="home";model={groups:[],grid:[],gridLabel:""};box.innerHTML=top+"<p class=muted>No practitioners match your search.</p>";return}
   if(active){model={groups:[],grid:ps.map(x=>x.p),gridLabel:pp?(pp.ci||pp.co):nearScope?"Near me":"Results"};
    const T=({p,d},i)=>tile(p,placeLoc(p)||L0(p)[0],-1,i,2,here?d:null);const k=ps.filter(x=>faIsHL(x.p)).length;
-   if(pp&&pp.ci&&k&&k<n){box.innerHTML=top+`<div class="hlFeat"><div class="hlSecH feat">${faSeal(22)} MER &amp; BBTRS in ${esc(pp.ci)} <small>· ${k}</small></div><div class="ptRow featRow">${ps.slice(0,k).map(T).join("")}</div></div><div class="hlSecH hlOther">Other practitioners <small>· ${n-k}</small></div><div class="ptGrid">${ps.slice(k).map((x,j)=>T(x,j+k)).join("")}</div>`;return}
+   if(listSort==="az"&&pp&&pp.ci&&k&&k<n){box.innerHTML=top+`<div class="hlFeat"><div class="hlSecH feat">${faSeal(22)} MER &amp; BBTRS in ${esc(pp.ci)} <small>· ${k}</small></div><div class="ptRow featRow">${ps.slice(0,k).map(T).join("")}</div></div><div class="hlSecH hlOther">Other practitioners <small>· ${n-k}</small></div><div class="ptGrid">${ps.slice(k).map((x,j)=>T(x,j+k)).join("")}</div>`;return}
    box.innerHTML=top+`<div class="ptGrid">${ps.map(T).join("")}</div>`;return}
   const by=new Map();ps.forEach(({p})=>{const seen=new Set();L0(p).forEach(l=>{const c=coOf(l)||OTHER;if(seen.has(c))return;seen.add(c);if(!by.has(c))by.set(c,[]);by.get(c).push({p,l})})});
   const groups=[...by.entries()].map(([c,list])=>({c,list,cities:cityList(c,list)})).sort((a,b)=>(a.c===OTHER)-(b.c===OTHER)||a.c.localeCompare(b.c,"en",{sensitivity:"base"}));
@@ -989,7 +1011,7 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
   scr.innerHTML=`<div class="ptHero">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="ptFb">${esc(initials(p.name||practiceTitle(p)))}</span>`}${shareOn?FA_SHARE.shareIconHtml():""}${hl?`<span class="shSeal">${faSeal(60)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}${many?`<div class="ptNav"><button type="button" class="ptPrev" aria-label="Previous">‹</button><span>${cur.i+1} of ${cur.list.length}${cur.label?" · "+esc(cur.label):""}</span><button type="button" class="ptNext" aria-label="Next">›</button></div>`:""}</div>
   <div class="ptBody" data-pid="${esc(p.id||"")}"><h3>${esc(practiceTitle(p))}</h3>${hl?`<div class="shHl">${faLaurel(24)} ${faHLLine(p)}</div>`:""}${String(p.practice_name||"").trim()&&p.name?`<div class="ptWho">${esc(p.name)}</div>`:""}
   <div class="ptLocs">${locLine(p)}</div><div class="chs ptMods">${(p.mods||[]).filter(Boolean).map(x=>`<span class="ch${faHLChip(x)?" hlCh":""}">${esc(faModLabel(x))}</span>`).join("")}</div>
-  ${shareOn?FA_SHARE.shareButtonHtml():""}
+  <div class="ptShareRow">${window.FA_SHARE?FA_SHARE.heartButtonHtml(faFavHas(p.id)):""}${shareOn?FA_SHARE.shareButtonHtml():""}</div>
   <div id="ptRatingSlot">${p.consent!==false&&window.FA_SHARE?FA_SHARE.ratingRowHtml({count:0,own:own}):""}</div>
   ${p.bio?`<div class="ptBio">${esc(p.bio)}</div><button type="button" class="ptMore">Read more</button>`:""}
   ${contacts(p)}<div id="ptRevSlot"></div><button type="button" class="ptMap">📍 Show on map</button></div>`;
@@ -1007,6 +1029,7 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
   const go=person=>{if(!person||person.consent===false||person.admin_hidden){show("list");showToast("That profile isn't available");return}show("list");open([person],0,"","share_link","share")};
   if(known){go(known);return}if(DB.bySlug){DB.bySlug(slug).then(go).catch(()=>go(null));return}go(null)};
  sh.addEventListener("click",e=>{const t=e.target;
+  if(t.closest("[data-fav]")){const person=cur.list[cur.i];if(!person||!person.id)return;const on=faFavToggle(person.id);const b=t.closest("[data-fav]");b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false");b.setAttribute("aria-label",on?"Saved to Favourites":"Save to Favourites");if(on)showToast("Saved to Favourites");if(favOn)renderList();return}
   if(t.closest("[data-share]")){if(window.faOpenShare)faOpenShare(cur.list[cur.i]);return}
   if(t.closest("[data-rate]")){if(window.faOpenRate)faOpenRate(cur.list[cur.i]);return}
   if(t.closest("[data-report],[data-hide],[data-restore]")){if(window.faReviewAct)faReviewAct(e);return}
@@ -1023,6 +1046,10 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
  // ---- list clicks
  function openLocShare(btn){if(!window.FA_SHARE||!window.faOpenLocShare)return;const kind=btn.dataset.kind||"",name=btn.dataset.name||"",n=Number(btn.dataset.n)||0,country=btn.dataset.country||"";let path="";if(kind==="region")path=FA_SHARE.regionSlug(name);else if(kind==="country")path=FA_SHARE.slugify(name);else if(kind==="city")path=FA_SHARE.slugify(country)+"/"+FA_SHARE.slugify(name);if(!path||path.endsWith("/"))return;const what=name+" · "+n+" "+noun(n);const url=FA_SHARE.locationUrl(path);faOpenLocShare({url,title:what,label:FA_SHARE.locationLabel(path),targets:FA_SHARE.shareTargets(url,what),sheetTitle:"Share "+what})}
  const lst=$("#list");if(lst)lst.addEventListener("click",e=>{const t=e.target;
+  if(t.closest("#favChip")){faOpenFav();return}
+  if(t.closest("#listNear")){nearMe();return}
+  if(t.closest("[data-favback]")){favOn=false;renderList();const m0=document.querySelector("main");if(m0)m0.scrollTop=0;return}
+  const srt=t.closest("[data-sort]");if(srt){const k=srt.dataset.sort;if(k==="near"&&!here){srt.disabled=true;geoOnce().then(pos=>{srt.disabled=false;if(!pos){showToast(geoErr===1?"Turn on location for this site to use Near me":"Couldn’t get your location. Try again in a moment",3000);return}here=[+pos[0],+pos[1]];listSort="near";renderList();renderMarkers()});return}listSort=k;renderList();return}
   const shb=t.closest("[data-locshare]");if(shb){e.preventDefault();e.stopPropagation();openLocShare(shb);return}
   const nb=t.closest("[data-nav]");if(nb){if(nb.dataset.nav==="allmod"){window.faSetModality("");return}if(nb.dataset.nav==="back"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}else{const pp=placeParts();if(pp)setPlaceV("co:"+pp.co)}return}
   const fc=t.closest("[data-clr]");if(fc){const k=fc.dataset.clr;
@@ -1099,7 +1126,7 @@ function profViewB(p,v,f){const h2=document.querySelector("#profile h2");if(h2)h
  <button type="button" class="bAv" data-pe="photo" data-pick="1" aria-label="Change photo">${p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="bFb">${esc(initials(nm))}</span>`}<span class="bCam">📷</span>${faIsHL(p)?`<span class="bHlSeal">${faSeal(40)}<span class="hlTag">${faHLTag(p)}</span></span>`:""}</button>
  <h3>${esc(nm)}</h3>${pn?`<div class="bPn">${esc(pn)}</div>`:""}${where?`<div class="bWhere">📍 ${isOnline(l0)?"🌐 ":co0?flagOf(co0)+" ":""}${esc(where)}</div>`:""}
  ${mods.length?`<div class="bChs">${mods.map(m=>`<span${faHLChip(m)?` class="hlCh"`:""}>${esc(faModLabel(m))}</span>`).join("")}</div>`:""}
- <div class="bBtns"><button type="button" class="ghost" data-bact="preview">👁 Preview</button><button type="button" class="gold" data-pe="photo">✏️ Photo & name</button></div></div>
+ <div class="bBtns"><button type="button" class="ghost" data-bact="fav">♥ Favourites</button><button type="button" class="ghost" data-bact="preview">👁 Preview</button><button type="button" class="gold" data-pe="photo">✏️ Photo & name</button></div></div>
  <p id="bMsg" class="msg"></p>
  <button type="button" class="bMeter"${nx?` data-pe="${nx[3]}"`:""}><span class="mt"><b>Profile ${pct}% complete</b>${nx?`<em>${nx[2]} ›</em>`:`<em class="ok">✓ All set</em>`}</span><span class="bar"><i style="width:${pct}%"></i></span></button>
  <div id="jrCard" class="jrCard">${faJourneyHTML()}</div>
@@ -1111,7 +1138,7 @@ function profViewB(p,v,f){const h2=document.querySelector("#profile h2");if(h2)h
  <div class="bOut"><button type="button" class="ghost" id="pOut2">Log out</button></div>`;
  v.hidden=false;f.hidden=true;try{window.faPanels&&faPanels().catch(()=>{})}catch(e){}
  v.onclick=e=>{const t=e.target;
-  const a=t.closest("[data-bact]");if(a){const k=a.dataset.bact;if(k==="preview"){if(window.faPreviewMe)faPreviewMe(p)}else if(k==="settings")bSetOpen(p);else show("log");return}
+  const a=t.closest("[data-bact]");if(a){const k=a.dataset.bact;if(k==="fav"){faOpenFav();return}if(k==="preview"){if(window.faPreviewMe)faPreviewMe(p)}else if(k==="settings")bSetOpen(p);else show("log");return}
   if(t.closest("#pOut2")){logout();return}
   const s=t.closest("[data-pe]");if(s)peOpen(s.dataset.pe,!!s.dataset.pick)};
  if(!bSet.hidden)bSetPaint(p)}
@@ -1319,14 +1346,16 @@ window.faLogFor=async nm=>{show("log");await loadLog();const f=$("#sessForm");f.
  window.faOpenRate=function(p,draft){
   if(!p||p.consent===false||!window.FA_SHARE)return;
   if(me&&p.user_id&&me.user_id===p.user_id){showToast("You can't rate your own profile.");return}
+  if(!me&&faReviewed(p.id)){showToast("You've already rated this practitioner on this phone.");return}
   popP=p; popMode="rate";
   const mine=(revMem.get(p.id)||{}).mine;
   const stars=draft&&draft.stars||mine&&mine.stars||0;
   const body=draft&&draft.body!=null?draft.body:(mine&&mine.body)||"";
   rateStars=Number(stars)||0;
-  box.innerHTML=FA_SHARE.rateSheetHtml({name:p.name||practiceTitle(p),stars:rateStars,body:body,signedIn:!!me,editing:!!(mine&&mine.id)});
+  box.innerHTML=FA_SHARE.rateSheetHtml({name:p.name||practiceTitle(p),stars:rateStars,body:body,signedIn:!!me,guest:!me,editing:!!(mine&&mine.id)});
   box.setAttribute("aria-label","Rate your session");
   pop.hidden=false;
+  if(!me&&window.FaCaptcha)FaCaptcha.mount("rate");
  };
  window.faReturnToRate=function(draft){
   if(!draft||!draft.id)return;
@@ -1349,10 +1378,23 @@ window.faLogFor=async nm=>{show("log");await loadLog();const f=$("#sessForm");f.
   if(!rateStars){if(err)err.textContent="Choose a star rating from 1 to 5.";return}
   if(body.length>200){if(err)err.textContent="Please keep the note to 200 characters.";return}
   if(!me){
-   try{sessionStorage.setItem("fa_rate",JSON.stringify({id:popP.id,stars:rateStars,body:body.slice(0,200),at:Date.now()}))}catch(e){}
-   const id=popP.id; faClosePops();
-   fillLastEmail(); setMode(false); show("auth");
-   return id;
+   const first=box.querySelector("[data-first]");
+   const name=first?first.value.trim():"";
+   if(!name){if(err)err.textContent="Please enter your first name.";return}
+   if(!DB.guestReview){if(err)err.textContent="Reviews aren't available right now.";return}
+   busy=true; const gbtn=box.querySelector("[data-post]"); if(gbtn)gbtn.disabled=true;
+   try{
+    const token=window.FaCaptcha?await FaCaptcha.token("rate"):undefined;
+    if(!token){if(err)err.textContent="Please complete the security check.";return}
+    await DB.guestReview({practitioner_id:popP.id,stars:rateStars,body:body.slice(0,200),first_name:name,device_id:faDevice(),token});
+    faMarkReviewed(popP.id);
+    const person=popP; faClosePops();
+    showToast("Review posted");
+    try{await loadRates();renderList()}catch(e){}
+    if(window.faLoadReviews)faLoadReviews(person,true);
+   }catch(e){if(err)err.textContent=FA_SHARE.reviewError(e)}
+   finally{busy=false;if(gbtn)gbtn.disabled=false}
+   return;
   }
   busy=true; const btn=box.querySelector("[data-post]"); if(btn)btn.disabled=true;
   try{
