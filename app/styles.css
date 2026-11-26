@@ -658,7 +658,8 @@ body.peOpen{overflow:hidden}
 .bLog .ed{flex:none;font-size:12.5px;font-weight:700;color:#02191E;background:#C99E67;border-radius:12px;padding:6px 10px}
 .bSet{display:block;margin:18px auto 0;background:none;border:0;color:#9fb3b5;font-size:13.5px;text-decoration:underline;text-underline-offset:3px;padding:8px 12px}
 .bPub[data-bact]{cursor:pointer}
-.bSetBox{padding:8px 16px calc(18px + env(safe-area-inset-bottom,0px))}.bSetBox::before{content:"";display:block;width:42px;height:5px;border-radius:3px;background:#3b5559;margin:0 auto 8px}
+.bSetBox{padding:8px 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto}.bSetBox::before{content:"";display:block;width:42px;height:5px;border-radius:3px;background:#3b5559;margin:0 auto 8px}
+.acctWho{margin:8px 0 0;color:#9fb3b5;font-size:13px}.acctF{margin-top:14px;padding-top:12px;border-top:1px solid #c99e6733}.acctF b{display:block;font-size:15px}.acctF .muted{margin:4px 0 8px;font-size:12.5px;line-height:1.4}.acctF .lbl{margin:0 0 8px}.acctF button{width:100%}
 .bSetBox .peTop{display:flex;align-items:center;gap:10px;margin-bottom:4px}
 .bSetBox .bSetMsg:empty{display:none}.bSetBox .bSetDone{width:100%;margin-top:14px;border-radius:14px;padding:12px;font-weight:700}
 /* v0.23.91: MER & BBTRS highlight (gold seal) */

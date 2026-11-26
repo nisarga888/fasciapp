@@ -155,10 +155,13 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);
-  assert.equal(ver[1], "0.23.282");
+  assert.equal(ver[1], "0.23.283");
   assert.match(app, /faOpenScanPlans/);
   assert.match(app, /get\("forms"\)==="1"/);
   assert.match(index, /You'll also get an email reminder/);
+  assert.match(app, /Change email/);
+  assert.match(app, /Change password/);
+  assert.match(data, /changeEmail/);
   assert.match(cal, /browserTz/);
   assert.equal(app.includes("Turn on location for this site"), false);
   assert.equal(app.includes("permissions.query"), false);
