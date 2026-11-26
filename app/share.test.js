@@ -155,7 +155,7 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);
-  assert.equal(ver[1], "0.23.276");
+  assert.equal(ver[1], "0.23.277");
   assert.match(app, /faOpenScanPlans/);
   assert.match(app, /get\("forms"\)==="1"/);
   assert.match(index, /You'll also get an email reminder/);
@@ -168,6 +168,9 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   assert.equal(app.includes("Use my exact location"), false);
   assert.equal(index.includes('id="near"'), false);
   assert.equal(index.includes("Nearest"), false);
+  assert.match(app, /let favOn=false,listSort="az"/);
+  assert.match(app, /function faCardMarks/);
+  assert.match(app, /function faOpenFav/);
   assert.equal(/supabase[\s\S]{0,80}fa_near/.test(app), false);
   assert.match(app, /faOpenLocation/);
   assert.match(app, /data-locshare/);
