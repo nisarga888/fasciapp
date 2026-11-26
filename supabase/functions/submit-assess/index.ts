@@ -64,17 +64,22 @@ function cleanData(raw: unknown) {
   return data;
 }
 
-function photoBytes(v: unknown): Uint8Array | null {
+function photoBytes(v: unknown): { bytes: Uint8Array; ext: "webp" | "jpg"; type: string } | null {
   const s = String(v || "");
-  const m = s.match(/^data:image\/webp;base64,([A-Za-z0-9+/=\s]+)$/);
+  const m = s.match(/^data:image\/(webp|jpeg);base64,([A-Za-z0-9+/=\s]+)$/);
   if (!m) return null;
-  const raw = m[1].replace(/\s/g, "");
+  const raw = m[2].replace(/\s/g, "");
   if (raw.length < 32 || raw.length > 1_800_000) return null;
-  const bin = atob(raw);
+  let bin = "";
+  try { bin = atob(raw); } catch { return null; }
   if (bin.length > 1_400_000) return null;
   const u = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
-  return u;
+  const jpeg = u[0] === 0xff && u[1] === 0xd8 && u[2] === 0xff;
+  const webp = u.length > 12 && u[0] === 0x52 && u[1] === 0x49 && u[2] === 0x46 && u[3] === 0x46 && u[8] === 0x57 && u[9] === 0x45 && u[10] === 0x42 && u[11] === 0x50;
+  if (m[1] === "jpeg" && jpeg) return { bytes: u, ext: "jpg", type: "image/jpeg" };
+  if (m[1] === "webp" && webp) return { bytes: u, ext: "webp", type: "image/webp" };
+  return null;
 }
 
 Deno.serve(async (req) => {
@@ -98,10 +103,11 @@ Deno.serve(async (req) => {
   const linkToken = String(body.link || "").trim().toLowerCase();
   if (!/^[a-f0-9]{36}$/.test(linkToken)) return json({ error: "That link isn't valid." }, 400);
   const photos = body.photos && typeof body.photos === "object" ? body.photos as Record<string, unknown> : {};
+  if (!photos.front || !photos.side || !photos.back) return json({ error: "Please add all three photos." }, 400);
   const front = photoBytes(photos.front);
   const side = photoBytes(photos.side);
   const back = photoBytes(photos.back);
-  if (!front || !side || !back) return json({ error: "Please add all three photos." }, 400);
+  if (!front || !side || !back) return json({ error: "Those photos couldn't be read. Please add them again as a JPG or PNG." }, 400);
 
   const url = Deno.env.get("SUPABASE_URL") || "";
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
@@ -119,13 +125,13 @@ Deno.serve(async (req) => {
   if (!owner) return json({ error: "That link isn't valid." }, 404);
   const id = crypto.randomUUID();
   const paths = {
-    front: owner + "/" + id + "/front.webp",
-    side: owner + "/" + id + "/side.webp",
-    back: owner + "/" + id + "/back.webp",
+    front: owner + "/" + id + "/front." + front.ext,
+    side: owner + "/" + id + "/side." + side.ext,
+    back: owner + "/" + id + "/back." + back.ext,
   };
   const uploaded: string[] = [];
-  for (const [view, bytes] of [["front", front], ["side", side], ["back", back]] as const) {
-    const up = await admin.storage.from("assessment-photos").upload(paths[view], bytes, { contentType: "image/webp", upsert: false });
+  for (const [view, pic] of [["front", front], ["side", side], ["back", back]] as const) {
+    const up = await admin.storage.from("assessment-photos").upload(paths[view], pic.bytes, { contentType: pic.type, upsert: false });
     if (up.error) {
       if (uploaded.length) await admin.storage.from("assessment-photos").remove(uploaded);
       return json({ error: "That didn't work. Please try again." }, 400);
