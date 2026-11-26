@@ -44,13 +44,14 @@ function fillPlaces(){const el=$("#qPlace");if(!el||el.tagName!=="SELECT")return
  countries.forEach(co=>{const cs=(by.get(fold(co.country))||[]).slice().sort((a,b)=>a.city.localeCompare(b.city,"en",{sensitivity:"base"}));
   h+=`<optgroup label="${esc(co.country)}"><option value="co:${esc(co.country)}">${esc(co.country)} (${co.n})</option>${cs.map(c=>`<option value="ci:${esc(c.city)}|${esc(c.country)}">${esc(c.city)} (${c.n})</option>`).join("")}</optgroup>`});
  if(v.startsWith("free:"))h+=`<option value="${esc(v)}">${esc(v.slice(5))}</option>`;
+ else if((v.startsWith("ci:")||v.startsWith("co:"))&&h.indexOf('value="'+esc(v)+'"')<0)h+=`<option value="${esc(v)}">${esc(v.replace(/^c[io]:/,"").replace("|",", "))}</option>`;
  el.innerHTML=h;el.value=[...el.options].some(o=>o.value===v)?v:""}
 function setPlace(text){const el=$("#qPlace");if(!el)return;fillPlaces();const t=fold(text);
  const o=[...el.options].find(o=>o.value.startsWith("ci:")&&fold(o.value.slice(3).split("|")[0])===t)||[...el.options].find(o=>o.value.startsWith("co:")&&fold(o.value.slice(3))===t);
  if(o){el.value=o.value;return}const opt=document.createElement("option");opt.value="free:"+text;opt.textContent=text;el.appendChild(opt);el.value=opt.value}
 function placeOk(p){const v=($("#qPlace")&&$("#qPlace").value)||"";if(!v)return true;const locs=(p.locations&&p.locations.length)?p.locations:[p];
  if(v.startsWith("co:")){const c=fold(v.slice(3));return locs.some(l=>fold(l.country||"")===c)}
- if(v.startsWith("ci:")){const [ci,co]=v.slice(3).split("|").map(fold);return locs.some(l=>fold(faCity(l.city))===ci&&fold(l.country||"")===co)}
+ if(v.startsWith("ci:")){const [ci,co]=v.slice(3).split("|");const fci=fold(ci),fco=fold(co);if(fci==="online / other")return locs.some(l=>fold(l.country||"")===fco&&(isOnline(l)||!faCity(l.city)));return locs.some(l=>fold(faCity(l.city))===fci&&fold(l.country||"")===fco)}
  return placeHit(p,fold(v.replace(/^free:/,"")))}
 function traineeKind(){try{const t=new URLSearchParams(location.search).get("trainees");if(t==="1"||t==="dir")return"bbtrs";if(t==="mine"||t==="join")return"bbtrsMe"}catch(e){}return""}
 function openTraineeScreen(kind, extra, mode){const u=new URL(location.href);u.searchParams.set("trainees",kind==="bbtrsMe"?"mine":"1");["next","list","id","cohort","lang"].forEach(k=>u.searchParams.delete(k));if(extra)Object.keys(extra).forEach(k=>{if(extra[k])u.searchParams.set(k,extra[k]);else u.searchParams.delete(k)});const url=u.pathname+u.search+u.hash;if(mode==="replace")history.replaceState({},"",url);else history.pushState({},"",url);show(kind==="bbtrsMe"?"bbtrsMe":"bbtrs")}
@@ -85,7 +86,8 @@ window.addEventListener("popstate",()=>{const tk=traineeKind();if(tk)show(tk)});
 function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(sp.get("reset")==="1")return false;
  const tr=sp.get("trainees");if(tr==="1"||tr==="dir"){show("bbtrs");return true}if(tr==="mine"||tr==="join"){show("bbtrsMe");return true}
- const slug=(sp.get("p")||"").trim();if(slug&&window.FA_SHARE&&FA_SHARE.isProfileSlug(slug)){if(window.faOpenSlug)faOpenSlug(slug);return true}
+ const loc=(sp.get("loc")||"").trim();if(loc&&window.faOpenLocation){const city=(sp.get("city")||"").trim();if(!faOpenLocation(loc,city)){show("list");showToast("That place isn't listed")}return true}
+ const slug=(sp.get("p")||"").trim();if(slug&&window.FA_SHARE&&FA_SHARE.isProfileSlug(slug)){if(FA_SHARE.regionBySlug(slug)||(window.faMatchCountry&&faMatchCountry(slug))){if(window.faOpenLocation)faOpenLocation(slug);return true}if(window.faOpenSlug)faOpenSlug(slug);return true}
  const tab=(sp.get("tab")||"").toLowerCase();if(tab==="learn"||tab==="lab"){show("learn");return true}
  if(sp.get("join")==="1"){wantForm=true;if(me){show("profile");return true}setMode(true);show("auth");return true}
  if(sp.get("move")==="1"){try{const u=new URL(location.href);u.searchParams.delete("move");history.replaceState({},"",u.pathname+u.search+u.hash)}catch(e){}faStartMove();return true}
@@ -815,7 +817,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const cityOf=l=>l?(isOnline(l)?"Online":faCity(l.city)):"";
  const qp=()=>$("#qPlace");const placeV=()=>((qp()||{}).value||"");
  const placeParts=()=>{const v=placeV();if(v.startsWith("co:"))return{co:v.slice(3),ci:""};if(v.startsWith("ci:")){const [ci,co]=v.slice(3).split("|");return{co,ci}}return null};
- const placeLoc=p=>{const pp=placeParts();if(!pp)return null;const c=fold(pp.co),ci=fold(pp.ci);return L0(p).find(l=>fold(l.country||"")===c&&(!ci||fold(faCity(l.city))===ci))};
+ const placeLoc=p=>{const pp=placeParts();if(!pp)return null;const c=fold(pp.co),ci=fold(pp.ci);if(ci===fold("Online / other"))return L0(p).find(l=>fold(l.country||"")===c&&(isOnline(l)||!faCity(l.city)));return L0(p).find(l=>fold(l.country||"")===c&&(!ci||fold(faCity(l.city))===ci))};
  const src=()=>nearScope?"near-me":(((($("#qName")||{}).value||"").trim()||placeV())?"search":"list");
  let srcOv="";const view=p=>{try{const s=srcOv||src();window.FA_ev&&FA_ev("pract_view",{pid:p.id,source:s,once:"v"+p.id+s})}catch(e){}};
  const chips=(p,n)=>{const m=(p.mods||[]).filter(Boolean);return m.slice(0,n).map(x=>`<span class="ch${faHLChip(x)?" hlCh":""}">${esc(faModLabel(x))}</span>`).join("")+(m.length>n?`<span class="ch more">+${m.length-n}</span>`:"")};
@@ -827,10 +829,10 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const HS=[];let skip=0,modFromPop=false;
  const hpush=k=>{try{history.pushState({fa:k},"")}catch(e){}HS.push(k)};
  const hpop=k=>{if(HS.length&&HS[HS.length-1]===k){HS.pop();skip++;try{history.back()}catch(e){skip--}}};
- window.addEventListener("popstate",()=>{if(skip){skip--;return}const k=HS.pop();if(k==="sheet")hideSheet();else if(k==="city")hideCity();else if(k==="seeall")leaveSeeAll();else if(k==="region"){BR=null;renderList()}else if(k==="mod"){modFromPop=true;try{window.faSetModality&&faSetModality("")}finally{modFromPop=false}}else if(k==="pe"&&window.faPeBack)faPeBack();else if(k==="log"){if($("#log").classList.contains("active"))show("profile")}});
+ window.addEventListener("popstate",()=>{if(skip){skip--;return}const k=HS.pop();if(k==="sheet")hideSheet();else if(k==="city")hideCity();else if(k==="seeall")leaveSeeAll();else if(k==="cities"){BC=null;renderList()}else if(k==="region"){BR=null;BC=null;renderList()}else if(k==="mod"){modFromPop=true;try{window.faSetModality&&faSetModality("")}finally{modFromPop=false}}else if(k==="pe"&&window.faPeBack)faPeBack();else if(k==="log"){if($("#log").classList.contains("active"))show("profile")}});
  window.faH={push:hpush,pop:hpop};
  // ---- model
- let model={groups:[],grid:[],gridLabel:""};const sel={};let seeAll=false,savedTop=0;let BR=null;
+ let model={groups:[],grid:[],gridLabel:""};const sel={};let seeAll=false,savedTop=0;let BR=null,BC=null;
  const AMR=new Set("United States|Canada|Mexico|Brazil|Argentina|Chile|Peru|Colombia|Ecuador|Bolivia|Uruguay|Paraguay|Venezuela|Costa Rica|Panama|Guatemala|Honduras|Nicaragua|El Salvador|Belize|Cuba|Dominican Republic|Puerto Rico|Jamaica|Trinidad and Tobago|Bahamas|Barbados|Haiti|Guyana|Suriname".split("|"));
  const APR=new Set("Australia|New Zealand|Japan|China|India|Indonesia|Thailand|Vietnam|Malaysia|Singapore|Philippines|South Korea|Korea|Taiwan|Hong Kong|Sri Lanka|Nepal|Bangladesh|Pakistan|Cambodia|Laos|Myanmar|Fiji|Bali|Mongolia".split("|"));
  const AFR=new Set("South Africa|Egypt|Morocco|Kenya|Nigeria|Ghana|Tanzania|Uganda|Ethiopia|Tunisia|Algeria|Namibia|Botswana|Zimbabwe|Mauritius|Senegal|Israel|United Arab Emirates|Saudi Arabia|Qatar|Jordan|Lebanon|Iran|Iraq|Kuwait|Oman|Bahrain".split("|"));
@@ -838,17 +840,44 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  const regionOf=c=>!c||c===OTHER?"Online & other":AMR.has(c)?"Americas":APR.has(c)?"Asia & Pacific":AFR.has(c)?"Africa & Middle East":"Europe";
  const bub=(ps,n,more)=>`<span class="brFaces">${ps.filter(p=>p.photo).slice(0,n).map(p=>`<img src="${esc(p.photo)}" alt="" loading="lazy" decoding="async">`).join("")}${more>0?`<i>+${more}</i>`:""}</span>`;
  const uniq=list=>{const m=new Map();list.forEach(({p})=>m.set(p.id,p));return[...m.values()]};
+ const ONLINE="Online / other";
+ const noun=n=>n===1?"practitioner":"practitioners";
+ const shareBtn=(kind,name,n,country)=>{if(!window.FA_SHARE)return"";const attrs=`data-kind="${esc(kind)}" data-name="${esc(name)}" data-n="${n}"`+(country?` data-country="${esc(country)}"`:"");return FA_SHARE.locShareButton("Share "+name+", "+n+" "+noun(n),attrs)};
+ const head=(title,sub,btn)=>`<div class="brRegH"><div class="brRegHt"><small>${esc(title)}</small>${btn||""}</div><span>${sub}</span></div>`;
+ const row=(o)=>`<div class="brCo" data-co="${esc(o.co)}"${o.ci!=null?` data-ci="${esc(o.ci)}"`:""}${o.all?` data-open="all"`:""}><button type="button" class="brCoHit" aria-label="${esc(o.label)}, ${o.n} ${noun(o.n)}"><span class="brFl">${o.flag}</span><span class="brCoT"><b>${esc(o.label)}</b><small>${o.n} ${noun(o.n)}</small></span></button>${shareBtn(o.kind,o.shareName,o.n,o.country)}${bub(o.ps,4,0)}<em aria-hidden="true">›</em></div>`;
+ function cityBuckets(g){const m=new Map();g.list.forEach(({p})=>{const seen=new Set();L0(p).filter(l=>(coOf(l)||OTHER)===g.c).forEach(l=>{const online=isOnline(l)||!faCity(l.city);const n=online?ONLINE:faCity(l.city);const k=fold(n);if(seen.has(k))return;seen.add(k);const o=m.get(k)||{k,n,online,ids:new Map()};o.ids.set(p.id,p);m.set(k,o)})});return [...m.values()].sort((a,b)=>(a.online?1:0)-(b.online?1:0)||a.n.localeCompare(b.n,"en",{sensitivity:"base"}))}
+ function listed(){return all().filter(p=>p.consent!==false&&!p.admin_hidden&&pins(p).length)}
+ function groupsNow(){const by=new Map();listed().forEach(p=>{const seen=new Set();L0(p).forEach(l=>{const c=coOf(l)||OTHER;if(seen.has(c))return;seen.add(c);if(!by.has(c))by.set(c,[]);by.get(c).push({p,l})})});return [...by.entries()].map(([c,list])=>({c,list}))}
+ function matchCountry(slug){slug=String(slug||"").trim().toLowerCase();if(!slug||!window.FA_SHARE)return "";return groupsNow().map(g=>g.c).find(c=>FA_SHARE.slugify(c)===slug)||""}
+ function matchCity(country,slug){slug=String(slug||"").trim().toLowerCase();const g=groupsNow().find(x=>x.c===country);if(!g||!window.FA_SHARE)return null;return cityBuckets(g).find(b=>FA_SHARE.slugify(b.n)===slug)||null}
  function browseHtml(groups){const lc=$("#list");
+  if(BC){const g=groups.find(x=>x.c===BC);if(!g){BC=null;return browseHtml(groups)}
+   lc.dataset.br="cities";
+   {const nb=$("#listNav");if(nb){nb.hidden=false;nb.innerHTML=`<button type="button" class="brBack" data-back="cities"><b>←</b> Back to ${esc(regionOf(g.c))}</button>`}}
+   const buckets=cityBuckets(g),named=buckets.filter(b=>!b.online),ps=uniq(g.list);
+   const cities=buckets.map(b=>row({co:g.c,ci:b.n,flag:b.online?"🌐":flagC(g.c),label:b.n,n:b.ids.size,ps:[...b.ids.values()],kind:"city",shareName:b.n,country:g.c})).join("");
+   const allRow=row({co:g.c,all:1,flag:flagC(g.c),label:"All of "+g.c,n:ps.length,ps,kind:"country",shareName:g.c});
+   return head(g.c,`${named.length} cit${named.length===1?"y":"ies"} · A–Z`,shareBtn("country",g.c,ps.length))+`<div class="brCos">${allRow}${cities}</div>`}
   if(BR){const gs=groups.filter(g=>regionOf(g.c)===BR);if(!gs.length){BR=null;return browseHtml(groups)}
    lc.dataset.br="reg";
    {const nb=$("#listNav");if(nb){nb.hidden=false;nb.innerHTML=`<button type="button" class="brBack" data-br="home"><b>←</b> Back to regions</button>`}}
-   return `<div class="brRegH"><small>${esc(BR)}</small><span>${gs.length} countr${gs.length===1?"y":"ies"} · A–Z</span></div><div class="brCos">${gs.map(g=>{const ps=uniq(g.list);return `<button type="button" class="brCo" data-co="${esc(g.c)}"><span class="brFl">${flagC(g.c)}</span><span class="brCoT"><b>${esc(g.c)}</b><small>${ps.length} practitioner${ps.length===1?"":"s"}</small></span>${bub(ps,4,0)}<em>›</em></button>`}).join("")}</div>`}
+   const ids=new Map();gs.forEach(g=>g.list.forEach(({p})=>ids.set(p.id,p)));
+   return head(BR,`${gs.length} countr${gs.length===1?"y":"ies"} · A–Z`,shareBtn("region",BR,ids.size))+`<div class="brCos">${gs.map(g=>{const ps=uniq(g.list);return row({co:g.c,flag:flagC(g.c),label:g.c,n:ps.length,ps,kind:"country",shareName:g.c})}).join("")}</div>`}
   lc.dataset.br="home";const by=new Map();groups.forEach(g=>{const r=regionOf(g.c);if(!by.has(r))by.set(r,{n:0,ids:new Map()});const o=by.get(r);o.n++;g.list.forEach(({p})=>o.ids.set(p.id,p))});
   const tot=new Set();groups.forEach(g=>g.list.forEach(({p})=>tot.add(p.id)));const nc=groups.filter(g=>g.c!==OTHER).length;
   return `<p class="brTot">${tot.size} practitioners in ${nc} countries</p><div class="brRegs">${REGS.filter(r=>by.has(r)).map((r,i)=>{const o=by.get(r),ps=[...o.ids.values()].sort((a,b)=>(!!b.photo)-(!!a.photo)),sh=Math.min(6,ps.filter(p=>p.photo).length);
    return `<button type="button" class="brReg r${i}" data-reg="${esc(r)}"><span class="brRegT"><b>${esc(r)}</b><small>${r==="Online & other"?"":`${o.n} countr${o.n===1?"y":"ies"} · `}${ps.length} practitioner${ps.length===1?"":"s"}</small></span>${bub(ps,6,ps.length-sh)}<em>›</em></button>`}).join("")}</div>`}
- function goPlace(v,co){const m=document.querySelector("main");fillPlaces();if(![...qp().options].some(x=>x.value===v))return false;BR=regionOf(co);savedTop=m?m.scrollTop:0;seeAll=true;hpush("seeall");setPlaceV(v);if(m)m.scrollTop=0;return true}
- window.faListHome=()=>{BR=null;seeAll=false;const nb=$("#qName");if(nb)nb.value="";const lf=$("#listFilter");if(lf)lf.value="";const el=qp();if(el)el.value="";clearGeo();const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}while(HS.length&&HS[HS.length-1]!=="sheet"&&HS[HS.length-1]!=="pe")HS.pop();try{fillPlaces()}catch(e){}renderMarkers();renderList();const m=document.querySelector("main");if(m)m.scrollTop=0};
+ function goPlace(v,co){const m=document.querySelector("main");const el=qp();fillPlaces();if(el&&v&&![...el.options].some(x=>x.value===v)){const o=document.createElement("option");o.value=v;o.textContent=v.replace(/^c[io]:/,"").replace("|",", ");el.appendChild(o);el.value=v}if(!el||![...el.options].some(x=>x.value===v))return false;BR=regionOf(co);savedTop=m?m.scrollTop:0;seeAll=true;hpush("seeall");setPlaceV(v);if(m)m.scrollTop=0;return true}
+ window.faListHome=()=>{BR=null;BC=null;seeAll=false;const nb=$("#qName");if(nb)nb.value="";const lf=$("#listFilter");if(lf)lf.value="";const el=qp();if(el)el.value="";clearGeo();const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}while(HS.length&&HS[HS.length-1]!=="sheet"&&HS[HS.length-1]!=="pe")HS.pop();try{fillPlaces()}catch(e){}renderMarkers();renderList();const m=document.querySelector("main");if(m)m.scrollTop=0};
+ window.faMatchCountry=matchCountry;
+ window.faOpenLocation=function(slug,citySlug){slug=String(slug||"").trim().toLowerCase();citySlug=String(citySlug||"").trim().toLowerCase();if(!window.FA_SHARE)return false;const reg=FA_SHARE.regionBySlug(slug);
+  const wipe=()=>{seeAll=false;const lf=$("#listFilter");if(lf)lf.value="";const w=$("#qWhere");if(w){w.value="";const sg=$("#qSug");if(sg)sg.hidden=true}const nm=$("#qName");if(nm)nm.value="";clearGeo();const el=qp();if(el)el.value="";if(nearScope){nearScope=null;const b=$("#nearAll");if(b)b.hidden=true}};
+  const top=()=>{const m=document.querySelector("main");if(m)m.scrollTop=0};
+  if(reg&&!citySlug){wipe();BR=reg.name;BC=null;show("list");if(HS[HS.length-1]!=="region")hpush("region");renderList();top();return true}
+  const country=matchCountry(slug);if(!country)return false;wipe();BR=regionOf(country);BC=country;show("list");if(!HS.includes("region"))hpush("region");if(HS[HS.length-1]!=="cities")hpush("cities");
+  if(!citySlug){renderList();top();return true}
+  const city=matchCity(country,citySlug);if(!city){renderList();top();showToast("That city isn't listed");return true}
+  const v="ci:"+city.n+"|"+country;if(!goPlace(v,country)){renderList();showToast("That city isn't listed")}return true};
  (function(){const w=$("#qWhere"),sg=$("#qSug");if(!w||!sg)return;let hits=[];
   const modOrd=(a,b)=>faModSort(a.name,b.name);
   const mods=()=>{const m=new Map();all().filter(p=>p.consent!==false&&pins(p).length).forEach(p=>(p.mods||[]).forEach(name=>{const t=String(name||"").trim();if(!t)return;const o=m.get(t)||{name:t,n:0};o.n++;m.set(t,o)}));if(!m.has("BBTRS online"))m.set("BBTRS online",{name:"BBTRS online",n:0});return [...m.values()].sort(modOrd)};
@@ -858,7 +887,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
   const row=(h)=>`<button type="button" data-pickmod="${esc(h.name)}"><span class="sgT"><b>${esc(faModLabel(h.name))}</b><small>${h.n} practitioner${h.n===1?"":"s"}</small></span></button>`;
   const fitH=()=>{const vv=window.visualViewport,vh=vv?vv.height+vv.offsetTop:innerHeight,top=sg.getBoundingClientRect().top;sg.style.maxHeight=Math.max(180,Math.min(vh*0.6,vh-top-12))+"px"};
   const paint=()=>{const q=w.value.trim();const list=build(q);hits=list;sg.hidden=false;sg.innerHTML=(q?"":`<p class="sgHd">Modalities</p>`)+(list.length?list.map(row).join(""):`<p class="sgNo">No modality found</p>`);sg.scrollTop=0;requestAnimationFrame(fitH)};
-  function leavePlace(){const el=qp();if(el&&el.value)el.value="";if(seeAll){seeAll=false;if(HS.length&&HS[HS.length-1]==="seeall")HS.pop()}BR=null;while(HS.length&&(HS[HS.length-1]==="region"||HS[HS.length-1]==="city"))HS.pop()}
+  function leavePlace(){const el=qp();if(el&&el.value)el.value="";if(seeAll){seeAll=false;if(HS.length&&HS[HS.length-1]==="seeall")HS.pop()}BR=null;BC=null;while(HS.length&&(HS[HS.length-1]==="region"||HS[HS.length-1]==="cities"||HS[HS.length-1]==="city"))HS.pop()}
   window.faSetModality=function(name){const lf=$("#listFilter");if(!lf)return;name=String(name||"");const prev=lf.value;if(!name)clearGeo();if(name&&![...lf.options].some(o=>o.value===name)){const o=document.createElement("option");o.value=o.textContent=name;lf.appendChild(o)}if(name)leavePlace();lf.value=name;if(document.activeElement!==w)w.value=name?faModLabel(name):"";sg.hidden=true;faHLPaint();syncModFilter("listFilter");const m=document.querySelector("main");if(m)m.scrollTop=0;if(name&&!prev&&HS[HS.length-1]!=="mod")hpush("mod");if(!name&&prev&&!modFromPop&&HS[HS.length-1]==="mod")hpop("mod")};
   if(window.visualViewport)visualViewport.addEventListener("resize",()=>{if(!sg.hidden)fitH()});
   sg.addEventListener("touchstart",()=>{if(document.activeElement===w)w.blur()},{passive:true});
@@ -876,7 +905,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  function rowHtml(gi){const g=model.groups[gi];const list=inCity(g,sel[g.c]);return list.map(({p,l},i)=>tile(p,l,gi,i,1,null)).join("")}
  function chipLabel(g){const k=sel[g.c];if(!k)return"All cities";const o=g.cities.find(x=>x.k===k);return o?o.n:"All cities"}
  function nav(){const box=$("#listNav"),pp=placeParts(),lst=$("#list");const on=!!pp;const mod=($("#listFilter")&&$("#listFilter").value)||"";if(lst)lst.classList.toggle("ptPlace",on);if(!box)return;
-  if(on){box.hidden=false;box.innerHTML=`<button type="button" class="ptBack brBack" data-nav="back"><b>←</b> ${BR&&BR!=="Online & other"?"Back to "+esc(BR):"Back to regions"}</button><span class="ptCrumb">${pp.ci?`<button type="button" data-nav="co">${flagOf(pp.co)} ${esc(pp.co)}</button><em>›</em><b>${esc(pp.ci)}</b>`:`<b>${flagOf(pp.co)} ${esc(pp.co)}</b>`}</span>`;return}
+  if(on){const back=pp.ci?"Back to "+pp.co:(BC?"Back to cities":(BR&&BR!=="Online & other"?"Back to "+BR:"Back to regions"));box.hidden=false;box.innerHTML=`<button type="button" class="ptBack brBack" data-nav="back"><b>←</b> ${esc(back)}</button><span class="ptCrumb">${pp.ci?`<button type="button" data-nav="co">${flagOf(pp.co)} ${esc(pp.co)}</button><em>›</em><b>${esc(pp.ci)}</b>`:`<b>${flagOf(pp.co)} ${esc(pp.co)}</b>`}</span>`;return}
   if(mod){box.hidden=false;box.innerHTML=`<button type="button" class="brBack allMod" data-nav="allmod"><b>←</b> All modalities</button>`;return}
   box.hidden=true;box.innerHTML=""}
  function setPlaceV(v){const el=qp();if(!el)return;fillPlaces();if(v&&![...el.options].some(o=>o.value===v))return;el.value=v;el.dispatchEvent(new Event("change"))}
@@ -904,6 +933,7 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
    if(nameQ)fc.push(`<button type="button" class="fChip" data-clr="name">“${esc(nameQ)}” <i>✕</i></button>`);
    if(nearScope)fc.push(`<button type="button" class="fChip" data-clr="near">📍 Near me <i>✕</i></button>`);
    top=`<div class="fChips">${fc.join("")}</div>`;$("#list").dataset.br=pp?"co":"res";
+   if(pp){const placeHead=pp.ci?head(pp.ci,`${esc(pp.co)} · ${n} ${noun(n)}`,shareBtn("city",pp.ci,n,pp.co)):head(pp.co,`${n} ${noun(n)}`,shareBtn("country",pp.co,n));top=placeHead+top}
    if(pp){const allIn=filteredNoPlace().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co)));const mc=new Map();(mod?all().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co))&&p.consent!==false):allIn).forEach(p=>(p.mods||[]).filter(Boolean).forEach(m=>mc.set(m,(mc.get(m)||0)+1)));const ms=[...mc.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
     if(ms.length)top+=`<div class="brMods"><button type="button" class="cChip${mod?"":" on"}" data-mod="">All</button>${ms.map(([m,c])=>`<button type="button" class="cChip${mod===m?" on":""}" data-mod="${esc(m)}">${esc(faModLabel(m))} <i>${c}</i></button>`).join("")}</div>`}
    if(pp){const allIn=filteredNoPlace().filter(p=>L0(p).some(l=>fold(l.country||"")===fold(pp.co)));const cs=cityList(pp.co,allIn.map(p=>({p})));
@@ -989,7 +1019,9 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
  bx.addEventListener("touchend",e=>{const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)step(dx<0?1:-1)},{passive:true});
  document.addEventListener("keydown",e=>{if(window.faPopOn&&faPopOn())return;if(!cp.hidden&&e.key==="Escape"){hideCity();hpop("city");return}if(sh.hidden)return;if(e.key==="Escape")close();else if(e.key==="ArrowRight")step(1);else if(e.key==="ArrowLeft")step(-1)});
  // ---- list clicks
+ function openLocShare(btn){if(!window.FA_SHARE||!window.faOpenLocShare)return;const kind=btn.dataset.kind||"",name=btn.dataset.name||"",n=Number(btn.dataset.n)||0,country=btn.dataset.country||"";let path="";if(kind==="region")path=FA_SHARE.regionSlug(name);else if(kind==="country")path=FA_SHARE.slugify(name);else if(kind==="city")path=FA_SHARE.slugify(country)+"/"+FA_SHARE.slugify(name);if(!path||path.endsWith("/"))return;const what=name+" · "+n+" "+noun(n);const url=FA_SHARE.locationUrl(path);faOpenLocShare({url,title:what,label:FA_SHARE.locationLabel(path),targets:FA_SHARE.shareTargets(url,what),sheetTitle:"Share "+what})}
  const lst=$("#list");if(lst)lst.addEventListener("click",e=>{const t=e.target;
+  const shb=t.closest("[data-locshare]");if(shb){e.preventDefault();e.stopPropagation();openLocShare(shb);return}
   const nb=t.closest("[data-nav]");if(nb){if(nb.dataset.nav==="allmod"){window.faSetModality("");return}if(nb.dataset.nav==="back"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}else{const pp=placeParts();if(pp)setPlaceV("co:"+pp.co)}return}
   const fc=t.closest("[data-clr]");if(fc){const k=fc.dataset.clr;
    if(k==="place"){if(HS[HS.length-1]==="seeall"){hpop("seeall");leaveSeeAll()}else leaveSeeAll()}
@@ -1000,8 +1032,9 @@ function faCity(raw){let c=String(raw||"").split(",")[0].trim();if(!c)return"";
    else if(k==="near")clearNear();return}
   const md=t.closest("button[data-mod]");if(md){const el=$("#listFilter");if(el){if(md.dataset.mod&&![...el.options].some(o=>o.value===md.dataset.mod)){const o=document.createElement("option");o.value=o.textContent=md.dataset.mod;el.appendChild(o)}el.value=md.dataset.mod;syncModFilter("listFilter")}return}
   const rg=t.closest("[data-reg]");if(rg){BR=rg.dataset.reg;hpush("region");renderList();const m=document.querySelector("main");if(m)m.scrollTop=0;return}
-  if(t.closest('[data-br="home"]')){BR=null;hpop("region");renderList();const m=document.querySelector("main");if(m)m.scrollTop=0;return}
-  const cb=t.closest("[data-co]");if(cb){const r=BR;if(!goPlace("co:"+cb.dataset.co,cb.dataset.co))return;BR=r;nav();return}
+  if(t.closest('[data-br="home"]')){BR=null;BC=null;hpop("region");renderList();const m=document.querySelector("main");if(m)m.scrollTop=0;return}
+  if(t.closest('[data-back="cities"]')){BC=null;hpop("cities");renderList();const m2=document.querySelector("main");if(m2)m2.scrollTop=0;return}
+  const crow=t.closest(".brCo");if(crow){const co=crow.dataset.co;if(crow.dataset.open==="all"){goPlace("co:"+co,co);return}if(crow.dataset.ci){goPlace("ci:"+crow.dataset.ci+"|"+co,co);return}BC=co;BR=BR||regionOf(co);hpush("cities");renderList();const m3=document.querySelector("main");if(m3)m3.scrollTop=0;return}
   const pl=t.closest("[data-pl]");if(pl){setPlaceV(pl.dataset.pl);return}
   const pk=t.closest("[data-pick]");if(pk){showCity(+pk.dataset.pick);return}
   const a=t.closest("[data-all]");if(a){const g=model.groups[+a.dataset.all];if(!g)return;const k=sel[g.c];const o=k&&g.cities.find(x=>x.k===k);
@@ -1225,7 +1258,7 @@ window.faLogFor=async nm=>{show("log");await loadLog();const f=$("#sessForm");f.
 /* v0.23.258 share a profile and session reviews. Reviews load only for the open profile. */
 (function(){
  const revMem=new Map();
- let revTok=0,popP=null,popMode="",rateStars=0,busy=false;
+ let revTok=0,popP=null,popLoc=null,popMode="",rateStars=0,busy=false;
  const pop=document.createElement("div");
  pop.id="ptPop"; pop.className="ptPop"; pop.hidden=true;
  pop.innerHTML='<div class="ptPopDim" data-popx></div><div class="ptPopBox" role="dialog" aria-modal="true"></div>';
@@ -1256,7 +1289,7 @@ window.faLogFor=async nm=>{show("log");await loadLog();const f=$("#sessForm");f.
   });
  };
  window.faPopOn=()=>!pop.hidden;
- window.faClosePops=()=>{pop.hidden=true;popP=null;popMode="";busy=false};
+ window.faClosePops=()=>{pop.hidden=true;popP=null;popLoc=null;popMode="";busy=false};
  function ctx(p){const url=FA_SHARE.profileUrl(p.slug),title=practiceTitle(p);return{url,title,label:FA_SHARE.profileLabel(p.slug),targets:FA_SHARE.shareTargets(url,title)}}
  async function copyText(text){
   try{await navigator.clipboard.writeText(text);return true}catch(e){}
@@ -1267,9 +1300,18 @@ window.faLogFor=async nm=>{show("log");await loadLog();const f=$("#sessForm");f.
   const c=ctx(p);
   const coarse=window.matchMedia&&matchMedia("(pointer: coarse)").matches;
   if(coarse&&navigator.share){try{await navigator.share({title:c.title,text:c.title+" on FasciApp",url:c.url});return}catch(e){if(e&&e.name==="AbortError")return}}
-  popP=p; popMode="share";
+  popP=p; popLoc=null; popMode="share";
   box.innerHTML=FA_SHARE.shareSheetHtml({label:c.label,native:typeof navigator.share==="function"});
   box.setAttribute("aria-label","Share this profile");
+  pop.hidden=false;
+ };
+ window.faOpenLocShare=async function(info){
+  if(!info||!info.url||!window.FA_SHARE)return;
+  const coarse=window.matchMedia&&matchMedia("(pointer: coarse)").matches;
+  if(coarse&&navigator.share){try{await navigator.share({title:info.title,text:info.title+" on FasciApp",url:info.url});return}catch(e){if(e&&e.name==="AbortError")return}}
+  popP=null; popLoc=info; popMode="loc";
+  box.innerHTML=FA_SHARE.shareSheetHtml({title:info.sheetTitle,label:info.label,native:typeof navigator.share==="function"});
+  box.setAttribute("aria-label",info.sheetTitle||"Share");
   pop.hidden=false;
  };
  window.faOpenRate=function(p,draft){
@@ -1342,8 +1384,8 @@ window.faLogFor=async nm=>{show("log");await loadLog();const f=$("#sessForm");f.
  pop.addEventListener("click",async e=>{
   const t=e.target;
   if(t.closest("[data-popx]")){faClosePops();return}
-  if(popMode==="share"&&popP){
-   const c=ctx(popP);
+  if((popMode==="share"&&popP)||(popMode==="loc"&&popLoc)){
+   const c=popMode==="loc"?popLoc:ctx(popP);
    const chan=t.closest("[data-chan]");
    if(t.closest("[data-copy]")||(chan&&chan.dataset.chan==="copy")){showToast(await copyText(c.url)?"Link copied":"Could not copy the link");return}
    if(t.closest("[data-native]")){try{await navigator.share({title:c.title,text:c.title+" on FasciApp",url:c.url})}catch(err){if(!err||err.name!=="AbortError")showToast("Could not open sharing")}return}

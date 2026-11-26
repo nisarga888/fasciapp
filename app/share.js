@@ -51,12 +51,38 @@ function isProfileSlug(path){
   return true;
 }
 
-function redirectTarget(pathname){
-  const raw = String(pathname||"");
-  const path = raw.replace(/\/index\.html$/i,"").replace(/^\/+|\/+$/g,"").toLowerCase();
-  if(!isProfileSlug(path)) return null;
-  return "/app/?p="+path;
+const LOC_REGIONS = [
+  ["Europe","europe"],
+  ["Americas","americas"],
+  ["Asia & Pacific","asia-pacific"],
+  ["Africa & Middle East","africa-middle-east"],
+  ["Online & other","online-other"]
+];
+
+function regionSlug(name){
+  const row = LOC_REGIONS.find(r=>r[0]===name);
+  return row ? row[1] : slugify(name);
 }
+function regionBySlug(slug){
+  const s = String(slug||"").trim().toLowerCase();
+  const row = LOC_REGIONS.find(r=>r[1]===s);
+  return row ? {name:row[0], slug:row[1]} : null;
+}
+function pathParts(pathname){
+  const path = String(pathname||"").replace(/\/index\.html$/i,"").replace(/^\/+|\/+$/g,"").toLowerCase();
+  return path ? path.split("/") : [];
+}
+function slugPart(s){
+  return !!s && s.length<=80 && s.indexOf(".")<0 && !UUID_RE.test(s) && !RESERVED_SET.has(s) && SLUG_RE.test(s);
+}
+function redirectTarget(pathname){
+  const parts = pathParts(pathname);
+  if(parts.length===2 && slugPart(parts[0]) && slugPart(parts[1])) return "/app/?loc="+parts[0]+"&city="+parts[1];
+  if(parts.length!==1 || !isProfileSlug(parts[0])) return null;
+  return "/app/?p="+parts[0];
+}
+function locationUrl(path){ return "https://fasciapp.app/"+String(path||"").replace(/^\/+/,""); }
+function locationLabel(path){ return "fasciapp.app/"+String(path||"").replace(/^\/+/,""); }
 
 function profileUrl(slug){ return "https://fasciapp.app/"+slug; }
 function profileLabel(slug){ return "fasciapp.app/"+slug; }
@@ -126,6 +152,9 @@ const SHARE_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" s
 function shareIconHtml(){
   return '<button type="button" class="ptShare" data-share aria-label="Share profile">'+SHARE_SVG+"</button>";
 }
+function locShareButton(label, attrs){
+  return '<button type="button" class="brShare" data-locshare '+(attrs||"")+' aria-label="'+esc(label)+'">'+SHARE_SVG+"</button>";
+}
 function shareButtonHtml(){
   return '<button type="button" class="ptShareBtn" data-share>'+SHARE_SVG+" Share profile</button>";
 }
@@ -176,8 +205,9 @@ function shareSheetHtml(o){
   o = o||{};
   const native = o.native ? '<button type="button" class="gold ptNative" data-native>Share on this phone</button>' : "";
   const btn = (k, cls, label) => '<button type="button" data-chan="'+k+'"><i class="'+cls+'">'+CHAN[k]+"</i>"+label+"</button>";
-  return '<div class="ptPopTop"><b>Share this profile</b><button type="button" class="ptPopX" data-popx aria-label="Close">✕</button></div>'
-    +'<p class="ptPopSub">Anyone with the link can open it directly.</p>'
+  const sub = o.sub!=null ? o.sub : "Anyone with the link can open it directly.";
+  return '<div class="ptPopTop"><b>'+esc(o.title||"Share this profile")+'</b><button type="button" class="ptPopX" data-popx aria-label="Close">✕</button></div>'
+    +'<p class="ptPopSub">'+esc(sub)+"</p>"
     +'<div class="ptLink"><b>'+esc(o.label||"")+'</b><button type="button" data-copy>Copy</button></div>'
     +native
     +'<div class="ptShareGrid">'
@@ -227,6 +257,7 @@ function reviewError(err){
 
 return {
   RESERVED, slugify, allocSlug, isProfileSlug, redirectTarget, profileUrl, profileLabel,
+  regionSlug, regionBySlug, locationUrl, locationLabel, locShareButton,
   shareTargets, publicName, relativeDate, formatAvg, starRow, shareIconHtml, shareButtonHtml,
   ratingRowHtml, reviewsSectionHtml, shareSheetHtml, rateSheetHtml, reviewError, esc
 };
