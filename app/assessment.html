@@ -212,7 +212,7 @@ const FG=window.FA_GIFTS;$("#gIntro").textContent=FG.INTRO;$("#gDisc").textConte
 const gUpd=()=>{const n=$$("#pqs input:checked").length,t=FG.Q.length;$("#gCnt").textContent=n+" / "+t;$("#gBar").style.width=(n/t*100)+"%"};$("#pqs").addEventListener("change",gUpd);
 const collect=()=>{const d={};$$("[data-k]").forEach(el=>{const k=el.dataset.k;if(el.classList.contains("chips")){const v=[...el.querySelectorAll("input:checked")].map(i=>i.value);d[k]=el.dataset.r?(v[0]||null):(Array.isArray(d[k])?d[k].concat(v):v)}else if(el.value!=="")d[k]=el.type=="number"||el.type=="range"?Number(el.value):el.value.trim()});const pt={};$$("#pqs input:checked").forEach(x=>pt[x.name.slice(3)]=Number(x.value));if(Object.keys(pt).length){const r=FG.score(pt);r.answers=pt;d.gifts=r;const sc={};FG.ORDER.forEach(k=>sc[FG.G[k].legacy]=Math.round(r.pct[k]*15/100));d.pattern_scores=sc}return d};
 const msg=t=>$("#msg").textContent=t;
-const kept={front:"",side:"",back:""};let draftId=new URLSearchParams(location.search).get("draft")||"",draftRow=null,stepN=1,saving=false,finishing=false;
+const kept={front:"",side:"",back:""};let draftId=new URLSearchParams(location.search).get("draft")||"",draftRow=null,stepN=1,saving=false,finishing=false,ready=false;
 const STEP_NAMES=["Client & photos","Why they're here","Where it is felt","Tension & history","Body & daily life","Breath & gifts","Health & the reading"];
 const ck=n=>(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/ł/g,"l").replace(/Ł/g,"L").trim().replace(/\s+/g," ").toLowerCase();
 let toastT;function toast(s){const t=$("#toast");if(!t)return;t.textContent=s;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2400)}
@@ -225,7 +225,7 @@ function showStep(n){stepN=Math.max(1,Math.min(7,n));$$(".sec[data-step]").forEa
 const shrinkWebp=f=>new Promise(res=>{const im=new Image();im.onload=()=>{const s=Math.min(1,1400/Math.max(im.width||1,im.height||1)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));c.getContext("2d").drawImage(im,0,0,c.width,c.height);c.toBlob(b=>res(b||f),"image/webp",.72)};im.onerror=()=>res(f);im.src=URL.createObjectURL(f)});
 function fillDraft(d){const data=Object.assign({},d.data||{});$$("[data-k]").forEach(el=>{const k=el.dataset.k,v=data[k];if(v==null)return;if(el.classList.contains("chips")){const a=[].concat(v);el.querySelectorAll("input").forEach(i=>i.checked=a.includes(i.value))}else{el.value=v;if(el.type==="range"&&el.nextElementSibling)el.nextElementSibling.value=v}});
  const PT=((data.gifts||{}).answers)||{};for(const q in PT){const x=document.querySelector('#pqs input[name="pq_'+q+'"][value="'+PT[q]+'"]');if(x)x.checked=true}if(window.FA_unitsRefresh)FA_unitsRefresh();try{gUpd()}catch(e){}$("#warn").classList.toggle("on",!!(data.red_flags||[]).length)}
-async function saveDraft(silent){if(!user||EID||saving)return false;const name=$("#client_name").value.trim();if(!name){msg("Add the client name first.");showStep(1);return false}
+async function saveDraft(silent){if(!ready||!user||EID||saving)return false;const name=$("#client_name").value.trim();if(!name){msg("Add the client name first.");showStep(1);return false}
  saving=true;try{
   if(!draftId){const ins=await sb.from("assessment_drafts").insert({owner_id:user.id,client_name:name.slice(0,80),client_key:ck(name),step:stepN,step_count:7,data:collect()}).select("id").single();if(ins.error)throw ins.error;draftId=ins.data.id;const u=new URL(location.href);u.searchParams.set("draft",draftId);history.replaceState({},"",u.pathname+u.search)}
   for(const v of ["front","side","back"]){if(!files[v])continue;const p=user.id+"/"+draftId+"/"+v+".webp";const up=await sb.storage.from("assessment-photos").upload(p,await shrinkWebp(files[v]),{contentType:"image/webp",upsert:true});if(up.error)throw up.error;kept[v]=p;files[v]=null}
@@ -238,7 +238,7 @@ async function startSteps(){document.body.classList.add("scanSteps");$("#scanPro
  if(draftId){const r=await sb.from("assessment_drafts").select("*").eq("id",draftId).maybeSingle();draftRow=r.data;
   if(draftRow&&draftRow.assessment_id){location.replace("assessment-results.html?id="+draftRow.assessment_id+"#bbtrs");return}
   if(draftRow){$("#client_name").value=draftRow.client_name||$("#client_name").value;fillDraft(draftRow);["front","side","back"].forEach(v=>{kept[v]=draftRow["photo_"+v]||""});for(const v of ["front","side","back"])if(kept[v]){const pic=await sb.storage.from("assessment-photos").createSignedUrl(kept[v],3600);if(pic.data)setImg(v,pic.data.signedUrl)}stepN=draftRow.step||1;$("#draftDel").hidden=false}}
- showStep(stepN)}
+ showStep(stepN);ready=true}
 $("#saveLater").onclick=()=>saveDraft(false);
 $("#nextStep").onclick=async()=>{if(stepN<7){const ok=await saveDraft(true);if(!ok)return;showStep(stepN+1);return}if(!(await saveDraft(true))&&!EID)return;if($("#go").onclick)$("#go").onclick()};
 $("#draftDel").onclick=async()=>{if(!draftId||!confirm("Delete this draft? Photos in it are removed."))return;const paths=["front","side","back"].map(v=>kept[v]).filter(Boolean);if(paths.length)await sb.storage.from("assessment-photos").remove(paths);await sb.from("assessment_drafts").delete().eq("id",draftId);const back=$("#back");location.href=back&&back.getAttribute("href")||"./"};
