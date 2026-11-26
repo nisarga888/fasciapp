@@ -17,7 +17,7 @@ async function loadCredits(){try{const {data}=await (await sb()).rpc("fa_scan_st
 function screen(){let s=$("#intake");if(s)return s;s=document.createElement("section");s.id="intake";s.className="screen";document.querySelector("main").appendChild(s);return s}
 function dateOf(iso){try{return new Date(iso).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}catch(e){return ""}}
 function initials(n){return String(n||"?").trim().split(/\s+/).slice(0,2).map(w=>w[0]||"").join("").toUpperCase()}
-async function unread(){const {count}=await (await sb()).from("intake_forms").select("id",{count:"exact",head:true}).is("read_at",null);return count||0}
+async function unread(){const a=await (await sb()).from("assessments").select("id",{count:"exact",head:true}).eq("via","client").is("opened_at",null);const b=await (await sb()).from("intake_forms").select("id",{count:"exact",head:true}).is("read_at",null);return (a.count||0)+(b.count||0)}
 function paintDot(n){const b=document.querySelector('#tabs [data-t="profile"]');if(!b)return;let d=b.querySelector(".inDot");if(!d){d=document.createElement("i");d.className="badge inDot";b.appendChild(d)}d.hidden=!n;d.textContent=n>9?"9+":String(n||"")}
 async function refreshDot(){if(!me()){paintDot(0);return}try{paintDot(await unread())}catch(e){}}
 function cardHtml(p){
@@ -98,6 +98,6 @@ document.addEventListener("click",e=>{
   if(t.closest("[data-indel]")){del(screen().dataset.id);return}
   const row=t.closest("[data-inid]");if(row)openOne(row.dataset.inid);
 });
-const prev=window.faProfShown;window.faProfShown=function(){if(prev)prev();setTimeout(mount,450)};
+const prev=window.faProfShown;window.faProfShown=function(){if(prev)prev();setTimeout(refreshDot,450)};
 document.addEventListener("DOMContentLoaded",()=>{try{const q=new URLSearchParams(location.search);if(q.get("forms")==="1")setTimeout(()=>window.faOpenIntake&&faOpenIntake(),800)}catch(e){}});
 })();
