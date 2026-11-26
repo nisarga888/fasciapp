@@ -146,7 +146,7 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);
-  assert.equal(ver[1], "0.23.267");
+  assert.equal(ver[1], "0.23.268");
   assert.match(app, /faOpenLocation/);
   assert.match(app, /data-locshare/);
   const quote = "A fellow practitioner found me through FasciApp and referred a client to me for a trial BBTRS® session, which led to her booking six more sessions.";
