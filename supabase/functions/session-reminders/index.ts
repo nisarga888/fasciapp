@@ -26,6 +26,16 @@ function when(iso: string, tz: string, fallback = false): { date: string; time: 
   }
 }
 
+function clientEmailHtml(who: string, date: string, time: string, zone: string) {
+  return `<!doctype html><html><body style="margin:0;background:#f6f1ea;font-family:Helvetica,Arial,sans-serif;color:#1d2a2c">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f6f1ea"><tr><td align="center" style="padding:28px 14px">
+<table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:14px">
+<tr><td style="padding:26px 26px 8px;font-size:18px;color:#1d2a2c"><b>A reminder of your session</b></td></tr>
+<tr><td style="padding:8px 26px 8px;font-size:16px;line-height:1.55">Your session with <b>${enc(who)}</b> is coming up.<br>${enc(date)} at <b>${enc(time)}</b> <span style="color:#5d6b6c">(${enc(zone)})</span></td></tr>
+<tr><td style="padding:8px 26px 26px;font-size:14px;line-height:1.5;color:#5d6b6c">Reply to this email if you need to change the time.</td></tr>
+</table></td></tr></table></body></html>`;
+}
+
 function emailHtml(client: string, date: string, time: string, zone: string, title: string) {
   const what = title ? `<tr><td style="padding:0 26px 8px;font-size:15px;line-height:1.5;color:#F3EDE4">${enc(title)}</td></tr>` : "";
   return `<!doctype html><html><body style="margin:0;background:#02191E;font-family:Helvetica,Arial,sans-serif;color:#F3EDE4">
@@ -102,5 +112,60 @@ Deno.serve(async (req) => {
     sent++;
     if (previews.length < 3) previews.push({ subject, html });
   }
-  return Response.json({ checked: (due.data || []).length, sent, failed, previews });
+
+  const since = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+  const used = await admin.from("planned_sessions").select("id", { count: "exact", head: true }).gte("client_reminder_sent_at", since);
+  const room = Math.max(0, 50 - (used.count || 0));
+  const clientDue = room ? await admin.from("planned_sessions")
+    .select("id,practitioner_id,client_email,starts_at,tz")
+    .eq("client_remind", true)
+    .is("client_reminder_sent_at", null)
+    .neq("reminder", "none")
+    .not("client_email", "is", null)
+    .not("reminder_at", "is", null)
+    .lte("reminder_at", now.toISOString())
+    .gt("reminder_at", from)
+    .gt("starts_at", now.toISOString())
+    .order("reminder_at", { ascending: true })
+    .limit(Math.min(20, room)) : { data: [], error: null };
+  let clientSent = 0, clientFailed = 0;
+  if (!clientDue.error) {
+    const ids = [...new Set((clientDue.data || []).map((r) => r.practitioner_id).filter(Boolean))];
+    const profs = ids.length ? await admin.from("practitioners").select("user_id,name,practice_name,email").in("user_id", ids) : { data: [] };
+    const byId = new Map((profs.data || []).map((p) => [p.user_id, p]));
+    for (const row of clientDue.data || []) {
+      const addr = String(row.client_email || "").trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(addr)) continue;
+      const claim = await admin.from("planned_sessions").update({ client_reminder_sent_at: now.toISOString() })
+        .eq("id", row.id).is("client_reminder_sent_at", null).select("id");
+      if (claim.error || !claim.data?.length) continue;
+      const prof = (byId.get(row.practitioner_id) || {}) as { name?: string; practice_name?: string; email?: string };
+      const who = String(prof.practice_name || prof.name || "your practitioner").replace(/[\r\n]/g, " ").trim().slice(0, 80) || "your practitioner";
+      const reply = String(prof.email || "").trim();
+      const replyOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(reply) ? reply : "hello@fasciapp.app";
+      const w = when(row.starts_at, row.tz || "UTC");
+      const html = clientEmailHtml(who, w.date, w.time, w.zone);
+      const text = `A reminder of your session\n\nYour session with ${who} is coming up.\n${w.date} at ${w.time} (${w.zone})\n\nReply to this email if you need to change the time.`;
+      const r = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: { "api-key": brevo, "content-type": "application/json", accept: "application/json" },
+        body: JSON.stringify({
+          sender: { name: who.slice(0, 70), email: "hello@fasciapp.app" },
+          replyTo: { email: replyOk, name: who.slice(0, 70) },
+          to: [{ email: addr }],
+          subject: `Reminder: your session with ${who} at ${w.time}`,
+          htmlContent: html,
+          textContent: text,
+          tags: ["client-session-reminder"],
+        }),
+      });
+      if (!r.ok) {
+        clientFailed++;
+        await admin.from("planned_sessions").update({ client_reminder_sent_at: null }).eq("id", row.id);
+        continue;
+      }
+      clientSent++;
+    }
+  }
+  return Response.json({ checked: (due.data || []).length, sent, failed, previews, client_sent: clientSent, client_failed: clientFailed, client_room: room });
 });
