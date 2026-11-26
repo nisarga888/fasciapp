@@ -7,17 +7,22 @@ const enc = (s: string) => String(s ?? "").replace(/[&<>"']/g, (c) => (
   { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] || c
 ));
 
+function zoneLabel(tz: string) {
+  const city = String(tz || "UTC").split("/").pop()?.replace(/_/g, " ") || "UTC";
+  return city === "UTC" ? "UTC" : city + " time";
+}
+
 function when(iso: string, tz: string, fallback = false): { date: string; time: string; zone: string } {
-  const zone = tz || "Europe/Warsaw";
+  const zone = tz || "UTC";
   const d = new Date(iso);
   const opt = { timeZone: zone } as const;
   try {
     const date = new Intl.DateTimeFormat("en-GB", { ...opt, weekday: "short", day: "numeric", month: "short", year: "numeric" }).format(d);
     const time = new Intl.DateTimeFormat("en-GB", { ...opt, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(d);
-    return { date, time, zone };
+    return { date, time, zone: zoneLabel(zone) };
   } catch {
-    if (fallback) return { date: iso, time: "", zone: "Europe/Warsaw" };
-    return when(iso, "Europe/Warsaw", true);
+    if (fallback) return { date: iso, time: "", zone: "UTC" };
+    return when(iso, "UTC", true);
   }
 }
 
@@ -70,7 +75,7 @@ Deno.serve(async (req) => {
     const to = user.data?.user?.email || "";
     const label = String(row.client_name || "your client").replace(/[\r\n]/g, " ").trim().slice(0, 80) || "your client";
     const first = label.split(/\s+/)[0] || "your client";
-    const w = when(row.starts_at, row.tz || "Europe/Warsaw");
+    const w = when(row.starts_at, row.tz || "UTC");
     const title = String(row.modality || "").replace(/[\r\n]/g, " ").trim().slice(0, 80);
     const subject = `Reminder: session with ${first} at ${w.time}`;
     const html = emailHtml(label, w.date, w.time, w.zone, title);
