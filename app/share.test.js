@@ -11,6 +11,12 @@ test("slugs are lowercase, hyphenated, and without diacritics", () => {
   assert.equal(S.slugify("Łódź"), "lodz");
   assert.equal(S.slugify("François Müller"), "francois-muller");
   assert.equal(S.slugify("Kraków"), "krakow");
+  assert.equal(S.cityKey("Bielsko - Biała"), "bielsko-biala");
+  assert.equal(S.cityKey("Bielsko-Biała"), S.cityKey("Bielsko - Biała"));
+  assert.equal(S.cityKey("  Zürich "), S.cityKey("Zurich"));
+  assert.equal(S.cityKey("Kraków"), S.cityKey("Krakow"));
+  assert.notEqual(S.cityKey("Warsaw"), S.cityKey("Warszawa"));
+  assert.notEqual(S.cityKey("Munich"), S.cityKey("München"));
   assert.equal(S.slugify("Anna   Nowak"), "anna-nowak");
   assert.equal(S.slugify("   "), "");
 });
@@ -140,7 +146,7 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);
-  assert.equal(ver[1], "0.23.264");
+  assert.equal(ver[1], "0.23.265");
   assert.match(app, /faOpenLocation/);
   assert.match(app, /data-locshare/);
   const quote = "A fellow practitioner found me through FasciApp and referred a client to me for a trial BBTRS® session, which led to her booking six more sessions.";
