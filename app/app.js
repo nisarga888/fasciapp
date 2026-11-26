@@ -92,13 +92,14 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(sp.get("join")==="1"){wantForm=true;if(me){show("profile");return true}setMode(true);show("auth");return true}
  if(sp.get("move")==="1"){try{const u=new URL(location.href);u.searchParams.delete("move");history.replaceState({},"",u.pathname+u.search+u.hash)}catch(e){}faStartMove();return true}
  if(sp.get("search")==="1"){show("list");const q=$("#qCountry")||$("#qPlace");if(q)requestAnimationFrame(()=>{try{q.focus()}catch(e){}});return true}
+ if(sp.get("forms")==="1"){if(window.faOpenIntake)faOpenIntake();return true}
  const practice=(sp.get("practice")||sp.get("mod")||"").trim();const place=(sp.get("place")||sp.get("city")||"").trim();
  if(!practice&&!place)return false;fillFilter();let hit=false;
  if(practice){const want=fold(practice);["listFilter"].forEach(id=>{const el=$(`#${id}`);if(!el)return;const opt=[...el.options].find(o=>o.value&&(fold(o.value)===want||fold(o.value).includes(want)||want.includes(fold(o.value))));if(opt){el.value=opt.value;hit=true}})}
  if(place){setPlace(place);hit=true}
  if(hit){renderMarkers();renderList();show("list");return true}return false}catch(e){return false}}
 window.show=show;function show(t){if(window.faSheetClose)faSheetClose();try{const u=new URL(location.href);if(u.searchParams.has("trainees")&&t!=="bbtrs"&&t!=="bbtrsMe"&&u.searchParams.get("reset")!=="1"){["trainees","next","list","id","cohort","lang"].forEach(k=>u.searchParams.delete(k));history.replaceState({},"",u.pathname+u.search+u.hash)}}catch(e){}if((t==="map"||t==="list")&&window.faJoinUpd)faJoinUpd();$$(".screen").forEach(s=>s.classList.toggle("active",s.id===t));const inApp=!["splash","auth"].includes(t);document.body.classList.toggle("in",inApp);
- $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||((t==="log"||t==="cal"||t==="clients"||t==="bbtrsMe")&&b.dataset.t==="profile")||(t==="bbtrs"&&b.dataset.t==="learn")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
+ $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t||((t==="log"||t==="cal"||t==="clients"||t==="bbtrsMe"||t==="intake")&&b.dataset.t==="profile")||(t==="bbtrs"&&b.dataset.t==="learn")));window.scrollTo(0,0);showT=t;requestAnimationFrame(()=>setTimeout(()=>{if(showT===t)afterShow(t)},0))}
 let showT=null;function afterShow(t){try{if(t==="scan")scanLoad();if(t==="profile"){setTimeout(scanPlansCard,300);setTimeout(()=>window.faProfShown&&faProfShown(),400)}if(t==="cal"&&window.faCalLoad)faCalLoad();if(window.faRemCheck)setTimeout(faRemCheck,500);if(t==="map"){initMap();setTimeout(()=>{map.invalidateSize();fitPins(!didFit)},80)}if(t==="list")renderList();
  if(t==="profile"){(async()=>{if(!me){me=await DB.session().catch(()=>null);hdr()}if(!me){faBbtrsCard(false);$("#needLogin").hidden=false;$("#profForm").hidden=true;$("#profView").hidden=true;$("#logCard").hidden=true;return}profEdit=wantForm;wantForm=false;loadProf()})()}
  if(t==="log")loadLog();if(t==="learn"){renderLearn();const n=window.FASCIAPP_NEWS;if(n){localStorage.setItem(LAB_SEEN,n.id);renderNews()}}if(t==="inbox"&&MSG_ON)renderInbox();if(t==="bbtrs"&&window.faTraineeRefresh)window.faTraineeRefresh();if(t==="bbtrsMe")traineeFrame()}catch(e){console.warn(e)}}
@@ -1259,6 +1260,7 @@ async function scanAccess(){const N=$("#scNew"),I=$("#scInfo");if(!N||!scanSb)re
 /* v0.23.146 Stripe links; v0.23.142 Scan landing inside the app (iframe of /scan/?embed=1), trial sign-in flow, profile plans card */
 window.FA_SCAN_BUY={single:"https://buy.stripe.com/cNi8wQ1F0dSnc1y6uD6Zy08",practitioner:"https://buy.stripe.com/aFa9AU4Rc8y38Pm9GP6Zy01",yearly:"https://buy.stripe.com/9B6eVe4Rc15B1mUaKT6Zy09"};
 function faBuyUrl(k){const u=(window.FA_SCAN_BUY||{})[k];if(!u)return "";return me&&me.email?u+"?prefilled_email="+encodeURIComponent(me.email):u}
+window.faOpenScanPlans=function(){show("scan");scanLanding("#pricing")};
 function scanLanding(hash){const S=$("#scan");if(!S)return;S.classList.add("scLand");let f=$("#scFrame");const v=window.FA_BUILD||"";const src="/scan/?embed=1"+(v?"&v="+encodeURIComponent(v):"")+(hash||"");
  if(!f){f=document.createElement("iframe");f.id="scFrame";f.title="FasciApp Scan";f.src=src;S.append(f)}else if(hash&&!f.src.endsWith(hash))f.src=src}
 /* v0.23.207 post-payment banner on the scan hub */

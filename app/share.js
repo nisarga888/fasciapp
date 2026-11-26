@@ -6,7 +6,7 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_SHARE = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function(){
-const RESERVED = ["app","scan","live","assets","nl","sig","privacy","terms","index","robots","sitemap","favicon","manifest","cname","about","admin","api","static","public","vendor","ph","lab","news","assessment","trainees","join","search","map","profile","auth","scripts","tools","supabase","readme","www","mail","share","reviews","review","login","signup","account","404","sw","css","js","html"];
+const RESERVED = ["app","scan","live","assets","nl","sig","privacy","terms","index","robots","sitemap","favicon","manifest","cname","about","admin","api","static","public","vendor","ph","lab","news","assessment","trainees","join","search","map","profile","auth","scripts","tools","supabase","readme","www","mail","share","reviews","review","login","signup","account","404","sw","css","js","html","intake"];
 const RESERVED_SET = new Set(RESERVED);
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -80,6 +80,7 @@ function slugPart(s){
 }
 function redirectTarget(pathname){
   const parts = pathParts(pathname);
+  if(parts.length===2 && parts[0]==="intake" && slugPart(parts[1])) return "/intake.html?s="+parts[1];
   if(parts.length===2 && slugPart(parts[0]) && slugPart(parts[1])) return "/app/?loc="+parts[0]+"&city="+parts[1];
   if(parts.length!==1 || !isProfileSlug(parts[0])) return null;
   return "/app/?p="+parts[0];

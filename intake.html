@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Client intake · FasciApp</title>
+<link rel="icon" href="/assets/favicon-32-v4.png" type="image/png">
+<style>
+  :root{--bg:#02191E;--card:#0a2a30;--gold:#C99E67;--tx:#F3EDE4;--mut:#9fb3b5;--field:#062025}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);font-family:Montserrat,system-ui,sans-serif}
+  header{display:flex;align-items:center;gap:10px;padding:16px 18px 10px}
+  header b{font-size:22px;font-weight:800} header b span{color:var(--gold)}
+  .hair{height:3px;background:linear-gradient(90deg,#8a6537,#f6dfa9,#c99e67)}
+  main{max-width:480px;margin:0 auto;padding:18px 18px 40px}
+  .pill{display:block;width:fit-content;margin:8px auto 16px;padding:6px 12px;border-radius:999px;background:#10282e;color:var(--mut);font-size:12px}
+  .who{text-align:center}
+  .av{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
+  .fb{width:72px;height:72px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;border:2px solid var(--gold);color:var(--gold);font-weight:800}
+  h1{margin:10px 0 2px;font-size:26px}
+  .sub{color:var(--mut);margin:0 0 12px}
+  .intro{margin:0 0 18px;line-height:1.45}
+  label{display:block;margin:12px 0 6px;color:var(--mut);font-size:13px}
+  input,textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #1d4a52;background:var(--field);color:var(--tx);font:inherit;font-size:16px}
+  textarea{min-height:72px;resize:vertical}
+  .preg{display:flex;gap:8px}
+  .preg button{border:1px solid var(--gold);background:transparent;color:var(--gold);border-radius:999px;padding:8px 18px;font:inherit;font-weight:700}
+  .preg button.on{background:var(--gold);color:#02191E}
+  .agree{display:flex;gap:10px;align-items:flex-start;margin:16px 0;color:var(--tx);font-size:14px;line-height:1.4}
+  .agree input{width:auto;margin-top:3px}
+  .send{width:100%;margin-top:8px;padding:14px;border:0;border-radius:999px;background:var(--gold);color:#02191E;font:inherit;font-size:18px;font-weight:800}
+  .send:disabled{opacity:.6}
+  .msg{min-height:1.2em;color:#e7b4b0;font-size:14px}
+  .thanks{text-align:center;padding-top:12px}
+  .tick{width:72px;height:72px;margin:18px auto;border-radius:50%;border:2px solid var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:34px}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<header><svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="none" stroke="#C99E67" stroke-width="2"/><circle cx="32" cy="18" r="6" fill="#C99E67"/><path d="M20 50c2-10 8-16 12-16s10 6 12 16" fill="#C99E67"/></svg><b>Fasci<span>App</span></b></header>
+<div class="hair"></div>
+<main>
+  <span class="pill" id="path"></span>
+  <div id="formView">
+    <div class="who" id="who"><p class="sub">Loading…</p></div>
+    <form id="f">
+      <label>Name<input name="name" required maxlength="80" autocomplete="name"></label>
+      <label>Email or phone<input name="contact" required maxlength="120" autocomplete="email"></label>
+      <label>Date of birth<input name="dob" maxlength="40" placeholder="12 March 1988"></label>
+      <label>Main concern / area of pain<textarea name="concern" maxlength="2000"></textarea></label>
+      <label>Health conditions &amp; medications<textarea name="conditions" maxlength="2000"></textarea></label>
+      <label>Injuries / surgeries<textarea name="injuries" maxlength="2000"></textarea></label>
+      <label>Pregnancy</label>
+      <div class="preg"><button type="button" id="no" class="on">No</button><button type="button" id="yes">Yes</button></div>
+      <label>What you hope for from the session<textarea name="hope" maxlength="2000"></textarea></label>
+      <label class="agree"><input type="checkbox" name="consent" required><span>I agree my answers are shared privately with my practitioner; stored securely in the EU</span></label>
+      <div id="ts"></div>
+      <p class="msg" id="msg"></p>
+      <button class="send" type="submit">Send</button>
+    </form>
+  </div>
+  <div id="thanks" class="thanks hide"></div>
+</main>
+<script src="/app/config.js"></script>
+<script src="/app/vendor/supabase-js-2.118.0.min.js"></script>
+<script>
+(function(){
+  const cfg = window.FASCIAPP_CONFIG || {};
+  const slug = (new URLSearchParams(location.search).get("s") || "").trim().toLowerCase();
+  const path = document.getElementById("path");
+  path.textContent = slug ? "fasciapp.app/intake/" + slug : "fasciapp.app/intake";
+  let pregnant = false, person = null, tok = null;
+  const yes = document.getElementById("yes"), no = document.getElementById("no");
+  yes.onclick = () => { pregnant = true; yes.classList.add("on"); no.classList.remove("on"); };
+  no.onclick = () => { pregnant = false; no.classList.add("on"); yes.classList.remove("on"); };
+  function esc(s){return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+  const sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {auth:{persistSession:false}});
+  async function loadPerson(){
+    if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)){document.getElementById("who").innerHTML = "<p>This link isn't valid.</p>"; document.getElementById("f").classList.add("hide"); return;}
+    let r = await sb.from("practitioners").select("name,photo,city").eq("slug", slug).eq("consent", true).eq("admin_hidden", false).maybeSingle();
+    if(r.error) r = await sb.from("practitioners").select("name,photo,city").eq("slug", slug).eq("consent", true).maybeSingle();
+    person = r.data;
+    const who = document.getElementById("who");
+    if(!person){who.innerHTML = "<p>This practitioner isn't available.</p>"; document.getElementById("f").classList.add("hide"); return;}
+    const nm = person.name || "Your practitioner";
+    document.title = "Client intake · " + nm;
+    who.innerHTML = (person.photo ? '<img class="av" alt="" src="'+esc(person.photo)+'">' : '<span class="fb">'+esc(nm.slice(0,1))+'</span>')
+      + '<h1>'+esc(nm)+'</h1><p class="sub">Client intake · no account needed</p>'
+      + '<p class="intro">Hi — please fill this in before your session. It only takes a couple of minutes.</p>';
+  }
+  function mountTs(){
+    const s = document.createElement("script");
+    s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    s.onload = () => window.turnstile.render("#ts", {sitekey:"0x4AAAAAAFvW3PHVqRby8-Fk", action:"intake", theme:"dark", size:"flexible", callback:t=>{tok=t}});
+    document.head.appendChild(s);
+  }
+  document.getElementById("f").onsubmit = async (e) => {
+    e.preventDefault();
+    const f = e.target, msg = document.getElementById("msg"), btn = f.querySelector(".send");
+    if(!f.consent.checked){msg.textContent = "Please agree to share your answers with your practitioner."; return;}
+    if(!tok){msg.textContent = "Please complete the security check."; return;}
+    btn.disabled = true; msg.textContent = "Sending…";
+    try{
+      const r = await fetch(cfg.SUPABASE_URL+"/functions/v1/submit-intake", {method:"POST", headers:{"content-type":"application/json", apikey:cfg.SUPABASE_ANON_KEY, authorization:"Bearer "+cfg.SUPABASE_ANON_KEY},
+        body: JSON.stringify({slug, token:tok, name:f.name.value, contact:f.contact.value, dob:f.dob.value, concern:f.concern.value, conditions:f.conditions.value, injuries:f.injuries.value, pregnant, hope:f.hope.value, consent:true})});
+      const j = await r.json().catch(()=>({}));
+      if(!r.ok){msg.textContent = j.error || "That didn't work. Please try again."; btn.disabled = false; tok = null; try{turnstile.reset()}catch(x){} return;}
+      const nm = person && person.name || "Your practitioner";
+      document.getElementById("formView").classList.add("hide");
+      const t = document.getElementById("thanks");
+      t.classList.remove("hide");
+      t.innerHTML = (person && person.photo ? '<img class="av" alt="" src="'+esc(person.photo)+'">' : '')
+        + '<p>'+esc(nm)+'</p><div class="tick">✓</div><h1>Thank you, your practitioner has your form</h1>'
+        + '<p class="intro">'+esc(nm)+' has received your answers and will use them to prepare for your session.</p><p class="sub">You can close this page.</p>';
+    }catch(err){msg.textContent = "That didn't work. Please try again."; btn.disabled = false;}
+  };
+  loadPerson(); mountTs();
+})();
+</script>
+</body>
+</html>
