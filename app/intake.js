@@ -2,9 +2,8 @@
 (function(){
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-let _sb=null;
-async function sb(){const c=window.FASCIAPP_CONFIG||{};if(!_sb){_sb=window.scanSb||window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}
- const {data}=await _sb.auth.getSession();if(!data.session){try{const s=JSON.parse(localStorage.getItem("fasciapp-auth")||"null");if(s&&s.access_token&&s.refresh_token)await _sb.auth.setSession({access_token:s.access_token,refresh_token:s.refresh_token})}catch(e){}}return _sb}
+async function sb(){const c=window.FASCIAPP_CONFIG||{};let token="";try{token=(JSON.parse(localStorage.getItem("fasciapp-auth")||"null")||{}).access_token||""}catch(e){}
+ return window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{global:{headers:token?{Authorization:"Bearer "+token}:{}},auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}})}
 function me(){try{return window.faMe}catch(e){return null}}
 let credits=null, slug="", list=[];
 function allowed(d){return !!(d&&(d.admin||d.active||d.trial_remaining>0))}
