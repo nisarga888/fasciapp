@@ -10,6 +10,7 @@ test("slugs are lowercase, hyphenated, and without diacritics", () => {
   assert.equal(S.slugify("José Muñoz"), "jose-munoz");
   assert.equal(S.slugify("Łódź"), "lodz");
   assert.equal(S.slugify("François Müller"), "francois-muller");
+  assert.equal(S.slugify("Kraków"), "krakow");
   assert.equal(S.slugify("Anna   Nowak"), "anna-nowak");
   assert.equal(S.slugify("   "), "");
 });
@@ -35,6 +36,12 @@ test("clashing names take the city, then a number, and skip site paths", () => {
 test("only a single public slug redirects, and existing site paths do not", () => {
   assert.equal(S.redirectTarget("/aisha-archer"), "/app/?p=aisha-archer");
   assert.equal(S.redirectTarget("/Aisha-Archer/"), "/app/?p=aisha-archer");
+  assert.equal(S.redirectTarget("/europe"), "/app/?p=europe");
+  assert.equal(S.redirectTarget("/poland/warsaw"), "/app/?loc=poland&city=warsaw");
+  assert.equal(S.redirectTarget("/Poland/Warsaw/"), "/app/?loc=poland&city=warsaw");
+  assert.equal(S.regionBySlug("asia-pacific").name, "Asia & Pacific");
+  assert.equal(S.regionSlug("Africa & Middle East"), "africa-middle-east");
+  assert.equal(S.locationUrl("poland/warsaw"), "https://fasciapp.app/poland/warsaw");
   assert.equal(S.redirectTarget("/app/foo"), null);
   assert.equal(S.redirectTarget("/privacy"), null);
   assert.equal(S.redirectTarget("/privacy.html"), null);
@@ -44,6 +51,8 @@ test("only a single public slug redirects, and existing site paths do not", () =
   for (const name of S.RESERVED) assert.equal(S.isProfileSlug(name), false, name);
   const page = fs.readFileSync(path.join(__dirname, "../404.html"), "utf8");
   assert.match(page, /location\.replace\("\/app\/\?p="/);
+  assert.match(page, /\/app\/\?loc=/);
+  assert.match(page, /&city=/);
   for (const name of S.RESERVED) assert.match(page, new RegExp('"' + name + '":1'));
 });
 
@@ -58,6 +67,10 @@ test("share links use the public slug and the direct channels", () => {
   assert.equal(t.instagram, "https://www.instagram.com/");
   const sheet = S.shareSheetHtml({label: "fasciapp.app/aisha-archer", native: true});
   assert.match(sheet, /Share this profile/);
+  const place = S.shareSheetHtml({title: "Share Belgium · 8 practitioners", label: "fasciapp.app/belgium"});
+  assert.match(place, /Share Belgium · 8 practitioners/);
+  assert.match(place, /fasciapp\.app\/belgium/);
+  assert.match(place, /data-chan="whatsapp"/);
   assert.match(sheet, /fasciapp\.app\/aisha-archer/);
   assert.match(sheet, /data-chan="whatsapp"/);
   assert.match(sheet, /data-chan="instagram"/);
@@ -127,7 +140,9 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);
-  assert.equal(ver[1], "0.23.263");
+  assert.equal(ver[1], "0.23.264");
+  assert.match(app, /faOpenLocation/);
+  assert.match(app, /data-locshare/);
   const quote = "A fellow practitioner found me through FasciApp and referred a client to me for a trial BBTRS® session, which led to her booking six more sessions.";
   assert.ok(index.includes(quote));
   assert.ok(index.includes("Viktoria (BBTRS® practitioner)"));

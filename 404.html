@@ -14,7 +14,9 @@
 <link rel="icon" href="/assets/favicon-32-v4.png" type="image/png">
 <!--
   GitHub Pages has no per-profile server. A path like /aisha-archer is not a file,
-  so this 404 page sends people to /app/?p=<slug>. Crawlers do not run this script,
+  so this 404 page sends people to /app/?p=<slug>. A place link such as /poland/warsaw
+  goes to /app/?loc=poland&city=warsaw. The app opens a region or country before a
+  profile, and leaves every other slug as a profile. Crawlers do not run this script,
   so Open Graph title and photo stay the site-wide image. Per-profile link previews
   are not available on GitHub Pages.
   Existing files (/, /app/, /scan/, /live/, /privacy.html, /terms.html, and the rest)
@@ -30,9 +32,12 @@
   var RESERVED={"app":1,"scan":1,"live":1,"assets":1,"nl":1,"sig":1,"privacy":1,"terms":1,"index":1,"robots":1,"sitemap":1,"favicon":1,"manifest":1,"cname":1,"about":1,"admin":1,"api":1,"static":1,"public":1,"vendor":1,"ph":1,"lab":1,"news":1,"assessment":1,"trainees":1,"join":1,"search":1,"map":1,"profile":1,"auth":1,"scripts":1,"tools":1,"supabase":1,"readme":1,"www":1,"mail":1,"share":1,"reviews":1,"review":1,"login":1,"signup":1,"account":1,"404":1,"sw":1,"css":1,"js":1,"html":1};
   var path=(location.pathname||"").replace(/\/index\.html$/i,"").replace(/^\/+|\/+$/g,"").toLowerCase();
   var uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-  if(!path||path.length>80||path.indexOf("/")>=0||path.indexOf(".")>=0||RESERVED[path]||uuid.test(path)||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(path)) return;
+  var slugOk=function(s){return !!s&&s.length<=80&&s.indexOf(".")<0&&!RESERVED[s]&&!uuid.test(s)&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s);};
   var extra=location.search?location.search.replace(/^\?/,"&"):"";
-  location.replace("/app/?p="+encodeURIComponent(path)+extra+location.hash);
+  var parts=path?path.split("/"):[];
+  if(parts.length===2&&slugOk(parts[0])&&slugOk(parts[1])){location.replace("/app/?loc="+encodeURIComponent(parts[0])+"&city="+encodeURIComponent(parts[1])+extra+location.hash);return;}
+  if(parts.length!==1||!slugOk(parts[0])) return;
+  location.replace("/app/?p="+encodeURIComponent(parts[0])+extra+location.hash);
 })();
 </script>
 </head>
