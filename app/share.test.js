@@ -44,6 +44,7 @@ test("only a single public slug redirects, and existing site paths do not", () =
   assert.equal(S.redirectTarget("/Aisha-Archer/"), "/app/?p=aisha-archer");
   assert.equal(S.redirectTarget("/europe"), "/app/?p=europe");
   assert.equal(S.redirectTarget("/poland/warsaw"), "/app/?loc=poland&city=warsaw");
+  assert.equal(S.redirectTarget("/intake/aisha-archer"), "/intake.html?s=aisha-archer");
   assert.equal(S.redirectTarget("/Poland/Warsaw/"), "/app/?loc=poland&city=warsaw");
   assert.equal(S.regionBySlug("asia-pacific").name, "Asia & Pacific");
   assert.equal(S.regionSlug("Africa & Middle East"), "africa-middle-east");
@@ -154,7 +155,9 @@ test("the app opens a public slug, keeps share and reviews off the main list, an
   const build = cal.match(/const BUILD="([^"]+)"/);
   const ver = sw.match(/const VERSION="fasciapp-v([^"]+)"/);
   assert.equal(build[1], ver[1]);
-  assert.equal(ver[1], "0.23.272");
+  assert.equal(ver[1], "0.23.273");
+  assert.match(app, /faOpenScanPlans/);
+  assert.match(app, /get\("forms"\)==="1"/);
   assert.match(index, /You'll also get an email reminder/);
   assert.match(cal, /browserTz/);
   assert.equal(app.includes("Turn on location for this site"), false);
