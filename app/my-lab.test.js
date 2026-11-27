@@ -25,11 +25,16 @@ test("My Toolkit links stay on the practitioner slug and only accept http(s)", (
   assert.equal(LAB.listingTile(0), "");
   assert.match(LAB.listingTile(2), /2 resources/);
   assert.match(LAB.listingTile(1), /My Toolkit/);
+  assert.equal(LAB.HINT, "Switch on at least one item to share");
+  assert.match(LAB.whatsappLink("https://fasciapp.app/p/nisarga-eryk-dobosz/toolkit", "My Toolkit"), /^https:\/\/wa\.me\/\?text=/);
+  assert.match(LAB.mailLink("https://fasciapp.app/p/nisarga-eryk-dobosz/toolkit", "My Toolkit"), /^mailto:\?subject=/);
+  assert.match(fs.readFileSync(path.join(__dirname, "my-lab.js"), "utf8"), /id="myToolkitShare"/);
   const page = fs.readFileSync(path.join(__dirname, "../404.html"), "utf8");
   assert.match(page, /view=toolkit/);
   assert.match(fs.readFileSync(path.join(__dirname, "my-lab.js"), "utf8"), /Share my Toolkit/);
   assert.match(fs.readFileSync(path.join(__dirname, "my-lab.js"), "utf8"), /'s Toolkit/);
   const profile = fs.readFileSync(path.join(__dirname, "cal.js"), "utf8");
+  assert.match(profile, /data-toolkit-share/);
   assert.match(profile, /My Toolkit/);
   assert.match(profile, /"mylab"/);
   assert.match(profile, /My Space/);
