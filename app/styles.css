@@ -799,13 +799,20 @@ body.peOpen{overflow:hidden}
 .moodHome h2{margin:0;color:#F3EDE4;font-size:18px;font-weight:500}
 .moodK{margin:0;color:#C99E67;font-size:11px;letter-spacing:1.2px;text-transform:uppercase}
 .moodTile{aspect-ratio:1.7/.72}
-.giftStrip{margin:0 0 10px}
+.giftStrip{margin:16px 0 10px}
 .giftStripTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.giftThumb{display:block;width:100%;height:100%;background:radial-gradient(circle at 40% 35%,#5FC9C3,#02191E 72%)}
-.giftStage{position:relative;width:140px;height:140px;margin:8px auto}
-.giftGlow,.giftBall{position:absolute;left:10px;top:10px;width:120px;height:120px;border-radius:50%;transform:translateZ(0) scale(.72);will-change:transform}
-.giftBall{background:radial-gradient(circle at 40% 35%,#5FC9C3,#0a2a30 70%);border:1px solid #C99E6788}
-.giftGlow{background:radial-gradient(circle,#5FC9C388,transparent 68%);opacity:.35;pointer-events:none}
+.giftGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.giftCard{display:flex;flex-direction:column;align-items:flex-start;gap:6px;width:100%;min-width:0;padding:0 0 12px;border:1px solid #c99e6744;border-radius:18px;overflow:hidden;background:#0a2a30;color:#F3EDE4;font:inherit;text-align:left;cursor:pointer}
+.giftCard b{padding:0 12px;color:#C99E67;font-size:14px;line-height:1.25}
+.giftCard small{padding:0 12px;color:#9fb3b5;font-size:12px;line-height:1.35}
+.giftArt,.giftPlayerArt{position:relative;display:block;width:100%;aspect-ratio:16/10;background:radial-gradient(circle at 42% 36%,#164850,#02191E 74%)}
+.giftPlayerArt{aspect-ratio:1/1;margin:0 0 12px;border-radius:16px;overflow:hidden}
+.giftMotif{display:block;width:100%;height:100%}
+.giftMotif [data-pulse]{transform-box:fill-box;transform-origin:center;will-change:transform;filter:drop-shadow(0 0 8px #5FC9C399)}
+.giftMotif.tone-gold [data-pulse]{filter:drop-shadow(0 0 8px #C99E67cc)}
+.giftMotif.tone-purple [data-pulse]{filter:drop-shadow(0 0 10px #9C8FD6dd)}
+.giftMotif.tone-pale [data-pulse]{filter:drop-shadow(0 0 8px #e7f7f5cc)}
+.giftArt .breathUseTag,.giftPlayerArt .breathUseTag{position:absolute;left:8px;top:8px;z-index:2}
 .breathPath,.plusPath{margin:4px 0 8px;color:#5FC9C3;font-size:13px}
 .giftPhase{text-align:center;color:#C99E67;font-size:18px;margin:8px 0 0}
 .giftRound,.plusUse,.plusLine,.plusFine,.plusPrice{color:#9fb3b5;font-size:13px;line-height:1.4}
