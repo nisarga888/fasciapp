@@ -1,4 +1,4 @@
-/* My Lab. A practitioner's own videos, courses and links.
+/* My Toolkit. A practitioner's own videos, courses and links.
    Self-contained so the public page and the profile editor share one store. */
 (function(root, factory){
   const api = factory();
@@ -24,10 +24,10 @@ function httpUrl(raw){
   } catch (e) { return ""; }
 }
 function kindOf(kind){ return GROUPS.some(g => g.id === kind) ? kind : ""; }
-function labPath(slug){ return "/p/" + String(slug || "").trim().toLowerCase() + "/lab"; }
-function labUrl(slug){ return "https://fasciapp.app" + labPath(slug); }
+function toolkitPath(slug){ return "/p/" + String(slug || "").trim().toLowerCase() + "/toolkit"; }
+function toolkitUrl(slug){ return "https://fasciapp.app" + toolkitPath(slug); }
 function resourceUrl(slug, id){
-  const base = labUrl(slug);
+  const base = toolkitUrl(slug);
   return id ? base + "?r=" + encodeURIComponent(id) : base;
 }
 function who(){ try { return window.faMe ? faMe() : null; } catch (e) { return null; } }
@@ -94,7 +94,7 @@ async function visibleCount(userId){
 function listingTile(n){
   n = Number(n) || 0;
   if (n < 1) return "";
-  return '<button type="button" class="myLabTile" data-open-lab><span class="myLabMark" aria-hidden="true">▣</span><span><b>My Lab</b><small>' + n + (n === 1 ? " resource" : " resources") + " for clients</small></span></button>";
+  return '<button type="button" class="myLabTile" data-open-lab><span class="myLabMark" aria-hidden="true">▣</span><span><b>My Toolkit</b><small>' + n + (n === 1 ? " resource" : " resources") + " for clients</small></span></button>";
 }
 async function mountListing(slot, person){
   if (!slot || !person || !person.user_id || person.consent === false) { if (slot) slot.innerHTML = ""; return; }
@@ -130,8 +130,8 @@ function shareSheet(url, title, line){
   d.id = "myLabShare";
   d.className = "ptPop";
   const native = typeof navigator !== "undefined" && navigator.share ? '<button type="button" class="gold big1" data-native>Share</button>' : "";
-  d.innerHTML = '<div class="ptPopDim" data-sx></div><div class="ptPopBox" role="dialog" aria-modal="true" aria-label="Share My Lab">'
-    + '<div class="ptPopTop"><b>Share</b><button type="button" class="ptPopX" data-sx aria-label="Close">✕</button></div>'
+  d.innerHTML = '<div class="ptPopDim" data-sx></div><div class="ptPopBox" role="dialog" aria-modal="true" aria-label="Share my Toolkit">'
+    + '<div class="ptPopTop"><b>Share my Toolkit</b><button type="button" class="ptPopX" data-sx aria-label="Close">✕</button></div>'
     + '<p class="plusH">' + esc(title) + "</p>" + (line ? '<p class="plusUse">' + esc(line) + "</p>" : "")
     + '<div class="ptLink"><b>' + esc(url.replace(/^https:\/\//, "")) + '</b><button type="button" data-copy>Copy link</button></div>'
     + native
@@ -154,13 +154,13 @@ function shareSheet(url, title, line){
 async function openEditor(){
   if (typeof document === "undefined") return;
   if (!signed()) {
-    shell(top("My Lab") + '<p class="plusUse">My Lab is part of your practitioner profile. Sign in to add videos, courses and links.</p><button type="button" class="gold" id="myLabAuth">Create a free account</button>', "My Lab");
+    shell(top("My Toolkit") + '<p class="plusUse">My Toolkit is part of your practitioner profile. Sign in to add videos, courses and links.</p><button type="button" class="gold" id="myLabAuth">Create a free account</button>', "My Toolkit");
     const b = root.querySelector("#myLabAuth");
     if (b) b.onclick = () => { if (window.faAuthFor) faAuthFor(false, "lab"); };
     return;
   }
   let rows = [];
-  try { rows = await mine(); } catch (e) { toast("Could not load My Lab"); return; }
+  try { rows = await mine(); } catch (e) { toast("Could not load My Toolkit"); return; }
   paintEditor(rows);
 }
 function paintEditor(rows){
@@ -168,7 +168,7 @@ function paintEditor(rows){
     const items = g.rows.length ? g.rows.map(r => rowCard(r, true)).join("") : '<p class="plusFine">Nothing here yet.</p>';
     return '<h3 class="lsec">' + esc(g.title) + "</h3>" + items;
   }).join("");
-  shell(top("My Lab") + '<p class="plusUse">What you mark “Visible to clients” appears on your public Lab page.</p><button type="button" class="gold" id="myLabAdd">+ Add resource</button>' + body, "My Lab");
+  shell(top("My Toolkit") + '<p class="plusUse">What you mark “Visible to clients” appears on your public Toolkit page.</p><button type="button" class="gold" id="myLabAdd">+ Add resource</button>' + body, "My Toolkit");
   const add = root.querySelector("#myLabAdd");
   if (add) add.onclick = () => openForm(null, rows);
   root.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openForm(rows.find(r => r.id === b.getAttribute("data-edit")), rows));
@@ -297,7 +297,7 @@ async function openPublic(key, focusId){
   if (typeof document === "undefined") return;
   const person = await loadPerson(key);
   if (!person || person.consent === false) {
-    shell(top("My Lab") + '<p class="plusUse">That Lab page isn’t available.</p>', "My Lab");
+    shell(top("My Toolkit") + '<p class="plusUse">That Toolkit page isn’t available.</p>', "My Toolkit");
     return;
   }
   const rows = await visibleRows(person.user_id);
@@ -306,9 +306,10 @@ async function openPublic(key, focusId){
     + (photo ? '<img src="' + esc(photo) + '" alt="">' : '<span class="myLabAv">' + esc(String(person.name || "?").trim().slice(0, 1).toUpperCase()) + "</span>")
     + '<div><b>' + esc(personTitle(person)) + "</b><small>" + esc(personPlace(person)) + "</small></div>"
     + '<button type="button" class="gold" id="myLabContact">Contact</button>'
-    + '<button type="button" class="outline" id="myLabShare">Share</button></header>';
+    + '<button type="button" class="outline" id="myLabShare">Share my Toolkit</button></header>';
   const body = rows.length ? groupRows(rows).filter(g => g.rows.length).map(g => '<h3 class="lsec">' + esc(g.title) + "</h3>" + g.rows.map(r => rowCard(r, false)).join("")).join("") : '<p class="plusUse">Nothing shared here yet.</p>';
-  shell(top("My Lab") + head + body, personTitle(person) + " · My Lab");
+  const pageTitle = personTitle(person) + "'s Toolkit";
+  shell(top(pageTitle) + head + body, pageTitle);
   const contact = root.querySelector("#myLabContact");
   if (contact) contact.onclick = () => {
     const slug = person.slug;
@@ -317,7 +318,7 @@ async function openPublic(key, focusId){
     else if (window.faOpenPract) faOpenPract(person.id);
   };
   const share = root.querySelector("#myLabShare");
-  if (share) share.onclick = () => shareSheet(labUrl(person.slug), personTitle(person) + " · My Lab", "Videos, courses and links");
+  if (share) share.onclick = () => shareSheet(toolkitUrl(person.slug), personTitle(person) + "'s Toolkit", "Videos, courses and links");
   root.querySelectorAll("[data-share-res]").forEach(b => b.onclick = () => {
     const row = rows.find(r => r.id === b.getAttribute("data-share-res"));
     if (row) shareSheet(resourceUrl(person.slug, row.id), row.title, row.description || "");
@@ -328,5 +329,5 @@ async function openPublic(key, focusId){
   }
 }
 
-return { GROUPS, httpUrl, kindOf, labPath, labUrl, resourceUrl, listingTile, youtubeMeta, openEditor, openPublic, mountListing, visibleCount };
+return { GROUPS, httpUrl, kindOf, toolkitPath, toolkitUrl, labPath: toolkitPath, labUrl: toolkitUrl, resourceUrl, listingTile, youtubeMeta, openEditor, openPublic, mountListing, visibleCount };
 });

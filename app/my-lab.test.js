@@ -6,13 +6,14 @@ const path = require("node:path");
 const LAB = require("./my-lab.js");
 const SHARE = require("./share.js");
 
-test("My Lab links stay on the practitioner slug and only accept http(s)", () => {
-  assert.equal(SHARE.redirectTarget("/p/aisha-archer/lab"), "/app/?p=aisha-archer&view=lab");
-  assert.equal(SHARE.redirectTarget("/p/550e8400-e29b-41d4-a716-446655440000/lab"), "/app/?p=550e8400-e29b-41d4-a716-446655440000&view=lab");
+test("My Toolkit links stay on the practitioner slug and only accept http(s)", () => {
+  assert.equal(SHARE.redirectTarget("/p/aisha-archer/toolkit"), "/app/?p=aisha-archer&view=toolkit");
+  assert.equal(SHARE.redirectTarget("/p/aisha-archer/lab"), "/app/?p=aisha-archer&view=toolkit");
+  assert.equal(SHARE.redirectTarget("/p/550e8400-e29b-41d4-a716-446655440000/toolkit"), "/app/?p=550e8400-e29b-41d4-a716-446655440000&view=toolkit");
   assert.equal(SHARE.redirectTarget("/p/aisha-archer"), null);
   assert.equal(SHARE.redirectTarget("/poland/warsaw"), "/app/?loc=poland&city=warsaw");
-  assert.equal(LAB.labUrl("Aisha-Archer"), "https://fasciapp.app/p/aisha-archer/lab");
-  assert.equal(LAB.resourceUrl("aisha-archer", "abc"), "https://fasciapp.app/p/aisha-archer/lab?r=abc");
+  assert.equal(LAB.toolkitUrl("Aisha-Archer"), "https://fasciapp.app/p/aisha-archer/toolkit");
+  assert.equal(LAB.resourceUrl("aisha-archer", "abc"), "https://fasciapp.app/p/aisha-archer/toolkit?r=abc");
   assert.equal(LAB.httpUrl("https://youtu.be/iWBourJ41kU"), "https://youtu.be/iWBourJ41kU");
   assert.equal(LAB.httpUrl("http://example.com/a"), "http://example.com/a");
   assert.equal(LAB.httpUrl("javascript:alert(1)"), "");
@@ -23,10 +24,13 @@ test("My Lab links stay on the practitioner slug and only accept http(s)", () =>
   assert.equal(LAB.kindOf("file"), "");
   assert.equal(LAB.listingTile(0), "");
   assert.match(LAB.listingTile(2), /2 resources/);
-  assert.equal(LAB.listingTile(1).includes("1 resource"), true);
+  assert.match(LAB.listingTile(1), /My Toolkit/);
   const page = fs.readFileSync(path.join(__dirname, "../404.html"), "utf8");
-  assert.match(page, /view=lab/);
+  assert.match(page, /view=toolkit/);
+  assert.match(fs.readFileSync(path.join(__dirname, "my-lab.js"), "utf8"), /Share my Toolkit/);
+  assert.match(fs.readFileSync(path.join(__dirname, "my-lab.js"), "utf8"), /'s Toolkit/);
   const profile = fs.readFileSync(path.join(__dirname, "cal.js"), "utf8");
+  assert.match(profile, /My Toolkit/);
   assert.match(profile, /"mylab"/);
   assert.match(profile, /My Space/);
   assert.match(profile, /Planned/);

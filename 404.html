@@ -59,7 +59,7 @@
     if(parts.length===3&&LAB[sec]&&slugOk(item)){location.replace("/app/?lab="+encodeURIComponent(sec)+"&item="+encodeURIComponent(item)+extra+location.hash);return;}
     return;
   }
-  if(parts[0]==="p"&&parts.length===3&&parts[2]==="lab"&&(slugOk(parts[1])||uuid.test(parts[1]))){location.replace("/app/?p="+encodeURIComponent(parts[1])+"&view=lab"+extra+location.hash);return;}
+  if(parts[0]==="p"&&parts.length===3&&(parts[2]==="toolkit"||parts[2]==="lab")&&(slugOk(parts[1])||uuid.test(parts[1]))){location.replace("/app/?p="+encodeURIComponent(parts[1])+"&view=toolkit"+extra+location.hash);return;}
   if(parts.length===2&&parts[0]==="intake"&&slugOk(parts[1])){location.replace("/intake.html?s="+encodeURIComponent(parts[1])+extra+location.hash);return;}
   if(parts.length===2&&parts[0]!=="p"&&slugOk(parts[0])&&slugOk(parts[1])){location.replace("/app/?loc="+encodeURIComponent(parts[0])+"&city="+encodeURIComponent(parts[1])+extra+location.hash);return;}
   if(parts.length!==1||!slugOk(parts[0])) return;

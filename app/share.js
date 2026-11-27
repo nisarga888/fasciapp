@@ -102,7 +102,7 @@ function redirectTarget(pathname){
     if(parts.length===3 && LAB_SECTIONS[parts[1]] && slugPart(parts[2])) return "/app/?lab="+parts[1]+"&item="+parts[2];
     return null;
   }
-  if(parts[0]==="p" && parts.length===3 && parts[2]==="lab" && (slugPart(parts[1]) || UUID_RE.test(parts[1]))) return "/app/?p="+parts[1]+"&view=lab";
+  if(parts[0]==="p" && parts.length===3 && (parts[2]==="toolkit" || parts[2]==="lab") && (slugPart(parts[1]) || UUID_RE.test(parts[1]))) return "/app/?p="+parts[1]+"&view=toolkit";
   if(parts.length===2 && parts[0]==="intake" && slugPart(parts[1])) return "/intake.html?s="+parts[1];
   if(parts.length===2 && parts[0]!=="p" && slugPart(parts[0]) && slugPart(parts[1])) return "/app/?loc="+parts[0]+"&city="+parts[1];
   if(parts.length!==1 || !isProfileSlug(parts[0])) return null;
