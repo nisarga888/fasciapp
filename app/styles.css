@@ -1019,6 +1019,20 @@ body.modInfoOpen>main{overflow:hidden}
 .faPick{background:#06252b;border:1px solid #C99E6755;border-radius:10px;max-height:190px;overflow:auto;margin-top:4px;display:flex;flex-direction:column}.faPick[hidden]{display:none}.faPick button{background:none;border:0;border-bottom:1px solid #ffffff10;border-radius:0;color:#F3EDE4;text-align:left;padding:10px 12px;font-size:15px}.faPick small{padding:8px 12px;color:#C99E67}
 /* v0.23.172 profile 2x2 tiles (Lab style) */
 .faGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.faGrid .faT{aspect-ratio:1/1;justify-content:flex-end;padding:12px}
+.myLabPair{margin-top:12px}.mySpaceSoon{aspect-ratio:1/1;cursor:default}.mySpaceSoon b{font-size:16px}.mySpaceSoon small{font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.myLabHead{display:grid;grid-template-columns:52px 1fr;gap:8px 10px;align-items:center;margin:0 0 12px}.myLabHead img,.myLabAv{width:52px;height:52px;border-radius:50%;object-fit:cover;background:#0e4a50;color:#C99E67;display:grid;place-items:center;font-weight:700}.myLabHead b{display:block;color:#F3EDE4}.myLabHead small{color:#9fb3b5}.myLabHead .gold,.myLabHead .outline{grid-column:1 / -1}
+.myLabRow{display:grid;grid-template-columns:72px 1fr;gap:8px 10px;padding:10px;margin:0 0 8px;border:1px solid #C99E6744;border-radius:14px;background:#0a2a30}.myLabRow.myLabHit{border-color:#5FC9C3}
+.myLabThumb{width:72px;height:54px;object-fit:cover;border-radius:8px;background:#02191E}.myLabThumb.ph{display:block;background:radial-gradient(circle at 40% 35%,#164850,#02191E)}.myLabThumb.lg{width:100%;height:auto;max-height:140px;margin:0 0 8px}
+.myLabTx b{display:block;color:#C99E67}.myLabTx small{display:block;color:#9fb3b5;font-size:12px}
+.myLabActs{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:6px}.myLabActs button,.myLabActs a{border:1px solid #C99E6788;background:#02191E;color:#F3EDE4;border-radius:10px;padding:6px 10px;font:inherit;font-size:13px;text-decoration:none}
+.myLabVis{display:flex;gap:8px;align-items:center;color:#C99E67;font-size:13px;grid-column:1 / -1}
+.myLabTile{display:flex;gap:10px;align-items:center;width:100%;margin:10px 0;padding:12px;border-radius:16px;border:1px solid #C99E67;background:#0e4a50;color:#F3EDE4;text-align:left;font:inherit;cursor:pointer}.myLabTile b{display:block;color:#C99E67}.myLabTile small{color:#9fb3b5}.myLabMark{font-size:22px;color:#C99E67}
+.calContact{margin:8px 0}.calContact .gold,.calContact .outline{width:100%}
+.ccTemps,.ccChannels{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.ccTemps button,.ccChannels button{border:1px solid #C99E6788;background:#0a2a30;color:#F3EDE4;border-radius:999px;padding:8px 12px;font:inherit;font-size:13px}.ccTemps button.on{background:#C99E67;color:#02191E}.ccChannels button:disabled{opacity:.4}
+#ccText{width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #C99E6755;background:#02191E;color:#F3EDE4;font:inherit;padding:10px}
+.ccTemps,.ccChannels{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.ccTemps button,.ccChannels button{border:1px solid #C99E6788;background:#0a2a30;color:#F3EDE4;border-radius:999px;padding:8px 12px;font:inherit;font-size:13px}.ccTemps button.on{background:#C99E67;color:#02191E}.ccChannels button:disabled{opacity:.4}
+#ccText{width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #C99E6755;background:#02191E;color:#F3EDE4;font:inherit;padding:10px}
+.plusNote select,.plusNote input,.plusNote textarea{width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #C99E6755;background:#02191E;color:#F3EDE4;font:inherit;padding:10px}
 .faT .ltIc{font-size:26px}.faTt{display:flex;flex-direction:column;gap:3px;min-width:0}.faTt b{font-size:15.5px;line-height:1.2}.faTt small{font-size:12px;opacity:.88;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
 .faTav{position:absolute;top:12px;left:12px;width:58px;height:58px;border-radius:50%;overflow:hidden;border:2px solid #fff4;background:#ffffff22;display:flex;align-items:center;justify-content:center}.faTav img{width:100%;height:100%;object-fit:cover}.faTav b{font-size:20px}
 .faTch span{display:inline-block;font-size:10.5px;background:#ffffff26;border-radius:999px;padding:2px 7px;margin:0 3px 2px 0}
@@ -1194,7 +1208,7 @@ body.modInfoOpen>main{overflow:hidden}
 .ptPop{position:fixed;inset:0;z-index:2300;display:flex;align-items:flex-end;justify-content:center}
 .ptPop[hidden]{display:none}
 .ptPopDim{position:absolute;inset:0;background:#000b}
-.ptPopBox{position:relative;width:100%;max-width:480px;max-height:92dvh;overflow:auto;background:#061f24;border:1px solid #C99E6788;border-bottom:0;border-radius:22px 22px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));color:#F3EDE4;box-shadow:0 -10px 40px #000a}
+.ptPopBox{position:relative;z-index:1;width:100%;max-width:480px;max-height:92dvh;overflow:auto;background:#061f24;border:1px solid #C99E6788;border-bottom:0;border-radius:22px 22px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));color:#F3EDE4;box-shadow:0 -10px 40px #000a}
 .ptPopBox::before{content:"";display:block;width:42px;height:5px;border-radius:3px;background:#3b5559;margin:4px auto 10px}
 .ptPopTop{display:flex;align-items:center;gap:10px}
 .ptPopTop b{flex:1;font-size:18px;font-weight:700}

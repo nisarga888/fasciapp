@@ -61,14 +61,23 @@ async function save(day, body){
   body = String(body || "").trim().slice(0, 500);
   const client = sb();
   const me = who();
-  if (!body || !client || !me) return false;
+  if (!body) return { ok: false, error: "Write a note first." };
+  if (!client || !me || !me.user_id) return { ok: false, error: "Sign in again, then save." };
   const existing = await client.from("mood_notes").select("id").eq("user_id", me.user_id).eq("mood", "journal").eq("day", day).maybeSingle();
+  if (existing.error) return { ok: false, error: existing.error.message };
   if (existing.data) {
-    const r = await client.from("mood_notes").update({ body }).eq("id", existing.data.id);
-    return !r.error;
+    const r = await client.from("mood_notes").update({ body }).eq("id", existing.data.id).eq("user_id", me.user_id);
+    return r.error ? { ok: false, error: r.error.message } : { ok: true };
   }
   const r = await client.from("mood_notes").insert({ user_id: me.user_id, mood: "journal", body, day });
-  return !r.error;
+  if (r.error && /duplicate|unique/i.test(r.error.message || "")) {
+    const again = await client.from("mood_notes").select("id").eq("user_id", me.user_id).eq("mood", "journal").eq("day", day).maybeSingle();
+    if (again.data) {
+      const u = await client.from("mood_notes").update({ body }).eq("id", again.data.id).eq("user_id", me.user_id);
+      return u.error ? { ok: false, error: u.error.message } : { ok: true };
+    }
+  }
+  return r.error ? { ok: false, error: r.error.message } : { ok: true };
 }
 function open(){
   if (typeof document === "undefined") return;
@@ -84,7 +93,7 @@ function open(){
     + '<p class="plusEyebrow">' + esc(pretty(day)) + "</p>"
     + '<p class="plusH">' + esc(promptFor(day)) + "</p>"
     + '<label class="plusNote">Today<textarea id="journalNote" maxlength="500" rows="5" placeholder="Leave a line about this day…"></textarea></label>'
-    + (signed() ? '<button type="button" class="gold" id="journalSave">Save today’s note</button>' : gate)
+    + (signed() ? '<button type="button" class="gold" id="journalSave">Save today’s note</button><p class="ptPopErr" id="journalMsg"></p>' : gate)
     + '<div id="journalPast" class="journalPast"></div></div>';
   document.body.appendChild(root);
   root.addEventListener("click", e => { if (e.target.closest("[data-jx]")) root.remove(); });
@@ -95,10 +104,19 @@ function open(){
     if (window.faAuthFor) faAuthFor(true, "lab");
   };
   const saveBtn = root.querySelector("#journalSave");
+  const msg = root.querySelector("#journalMsg");
   if (saveBtn) saveBtn.onclick = async () => {
-    const ok = await save(day, note.value);
-    if (window.showToast) showToast(ok ? "Saved for you" : "Could not save that note");
-    if (ok) paintPast(root, day);
+    saveBtn.disabled = true;
+    if (msg) msg.textContent = "Saving…";
+    const res = await save(day, note.value);
+    saveBtn.disabled = false;
+    if (msg) msg.textContent = res.ok ? "Saved" : ("Could not save. " + (res.error || "Try again."));
+    if (window.showToast) showToast(res.ok ? "Saved" : "Could not save that note");
+    if (res.ok) {
+      const data = await load(day);
+      if (note && !note.value) note.value = data.today || "";
+      paintPast(root, day, data.notes);
+    }
   };
   if (signed()) {
     load(day).then(data => {
@@ -129,8 +147,8 @@ async function afterAuth(){
   let d = null;
   try { d = JSON.parse(raw); } catch (e) {}
   if (!d || !d.day || !d.body) return;
-  await save(d.day, d.body);
-  if (window.showToast) showToast("Saved for you");
+  const res = await save(d.day, d.body);
+  if (window.showToast) showToast(res.ok ? "Saved" : ("Could not save. " + (res.error || "Try again.")));
 }
 return { PROMPTS, TAGS, localDay, promptFor, tagOf, open, afterAuth };
 });

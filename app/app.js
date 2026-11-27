@@ -87,7 +87,7 @@ function applyDeepLink(){try{const sp=new URLSearchParams(location.search);
  if(sp.get("reset")==="1")return false;
  const tr=sp.get("trainees");if(tr==="1"||tr==="dir"){show("bbtrs");return true}if(tr==="mine"||tr==="join"){show("bbtrsMe");return true}
  const loc=(sp.get("loc")||"").trim();if(loc&&window.faOpenLocation){const city=(sp.get("city")||"").trim();if(!faOpenLocation(loc,city)){show("list");showToast("That place isn't listed")}return true}
- const slug=(sp.get("p")||"").trim();if(slug&&window.FA_SHARE&&FA_SHARE.isProfileSlug(slug)){if(FA_SHARE.regionBySlug(slug)||(window.faMatchCountry&&faMatchCountry(slug))){if(window.faOpenLocation)faOpenLocation(slug);return true}if(window.faOpenSlug)faOpenSlug(slug);return true}
+ const slug=(sp.get("p")||"").trim();const view=(sp.get("view")||"").toLowerCase();if(slug&&view==="lab"&&window.FA_MYLAB){const key=slug.toLowerCase();const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(key);if(uuid||(window.FA_SHARE&&FA_SHARE.isProfileSlug(key))){show("list");FA_MYLAB.openPublic(key,sp.get("r")||"");return true}}if(slug&&window.FA_SHARE&&FA_SHARE.isProfileSlug(slug)){if(FA_SHARE.regionBySlug(slug)||(window.faMatchCountry&&faMatchCountry(slug))){if(window.faOpenLocation)faOpenLocation(slug);return true}if(window.faOpenSlug)faOpenSlug(slug);return true}
  const lab=(sp.get("lab")||"").toLowerCase();if(lab){faLabArrive(lab,(sp.get("item")||"").toLowerCase(),{gift:(sp.get("gift")||"").toLowerCase(),from:sp.get("from")||"",feel:(sp.get("feel")||"").toLowerCase(),buddy:(sp.get("buddy")||"").toLowerCase(),bought:sp.get("bought")==="1"});return true}
  const tab=(sp.get("tab")||"").toLowerCase();if(tab==="learn"||tab==="lab"){show("learn");return true}
  if(sp.get("join")==="1"){wantForm=true;if(me){show("profile");return true}setMode(true);show("auth");return true}
@@ -656,7 +656,7 @@ const LAB_COURSES=[
  {k:"c4",t:"Home-Practice Breathwork Journey",by:"Giten Tonkov",dur:"7 sessions · 30–45 min each",price:"$129",bg:"#2f5d7a",img:"lab/course-bbtrs-home.jpg",url:"https://members.biodynamicbreath.com/courses/offers/975170e6-7522-4b82-b9ba-6ee63d8106e7"}];
 const LAB_TILES=[
  {k:"courses",ic:"✿",t:"Online courses",s:"Learn at your own pace",bg:"#16695f"},
- {k:"breathing",ic:"≋",t:"Breathing",s:"Guided practices",bg:"#96693a"},
+ {k:"breathing",ic:"≋",t:"Breath Gifts",s:"Practices and short breaths",bg:"#96693a"},
  {k:"listen",ic:"♪",t:"Listen",s:"Meditations",bg:"#463c6e"},
  {k:"watch",ic:"▶",t:"Watch",s:"Videos",bg:"#19465f"},
  {k:"live",ic:"◷",t:"Live",s:"Free sessions",bg:"#6e373c"},
@@ -1002,8 +1002,8 @@ function faCityKey(name){const n=faCity(name);if(!n)return "";if(window.FA_SHARE
   <div class="ptShareRow">${window.FA_SHARE?FA_SHARE.heartButtonHtml(faFavHas(p.id)):""}${shareOn?FA_SHARE.shareButtonHtml():""}</div>
   <div id="ptRatingSlot">${p.consent!==false&&window.FA_SHARE?FA_SHARE.ratingRowHtml({count:0,own:own}):""}</div>
   ${p.bio?`<div class="ptBio">${esc(p.bio)}</div><button type="button" class="ptMore">Read more</button>`:""}
-  ${contacts(p)}<div id="ptRevSlot"></div><button type="button" class="ptMap">📍 Show on map</button></div>`;
-  scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});if(srcOv!=="self_preview")view(p);if(window.faLoadReviews)faLoadReviews(p,visitor)}
+  ${contacts(p)}<div id="ptLabSlot"></div><div id="ptRevSlot"></div><button type="button" class="ptMap">📍 Show on map</button></div>`;
+  scr.scrollTop=0;const b=scr.querySelector(".ptBio"),m=scr.querySelector(".ptMore");if(b&&m)requestAnimationFrame(()=>{if(b.scrollHeight<=b.clientHeight+2)m.hidden=true});if(p.consent!==false&&window.FA_MYLAB)FA_MYLAB.mountListing(scr.querySelector("#ptLabSlot"),p);if(srcOv!=="self_preview")view(p);if(window.faLoadReviews)faLoadReviews(p,visitor)}
  function open(list,i,label,so,kind){srcOv=so||"";const was=!sh.hidden;if(was){}else saveListScroll();cur={list,i,label:label||"",kind:kind||""};sh.hidden=false;document.body.classList.add("ptOpen");paint();if(!was)hpush("sheet")}
  function hideSheet(){const was=!sh.hidden;sh.hidden=true;sh.classList.remove("selfPrev");document.body.classList.remove("ptOpen");if(was){restoreListScroll();try{if(window.faClosePops)faClosePops()}catch(e){}try{const u=new URL(location.href);if(u.searchParams.has("p")){u.searchParams.delete("p");history.replaceState(history.state,"",u.pathname+u.search+u.hash)}}catch(e){}}}
  function close(){if(sh.hidden)return;hideSheet();hpop("sheet")}

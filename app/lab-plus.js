@@ -47,14 +47,25 @@
       if (window.faAuthFor) faAuthFor(true, "lab");
       return;
     }
+    if (!who.user_id) {
+      setMoodMsg("Sign in again, then save.");
+      return;
+    }
     const day = window.FA_JOURNAL ? FA_JOURNAL.localDay() : null;
     const r = await sb().from("mood_notes").insert({ user_id: who.user_id, mood, body, day });
-    if (window.showToast) showToast(r.error ? "Could not save that note" : "Saved for you");
+    const err = r.error ? r.error.message : "";
+    setMoodMsg(err ? "Could not save. " + err : "Saved");
+    if (window.showToast) showToast(err ? "Could not save that note" : "Saved");
+  }
+  function setMoodMsg(text){
+    const el = document.getElementById("moodSaveMsg");
+    if (el) el.textContent = text;
   }
 
   function journalBox(mood){
     return '<label class="plusNote">How do you feel now?<textarea maxlength="500" rows="3" data-note placeholder="Leave a line about this moment…"></textarea></label>'
       + '<button type="button" class="gold" data-save="' + esc(mood) + '">' + (signed() ? "Save this note" : "Create a free account to save") + "</button>"
+      + '<p class="ptPopErr" id="moodSaveMsg"></p>'
       + (signed() ? "" : '<p class="plusFine">The note stays on this phone until you have an account. Nothing is sent.</p>');
   }
 
@@ -96,7 +107,8 @@
     return '<section class="card moodHome wind"><p class="moodK">Evening Wind-down</p><h2>A quieter close to the day</h2>'
       + '<button type="button" class="lcard" id="windBreath"><div class="lbody"><span class="ltag free">Free</span><b>4-7-8 Breathing</b><small class="muted">In through the nose, out through the mouth. A longer exhale for the nightstand.</small></div></button>'
       + '<label class="plusNote">Close your day<textarea maxlength="500" rows="3" id="windNote" placeholder="What can you set down until morning?"></textarea></label>'
-      + '<button type="button" class="gold" id="windSave">' + (signed() ? "Save this note" : "Create a free account to save") + "</button></section>";
+      + '<button type="button" class="gold" id="windSave">' + (signed() ? "Save this note" : "Create a free account to save") + "</button>"
+      + '<p class="ptPopErr" id="moodSaveMsg"></p></section>';
   }
 
   function onBreath(){
@@ -104,7 +116,8 @@
     if (!wrap || !window.FA_GIFTS || wrap.querySelector(".giftStrip")) return;
     const strip = document.createElement("div");
     strip.className = "giftStrip";
-    strip.innerHTML = '<div class="giftStripTop"><h3 class="lsec">Breath Gifts</h3><button type="button" class="ghost sm" data-gifts>All 12</button></div><div class="giftGrid">'
+    strip.id = "breathGifts";
+    strip.innerHTML = '<div class="giftStripTop"><h3 class="lsec">Breath Gifts</h3></div><div class="giftGrid">'
       + FA_GIFTS.GIFTS.map(g => FA_GIFTS.cardHtml(g)).join("") + "</div>";
     wrap.appendChild(strip);
   }
@@ -117,7 +130,6 @@
     box.className = "labTiles";
     box.innerHTML = '<button type="button" class="ltile" style="--tb:#16695f" data-journey><span class="ltIc" aria-hidden="true">☾</span><span class="ltTx"><b>21-day Breath Journey</b><small>21 gentle days</small><small>' + esc(price) + "</small></span></button>"
       + '<button type="button" class="ltile journalTile" data-journal><span class="ltIc" aria-hidden="true">✎</span><span class="ltTx"><b>Daily Journal</b><small>A private note for today</small></span></button>'
-      + '<button type="button" class="ltile" style="--tb:#96693a" data-gifts><span class="ltIc" aria-hidden="true">≋</span><span class="ltTx"><b>Breath Gifts</b><small>12 short breaths, free</small></span></button>'
       + '<button type="button" class="ltile" style="--tb:#463c6e" data-mood><span class="ltIc" aria-hidden="true">♡</span><span class="ltTx"><b>Mood Shift</b><small>How do you feel right now?</small></span></button>';
     tiles.parentNode.insertBefore(box, tiles);
   }
@@ -224,13 +236,29 @@
     if (end) end.onclick = async () => { const client = sb(); if (client) await client.rpc("fa_journey_end"); root.remove(); openJourney(); };
   }
 
+  function openBreathGifts(scroll){
+    if (window.show) show("learn");
+    const tile = document.querySelector('[data-lt="breathing"]');
+    if (tile) tile.click();
+    if (!scroll) return;
+    setTimeout(() => {
+      const g = document.getElementById("breathGifts");
+      if (g) g.scrollIntoView({ block: "start" });
+    }, 180);
+  }
+
   function arrive(section, slug, extra){
     extra = extra || {};
     if (section === "journey") { if (window.show) show("learn"); setTimeout(() => openJourney({ buddy: extra.buddy, bought: extra.bought }), 60); return true; }
     if (section === "mood") { if (window.show) show("learn"); setTimeout(() => openMood(extra.feel || slug), 60); return true; }
-    if (section === "breathing" && (slug === "gifts" || extra.gift)) {
+    if (section === "breathing" && extra.gift) {
       if (window.show) show("learn");
-      setTimeout(() => openGifts(extra.gift || "", extra.from), 60);
+      setTimeout(() => openGifts(extra.gift, extra.from), 60);
+      return true;
+    }
+    if (section === "breathing" && slug === "gifts") {
+      if (window.show) show("learn");
+      setTimeout(() => openBreathGifts(true), 80);
       return true;
     }
     return false;
@@ -266,7 +294,7 @@
       if (window.FA_GIFTS) FA_GIFTS.open(gift.getAttribute("data-gift"));
       return;
     }
-    if (e.target.closest && e.target.closest("[data-gifts]")) { openGifts(); return; }
+    if (e.target.closest && e.target.closest("[data-gifts]")) { openBreathGifts(true); return; }
     if (e.target.closest && e.target.closest("[data-mood]")) { openMood(""); return; }
     if (e.target.closest && e.target.closest("[data-journey]")) { openJourney(); return; }
     if (e.target.closest && e.target.closest("[data-journal]")) { if (window.FA_JOURNAL) FA_JOURNAL.open(); return; }

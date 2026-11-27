@@ -8,7 +8,7 @@
 const SECTIONS = {
   books: { id: "books", title: "Books", groups: ["Books"] },
   courses: { id: "courses", title: "Online courses", groups: [] },
-  breathing: { id: "breathing", title: "Breathing", groups: ["Breathing practices"] },
+  breathing: { id: "breathing", title: "Breath Gifts", groups: ["Breathing practices"] },
   listen: { id: "listen", title: "Listen", groups: ["Listen"] },
   watch: { id: "watch", title: "Watch", groups: ["Biodynamic Breathwork Videos", "Myofascial Energetic Release Videos", "Fascia & anatomy"] },
   live: { id: "live", title: "Live sessions", groups: ["Free live sessions"] }
