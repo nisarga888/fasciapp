@@ -7,8 +7,8 @@
 const NOTE = "A few gentle practices you could try. This isn’t a diagnosis or a treatment — just a short invitation to pause.";
 const MOODS = [
   { id: "anxious", label: "Anxious", practices: [
-    { kind: "lab", id: "f478", title: "4-7-8 breathing", line: "In 4 · hold 7 · out 8 · about 2½ min. A slower pattern often used when the day still feels loud." },
-    { kind: "gift", id: "4-6-calming", title: "4-6 Calming Breath", line: "4s in · 6s out · a quiet pause to soften." },
+    { kind: "lab", id: "f478", title: "4-7-8 breathing", line: "In through the nose, out through the mouth. In 4 · hold 7 · out 8 · about 2½ min." },
+    { kind: "gift", id: "4-6-calming", title: "4-6 Calming Breath", line: "Breathe through the nose. 4s in · 6s out." },
     { kind: "listen", id: "breath-awareness", title: "Breath awareness", line: "With Steph Magenta · 15 min. A guided sit with the breath." }
   ], cards: [
     { type: "practice", text: "Look around and quietly name five things you can see, just as they are." },
@@ -18,8 +18,8 @@ const MOODS = [
     { type: "proverb", text: "This too shall pass.", by: "traditional proverb" }
   ]},
   { id: "tired", label: "Tired", practices: [
-    { kind: "gift", id: "belly-5", title: "5-5 Belly Breathing", line: "5s in · 5s out. Soft belly breaths when the body feels heavy." },
-    { kind: "gift", id: "grounding-3", title: "3-3 Grounding Breath", line: "3s in · 3s out. A short way to come back to your body." },
+    { kind: "gift", id: "belly-5", title: "5-5 Belly Breathing", line: "Breathe through the nose. 5s in · 5s out." },
+    { kind: "gift", id: "grounding-3", title: "3-3 Grounding Breath", line: "Breathe through the nose. 3s in · 3s out." },
     { kind: "listen", id: "reset-of-the-nervous-system", title: "Reset of the Nervous System", line: "Giten Tonkov, guided meditation." }
   ], cards: [
     { type: "practice", text: "A one-minute check-in: notice your feet, your hands, then your breath, without needing to change them." },
@@ -29,8 +29,8 @@ const MOODS = [
     { type: "original", text: "Rest is not a reward you have to earn.", by: "FasciApp (original)" }
   ]},
   { id: "pain", label: "In pain", practices: [
-    { kind: "gift", id: "gentle-2-4", title: "2-4 Gentle Breath", line: "2s in · 4s out. A kind pace when a deep breath feels like too much." },
-    { kind: "lab", id: "coherent", title: "Coherent breathing", line: "6s in · 6s out · 5 min. An even, unhurried rhythm." },
+    { kind: "gift", id: "gentle-2-4", title: "2-4 Gentle Breath", line: "Breathe through the nose. 2s in · 4s out." },
+    { kind: "lab", id: "coherent", title: "Coherent breathing", line: "Breathe through the nose. 6s in · 6s out · 5 min." },
     { kind: "listen", id: "myofascial-unwinding", title: "Myofascial Unwinding", line: "Music playlist to accompany rest. Not a treatment for pain — a soft companion while you rest." }
   ], cards: [
     { type: "practice", text: "Feel the contact of your body with the chair or the floor. Stay with that contact for three easy breaths." },
@@ -40,9 +40,9 @@ const MOODS = [
     { type: "original", text: "You can meet this moment gently, without asking it to disappear.", by: "FasciApp (original)" }
   ]},
   { id: "sleep", label: "Can’t sleep", practices: [
-    { kind: "gift", id: "4-8-sleep", title: "Extended Exhale · 4-8", line: "4s in · 8s out. For the nightstand, when sleep won’t come." },
-    { kind: "lab", id: "coherent", title: "Coherent breathing", line: "For sleep. 6s in · 6s out · 5 min." },
-    { kind: "gift", id: "4-7-8", title: "4-7-8 Breathing", line: "4s in · 7s hold · 8s out. A longer exhale to wind down." }
+    { kind: "gift", id: "4-8-sleep", title: "Extended Exhale · 4-8", line: "Breathe through the nose. 4s in · 8s out." },
+    { kind: "lab", id: "coherent", title: "Coherent breathing", line: "Breathe through the nose. For sleep. 6s in · 6s out · 5 min." },
+    { kind: "gift", id: "4-7-8", title: "4-7-8 Breathing", line: "In through the nose, out through the mouth. 4s in · 7s hold · 8s out." }
   ], cards: [
     { type: "question", text: "What can you set down until morning?" },
     { type: "question", text: "If the night is long, what is one kind thing you can offer yourself right now?" },
@@ -51,9 +51,9 @@ const MOODS = [
     { type: "proverb", text: "This too shall pass.", by: "traditional proverb" }
   ]},
   { id: "tense", label: "Angry/tense", practices: [
-    { kind: "gift", id: "physiological-sigh", title: "Physiological Sigh", line: "Two gentle inhales and a long sigh. When tension sits in the chest or shoulders." },
-    { kind: "gift", id: "4-6-calming", title: "4-6 Calming Breath", line: "4s in · 6s out." },
-    { kind: "lab", id: "longer", title: "Longer exhale", line: "In 4 · out 6 · 5 min. For stress." }
+    { kind: "gift", id: "physiological-sigh", title: "Physiological Sigh", line: "In through the nose, sigh out through the mouth." },
+    { kind: "gift", id: "4-6-calming", title: "4-6 Calming Breath", line: "Breathe through the nose. 4s in · 6s out." },
+    { kind: "lab", id: "longer", title: "Longer exhale", line: "Breathe through the nose. In 4 · out 6 · 5 min." }
   ], cards: [
     { type: "practice", text: "Look around and name five things you see, then feel your feet." },
     { type: "practice", text: "Let a long, easy sigh go, as if the shoulders could drop a little." },
@@ -62,8 +62,8 @@ const MOODS = [
     { type: "proverb", text: "This too shall pass.", by: "traditional proverb" }
   ]},
   { id: "overwhelmed", label: "Overwhelmed", practices: [
-    { kind: "gift", id: "gentle-2-4", title: "2-4 Gentle Breath", line: "When everything feels like too much, start small." },
-    { kind: "gift", id: "grounding-3", title: "3-3 Grounding Breath", line: "Between things, to come back." },
+    { kind: "gift", id: "gentle-2-4", title: "2-4 Gentle Breath", line: "Breathe through the nose. When everything feels like too much, start small." },
+    { kind: "gift", id: "grounding-3", title: "3-3 Grounding Breath", line: "Breathe through the nose. Between things, to come back." },
     { kind: "listen", id: "reset-of-the-nervous-system", title: "Reset of the Nervous System", line: "Giten Tonkov, guided meditation." }
   ], cards: [
     { type: "original", text: "You don’t have to carry all of this at once.", by: "FasciApp (original)" },

@@ -4,19 +4,24 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.FA_GIFTS = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function(){
+const NOSE = "Breathe through the nose";
+const MOUTH = "In through the nose, out through the mouth";
+const IN = "In through the nose";
+const OUT = "Out through the nose";
+const OUT_MOUTH = "Out through the mouth";
 const GIFTS = [
-  { slug: "4-6-calming", title: "4-6 Calming Breath", timing: "4s in · 6s out · 4 rounds", length: "about 40s", use: "When you need a quiet pause to soften", rounds: 4, phases: [["Inhale", 4000], ["Exhale", 6000]] },
-  { slug: "box-4", title: "Box Breathing · 4-4-4-4", timing: "4s in / hold / out / hold · 3 rounds", length: "about 48s", use: "When your mind feels scattered or busy", rounds: 3, phases: [["Inhale", 4000], ["Hold", 4000], ["Exhale", 4000], ["Hold", 4000]] },
-  { slug: "4-7-8", title: "4-7-8 Breathing", timing: "4s in · 7s hold · 8s out · 2 rounds", length: "about 38s", use: "When you’re winding down after a full day", rounds: 2, phases: [["Inhale", 4000], ["Hold", 7000], ["Exhale", 8000]] },
-  { slug: "coherent-55", title: "Coherent Breathing · 5.5-5.5", timing: "5.5s in · 5.5s out · 4 rounds", length: "about 44s", use: "When you want even, balanced calm", rounds: 4, phases: [["Inhale", 5500], ["Exhale", 5500]] },
-  { slug: "physiological-sigh", title: "Physiological Sigh", timing: "2.5s in · 1.5s top-up · 6s out · 4 rounds", length: "about 40s", use: "When tension sits in the chest or shoulders", rounds: 4, phases: [["Inhale", 2500], ["Top-up inhale", 1500], ["Long exhale", 6000]] },
-  { slug: "4-8-sleep", title: "Extended Exhale · 4-8", timing: "4s in · 8s out · 4 rounds", length: "about 48s", use: "When you can’t sleep, at the nightstand", rounds: 4, phases: [["Inhale", 4000], ["Exhale", 8000]] },
-  { slug: "triangle-4", title: "Triangle Breathing · 4-4-4", timing: "4s in · 4s hold · 4s out · 4 rounds", length: "about 48s", use: "When you need a simple midday anchor", rounds: 4, phases: [["Inhale", 4000], ["Hold", 4000], ["Exhale", 4000]] },
-  { slug: "belly-5", title: "5-5 Belly Breathing", timing: "5s in · 5s out · 4 rounds", length: "about 40s", use: "When shoulders and ribs feel tight", rounds: 4, phases: [["Inhale", 5000], ["Exhale", 5000]] },
-  { slug: "4-2-6", title: "4-2-6 Calming Breath", timing: "4s in · 2s hold · 6s out · 4 rounds", length: "about 48s", use: "When you want a gentle unwind", rounds: 4, phases: [["Inhale", 4000], ["Hold", 2000], ["Exhale", 6000]] },
-  { slug: "gentle-2-4", title: "2-4 Gentle Breath", timing: "2s in · 4s out · 7 rounds", length: "about 42s", use: "When a deep breath feels like too much", rounds: 7, phases: [["Inhale", 2000], ["Exhale", 4000]] },
-  { slug: "alternate-nostril", title: "Alternate Nostril · 4-4", timing: "4s left · 4s right · about 56s", length: "about 56s", use: "When you want to settle and find focus", rounds: 7, phases: [["Left side", 4000], ["Right side", 4000]] },
-  { slug: "grounding-3", title: "3-3 Grounding Breath", timing: "3s in · 3s out · 7 rounds", length: "about 42s", use: "Between meetings, to come back to your body", rounds: 7, phases: [["Inhale", 3000], ["Exhale", 3000]] }
+  { slug: "4-6-calming", title: "4-6 Calming Breath", timing: "4s in · 6s out · 4 rounds", length: "about 40s", use: "When you need a quiet pause to soften", path: NOSE, rounds: 4, phases: [[IN, 4000], [OUT, 6000]] },
+  { slug: "box-4", title: "Box Breathing · 4-4-4-4", timing: "4s in / hold / out / hold · 3 rounds", length: "about 48s", use: "When your mind feels scattered or busy", path: NOSE, rounds: 3, phases: [[IN, 4000], ["Hold", 4000], [OUT, 4000], ["Hold", 4000]] },
+  { slug: "4-7-8", title: "4-7-8 Breathing", timing: "4s in · 7s hold · 8s out · 2 rounds", length: "about 38s", use: "When you’re winding down after a full day", path: MOUTH, rounds: 2, phases: [[IN, 4000], ["Hold", 7000], [OUT_MOUTH, 8000]] },
+  { slug: "coherent-55", title: "Coherent Breathing · 3-3", timing: "3s in · 3s out · 4 rounds", length: "about 24s", use: "When you want even, balanced calm", path: NOSE, rounds: 4, phases: [[IN, 3000], [OUT, 3000]] },
+  { slug: "physiological-sigh", title: "Physiological Sigh", timing: "2.5s in · 1.5s top-up · 6s out · 4 rounds", length: "about 40s", use: "When tension sits in the chest or shoulders", path: "In through the nose, sigh out through the mouth", rounds: 4, phases: [[IN, 2500], ["Top-up through the nose", 1500], [OUT_MOUTH, 6000]] },
+  { slug: "4-8-sleep", title: "Extended Exhale · 4-8", timing: "4s in · 8s out · 4 rounds", length: "about 48s", use: "When you can’t sleep, at the nightstand", path: NOSE, rounds: 4, phases: [[IN, 4000], [OUT, 8000]] },
+  { slug: "triangle-4", title: "Triangle Breathing · 4-4-4", timing: "4s in · 4s hold · 4s out · 4 rounds", length: "about 48s", use: "When you need a simple midday anchor", path: NOSE, rounds: 4, phases: [[IN, 4000], ["Hold", 4000], [OUT, 4000]] },
+  { slug: "belly-5", title: "5-5 Belly Breathing", timing: "5s in · 5s out · 4 rounds", length: "about 40s", use: "When shoulders and ribs feel tight", path: NOSE, rounds: 4, phases: [[IN, 5000], [OUT, 5000]] },
+  { slug: "4-2-6", title: "4-2-6 Calming Breath", timing: "4s in · 2s hold · 6s out · 4 rounds", length: "about 48s", use: "When you want a gentle unwind", path: NOSE, rounds: 4, phases: [[IN, 4000], ["Hold", 2000], [OUT, 6000]] },
+  { slug: "gentle-2-4", title: "2-4 Gentle Breath", timing: "2s in · 4s out · 7 rounds", length: "about 42s", use: "When a deep breath feels like too much", path: NOSE, rounds: 7, phases: [[IN, 2000], [OUT, 4000]] },
+  { slug: "alternate-nostril", title: "Alternate Nostril · 4-4", timing: "4s left · 4s right · about 56s", length: "about 56s", use: "When you want to settle and find focus", path: NOSE, rounds: 7, phases: [["Through the left nostril", 4000], ["Through the right nostril", 4000]] },
+  { slug: "grounding-3", title: "3-3 Grounding Breath", timing: "3s in · 3s out · 7 rounds", length: "about 42s", use: "Between meetings, to come back to your body", path: NOSE, rounds: 7, phases: [[IN, 3000], [OUT, 3000]] }
 ];
 const PACKS = {
   "pack-restless-evening": {
@@ -50,11 +55,20 @@ function totalMs(g){
   const one = g.phases.reduce((n, p) => n + p[1], 0);
   return one * g.rounds;
 }
-let root = null, timer = 0, running = false;
+let root = null, raf = 0, running = false;
 function close(){
   running = false;
-  clearInterval(timer);
+  if (raf) cancelAnimationFrame(raf);
+  raf = 0;
   if (root) { root.remove(); root = null; }
+}
+function easeInOut(t){ return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+function phaseTarget(name, from){
+  const n = String(name || "").toLowerCase();
+  if (n === "hold" || n.indexOf("hold") === 0) return from;
+  if (/mouth|right nostril/.test(n) || n.indexOf("out through") === 0) return 0.72;
+  if (n.indexOf("top-up") === 0) return 1.32;
+  return 1.18;
 }
 function shell(inner, label){
   close();
@@ -74,8 +88,9 @@ function open(slug, opts){
     + '<p class="plusEyebrow">' + esc(note) + "</p>"
     + '<h2 class="plusH">' + esc(g.title) + "</h2>"
     + '<p class="plusLine">' + esc(g.timing) + "</p>"
+    + '<p class="plusPath">' + esc(g.path) + "</p>"
     + '<p class="plusUse">' + esc(g.use) + "</p>"
-    + '<div class="giftBall" id="giftBall" aria-hidden="true"></div>'
+    + '<div class="giftStage" aria-hidden="true"><div class="giftGlow" id="giftGlow"></div><div class="giftBall" id="giftBall"></div></div>'
     + '<p class="giftPhase" id="giftPhase">Ready when you are</p>'
     + '<p class="giftRound" id="giftRound"></p>'
     + '<button type="button" class="gold big1" id="giftBegin">Begin</button>'
@@ -88,40 +103,58 @@ function open(slug, opts){
   share.onclick = () => { if (window.faGiftShare) window.faGiftShare(g); };
   return g;
 }
+function paintScale(ball, glow, scale){
+  const t = "translateZ(0) scale(" + scale.toFixed(4) + ")";
+  if (ball) ball.style.transform = t;
+  if (glow) {
+    glow.style.transform = t;
+    glow.style.opacity = String(Math.max(0.2, Math.min(1, (scale - 0.72) / 0.6)));
+  }
+}
 function start(g){
   if (!root) return;
   running = true;
+  if (raf) cancelAnimationFrame(raf);
   const ball = root.querySelector("#giftBall");
+  const glow = root.querySelector("#giftGlow");
   const phaseEl = root.querySelector("#giftPhase");
   const roundEl = root.querySelector("#giftRound");
   const begin = root.querySelector("#giftBegin");
   if (begin) begin.hidden = true;
   const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let round = 0, step = 0;
-  const tick = () => {
-    if (!running || !root) return;
-    if (round >= g.rounds) {
-      phaseEl.textContent = "That’s the practice";
-      roundEl.textContent = "";
-      if (ball) ball.style.transform = "";
-      if (begin) { begin.hidden = false; begin.textContent = "Begin again"; }
-      running = false;
-      return;
-    }
+  let round = 0, step = 0, from = 0.72, to = 0.72, phaseStart = 0;
+  const beginPhase = now => {
     const ph = g.phases[step];
-    phaseEl.textContent = ph[0];
-    roundEl.textContent = "Round " + (round + 1) + " of " + g.rounds;
-    if (ball && !reduce) {
-      const inhale = /inhale|left/i.test(ph[0]);
-      ball.style.transform = inhale ? "scale(1.18)" : "scale(0.82)";
-    }
-    timer = setTimeout(() => {
+    from = to;
+    to = phaseTarget(ph[0], from);
+    phaseStart = now;
+    if (phaseEl) phaseEl.textContent = ph[0];
+    if (roundEl) roundEl.textContent = "Round " + (round + 1) + " of " + g.rounds;
+  };
+  const finish = () => {
+    running = false;
+    raf = 0;
+    if (phaseEl) phaseEl.textContent = "That’s the practice";
+    if (roundEl) roundEl.textContent = "";
+    if (begin) { begin.hidden = false; begin.textContent = "Begin again"; }
+  };
+  const frame = now => {
+    if (!running || !root) return;
+    if (!phaseStart) beginPhase(now);
+    const dur = g.phases[step][1];
+    const t = Math.min(1, (now - phaseStart) / dur);
+    const scale = from + (to - from) * (reduce ? (t >= 1 ? 1 : 0) : easeInOut(t));
+    paintScale(ball, glow, scale);
+    if (t >= 1) {
+      to = scale;
       step += 1;
       if (step >= g.phases.length) { step = 0; round += 1; }
-      tick();
-    }, ph[1]);
+      if (round >= g.rounds) { finish(); return; }
+      beginPhase(now);
+    }
+    raf = requestAnimationFrame(frame);
   };
-  tick();
+  raf = requestAnimationFrame(frame);
 }
 function openPack(slug){
   const p = pack(slug);
@@ -141,7 +174,7 @@ function openPack(slug){
 function cardHtml(g){
   return '<button type="button" class="lcard giftCard" data-gift="' + esc(g.slug) + '" data-lab-id="breathing/gifts/' + esc(g.slug) + '">'
     + '<div class="lthumb"><span class="giftThumb" aria-hidden="true"></span></div>'
-    + '<div class="lbody"><span class="ltag free">Free</span><b>' + esc(g.title) + "</b><small>" + esc(g.timing) + "</small><small class=\"muted\">" + esc(g.use) + "</small></div></button>";
+    + '<div class="lbody"><span class="ltag free">Free</span><b>' + esc(g.title) + "</b><small>" + esc(g.timing) + "</small><small class=\"muted\">" + esc(g.path) + "</small><small class=\"muted\">" + esc(g.use) + "</small></div></button>";
 }
-return { GIFTS, PACKS, bySlug, pack, giftFrom, giftUrl, giftNote, totalMs, cardHtml, open, openPack, close };
+return { GIFTS, PACKS, bySlug, pack, giftFrom, giftUrl, giftNote, totalMs, phaseTarget, easeInOut, cardHtml, open, openPack, close };
 });

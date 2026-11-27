@@ -785,7 +785,16 @@ body.peOpen{overflow:hidden}
 .labQr canvas{width:180px;height:180px;background:#F3EDE4;border-radius:12px}
 .labOpenImg{width:100%;max-height:180px;object-fit:cover;border-radius:12px}
 #labFeature.labTiles{margin-top:8px}
-#labFeature .labJourney{grid-column:1 / -1;aspect-ratio:1.8/.72}
+.journalTile{background:linear-gradient(165deg,#f6ead4 0%,#e7d3ae 42%,#c99e67 100%)!important;color:#02191E}
+.journalTile .ltIc,.journalTile .ltTx b,.journalTile .ltTx small{color:#02191E}
+.journalTile::after{content:"";position:absolute;left:16px;right:18px;top:16px;height:34px;border-left:2px solid #8a6537;background:repeating-linear-gradient(#02191E33,#02191E33 1px,transparent 1px,transparent 8px);opacity:.55;pointer-events:none}
+/* Desktop trackpad: the window scrolls. Phones keep the fixed shell and scroll <main>. */
+@media (min-width:800px), ((hover:hover) and (pointer:fine)){
+  html:has(body.in){height:auto;overflow-y:auto;overscroll-behavior:auto}
+  body.in{position:static;height:auto;max-height:none;overflow:visible;overscroll-behavior:auto}
+  body.in > main{overflow:visible;flex:none;min-height:calc(100dvh - var(--hdr-h) - var(--nav-h))}
+  #map.screen.active{height:calc(100dvh - var(--hdr-h) - var(--nav-h));max-height:calc(100dvh - var(--hdr-h) - var(--nav-h));overflow:hidden}
+}
 .moodHome{margin:8px 12px 12px}
 .moodHome h2{margin:0;color:#F3EDE4;font-size:18px;font-weight:500}
 .moodK{margin:0;color:#C99E67;font-size:11px;letter-spacing:1.2px;text-transform:uppercase}
@@ -793,7 +802,11 @@ body.peOpen{overflow:hidden}
 .giftStrip{margin:0 0 10px}
 .giftStripTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .giftThumb{display:block;width:100%;height:100%;background:radial-gradient(circle at 40% 35%,#5FC9C3,#02191E 72%)}
-.giftBall{width:120px;height:120px;margin:8px auto;border-radius:50%;background:radial-gradient(circle at 40% 35%,#5FC9C3,#0a2a30 70%);border:1px solid #C99E6788;transition:transform .6s}
+.giftStage{position:relative;width:140px;height:140px;margin:8px auto}
+.giftGlow,.giftBall{position:absolute;left:10px;top:10px;width:120px;height:120px;border-radius:50%;transform:translateZ(0) scale(.72);will-change:transform}
+.giftBall{background:radial-gradient(circle at 40% 35%,#5FC9C3,#0a2a30 70%);border:1px solid #C99E6788}
+.giftGlow{background:radial-gradient(circle,#5FC9C388,transparent 68%);opacity:.35;pointer-events:none}
+.breathPath,.plusPath{margin:4px 0 8px;color:#5FC9C3;font-size:13px}
 .giftPhase{text-align:center;color:#C99E67;font-size:18px;margin:8px 0 0}
 .giftRound,.plusUse,.plusLine,.plusFine,.plusPrice{color:#9fb3b5;font-size:13px;line-height:1.4}
 .plusH{color:#C99E67;font-weight:500;margin:4px 0}

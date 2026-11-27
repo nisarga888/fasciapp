@@ -47,7 +47,8 @@
       if (window.faAuthFor) faAuthFor(true, "lab");
       return;
     }
-    const r = await sb().from("mood_notes").insert({ user_id: who.user_id, mood, body });
+    const day = window.FA_JOURNAL ? FA_JOURNAL.localDay() : null;
+    const r = await sb().from("mood_notes").insert({ user_id: who.user_id, mood, body, day });
     if (window.showToast) showToast(r.error ? "Could not save that note" : "Saved for you");
   }
 
@@ -61,9 +62,17 @@
     const M = window.FA_MOOD;
     if (!M) return;
     if (!id) {
-      const chips = M.MOODS.map(m => '<button type="button" class="ltile moodTile" style="--tb:#463c6e" data-feel="' + m.id + '"><span class="ltTx"><b>' + esc(m.label) + "</b></span></button>").join("");
-      const root = sheet(top("Mood Shift") + '<p class="ptPopSub">How do you feel right now?</p><div class="labTiles">' + chips + "</div>", "Mood Shift");
+      const chips = M.MOODS.map((m, i) => {
+        const bg = ["#463c6e", "#16695f", "#6e373c", "#19465f", "#96693a", "#3c5032"][i % 6];
+        return '<button type="button" class="ltile moodTile" style="--tb:' + bg + '" data-feel="' + m.id + '"><span class="ltTx"><b>' + esc(m.label) + "</b></span></button>";
+      }).join("");
+      const wind = M.isEvening(new Date()) ? windHtml() : "";
+      const root = sheet(top("Mood Shift") + wind + '<p class="ptPopSub">How do you feel right now?</p><div class="labTiles">' + chips + "</div>", "Mood Shift");
       root.querySelectorAll("[data-feel]").forEach(b => b.addEventListener("click", () => openMood(b.getAttribute("data-feel"))));
+      const breath = root.querySelector("#windBreath");
+      if (breath) breath.onclick = () => window.FA_GIFTS && FA_GIFTS.open("4-7-8");
+      const save = root.querySelector("#windSave");
+      if (save) save.onclick = () => saveNote("evening", (root.querySelector("#windNote") || {}).value);
       return;
     }
     const m = M.mood(id);
@@ -84,44 +93,10 @@
   }
 
   function windHtml(){
-    return '<section class="card moodHome wind" id="moodHome"><p class="moodK">Evening Wind-down</p><h2>A quieter close to the day</h2>'
-      + '<button type="button" class="lcard" id="windBreath"><div class="lbody"><span class="ltag free">Free</span><b>4-7-8 Breathing</b><small class="muted">A longer exhale for the nightstand.</small></div></button>'
+    return '<section class="card moodHome wind"><p class="moodK">Evening Wind-down</p><h2>A quieter close to the day</h2>'
+      + '<button type="button" class="lcard" id="windBreath"><div class="lbody"><span class="ltag free">Free</span><b>4-7-8 Breathing</b><small class="muted">In through the nose, out through the mouth. A longer exhale for the nightstand.</small></div></button>'
       + '<label class="plusNote">Close your day<textarea maxlength="500" rows="3" id="windNote" placeholder="What can you set down until morning?"></textarea></label>'
-      + '<button type="button" class="gold" id="windSave">' + (signed() ? "Save this note" : "Create a free account to save") + "</button>"
-      + '<button type="button" class="ghost sm" id="windMood">Mood Shift is in the Lab</button></section>';
-  }
-  function dayHtml(){
-    const M = window.FA_MOOD;
-    const chips = M.MOODS.map((m, i) => {
-      const bg = ["#463c6e", "#16695f", "#6e373c", "#19465f", "#96693a", "#3c5032"][i % 6];
-      return '<button type="button" class="ltile moodTile" style="--tb:' + bg + '" data-feel="' + m.id + '"><span class="ltTx"><b>' + esc(m.label) + "</b></span></button>";
-    }).join("");
-    return '<section class="card moodHome" id="moodHome"><p class="moodK">Mood Shift</p><h2>How do you feel right now?</h2><div class="labTiles moodTiles">' + chips + "</div></section>";
-  }
-  function onHome(){
-    const map = $("map");
-    if (!map || !window.FA_MOOD) return;
-    const evening = FA_MOOD.isEvening(new Date());
-    let box = $("moodHome");
-    const html = evening ? windHtml() : dayHtml();
-    if (!box) {
-      const slot = map.querySelector(".newsSlot");
-      const wrap = document.createElement("div");
-      wrap.innerHTML = html;
-      box = wrap.firstElementChild;
-      if (slot && slot.nextSibling) slot.parentNode.insertBefore(box, slot.nextSibling);
-      else map.insertBefore(box, map.firstChild);
-    } else if ((evening && !box.classList.contains("wind")) || (!evening && box.classList.contains("wind"))) {
-      box.outerHTML = html;
-      box = $("moodHome");
-    }
-    box.querySelectorAll("[data-feel]").forEach(b => b.onclick = () => openMood(b.getAttribute("data-feel")));
-    const wind = $("windBreath");
-    if (wind) wind.onclick = () => window.FA_GIFTS && FA_GIFTS.open("4-7-8");
-    const save = $("windSave");
-    if (save) save.onclick = () => saveNote("evening", ($("windNote") || {}).value);
-    const more = $("windMood");
-    if (more) more.onclick = () => openMood("");
+      + '<button type="button" class="gold" id="windSave">' + (signed() ? "Save this note" : "Create a free account to save") + "</button></section>";
   }
 
   function onBreath(){
@@ -140,7 +115,8 @@
     box.id = "labFeature";
     const price = FA_JOURNEY.priceShort(Date.now());
     box.className = "labTiles";
-    box.innerHTML = '<button type="button" class="ltile labJourney" style="--tb:#16695f" data-journey><span class="ltIc" aria-hidden="true">☾</span><span class="ltTx"><small class="ltKind">Featured</small><b>21-day Breath Journey</b><small>21 gentle days to calm your nervous system and rest more deeply</small><small>' + esc(price) + "</small></span></button>"
+    box.innerHTML = '<button type="button" class="ltile" style="--tb:#16695f" data-journey><span class="ltIc" aria-hidden="true">☾</span><span class="ltTx"><b>21-day Breath Journey</b><small>21 gentle days</small><small>' + esc(price) + "</small></span></button>"
+      + '<button type="button" class="ltile journalTile" data-journal><span class="ltIc" aria-hidden="true">✎</span><span class="ltTx"><b>Daily Journal</b><small>A private note for today</small></span></button>'
       + '<button type="button" class="ltile" style="--tb:#96693a" data-gifts><span class="ltIc" aria-hidden="true">≋</span><span class="ltTx"><b>Breath Gifts</b><small>12 short breaths, free</small></span></button>'
       + '<button type="button" class="ltile" style="--tb:#463c6e" data-mood><span class="ltIc" aria-hidden="true">♡</span><span class="ltTx"><b>Mood Shift</b><small>How do you feel right now?</small></span></button>';
     tiles.parentNode.insertBefore(box, tiles);
@@ -251,7 +227,7 @@
   function arrive(section, slug, extra){
     extra = extra || {};
     if (section === "journey") { if (window.show) show("learn"); setTimeout(() => openJourney({ buddy: extra.buddy, bought: extra.bought }), 60); return true; }
-    if (section === "mood") { if (window.show) show("map"); setTimeout(() => openMood(extra.feel || slug), 60); return true; }
+    if (section === "mood") { if (window.show) show("learn"); setTimeout(() => openMood(extra.feel || slug), 60); return true; }
     if (section === "breathing" && (slug === "gifts" || extra.gift)) {
       if (window.show) show("learn");
       setTimeout(() => openGifts(extra.gift || "", extra.from), 60);
@@ -263,6 +239,7 @@
   async function afterAuth(){
     let raw = "";
     try { raw = sessionStorage.getItem("faMoodDraft") || ""; } catch (e) {}
+    if (window.FA_JOURNAL) FA_JOURNAL.afterAuth();
     if (!raw) return;
     try { sessionStorage.removeItem("faMoodDraft"); } catch (e) {}
     let d = null;
@@ -292,7 +269,8 @@
     if (e.target.closest && e.target.closest("[data-gifts]")) { openGifts(); return; }
     if (e.target.closest && e.target.closest("[data-mood]")) { openMood(""); return; }
     if (e.target.closest && e.target.closest("[data-journey]")) { openJourney(); return; }
+    if (e.target.closest && e.target.closest("[data-journal]")) { if (window.FA_JOURNAL) FA_JOURNAL.open(); return; }
   }, true);
 
-  window.FA_PLUS = { arrive, onHome, onLab, onBreath, openMood, openJourney, openGifts, afterAuth, isEvening: d => window.FA_MOOD && FA_MOOD.isEvening(d) };
+  window.FA_PLUS = { arrive, onLab, onBreath, openMood, openJourney, openGifts, afterAuth, isEvening: d => window.FA_MOOD && FA_MOOD.isEvening(d) };
 })();
