@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const GIFTS = require("./breath-gifts.js");
+const JOURNAL = require("./journal.js");
 const MOOD = require("./mood-shift.js");
 const JOURNEY = require("./journey.js");
 const SHARE = require("./share.js");
@@ -21,6 +22,18 @@ test("the twelve breath gifts are free and share a Lab path", () => {
   assert.equal(GIFTS.giftNote("Nisarga E."), "A breath gift from Nisarga E.");
   assert.equal(GIFTS.giftNote("a@b.c"), "A breath gift for you");
   assert.equal(GIFTS.bySlug("4-8-sleep").title, "Extended Exhale · 4-8");
+  assert.equal(GIFTS.bySlug("gentle-2-4").path, "Breathe through the nose");
+  assert.deepEqual(GIFTS.bySlug("coherent-55").phases, [["In through the nose", 3000], ["Out through the nose", 3000]]);
+  assert.equal(GIFTS.bySlug("4-7-8").phases[2][0], "Out through the mouth");
+  assert.equal(GIFTS.bySlug("physiological-sigh").phases[2][0], "Out through the mouth");
+  assert.equal(GIFTS.phaseTarget("Hold", 1.18), 1.18);
+  assert.equal(GIFTS.phaseTarget("Out through the nose", 1), 0.72);
+  assert.equal(GIFTS.easeInOut(0), 0);
+  assert.equal(GIFTS.easeInOut(1), 1);
+  GIFTS.GIFTS.forEach(g => assert.match(g.path, /nose/));
+  assert.equal(JOURNAL.tagOf("anxious"), "Anxious");
+  assert.equal(JOURNAL.tagOf("evening"), "Evening wind-down");
+  assert.match(JOURNAL.promptFor(JOURNAL.localDay(new Date(2026, 10, 27))), /./);
   assert.ok(GIFTS.pack("pack-restless-evening").gifts.includes("4-8-sleep"));
 });
 
@@ -70,7 +83,9 @@ test("new Lab paths redirect and the build does not add My space", () => {
   assert.match(page, /lab=journey/);
   const plus = fs.readFileSync(path.join(__dirname, "lab-plus.js"), "utf8");
   assert.equal(/My space|Client space|recommend to client/i.test(plus), false);
-  assert.match(plus, /class="ltile labJourney"/);
-  assert.match(plus, /class="lcard"/);
-  assert.match(plus, /class="card moodHome"/);
+  assert.match(plus, /data-journal/);
+  assert.match(plus, /mood, body, day/);
+  assert.equal(/onHome|getElementById\("map"\)|labJourney/.test(plus), false);
+  assert.match(plus, /Daily Journal/);
+  assert.match(plus, /card moodHome/);
 });

@@ -14,9 +14,10 @@
       title: "Coherent breathing",
       tag: "For sleep",
       line: "6 seconds in · 6 seconds out · 5 minutes",
+      path: "Breathe through the nose",
       phases: [
-        { name: "Inhale through the nose", ms: 6000, kind: "in" },
-        { name: "Exhale through the nose", ms: 6000, kind: "out" }
+        { name: "In through the nose", ms: 6000, kind: "in" },
+        { name: "Out through the nose", ms: 6000, kind: "out" }
       ],
       viz: "ball",
       desc: "Coherent breathing means breathing in and out at a steady, even, slow pace: about six seconds in and six seconds out, around five or six breaths a minute. Breathe in and out through the nose, softly and low into the belly. Research on slow breathing (often around six breaths a minute) suggests it can increase heart rate variability (HRV), which is often used as a sign of how flexibly the nervous system adapts. Many people find the even rhythm steadying when stress makes the mind feel scattered.",
@@ -31,9 +32,10 @@
       title: "Longer exhale",
       tag: "For stress",
       line: "In 4 · out 6 · 5 minutes",
+      path: "Breathe through the nose",
       phases: [
-        { name: "Inhale through the nose", ms: 4000, kind: "in" },
-        { name: "Exhale through the nose", ms: 6000, kind: "out" }
+        { name: "In through the nose", ms: 4000, kind: "in" },
+        { name: "Out through the nose", ms: 6000, kind: "out" }
       ],
       viz: "wave",
       desc: "It is known that the heart speeds up slightly on the in-breath and slows slightly on the out-breath. Research suggests that making the exhale longer than the inhale activates the calming parasympathetic response, which can help ease stress. Inhale through the nose for 4, exhale through the nose for 6, smooth and unhurried. It needs no special setup, so it can be used before a meeting, in a queue, before a difficult conversation or at bedtime.",
@@ -48,10 +50,11 @@
       title: "Box breathing",
       tag: "For energy",
       line: "In 4 · hold 4 · out 4 · hold 4 · 5 minutes",
+      path: "Breathe through the nose",
       phases: [
-        { name: "Inhale through the nose", ms: 4000, kind: "in" },
+        { name: "In through the nose", ms: 4000, kind: "in" },
         { name: "Hold", ms: 4000, kind: "hold" },
-        { name: "Exhale through the nose", ms: 4000, kind: "out" },
+        { name: "Out through the nose", ms: 4000, kind: "out" },
         { name: "Hold", ms: 4000, kind: "hold" }
       ],
       viz: "box",
@@ -68,15 +71,16 @@
       title: "4-7-8 breathing",
       tag: "For anxiety",
       line: "In 4 · hold 7 · out 8 · 8 rounds (about 2½ minutes)",
+      path: "In through the nose, out through the mouth",
       totalMs: 8 * 19000,
       phases: [
-        { name: "Inhale through the nose", ms: 4000, kind: "in" },
+        { name: "In through the nose", ms: 4000, kind: "in" },
         { name: "Hold", ms: 7000, kind: "hold" },
-        { name: "Exhale slowly", ms: 8000, kind: "out" }
+        { name: "Out through the mouth", ms: 8000, kind: "out" }
       ],
       viz: "ball",
       art: "calm",
-      desc: "4-7-8 breathing is a slow rhythm popularised by Dr Andrew Weil: inhale through the nose for 4, softly hold for 7, then exhale slowly for 8. One round takes 19 seconds; this practice guides you through 8 rounds. The exhale is the longest part of the cycle. If the hold feels like too much, shorten all the counts and keep the same proportions.",
+      desc: "4-7-8 breathing is a slow rhythm popularised by Dr Andrew Weil: in through the nose for 4, softly hold for 7, then out through the mouth for 8. One round takes 19 seconds; this practice guides you through 8 rounds. The exhale is the longest part of the cycle. If the hold feels like too much, shorten all the counts and keep the same proportions.",
       why: [
         "The long, slow exhale gives the mind one simple thing to follow.",
         "Counting the rhythm can help when thoughts are racing.",
@@ -285,7 +289,7 @@
             <b>${esc(p.title)}${p.tag?` <span class="breathFor">· ${esc(p.tag.toLowerCase())}</span>`:""}</b>
             <button type="button" class="breathX" data-breath-close="1" aria-label="Close">✕</button>
           </div>
-          <div class="breathIntroHead">${p.tag?`<span class="breathUseTag">${esc(p.tag)}</span>`:""}<p class="breathIntroLine">${esc(p.line)}</p></div>
+          <div class="breathIntroHead">${p.tag?`<span class="breathUseTag">${esc(p.tag)}</span>`:""}<p class="breathIntroLine">${esc(p.line)}</p><p class="breathPath">${esc(p.path||"Breathe through the nose")}</p></div>
           <p class="breathDesc">${esc(p.desc)}</p>
           <div class="breathWhy">
             <b>Why it helps</b>
@@ -339,6 +343,7 @@
             <b>${esc(p.title)}${p.tag?` <span class="breathFor">· ${esc(p.tag.toLowerCase())}</span>`:""}</b>
             <button type="button" class="breathX" data-breath-close="1" aria-label="Close">✕</button>
           </div>
+          <p class="breathPath">${esc(p.path||"Breathe through the nose")}</p>
           <p class="breathRemain" id="breathRemain">5:00</p>
           ${vizHTML(p.viz)}
           <p class="breathCue" id="breathCue">Ready when you are</p>
