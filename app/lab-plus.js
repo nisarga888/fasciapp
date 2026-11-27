@@ -4,7 +4,6 @@
   function esc(s){ return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function sb(){ return window.faSb || null; }
   function signed(){ try { return !!(window.faSignedIn && faSignedIn()); } catch (e) { return false; } }
-  function me(){ try { return window.faMe ? faMe() : null; } catch (e) { return null; } }
 
   function sheet(html, label){
     const old = document.getElementById("plusRoot");
@@ -38,38 +37,51 @@
     return n;
   }
 
+  async function actor(){
+    const session = window.DB && DB.session ? await DB.session().catch(() => null) : null;
+    return { client: sb(), id: (session && session.user_id) || "", email: (session && session.email) || "" };
+  }
+  function appSigned(){ try { return !!(window.faSignedIn && faSignedIn()); } catch (e) { return false; } }
+  function closeMood(){ const old = document.getElementById("plusRoot"); if (old) old.remove(); }
   async function saveNote(mood, body){
     body = String(body || "").trim().slice(0, 500);
     if (!body) return;
-    const who = me();
-    if (!signed() || !who || !sb()) {
+    const act = await actor();
+    if (!act.client || !act.id) {
+      if (appSigned()) {
+        const el = document.getElementById("moodSaveMsg");
+        if (el) { el.hidden = false; el.textContent = "Still connecting your account. Please try once more."; el.classList.remove("ok"); }
+        if (window.showToast) showToast("Still connecting. Please try once more.");
+        return;
+      }
       try { sessionStorage.setItem("faMoodDraft", JSON.stringify({ mood, body })); } catch (e) {}
+      closeMood();
       if (window.faAuthFor) faAuthFor(true, "lab");
       return;
     }
-    if (!who.user_id) {
-      setMoodMsg("Sign in again, then save.");
-      return;
-    }
     const day = window.FA_JOURNAL ? FA_JOURNAL.localDay() : null;
-    const r = await sb().from("mood_notes").insert({ user_id: who.user_id, mood, body, day });
+    const r = await act.client.from("mood_notes").insert({ user_id: act.id, mood, body, day });
     const err = r.error ? r.error.message : "";
-    setMoodMsg(err ? "Could not save. " + err : "Saved");
-    if (window.showToast) showToast(err ? "Could not save that note" : "Saved");
+    const el = document.getElementById("moodSaveMsg");
+    if (el) { el.hidden = false; el.textContent = err ? "Could not save. " + err : "Saved ✓"; el.classList.toggle("ok", !err); }
+    if (window.showToast) showToast(err ? "Could not save that note" : "Saved ✓");
+    if (!err && window.FA_JOURNAL && FA_JOURNAL.showSaved) FA_JOURNAL.showSaved();
   }
   function setMoodMsg(text){
     const el = document.getElementById("moodSaveMsg");
     if (el) el.textContent = text;
   }
 
-  function journalBox(mood){
+  function journalBox(mood, on){
     return '<label class="plusNote">How do you feel now?<textarea maxlength="500" rows="3" data-note placeholder="Leave a line about this moment…"></textarea></label>'
-      + '<button type="button" class="gold" data-save="' + esc(mood) + '">' + (signed() ? "Save this note" : "Create a free account to save") + "</button>"
-      + '<p class="ptPopErr" id="moodSaveMsg"></p>'
-      + (signed() ? "" : '<p class="plusFine">The note stays on this phone until you have an account. Nothing is sent.</p>');
+      + '<button type="button" class="gold" data-save="' + esc(mood) + '">' + (on ? "Save this note" : "Create a free account to save") + "</button>"
+      + '<p class="journalSaved" id="moodSaveMsg" hidden></p>'
+      + (on ? "" : '<p class="plusFine">The note stays on this phone until you have an account. Nothing is sent.</p>');
   }
 
-  function openMood(id){
+  async function openMood(id){
+    const act = await actor();
+    const on = !!act.id || appSigned();
     const M = window.FA_MOOD;
     if (!M) return;
     if (!id) {
@@ -77,7 +89,7 @@
         const bg = ["#463c6e", "#16695f", "#6e373c", "#19465f", "#96693a", "#3c5032"][i % 6];
         return '<button type="button" class="ltile moodTile" style="--tb:' + bg + '" data-feel="' + m.id + '"><span class="ltTx"><b>' + esc(m.label) + "</b></span></button>";
       }).join("");
-      const wind = M.isEvening(new Date()) ? windHtml() : "";
+      const wind = M.isEvening(new Date()) ? windHtml(on) : "";
       const root = sheet(top("Mood Shift") + wind + '<p class="ptPopSub">How do you feel right now?</p><div class="labTiles">' + chips + "</div>", "Mood Shift");
       root.querySelectorAll("[data-feel]").forEach(b => b.addEventListener("click", () => openMood(b.getAttribute("data-feel"))));
       const breath = root.querySelector("#windBreath");
@@ -95,7 +107,7 @@
       + '<p class="plusUse">' + esc(M.NOTE) + "</p>"
       + M.cardHtml(card)
       + '<div class="lgrid">' + practices + "</div>"
-      + journalBox(id),
+      + journalBox(id, on),
       m.label
     );
     root.querySelectorAll("[data-kind]").forEach(b => b.addEventListener("click", () => openPractice({ kind: b.getAttribute("data-kind"), id: b.getAttribute("data-id") })));
@@ -103,11 +115,11 @@
     if (save) save.onclick = () => saveNote(id, (root.querySelector("[data-note]") || {}).value);
   }
 
-  function windHtml(){
+  function windHtml(on){
     return '<section class="card moodHome wind"><p class="moodK">Evening Wind-down</p><h2>A quieter close to the day</h2>'
       + '<button type="button" class="lcard" id="windBreath"><div class="lbody"><span class="ltag free">Free</span><b>4-7-8 Breathing</b><small class="muted">In through the nose, out through the mouth. A longer exhale for the nightstand.</small></div></button>'
       + '<label class="plusNote">Close your day<textarea maxlength="500" rows="3" id="windNote" placeholder="What can you set down until morning?"></textarea></label>'
-      + '<button type="button" class="gold" id="windSave">' + (signed() ? "Save this note" : "Create a free account to save") + "</button>"
+      + '<button type="button" class="gold" id="windSave">' + (on ? "Save this note" : "Create a free account to save") + "</button>"
       + '<p class="ptPopErr" id="moodSaveMsg"></p></section>';
   }
 
@@ -123,15 +135,11 @@
   }
   function onLab(){
     const tiles = $("labTiles");
-    if (!tiles || $("labFeature") || !window.FA_JOURNEY) return;
-    const box = document.createElement("div");
-    box.id = "labFeature";
+    if (!tiles || tiles.querySelector("[data-journal]") || !window.FA_JOURNEY) return;
     const price = FA_JOURNEY.priceShort(Date.now());
-    box.className = "labTiles";
-    box.innerHTML = '<button type="button" class="ltile" style="--tb:#16695f" data-journey><span class="ltIc" aria-hidden="true">☾</span><span class="ltTx"><b>21-day Breath Journey</b><small>21 gentle days</small><small>' + esc(price) + "</small></span></button>"
+    tiles.insertAdjacentHTML("afterbegin", '<button type="button" class="ltile" style="--tb:#16695f" data-journey><span class="ltIc" aria-hidden="true">☾</span><span class="ltTx"><b>21-day Breath Journey</b><small>21 gentle days</small><small>' + esc(price) + "</small></span></button>"
       + '<button type="button" class="ltile journalTile" data-journal><span class="ltIc" aria-hidden="true">✎</span><span class="ltTx"><b>Daily Journal</b><small>A private note for today</small></span></button>'
-      + '<button type="button" class="ltile" style="--tb:#463c6e" data-mood><span class="ltIc" aria-hidden="true">♡</span><span class="ltTx"><b>Mood Shift</b><small>How do you feel right now?</small></span></button>';
-    tiles.parentNode.insertBefore(box, tiles);
+      + '<button type="button" class="ltile" style="--tb:#463c6e" data-mood><span class="ltIc" aria-hidden="true">♡</span><span class="ltTx"><b>Mood Shift</b><small>How do you feel right now?</small></span></button>');
   }
 
   function openGifts(slug, from){
@@ -147,13 +155,12 @@
   }
 
   async function journeyState(){
-    const client = sb();
-    const who = me();
-    if (!client || !who) return { access: false, done: [], reminder: false, buddy: null };
-    const email = String(who.email || "").toLowerCase();
-    const acc = await client.from("journey_access").select("email").eq("email", email).maybeSingle();
-    const prog = await client.from("journey_progress").select("done,reminder").eq("user_id", who.user_id).maybeSingle();
-    const buddy = await client.rpc("fa_journey_buddy");
+    const act = await actor();
+    if (!act.client || !act.id) return { access: false, done: [], reminder: false, buddy: null };
+    const email = String(act.email || "").toLowerCase();
+    const acc = await act.client.from("journey_access").select("email").eq("email", email).maybeSingle();
+    const prog = await act.client.from("journey_progress").select("done,reminder").eq("user_id", act.id).maybeSingle();
+    const buddy = await act.client.rpc("fa_journey_buddy");
     const row = buddy.data && buddy.data[0];
     return {
       access: !!(acc.data && !acc.error),
@@ -163,10 +170,9 @@
     };
   }
   async function saveProgress(done, reminder){
-    const client = sb();
-    const who = me();
-    if (!client || !who) return;
-    await client.from("journey_progress").upsert({ user_id: who.user_id, done, reminder: !!reminder }, { onConflict: "user_id" });
+    const act = await actor();
+    if (!act.client || !act.id) return;
+    await act.client.from("journey_progress").upsert({ user_id: act.id, done, reminder: !!reminder }, { onConflict: "user_id" });
   }
 
   async function openJourney(opts){

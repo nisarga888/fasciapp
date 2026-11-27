@@ -44,56 +44,57 @@ function pretty(day){
   catch (e) { return day; }
 }
 function esc(s){ return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
-function who(){ try { return window.faMe ? faMe() : null; } catch (e) { return null; } }
-function signed(){ try { return !!(window.faSignedIn && faSignedIn()); } catch (e) { return false; } }
-function sb(){ return window.faSb || null; }
+async function actor(){
+  const session = window.DB && DB.session ? await DB.session().catch(() => null) : null;
+  return { client: window.faSb || null, id: (session && session.user_id) || "" };
+}
 
 async function load(day){
-  const client = sb();
-  const me = who();
-  if (!client || !me) return { today: "", past: [] };
-  const rows = await client.from("mood_notes").select("id,body,day,mood,created_at").eq("user_id", me.user_id).order("created_at", { ascending: false }).limit(80);
+  const act = await actor();
+  if (!act.client || !act.id) return { today: "", past: [] };
+  const rows = await act.client.from("mood_notes").select("id,body,day,mood,created_at").eq("user_id", act.id).order("created_at", { ascending: false }).limit(80);
   const list = (rows.data || []).map(r => ({ ...r, day: r.day || String(r.created_at || "").slice(0, 10) })).filter(r => r.day && r.body);
   const todayNote = list.find(r => r.mood === "journal" && r.day === day);
-  return { today: todayNote ? todayNote.body : "", notes: list.filter(r => !(r.mood === "journal" && r.day === day)) };
+  return { today: todayNote ? todayNote.body : "", notes: list };
 }
 async function save(day, body){
   body = String(body || "").trim().slice(0, 500);
-  const client = sb();
-  const me = who();
   if (!body) return { ok: false, error: "Write a note first." };
-  if (!client || !me || !me.user_id) return { ok: false, error: "Sign in again, then save." };
-  const existing = await client.from("mood_notes").select("id").eq("user_id", me.user_id).eq("mood", "journal").eq("day", day).maybeSingle();
+  const act = await actor();
+  if (!act.client || !act.id) return { ok: false, error: "Still connecting your account. Please try once more." };
+  const existing = await act.client.from("mood_notes").select("id").eq("user_id", act.id).eq("mood", "journal").eq("day", day).maybeSingle();
   if (existing.error) return { ok: false, error: existing.error.message };
   if (existing.data) {
-    const r = await client.from("mood_notes").update({ body }).eq("id", existing.data.id).eq("user_id", me.user_id);
+    const r = await act.client.from("mood_notes").update({ body }).eq("id", existing.data.id).eq("user_id", act.id);
     return r.error ? { ok: false, error: r.error.message } : { ok: true };
   }
-  const r = await client.from("mood_notes").insert({ user_id: me.user_id, mood: "journal", body, day });
+  const r = await act.client.from("mood_notes").insert({ user_id: act.id, mood: "journal", body, day });
   if (r.error && /duplicate|unique/i.test(r.error.message || "")) {
-    const again = await client.from("mood_notes").select("id").eq("user_id", me.user_id).eq("mood", "journal").eq("day", day).maybeSingle();
+    const again = await act.client.from("mood_notes").select("id").eq("user_id", act.id).eq("mood", "journal").eq("day", day).maybeSingle();
     if (again.data) {
-      const u = await client.from("mood_notes").update({ body }).eq("id", again.data.id).eq("user_id", me.user_id);
+      const u = await act.client.from("mood_notes").update({ body }).eq("id", again.data.id).eq("user_id", act.id);
       return u.error ? { ok: false, error: u.error.message } : { ok: true };
     }
   }
   return r.error ? { ok: false, error: r.error.message } : { ok: true };
 }
-function open(){
+async function open(){
   if (typeof document === "undefined") return;
+  const act = await actor();
+  const on = !!act.id || !!(window.faSignedIn && faSignedIn());
   const day = localDay();
   const old = document.getElementById("journalRoot");
   if (old) old.remove();
   const root = document.createElement("div");
   root.id = "journalRoot";
   root.className = "ptPop";
-  const gate = signed() ? "" : '<p class="plusFine">This journal is private. Create a free account to keep today’s note.</p><button type="button" class="gold" id="journalAuth">Create a free account</button>';
+  const gate = on ? "" : '<p class="plusFine">This journal is private. Create a free account to keep today’s note.</p><button type="button" class="gold" id="journalAuth">Create a free account</button>';
   root.innerHTML = '<div class="ptPopDim" data-jx></div><div class="ptPopBox" role="dialog" aria-modal="true" aria-label="Daily Journal">'
     + '<div class="ptPopTop"><b>Daily Journal</b><button type="button" class="ptPopX" data-jx aria-label="Close">✕</button></div>'
     + '<p class="plusEyebrow">' + esc(pretty(day)) + "</p>"
     + '<p class="plusH">' + esc(promptFor(day)) + "</p>"
     + '<label class="plusNote">Today<textarea id="journalNote" maxlength="500" rows="5" placeholder="Leave a line about this day…"></textarea></label>'
-    + (signed() ? '<button type="button" class="gold" id="journalSave">Save today’s note</button><p class="ptPopErr" id="journalMsg"></p>' : gate)
+    + (on ? '<button type="button" class="gold" id="journalSave">Save today’s note</button><p class="journalSaved" id="journalMsg" hidden></p>' : gate)
     + '<div id="journalPast" class="journalPast"></div></div>';
   document.body.appendChild(root);
   root.addEventListener("click", e => { if (e.target.closest("[data-jx]")) root.remove(); });
@@ -107,18 +108,20 @@ function open(){
   const msg = root.querySelector("#journalMsg");
   if (saveBtn) saveBtn.onclick = async () => {
     saveBtn.disabled = true;
-    if (msg) msg.textContent = "Saving…";
+    if (msg) { msg.hidden = false; msg.textContent = "Saving…"; }
     const res = await save(day, note.value);
     saveBtn.disabled = false;
-    if (msg) msg.textContent = res.ok ? "Saved" : ("Could not save. " + (res.error || "Try again."));
-    if (window.showToast) showToast(res.ok ? "Saved" : "Could not save that note");
+    if (msg) { msg.hidden = false; msg.textContent = res.ok ? "Saved ✓" : ("Could not save. " + (res.error || "Try again.")); msg.classList.toggle("ok", !!res.ok); }
+    if (window.showToast) showToast(res.ok ? "Saved ✓" : "Could not save that note");
     if (res.ok) {
+      const saved = String(note.value || "").trim();
       const data = await load(day);
-      if (note && !note.value) note.value = data.today || "";
-      paintPast(root, day, data.notes);
+      const notes = data.notes && data.notes.length ? data.notes : [{ mood: "journal", body: saved, day }];
+      if (note && !note.value) note.value = data.today || saved;
+      paintPast(root, day, notes);
     }
   };
-  if (signed()) {
+  if (on) {
     load(day).then(data => {
       if (note && !note.value) note.value = data.today || "";
       paintPast(root, day, data.notes);
@@ -142,13 +145,21 @@ function paintPast(root, day, notes){
 async function afterAuth(){
   let raw = "";
   try { raw = sessionStorage.getItem("faJournalDraft") || ""; } catch (e) {}
-  if (!raw || !signed()) return;
+  const act = await actor();
+  if (!raw || !act.id) return;
   try { sessionStorage.removeItem("faJournalDraft"); } catch (e) {}
   let d = null;
   try { d = JSON.parse(raw); } catch (e) {}
   if (!d || !d.day || !d.body) return;
   const res = await save(d.day, d.body);
-  if (window.showToast) showToast(res.ok ? "Saved" : ("Could not save. " + (res.error || "Try again.")));
+  if (window.showToast) showToast(res.ok ? "Saved ✓" : ("Could not save. " + (res.error || "Try again.")));
 }
-return { PROMPTS, TAGS, localDay, promptFor, tagOf, open, afterAuth };
+async function showSaved(){
+  const root = document.getElementById("journalRoot");
+  if (!root) return;
+  const day = localDay();
+  const data = await load(day);
+  paintPast(root, day, data.notes);
+}
+return { PROMPTS, TAGS, localDay, promptFor, tagOf, open, afterAuth, showSaved };
 });
