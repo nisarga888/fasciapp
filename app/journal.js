@@ -45,9 +45,8 @@ function pretty(day){
 }
 function esc(s){ return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 async function actor(){
-  if (window.faActor) return faActor();
-  const me = window.faMe ? faMe() : null;
-  return { client: window.faSb || null, id: (me && (me.user_id || me.id)) || "" };
+  const session = window.DB && DB.session ? await DB.session().catch(() => null) : null;
+  return { client: window.faSb || null, id: (session && session.user_id) || "" };
 }
 
 async function load(day){
@@ -56,7 +55,7 @@ async function load(day){
   const rows = await act.client.from("mood_notes").select("id,body,day,mood,created_at").eq("user_id", act.id).order("created_at", { ascending: false }).limit(80);
   const list = (rows.data || []).map(r => ({ ...r, day: r.day || String(r.created_at || "").slice(0, 10) })).filter(r => r.day && r.body);
   const todayNote = list.find(r => r.mood === "journal" && r.day === day);
-  return { today: todayNote ? todayNote.body : "", notes: list.filter(r => !(r.mood === "journal" && r.day === day)) };
+  return { today: todayNote ? todayNote.body : "", notes: list };
 }
 async function save(day, body){
   body = String(body || "").trim().slice(0, 500);
@@ -82,7 +81,7 @@ async function save(day, body){
 async function open(){
   if (typeof document === "undefined") return;
   const act = await actor();
-  const on = !!act.id;
+  const on = !!act.id || !!(window.faSignedIn && faSignedIn());
   const day = localDay();
   const old = document.getElementById("journalRoot");
   if (old) old.remove();
@@ -115,9 +114,11 @@ async function open(){
     if (msg) { msg.hidden = false; msg.textContent = res.ok ? "Saved ✓" : ("Could not save. " + (res.error || "Try again.")); msg.classList.toggle("ok", !!res.ok); }
     if (window.showToast) showToast(res.ok ? "Saved ✓" : "Could not save that note");
     if (res.ok) {
+      const saved = String(note.value || "").trim();
       const data = await load(day);
-      if (note && !note.value) note.value = data.today || "";
-      paintPast(root, day, data.notes);
+      const notes = data.notes && data.notes.length ? data.notes : [{ mood: "journal", body: saved, day }];
+      if (note && !note.value) note.value = data.today || saved;
+      paintPast(root, day, notes);
     }
   };
   if (on) {
@@ -153,5 +154,12 @@ async function afterAuth(){
   const res = await save(d.day, d.body);
   if (window.showToast) showToast(res.ok ? "Saved ✓" : ("Could not save. " + (res.error || "Try again.")));
 }
-return { PROMPTS, TAGS, localDay, promptFor, tagOf, open, afterAuth };
+async function showSaved(){
+  const root = document.getElementById("journalRoot");
+  if (!root) return;
+  const day = localDay();
+  const data = await load(day);
+  paintPast(root, day, data.notes);
+}
+return { PROMPTS, TAGS, localDay, promptFor, tagOf, open, afterAuth, showSaved };
 });

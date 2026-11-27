@@ -1020,7 +1020,7 @@ body.modInfoOpen>main{overflow:hidden}
 /* v0.23.172 profile 2x2 tiles (Lab style) */
 .faGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.faGrid .faT{aspect-ratio:1/1;justify-content:flex-end;padding:12px}
 .myLabPair{margin-top:12px}.mySpaceSoon{aspect-ratio:1/1;cursor:default}.mySpaceSoon b{font-size:16px}.mySpaceSoon small{font-size:12px;letter-spacing:.08em;text-transform:uppercase}
-.toolkitTile{position:relative;padding:0}
+.toolkitTile{position:relative;padding:0;background:radial-gradient(circle at 75% 20%,#1d8073,#0e4a50 75%)!important}.toolkitTile .faTt{position:relative;z-index:1;text-shadow:0 1px 4px #0009}
 .toolkitOpen{position:absolute;inset:0;border:0;background:transparent;color:inherit;text-align:left;font:inherit;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;cursor:pointer}
 .toolkitShare{position:absolute;top:10px;right:10px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid #C99E67;background:#02191Eee;color:#C99E67;display:grid;place-items:center;padding:0;cursor:pointer}
 .toolkitShare.sm{position:static;width:34px;height:34px}

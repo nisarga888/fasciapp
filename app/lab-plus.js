@@ -39,16 +39,22 @@
   }
 
   async function actor(){
-    if (window.faActor) return faActor();
-    const who = me();
-    return { client: sb(), id: (who && (who.user_id || who.id)) || "" };
+    const session = window.DB && DB.session ? await DB.session().catch(() => null) : null;
+    return { client: sb(), id: (session && session.user_id) || "" };
   }
+  function appSigned(){ try { return !!(window.faSignedIn && faSignedIn()); } catch (e) { return false; } }
   function closeMood(){ const old = document.getElementById("plusRoot"); if (old) old.remove(); }
   async function saveNote(mood, body){
     body = String(body || "").trim().slice(0, 500);
     if (!body) return;
     const act = await actor();
     if (!act.client || !act.id) {
+      if (appSigned()) {
+        const el = document.getElementById("moodSaveMsg");
+        if (el) { el.hidden = false; el.textContent = "Still connecting your account. Please try once more."; el.classList.remove("ok"); }
+        if (window.showToast) showToast("Still connecting. Please try once more.");
+        return;
+      }
       try { sessionStorage.setItem("faMoodDraft", JSON.stringify({ mood, body })); } catch (e) {}
       closeMood();
       if (window.faAuthFor) faAuthFor(true, "lab");
@@ -60,6 +66,7 @@
     const el = document.getElementById("moodSaveMsg");
     if (el) { el.hidden = false; el.textContent = err ? "Could not save. " + err : "Saved ✓"; el.classList.toggle("ok", !err); }
     if (window.showToast) showToast(err ? "Could not save that note" : "Saved ✓");
+    if (!err && window.FA_JOURNAL && FA_JOURNAL.showSaved) FA_JOURNAL.showSaved();
   }
   function setMoodMsg(text){
     const el = document.getElementById("moodSaveMsg");
@@ -75,7 +82,7 @@
 
   async function openMood(id){
     const act = await actor();
-    const on = !!act.id;
+    const on = !!act.id || appSigned();
     const M = window.FA_MOOD;
     if (!M) return;
     if (!id) {
