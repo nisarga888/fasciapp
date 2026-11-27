@@ -246,6 +246,7 @@
         }).join("")}
       </div>`;
     box.prepend(wrap);
+    if (window.FA_PLUS) FA_PLUS.onBreath();
     wrap.onclick = e => {
       const b = e.target.closest("[data-breath-open]");
       if (b) openIntro(b.getAttribute("data-breath-open"));

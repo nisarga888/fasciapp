@@ -79,7 +79,7 @@ const local={mode:"local",
 let noLocCol=false,noPracticeCol=false,noNewsCol=false,noFormatCol=false,noSessionTypeCol=false;
 function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY,{
   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage,storageKey:"fasciapp-auth"}
- });
+ });window.faSb=sb;
  const sess=async()=>{const {data}=await sb.auth.getSession();const u=data.session?.user;return u?{user_id:u.id,email:u.email,news_optin:!!(u.user_metadata&&u.user_metadata.news_optin)}:null};
  const CAP_MSG="The security check didn't pass. Please wait for the check above the button to finish (or tick it), then try again.";
  const capTok=async k=>{try{return window.FaCaptcha?await FaCaptcha.token(k):undefined}catch(e){return undefined}};
