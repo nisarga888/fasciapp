@@ -116,39 +116,88 @@ function rowCard(r, editor){
     return '<article class="myLabRow" data-id="' + esc(r.id) + '">' + art
       + '<div class="myLabTx"><b>' + esc(r.title) + "</b><small>" + esc(r.description || link) + "</small></div>"
       + '<label class="myLabVis"><input type="checkbox" data-vis="' + esc(r.id) + '"' + (r.visible_to_clients ? " checked" : "") + "> Visible to clients</label>"
-      + '<div class="myLabActs"><button type="button" data-up="' + esc(r.id) + '">Up</button><button type="button" data-down="' + esc(r.id) + '">Down</button><button type="button" data-edit="' + esc(r.id) + '">Edit</button><button type="button" data-del="' + esc(r.id) + '">Delete</button></div></article>';
+      + '<div class="myLabActs"><button type="button" class="toolkitShare sm" data-share-edit="' + esc(r.id) + '" aria-label="Share ' + esc(r.title) + '">' + SHARE_ICON + '</button><button type="button" data-up="' + esc(r.id) + '">Up</button><button type="button" data-down="' + esc(r.id) + '">Down</button><button type="button" data-edit="' + esc(r.id) + '">Edit</button><button type="button" data-del="' + esc(r.id) + '">Delete</button></div></article>';
   }
   return '<article class="myLabRow" id="labres-' + esc(r.id) + '">' + art
     + '<div class="myLabTx"><b>' + esc(r.title) + "</b>" + (r.description ? "<small>" + esc(r.description) + "</small>" : "") + "</div>"
-    + '<div class="myLabActs"><a class="gold" href="' + esc(link) + '" target="_blank" rel="noopener">Open</a><button type="button" data-share-res="' + esc(r.id) + '">Share</button></div></article>';
+    + '<div class="myLabActs"><a class="gold" href="' + esc(link) + '" target="_blank" rel="noopener">Open</a><button type="button" class="toolkitShare sm" data-share-res="' + esc(r.id) + '" aria-label="Share ' + esc(r.title) + '">' + SHARE_ICON + "</button></div></article>";
 }
 
+const HINT = "Switch on at least one item to share";
+const SHARE_ICON = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="12" r="2.2"/><circle cx="17" cy="6.5" r="2.2"/><circle cx="17" cy="17.5" r="2.2"/><path d="M8.1 11.1 14.8 7.7M8.1 12.9l6.7 3.4"/></svg>';
+function whatsappLink(url, title){
+  return "https://wa.me/?text=" + encodeURIComponent(String(title || "My Toolkit") + " " + url);
+}
+function mailLink(url, title){
+  const subject = String(title || "My Toolkit");
+  return "mailto:?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(subject + "\n" + url);
+}
+async function copyText(url){
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(url); toast("Link copied"); return; }
+  } catch (e) {}
+  try {
+    const t = document.createElement("textarea");
+    t.value = url;
+    document.body.appendChild(t);
+    t.select();
+    document.execCommand("copy");
+    t.remove();
+    toast("Link copied");
+  } catch (e) { toast("Could not copy that link"); }
+}
+async function nativeShare(url, title, line){
+  if (typeof navigator !== "undefined" && navigator.share) {
+    try { await navigator.share({ title: title, text: line || title, url: url }); return; }
+    catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  await copyText(url);
+}
 function shareSheet(url, title, line){
   const old = document.getElementById("myLabShare");
   if (old) old.remove();
   const d = document.createElement("div");
   d.id = "myLabShare";
   d.className = "ptPop";
-  const native = typeof navigator !== "undefined" && navigator.share ? '<button type="button" class="gold big1" data-native>Share</button>' : "";
   d.innerHTML = '<div class="ptPopDim" data-sx></div><div class="ptPopBox" role="dialog" aria-modal="true" aria-label="Share my Toolkit">'
     + '<div class="ptPopTop"><b>Share my Toolkit</b><button type="button" class="ptPopX" data-sx aria-label="Close">✕</button></div>'
     + '<p class="plusH">' + esc(title) + "</p>" + (line ? '<p class="plusUse">' + esc(line) + "</p>" : "")
     + '<div class="ptLink"><b>' + esc(url.replace(/^https:\/\//, "")) + '</b><button type="button" data-copy>Copy link</button></div>'
-    + native
+    + '<div class="ccChannels"><button type="button" data-wa>WhatsApp</button><button type="button" data-mail>Email</button><button type="button" class="gold" data-native>Share</button></div>'
     + '<div class="labQr"><canvas width="180" height="180" aria-label="QR code"></canvas></div></div>';
   document.body.appendChild(d);
   const cv = d.querySelector("canvas");
   if (cv && window.FA_QR) { try { FA_QR.draw(cv, url); } catch (e) {} }
   d.addEventListener("click", async e => {
     if (e.target.closest("[data-sx]")) { d.remove(); return; }
-    if (e.target.closest("[data-copy]")) {
-      try { await navigator.clipboard.writeText(url); toast("Link copied"); } catch (err) { toast("Could not copy that link"); }
-      return;
-    }
-    if (e.target.closest("[data-native]") && navigator.share) {
-      navigator.share({ title: title, text: line || title, url: url }).catch(() => {});
-    }
+    if (e.target.closest("[data-copy]")) { await copyText(url); return; }
+    if (e.target.closest("[data-wa]")) { window.open(whatsappLink(url, title), "_blank", "noopener"); return; }
+    if (e.target.closest("[data-mail]")) { location.href = mailLink(url, title); return; }
+    if (e.target.closest("[data-native]")) { await nativeShare(url, title, line); }
   });
+}
+async function practitionerSlug(){
+  try {
+    if (window.DB && DB.mine) {
+      const p = await DB.mine();
+      if (p && p.slug) return p.slug;
+    }
+  } catch (e) {}
+  return "";
+}
+async function shareToolkit(){
+  let rows = [];
+  try { rows = await mine(); } catch (e) { rows = []; }
+  if (!rows.some(r => r.visible_to_clients)) { toast(HINT); return; }
+  const slug = await practitionerSlug();
+  if (!slug) { toast("Publish your listing first"); return; }
+  shareSheet(toolkitUrl(slug), "My Toolkit", "Videos, courses and links");
+}
+async function shareResource(row){
+  if (!row || !row.visible_to_clients) { toast("Switch this item on to share it."); return; }
+  const slug = await practitionerSlug();
+  if (!slug) { toast("Publish your listing first"); return; }
+  shareSheet(resourceUrl(slug, row.id), row.title, row.description || "");
 }
 
 async function openEditor(){
@@ -168,12 +217,15 @@ function paintEditor(rows){
     const items = g.rows.length ? g.rows.map(r => rowCard(r, true)).join("") : '<p class="plusFine">Nothing here yet.</p>';
     return '<h3 class="lsec">' + esc(g.title) + "</h3>" + items;
   }).join("");
-  shell(top("My Toolkit") + '<p class="plusUse">What you mark “Visible to clients” appears on your public Toolkit page.</p><button type="button" class="gold" id="myLabAdd">+ Add resource</button>' + body, "My Toolkit");
+  shell(top("My Toolkit") + '<button type="button" class="gold big1" id="myToolkitShare">Share my Toolkit</button><p class="plusUse">What you mark “Visible to clients” appears on your public Toolkit page.</p><button type="button" class="gold" id="myLabAdd">+ Add resource</button>' + body, "My Toolkit");
+  const share = root.querySelector("#myToolkitShare");
+  if (share) share.onclick = () => shareToolkit();
   const add = root.querySelector("#myLabAdd");
   if (add) add.onclick = () => openForm(null, rows);
   root.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openForm(rows.find(r => r.id === b.getAttribute("data-edit")), rows));
   root.querySelectorAll("[data-del]").forEach(b => b.onclick = () => removeRow(b.getAttribute("data-del")));
   root.querySelectorAll("[data-vis]").forEach(b => b.onchange = () => setVisible(b.getAttribute("data-vis"), b.checked));
+  root.querySelectorAll("[data-share-edit]").forEach(b => b.onclick = () => shareResource(rows.find(r => r.id === b.getAttribute("data-share-edit"))));
   root.querySelectorAll("[data-up]").forEach(b => b.onclick = () => move(rows, b.getAttribute("data-up"), -1));
   root.querySelectorAll("[data-down]").forEach(b => b.onclick = () => move(rows, b.getAttribute("data-down"), 1));
 }
@@ -318,7 +370,10 @@ async function openPublic(key, focusId){
     else if (window.faOpenPract) faOpenPract(person.id);
   };
   const share = root.querySelector("#myLabShare");
-  if (share) share.onclick = () => shareSheet(toolkitUrl(person.slug), personTitle(person) + "'s Toolkit", "Videos, courses and links");
+  if (share) share.onclick = () => {
+    if (!rows.length) { toast(HINT); return; }
+    shareSheet(toolkitUrl(person.slug), personTitle(person) + "'s Toolkit", "Videos, courses and links");
+  };
   root.querySelectorAll("[data-share-res]").forEach(b => b.onclick = () => {
     const row = rows.find(r => r.id === b.getAttribute("data-share-res"));
     if (row) shareSheet(resourceUrl(person.slug, row.id), row.title, row.description || "");
@@ -329,5 +384,5 @@ async function openPublic(key, focusId){
   }
 }
 
-return { GROUPS, httpUrl, kindOf, toolkitPath, toolkitUrl, labPath: toolkitPath, labUrl: toolkitUrl, resourceUrl, listingTile, youtubeMeta, openEditor, openPublic, mountListing, visibleCount };
+return { GROUPS, HINT, httpUrl, kindOf, toolkitPath, toolkitUrl, labPath: toolkitPath, labUrl: toolkitUrl, resourceUrl, whatsappLink, mailLink, listingTile, youtubeMeta, openEditor, openPublic, mountListing, visibleCount, shareToolkit };
 });
