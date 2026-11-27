@@ -24,6 +24,20 @@ test("the twelve breath gifts are free and share a Lab path", () => {
   assert.equal(GIFTS.bySlug("4-8-sleep").title, "Extended Exhale · 4-8");
   assert.equal(GIFTS.bySlug("gentle-2-4").path, "Breathe through the nose");
   assert.deepEqual(GIFTS.bySlug("coherent-55").phases, [["In through the nose", 3000], ["Out through the nose", 3000]]);
+  assert.deepEqual(GIFTS.bySlug("grounding-3").phases, [["In through the nose", 3000], ["Out through the nose", 3000]]);
+  assert.equal(GIFTS.bySlug("grounding-3").title, "3-3 Grounding Breath");
+  GIFTS.GIFTS.forEach(g => {
+    const html = GIFTS.cardHtml(g);
+    assert.match(html, /giftArt/);
+    assert.match(html, /breathUseTag/);
+    assert.match(html, new RegExp('data-motif="' + g.slug + '"'));
+    assert.match(html, /data-pulse/);
+  });
+  assert.match(GIFTS.cardHtml(GIFTS.bySlug("4-6-calming")), /giftWave/);
+  assert.match(GIFTS.cardHtml(GIFTS.bySlug("4-7-8")), /#9C8FD6/);
+  assert.match(GIFTS.cardHtml(GIFTS.bySlug("alternate-nostril")), /data-pulse="left"/);
+  assert.match(GIFTS.cardHtml(GIFTS.bySlug("alternate-nostril")), /data-pulse="right"/);
+  assert.match(GIFTS.cardHtml(GIFTS.bySlug("grounding-3")), /<line /);
   assert.equal(GIFTS.bySlug("4-7-8").phases[2][0], "Out through the mouth");
   assert.equal(GIFTS.bySlug("physiological-sigh").phases[2][0], "Out through the mouth");
   assert.equal(GIFTS.phaseTarget("Hold", 1.18), 1.18);

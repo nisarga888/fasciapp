@@ -104,9 +104,9 @@
     if (!wrap || !window.FA_GIFTS || wrap.querySelector(".giftStrip")) return;
     const strip = document.createElement("div");
     strip.className = "giftStrip";
-    strip.innerHTML = '<div class="giftStripTop"><h3 class="lsec">Breath Gifts</h3><button type="button" class="ghost sm" data-gifts>All 12</button></div><div class="lgrid">'
+    strip.innerHTML = '<div class="giftStripTop"><h3 class="lsec">Breath Gifts</h3><button type="button" class="ghost sm" data-gifts>All 12</button></div><div class="giftGrid">'
       + FA_GIFTS.GIFTS.map(g => FA_GIFTS.cardHtml(g)).join("") + "</div>";
-    wrap.insertBefore(strip, wrap.firstChild);
+    wrap.appendChild(strip);
   }
   function onLab(){
     const tiles = $("labTiles");
@@ -127,7 +127,7 @@
     if (slug && FA_GIFTS.pack(slug)) return FA_GIFTS.openPack(slug);
     if (slug && FA_GIFTS.bySlug(slug)) return FA_GIFTS.open(slug, { from });
     const root = sheet(
-      top("Breath Gifts") + '<p class="plusUse">Twelve short breaths. All free. A taste of a longer practice, not the full Lab timer.</p><div class="lgrid">'
+      top("Breath Gifts") + '<p class="plusUse">Twelve short breaths. All free. A taste of a longer practice, not the full Lab timer.</p><div class="giftGrid">'
       + FA_GIFTS.GIFTS.map(g => FA_GIFTS.cardHtml(g)).join("") + "</div>",
       "Breath Gifts"
     );
