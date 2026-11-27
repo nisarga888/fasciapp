@@ -15,6 +15,7 @@ function missingTable(err){
 }
 let sbClient = null, uid = "", tableOk = null, mem = {};
 function sb(){
+  if (typeof window!=="undefined" && window.faSb) return window.faSb;
   if (sbClient) return sbClient;
   const c = (typeof window!=="undefined" && window.FASCIAPP_CONFIG) || {};
   if (typeof window==="undefined" || !window.supabase || !c.SUPABASE_URL) return null;
@@ -23,6 +24,12 @@ function sb(){
 }
 async function userId(){
   if (uid) return uid;
+  try {
+    if (typeof window!=="undefined" && window.DB && DB.session) {
+      const s = await DB.session();
+      if (s && s.user_id) { uid = s.user_id; return uid; }
+    }
+  } catch (e) {}
   const c = sb();
   if (!c) return "";
   try{const {data}=await c.auth.getSession(); uid=(data&&data.session&&data.session.user&&data.session.user.id)||"";}catch(e){uid="";}

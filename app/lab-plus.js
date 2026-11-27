@@ -4,7 +4,6 @@
   function esc(s){ return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function sb(){ return window.faSb || null; }
   function signed(){ try { return !!(window.faSignedIn && faSignedIn()); } catch (e) { return false; } }
-  function me(){ try { return window.faMe ? faMe() : null; } catch (e) { return null; } }
 
   function sheet(html, label){
     const old = document.getElementById("plusRoot");
@@ -40,7 +39,7 @@
 
   async function actor(){
     const session = window.DB && DB.session ? await DB.session().catch(() => null) : null;
-    return { client: sb(), id: (session && session.user_id) || "" };
+    return { client: sb(), id: (session && session.user_id) || "", email: (session && session.email) || "" };
   }
   function appSigned(){ try { return !!(window.faSignedIn && faSignedIn()); } catch (e) { return false; } }
   function closeMood(){ const old = document.getElementById("plusRoot"); if (old) old.remove(); }
@@ -156,13 +155,12 @@
   }
 
   async function journeyState(){
-    const client = sb();
-    const who = me();
-    if (!client || !who) return { access: false, done: [], reminder: false, buddy: null };
-    const email = String(who.email || "").toLowerCase();
-    const acc = await client.from("journey_access").select("email").eq("email", email).maybeSingle();
-    const prog = await client.from("journey_progress").select("done,reminder").eq("user_id", who.user_id).maybeSingle();
-    const buddy = await client.rpc("fa_journey_buddy");
+    const act = await actor();
+    if (!act.client || !act.id) return { access: false, done: [], reminder: false, buddy: null };
+    const email = String(act.email || "").toLowerCase();
+    const acc = await act.client.from("journey_access").select("email").eq("email", email).maybeSingle();
+    const prog = await act.client.from("journey_progress").select("done,reminder").eq("user_id", act.id).maybeSingle();
+    const buddy = await act.client.rpc("fa_journey_buddy");
     const row = buddy.data && buddy.data[0];
     return {
       access: !!(acc.data && !acc.error),
@@ -172,10 +170,9 @@
     };
   }
   async function saveProgress(done, reminder){
-    const client = sb();
-    const who = me();
-    if (!client || !who) return;
-    await client.from("journey_progress").upsert({ user_id: who.user_id, done, reminder: !!reminder }, { onConflict: "user_id" });
+    const act = await actor();
+    if (!act.client || !act.id) return;
+    await act.client.from("journey_progress").upsert({ user_id: act.id, done, reminder: !!reminder }, { onConflict: "user_id" });
   }
 
   async function openJourney(opts){

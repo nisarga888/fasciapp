@@ -157,6 +157,7 @@ function subjectOf(tpl){
   return row.subject;
 }
 async function mark(channel, template){
+  try { if (window.DB && DB.session) await DB.session(); } catch (e) {}
   const client = sb();
   if (!client || !current || !current.id) return;
   const now = new Date().toISOString();

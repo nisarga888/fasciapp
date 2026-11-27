@@ -30,7 +30,12 @@ function resourceUrl(slug, id){
   const base = toolkitUrl(slug);
   return id ? base + "?r=" + encodeURIComponent(id) : base;
 }
-function who(){ try { return window.faMe ? faMe() : null; } catch (e) { return null; } }
+async function who(){
+  if (window.DB && DB.session) {
+    try { const s = await DB.session(); if (s && s.user_id) return s; } catch (e) {}
+  }
+  return null;
+}
 function signed(){ try { return !!(window.faSignedIn && faSignedIn()); } catch (e) { return false; } }
 function sb(){ return window.faSb || null; }
 function toast(msg){ if (window.showToast) showToast(msg); }
@@ -70,7 +75,7 @@ async function youtubeMeta(url){
 
 async function mine(){
   const client = sb();
-  const me = who();
+  const me = await who();
   if (!client || !me) return [];
   const r = await client.from("practitioner_lab_resources").select("id,kind,url,title,description,thumb,visible_to_clients,sort_order,created_at").eq("user_id", me.user_id).order("sort_order", { ascending: true }).order("created_at", { ascending: true });
   if (r.error) throw new Error(r.error.message);
@@ -202,12 +207,14 @@ async function shareResource(row){
 
 async function openEditor(){
   if (typeof document === "undefined") return;
-  if (!signed()) {
+  const me = await who();
+  if (!me && !signed()) {
     shell(top("My Toolkit") + '<p class="plusUse">My Toolkit is part of your practitioner profile. Sign in to add videos, courses and links.</p><button type="button" class="gold" id="myLabAuth">Create a free account</button>', "My Toolkit");
     const b = root.querySelector("#myLabAuth");
     if (b) b.onclick = () => { if (window.faAuthFor) faAuthFor(false, "lab"); };
     return;
   }
+  if (!me) { toast("Still connecting your account. Please try once more."); return; }
   let rows = [];
   try { rows = await mine(); } catch (e) { toast("Could not load My Toolkit"); return; }
   paintEditor(rows);
@@ -279,8 +286,8 @@ function openForm(row, rows){
       updated_at: new Date().toISOString()
     };
     const client = sb();
-    const me = who();
-    if (!client || !me) { toast("Sign in to save"); return; }
+    const me = await who();
+    if (!client || !me) { toast(signed() ? "Still connecting your account. Please try once more." : "Sign in to save"); return; }
     let r;
     if (row) r = await client.from("practitioner_lab_resources").update(payload).eq("id", row.id);
     else {

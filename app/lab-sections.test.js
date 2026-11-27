@@ -108,6 +108,13 @@ test("new Lab paths redirect and the build does not add My space", () => {
   const data = fs.readFileSync(path.join(__dirname, "data.js"), "utf8");
   assert.match(data, /refreshSession/);
   assert.equal(data.includes("faActor"), false);
+  const toolkit = fs.readFileSync(path.join(__dirname, "my-lab.js"), "utf8");
+  assert.match(toolkit, /DB\.session/);
+  assert.equal(/faMe\(\)/.test(toolkit), false);
+  const notes = fs.readFileSync(path.join(__dirname, "notes.js"), "utf8");
+  const mer = fs.readFileSync(path.join(__dirname, "mer-sessions.js"), "utf8");
+  assert.match(notes, /DB\.session/);
+  assert.match(mer, /DB\.session/);
   const app = fs.readFileSync(path.join(__dirname, "app.js"), "utf8");
   const tiles = app.slice(app.indexOf("const LAB_TILES"), app.indexOf("function labGroupOf"));
   assert.ok(tiles.indexOf('k:"breathing"') < tiles.indexOf('k:"courses"'));
