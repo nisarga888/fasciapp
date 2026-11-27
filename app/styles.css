@@ -784,6 +784,27 @@ body.peOpen{overflow:hidden}
 .labQr{display:grid;place-items:center;margin:4px 0 8px}
 .labQr canvas{width:180px;height:180px;background:#F3EDE4;border-radius:12px}
 .labOpenImg{width:100%;max-height:180px;object-fit:cover;border-radius:12px}
+#labFeature.labTiles{margin-top:8px}
+#labFeature .labJourney{grid-column:1 / -1;aspect-ratio:1.8/.72}
+.moodHome{margin:8px 12px 12px}
+.moodHome h2{margin:0;color:#F3EDE4;font-size:18px;font-weight:500}
+.moodK{margin:0;color:#C99E67;font-size:11px;letter-spacing:1.2px;text-transform:uppercase}
+.moodTile{aspect-ratio:1.7/.72}
+.giftStrip{margin:0 0 10px}
+.giftStripTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.giftThumb{display:block;width:100%;height:100%;background:radial-gradient(circle at 40% 35%,#5FC9C3,#02191E 72%)}
+.giftBall{width:120px;height:120px;margin:8px auto;border-radius:50%;background:radial-gradient(circle at 40% 35%,#5FC9C3,#0a2a30 70%);border:1px solid #C99E6788;transition:transform .6s}
+.giftPhase{text-align:center;color:#C99E67;font-size:18px;margin:8px 0 0}
+.giftRound,.plusUse,.plusLine,.plusFine,.plusPrice{color:#9fb3b5;font-size:13px;line-height:1.4}
+.plusH{color:#C99E67;font-weight:500;margin:4px 0}
+.plusEyebrow{color:#5FC9C3;font-size:12px;letter-spacing:.4px}
+.plusNote{display:grid;gap:6px;color:#F3EDE4;font-size:14px}
+.plusNote textarea,.moodHome textarea{width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #C99E6755;background:#02191E;color:#F3EDE4;font:inherit;padding:10px}
+.dayRow .lbody{width:100%;background:none;border:0;color:inherit;text-align:left;font:inherit;cursor:pointer}
+.dayDone{display:flex;gap:6px;align-items:center;padding:0 10px 10px;color:#C99E67;font-size:13px}
+.dayRow.locked{opacity:.55}
+.ptPopBox .lgrid{margin:8px 0}
+.ptPopBox .card{margin:8px 0}
 #learnList:not(.lv-home) .labCarousel,#learnList:not(.lv-home) .breathCarousel{display:grid;grid-template-columns:1fr 1fr;gap:12px;overflow:visible;padding:0;margin:0}
 #learnList:not(.lv-home) .labCarousel .lcard,#learnList:not(.lv-home) .breathCarousel .breathCaroCard,#learnList:not(.lv-home) .lgrid .lcard{flex:none;width:auto;border-radius:18px;box-shadow:0 4px 14px #0004}
 .lcTile{aspect-ratio:auto;min-height:250px;padding-top:120px}

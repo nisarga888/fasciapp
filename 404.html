@@ -38,8 +38,23 @@
   var parts=path?path.split("/"):[];
   var LAB={"books":1,"courses":1,"breathing":1,"listen":1,"watch":1,"live":1};
   if(parts[0]==="lab"){
-    var sec=parts[1]||"", item=parts[2]||"";
+    var sec=parts[1]||"", item=parts[2]||"", gift=parts[3]||"";
     if(parts.length===1){location.replace("/app/?tab=lab"+extra+location.hash);return;}
+    if(sec==="breathing"&&item==="gifts"){
+      if(parts.length===3){location.replace("/app/?lab=breathing&item=gifts"+extra+location.hash);return;}
+      if(parts.length===4&&slugOk(gift)){location.replace("/app/?lab=breathing&item=gifts&gift="+encodeURIComponent(gift)+extra+location.hash);return;}
+      return;
+    }
+    if(sec==="journey"){
+      if(parts.length===2){location.replace("/app/?lab=journey"+extra+location.hash);return;}
+      if(parts.length===4&&item==="buddy"&&slugOk(gift)){location.replace("/app/?lab=journey&buddy="+encodeURIComponent(gift)+extra+location.hash);return;}
+      return;
+    }
+    if(sec==="mood"){
+      if(parts.length===2){location.replace("/app/?lab=mood"+extra+location.hash);return;}
+      if(parts.length===3&&slugOk(item)){location.replace("/app/?lab=mood&feel="+encodeURIComponent(item)+extra+location.hash);return;}
+      return;
+    }
     if(parts.length===2&&LAB[sec]){location.replace("/app/?lab="+encodeURIComponent(sec)+extra+location.hash);return;}
     if(parts.length===3&&LAB[sec]&&slugOk(item)){location.replace("/app/?lab="+encodeURIComponent(sec)+"&item="+encodeURIComponent(item)+extra+location.hash);return;}
     return;

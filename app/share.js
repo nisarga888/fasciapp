@@ -83,6 +83,21 @@ function redirectTarget(pathname){
   const parts = pathParts(pathname);
   if(parts[0]==="lab"){
     if(parts.length===1) return "/app/?tab=lab";
+    if(parts[1]==="breathing" && parts[2]==="gifts"){
+      if(parts.length===3) return "/app/?lab=breathing&item=gifts";
+      if(parts.length===4 && slugPart(parts[3])) return "/app/?lab=breathing&item=gifts&gift="+parts[3];
+      return null;
+    }
+    if(parts[1]==="journey"){
+      if(parts.length===2) return "/app/?lab=journey";
+      if(parts.length===4 && parts[2]==="buddy" && slugPart(parts[3])) return "/app/?lab=journey&buddy="+parts[3];
+      return null;
+    }
+    if(parts[1]==="mood"){
+      if(parts.length===2) return "/app/?lab=mood";
+      if(parts.length===3 && slugPart(parts[2])) return "/app/?lab=mood&feel="+parts[2];
+      return null;
+    }
     if(parts.length===2 && LAB_SECTIONS[parts[1]]) return "/app/?lab="+parts[1];
     if(parts.length===3 && LAB_SECTIONS[parts[1]] && slugPart(parts[2])) return "/app/?lab="+parts[1]+"&item="+parts[2];
     return null;

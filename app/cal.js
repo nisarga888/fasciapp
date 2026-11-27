@@ -1,6 +1,6 @@
 /* v0.23.282 Session times use the device IANA zone. The stored instant is UTC. */
 (function(){
-const BUILD="0.23.288";function browserTz(){try{const z=Intl.DateTimeFormat().resolvedOptions().timeZone;return z&&z.length<80?z:"UTC"}catch(e){return "UTC"}}try{window.FA_BUILD=BUILD}catch(e){}const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
+const BUILD="0.23.289";function browserTz(){try{const z=Intl.DateTimeFormat().resolvedOptions().timeZone;return z&&z.length<80?z:"UTC"}catch(e){return "UTC"}}try{window.FA_BUILD=BUILD}catch(e){}const faU=()=>{try{return me}catch(e){return window.faMe}};let showPast=false,vm="week",C=null,list=[],loaded=false,sel=null,wk0=null,editId=null;
 const q=s=>document.querySelector(s),E=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function sb(){if(window.scanSb)return window.scanSb;if(!C){const c=window.FASCIAPP_CONFIG||{};C=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false,storage:window.localStorage,storageKey:"fasciapp-auth"}})}return C}
 function parts(d,zone){return FA_TZ.partsIn(d,zone||browserTz())}
