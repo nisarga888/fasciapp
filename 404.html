@@ -15,7 +15,8 @@
 <!--
   GitHub Pages has no per-profile server. A path like /aisha-archer is not a file,
   so this 404 page sends people to /app/?p=<slug>. A place link such as /poland/warsaw
-  goes to /app/?loc=poland&city=warsaw. The app opens a region or country before a
+  goes to /app/?loc=poland&city=warsaw. A Lab link such as /lab/books/feel-to-heal
+  goes to /app/?lab=books&item=feel-to-heal. The app opens a region or country before a
   profile, and leaves every other slug as a profile. Crawlers do not run this script,
   so Open Graph title and photo stay the site-wide image. Per-profile link previews
   are not available on GitHub Pages.
@@ -35,6 +36,14 @@
   var slugOk=function(s){return !!s&&s.length<=80&&s.indexOf(".")<0&&!RESERVED[s]&&!uuid.test(s)&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s);};
   var extra=location.search?location.search.replace(/^\?/,"&"):"";
   var parts=path?path.split("/"):[];
+  var LAB={"books":1,"courses":1,"breathing":1,"listen":1,"watch":1,"live":1};
+  if(parts[0]==="lab"){
+    var sec=parts[1]||"", item=parts[2]||"";
+    if(parts.length===1){location.replace("/app/?tab=lab"+extra+location.hash);return;}
+    if(parts.length===2&&LAB[sec]){location.replace("/app/?lab="+encodeURIComponent(sec)+extra+location.hash);return;}
+    if(parts.length===3&&LAB[sec]&&slugOk(item)){location.replace("/app/?lab="+encodeURIComponent(sec)+"&item="+encodeURIComponent(item)+extra+location.hash);return;}
+    return;
+  }
   if(parts.length===2&&parts[0]==="intake"&&slugOk(parts[1])){location.replace("/intake.html?s="+encodeURIComponent(parts[1])+extra+location.hash);return;}
   if(parts.length===2&&slugOk(parts[0])&&slugOk(parts[1])){location.replace("/app/?loc="+encodeURIComponent(parts[0])+"&city="+encodeURIComponent(parts[1])+extra+location.hash);return;}
   if(parts.length!==1||!slugOk(parts[0])) return;

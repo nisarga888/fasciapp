@@ -78,8 +78,15 @@ function pathParts(pathname){
 function slugPart(s){
   return !!s && s.length<=80 && s.indexOf(".")<0 && !UUID_RE.test(s) && !RESERVED_SET.has(s) && SLUG_RE.test(s);
 }
+const LAB_SECTIONS = { books: 1, courses: 1, breathing: 1, listen: 1, watch: 1, live: 1 };
 function redirectTarget(pathname){
   const parts = pathParts(pathname);
+  if(parts[0]==="lab"){
+    if(parts.length===1) return "/app/?tab=lab";
+    if(parts.length===2 && LAB_SECTIONS[parts[1]]) return "/app/?lab="+parts[1];
+    if(parts.length===3 && LAB_SECTIONS[parts[1]] && slugPart(parts[2])) return "/app/?lab="+parts[1]+"&item="+parts[2];
+    return null;
+  }
   if(parts.length===2 && parts[0]==="intake" && slugPart(parts[1])) return "/intake.html?s="+parts[1];
   if(parts.length===2 && slugPart(parts[0]) && slugPart(parts[1])) return "/app/?loc="+parts[0]+"&city="+parts[1];
   if(parts.length!==1 || !isProfileSlug(parts[0])) return null;

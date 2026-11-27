@@ -763,6 +763,27 @@ body.peOpen{overflow:hidden}
 .ltBack{width:100%;padding:13px 16px;border-radius:999px;border:1.5px solid #C99E67;background:#C99E6722;color:#F3D9A8;font:inherit;font-size:16px;font-weight:700;text-align:left;cursor:pointer}
 .ltBack:active{background:#C99E6744}
 .labBackBar .lsec{margin:14px 0 2px;font-size:15px}
+.lshare{position:absolute;top:8px;left:8px;z-index:6;width:32px;height:32px;border-radius:50%;border:1px solid #C99E67;background:#02191eee;color:#C99E67;display:grid;place-items:center;padding:0;cursor:pointer}
+.lshare svg{display:block;pointer-events:none}
+.labSecHead{display:flex;align-items:center;gap:8px;width:100%}
+.labSecHead .lsec{flex:1}
+.labSecShare{position:static;flex:none;margin-top:10px}
+.labShared{margin:2px 0 8px;color:#C99E67;font-size:12px;letter-spacing:.3px}
+.labShared[hidden],.labAuthCard[hidden]{display:none}
+.labHit{outline:2px solid #C99E67;outline-offset:2px}
+.labAuthCard,.labPreview{display:flex;gap:12px;align-items:center;text-align:left}
+.labAuthCard{background:#0a2a30;border:1px solid #C99E6755;border-radius:16px;padding:12px;margin:0 0 14px}
+.labPreview{margin:8px 0 12px}
+.labAuthCard img,.labAuthCard .labAuthIc,.labPreview img,.labPreview .labAuthIc{width:64px;height:64px;object-fit:cover;border-radius:12px;flex:none;background:#02191E;display:grid;place-items:center;color:#C99E67}
+.labAuthCard b,.labPreview b{display:block;color:#C99E67;font-size:16px}
+.labAuthCard small,.labPreview small{display:block;color:#9fb3b5;line-height:1.35}
+.labAuthEyebrow{color:#5FC9C3!important;font-size:11px;letter-spacing:.6px;text-transform:uppercase}
+.labShareActs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 8px}
+.labShareActs .labNative,.labShareActs .labPract{grid-column:1 / -1}
+.labShareActs button{border:1px solid #C99E6788;background:#0a2a30;color:#F3EDE4;border-radius:12px;padding:10px;font:inherit;font-weight:700}
+.labQr{display:grid;place-items:center;margin:4px 0 8px}
+.labQr canvas{width:180px;height:180px;background:#F3EDE4;border-radius:12px}
+.labOpenImg{width:100%;max-height:180px;object-fit:cover;border-radius:12px}
 #learnList:not(.lv-home) .labCarousel,#learnList:not(.lv-home) .breathCarousel{display:grid;grid-template-columns:1fr 1fr;gap:12px;overflow:visible;padding:0;margin:0}
 #learnList:not(.lv-home) .labCarousel .lcard,#learnList:not(.lv-home) .breathCarousel .breathCaroCard,#learnList:not(.lv-home) .lgrid .lcard{flex:none;width:auto;border-radius:18px;box-shadow:0 4px 14px #0004}
 .lcTile{aspect-ratio:auto;min-height:250px;padding-top:120px}

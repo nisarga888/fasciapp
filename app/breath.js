@@ -235,8 +235,9 @@
         ${ORDER.map(id => {
           const p = PRACTICES[id];
           const icon = p.art || (p.viz === "wave" ? "wave" : p.viz === "box" ? "box" : "ball");
-          return `<button type="button" class="breathCaroCard" role="listitem" data-breath-open="${esc(id)}" aria-label="${esc(p.title)}: ${esc(p.tag||"")}">
-            ${window.FA_isNew&&FA_isNew("breath:"+id)?FA_NEW_TAG:""}<div class="breathCaroArt ${icon}" aria-hidden="true">${p.tag?`<span class="breathUseTag">${esc(p.tag)}</span>`:""}${isLocked(id)?`<span class="breathLock">${LOCKI}</span>`:""}</div>
+          const share = window.FA_LAB ? FA_LAB.shareBtn("item:breathing/" + id, "Share " + p.title) : "";
+          return `<button type="button" class="breathCaroCard" role="listitem" data-breath-open="${esc(id)}" data-lab-id="breathing/${esc(id)}" aria-label="${esc(p.title)}: ${esc(p.tag||"")}">
+            ${share}${window.FA_isNew&&FA_isNew("breath:"+id)?FA_NEW_TAG:""}<div class="breathCaroArt ${icon}" aria-hidden="true">${p.tag?`<span class="breathUseTag">${esc(p.tag)}</span>`:""}${isLocked(id)?`<span class="breathLock">${LOCKI}</span>`:""}</div>
             <span class="breathTags">${FREE[id]?'<span class="ltag free">Free</span>':`<span class="ltag lk">${isLocked(id)?LOCKI+' ':''}Members</span>`}</span>
             <b>${esc(p.title)}${p.tag?` <span class="breathFor">· ${esc(p.tag.toLowerCase())}</span>`:""}</b>
             <small>${esc(p.line)}</small>
