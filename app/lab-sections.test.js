@@ -98,6 +98,14 @@ test("new Lab paths redirect and the build does not add My space", () => {
   const plus = fs.readFileSync(path.join(__dirname, "lab-plus.js"), "utf8");
   assert.equal(/My space|Client space|recommend to client/i.test(plus), false);
   assert.match(plus, /data-journal/);
+  assert.match(plus, /faActor/);
+  assert.equal(plus.includes("Sign in again"), false);
+  const journal = fs.readFileSync(path.join(__dirname, "journal.js"), "utf8");
+  assert.match(journal, /faActor/);
+  assert.equal(journal.includes("Sign in again"), false);
+  const app = fs.readFileSync(path.join(__dirname, "app.js"), "utf8");
+  const tiles = app.slice(app.indexOf("const LAB_TILES"), app.indexOf("function labGroupOf"));
+  assert.ok(tiles.indexOf('k:"breathing"') < tiles.indexOf('k:"courses"'));
   assert.match(plus, /mood, body, day/);
   assert.equal(/onHome|getElementById\("map"\)|labJourney/.test(plus), false);
   assert.match(plus, /Daily Journal/);

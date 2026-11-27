@@ -80,6 +80,21 @@ let noLocCol=false,noPracticeCol=false,noNewsCol=false,noFormatCol=false,noSessi
 function supa(){const sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY,{
   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage,storageKey:"fasciapp-auth"}
  });window.faSb=sb;
+ window.faActor=async function(){
+  const client=window.faSb||null;
+  let id="";
+  if(client&&client.auth){
+   try{
+    const got=await client.auth.getSession();
+    let u=got.data&&got.data.session&&got.data.session.user;
+    if(!u||!u.id){const ref=await client.auth.refreshSession();u=ref.data&&ref.data.session&&ref.data.session.user}
+    if(u&&u.id)id=u.id;
+   }catch(e){}
+  }
+  if(!id){try{const s=await sess();if(s)id=s.user_id||s.id||""}catch(e){}}
+  if(!id){try{const m=window.faMe&&faMe();if(m&&m.user_id)id=m.user_id}catch(e){}}
+  return {client:window.faSb||null,id:id||""};
+ };
  const sess=async()=>{const {data}=await sb.auth.getSession();const u=data.session?.user;return u?{user_id:u.id,email:u.email,news_optin:!!(u.user_metadata&&u.user_metadata.news_optin)}:null};
  const CAP_MSG="The security check didn't pass. Please wait for the check above the button to finish (or tick it), then try again.";
  const capTok=async k=>{try{return window.FaCaptcha?await FaCaptcha.token(k):undefined}catch(e){return undefined}};

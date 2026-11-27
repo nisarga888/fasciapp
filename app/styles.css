@@ -1241,5 +1241,6 @@ body.modInfoOpen>main{overflow:hidden}
 .ptCount.hot{color:#C99E67}
 .ptPopErr{min-height:1.2em;margin:0 0 8px;color:#E7C78F;font-size:13px}
 .ptPopErr:empty{display:none}
+.journalSaved{margin:8px 0 0;color:#E7C78F;font-size:14px}.journalSaved.ok{color:#8fd4b0;font-weight:700}
 .ptPost{width:100%;border-radius:14px;padding:13px;font-size:16px}
 .ptPost:disabled{opacity:.6}

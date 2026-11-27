@@ -655,8 +655,8 @@ const LAB_COURSES=[
  {k:"c3",t:"Reichian Character Structure",by:"Jennifer McKeever",dur:"3.5 hours · 6 lessons",price:"€79",bg:"#4a3f5e",img:"lab/course-character-types.jpg",url:"https://online.myofascialtrainings.com/courses/mer-character-types-course-en-version"},
  {k:"c4",t:"Home-Practice Breathwork Journey",by:"Giten Tonkov",dur:"7 sessions · 30–45 min each",price:"$129",bg:"#2f5d7a",img:"lab/course-bbtrs-home.jpg",url:"https://members.biodynamicbreath.com/courses/offers/975170e6-7522-4b82-b9ba-6ee63d8106e7"}];
 const LAB_TILES=[
- {k:"courses",ic:"✿",t:"Online courses",s:"Learn at your own pace",bg:"#16695f"},
  {k:"breathing",ic:"≋",t:"Breath Gifts",s:"Practices and short breaths",bg:"#96693a"},
+ {k:"courses",ic:"✿",t:"Online courses",s:"Learn at your own pace",bg:"#16695f"},
  {k:"listen",ic:"♪",t:"Listen",s:"Meditations",bg:"#463c6e"},
  {k:"watch",ic:"▶",t:"Watch",s:"Videos",bg:"#19465f"},
  {k:"live",ic:"◷",t:"Live",s:"Free sessions",bg:"#6e373c"},
